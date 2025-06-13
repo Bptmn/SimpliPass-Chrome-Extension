@@ -2,6 +2,7 @@ import React from 'react';
 import { auth } from '../../../src/firebase';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import cognitoConfig from '../../../config/cognito';
+import './settingsPage.css';
 
 export const SettingsPage: React.FC = () => {
   const user = auth.currentUser;

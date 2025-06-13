@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import './helperBar.css';
 
 export const HelperBar: React.FC = () => {
   const navigate = useNavigate();

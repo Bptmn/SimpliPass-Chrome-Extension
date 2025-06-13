@@ -5,9 +5,9 @@ interface CognitoConfig {
 }
 
 const cognitoConfig: CognitoConfig = {
-  UserPoolId: 'eu-west-3_Sh6OZ4wUd',
-  ClientId: '1tcatk284cv30md9s0p8nr9ldf',
-  Region: 'eu-west-3'
+  UserPoolId: process.env.REACT_APP_COGNITO_USER_POOL_ID || '',
+  ClientId: process.env.REACT_APP_COGNITO_CLIENT_ID || '',
+  Region: process.env.REACT_APP_COGNITO_REGION || ''
 };
 
 export default cognitoConfig; 

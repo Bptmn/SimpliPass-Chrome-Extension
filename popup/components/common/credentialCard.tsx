@@ -2,6 +2,7 @@ import React from 'react';
 import { CachedCredential } from '../../../src/types';
 import { getUserSecretKey } from '../../../utils/indexdb';
 import { decryptData } from '../../../utils/crypto';
+import './credentialCard.css';
 
 interface CredentialCardProps {
   cred: CachedCredential;

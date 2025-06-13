@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './generatorPage.css';
 
 export const GeneratorPage: React.FC = () => {
   const [length, setLength] = useState(12);

@@ -1,0 +1,100 @@
+.settings-page h1 {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-secondary);
+  padding: 16px;
+  margin: 0;
+}
+
+.profile-card {
+  margin: 0 16px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.profile-card .user-icon {
+  font-size: 24px;
+  color: var(--color-primary);
+}
+
+.profile-card .user-info {
+  flex: 1;
+}
+
+.profile-card .user-email {
+  font-size: 16px;
+  color: var(--color-accent);
+}
+
+.profile-card .user-subscription {
+  font-size: 14px;
+  color: var(--color-primary);
+}
+
+.theme-toggle {
+  margin: 0 16px 16px;
+  padding: 8px;
+  border-radius: 20px;
+  display: flex;
+  gap: 8px;
+}
+
+.theme-toggle .btn {
+  flex: 1;
+  border-radius: 16px;
+}
+
+.theme-toggle .btn.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.theme-toggle .btn:not(.active) {
+  background: transparent;
+  color: var(--color-accent);
+}
+
+.menu-list {
+  margin: 0 16px;
+}
+
+.menu-item {
+  height: 48px;
+  padding: 0 16px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-item .menu-icon {
+  font-size: 20px;
+  color: var(--color-primary);
+  margin-right: 12px;
+}
+
+.menu-item .menu-label {
+  flex: 1;
+  font-size: 16px;
+  color: var(--color-accent);
+}
+
+.menu-item .menu-arrow {
+  color: var(--color-accent);
+}
+
+.feedback-btn {
+  width: calc(100% - 32px);
+  margin: 16px;
+  background: var(--color-primary);
+  color: white;
+}
+
+.logout-btn {
+  width: calc(100% - 32px);
+  margin: 0 16px 16px;
+  background: var(--color-secondary);
+  color: white;
+}
