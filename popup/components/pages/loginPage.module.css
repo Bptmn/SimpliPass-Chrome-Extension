@@ -1,0 +1,236 @@
+.loginBackground {
+  background: #fff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loginCard {
+  background: #fff;
+  max-width: 360px;
+  width: 100%;
+  padding: 24px 16px;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.loginLogo {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 32px;
+  letter-spacing: 0.01em;
+}
+.loginDot {
+  color: #4f86a2;
+  margin-right: 2px;
+}
+.loginSimpli {
+  color: #4f86a2;
+}
+.loginPass {
+  color: #2eae97;
+}
+
+.loginLabel {
+  font-size: 14px;
+  color: #4f86a2;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.loginInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.loginInput {
+  width: 100%;
+  height: 48px;
+  background: #f1f4f8;
+  border: none;
+  border-radius: 12px;
+  padding: 0 44px 0 44px;
+  font-size: 16px;
+  color: #2eae97;
+  outline: none;
+  font-weight: 500;
+  transition: box-shadow 0.2s;
+}
+.loginInput:focus {
+  box-shadow: 0 0 0 2px #2eae9733;
+}
+
+.loginInput::placeholder {
+  color: #74787a;
+  opacity: 1;
+  font-weight: 400;
+}
+
+.loginInputIcon {
+  position: absolute;
+  left: 16px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.loginClearBtn {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: #74787a;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+.loginClearBtn:hover {
+  color: #2eae97;
+}
+
+.loginCheckboxRow {
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+}
+
+.loginCheckboxLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.loginCheckbox {
+  display: none;
+}
+
+.loginCustomCheckbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #2eae97;
+  border-radius: 4px;
+  background: #fff;
+  display: inline-block;
+  position: relative;
+  margin-right: 8px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.loginCheckbox:checked + .loginCustomCheckbox {
+  background: #2eae97;
+  border-color: #2eae97;
+}
+.loginCheckbox:checked + .loginCustomCheckbox::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 6px;
+  height: 12px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.loginCheckboxText {
+  font-size: 15px;
+  color: #2eae97;
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+.loginEyeBtn {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: #74787a;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+.loginEyeBtn:hover {
+  color: #2eae97;
+}
+
+.loginSubmitBtn {
+  width: 100%;
+  height: 48px;
+  background: #2eae97;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin-top: 24px;
+  cursor: pointer;
+  transition: background 0.15s;
+  box-shadow: none;
+  position: relative;
+}
+
+.loginSubmitBtn:hover:not(:disabled) {
+  background: #28a386;
+}
+
+.loginSubmitBtn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.loginSubmitBtn.loading {
+  color: transparent;
+}
+
+.spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.errorMessage {
+  color: #ff4d4f;
+  font-size: 14px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.inputError {
+  border: 1px solid #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;
+} 

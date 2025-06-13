@@ -1,0 +1,1 @@
+{"version":3,"file":"content.js","mappings":";AAAA;AACA;;AAEA,sC","sources":["webpack://simplipass-chrome-extension/./content/content.js"],"sourcesContent":["// Content script for SimpliPass\nconsole.log('SimpliPass content script loaded');\n\n// Add your content script logic here "],"names":[],"sourceRoot":""}

@@ -1,0 +1,46 @@
+// src/types.ts
+
+import { DocumentReference, Timestamp } from "firebase/firestore";
+
+// Represents a decrypted credential item
+export interface ItemCredentialDecrypted {
+  createdDateTime: Date;
+  lastUseDateTime: Date;
+  title: string;
+  username: string;
+  password: string;
+  note: string;
+  url: string;
+  itemKey: string;
+  document_reference: DocumentReference;
+}
+
+/** Top‐level Firestore "users" document */
+export interface User {
+  email: string;
+  uid: string;
+  created_time: Timestamp;
+  phone_number: string;
+  salt: string;
+  display_name: string;
+  photo_url: string;
+}
+
+/** Subcollection "my_credentials" under each user */
+export interface CredentialEncrypted {
+  content_encrypted: string;
+  item_key_encrypted: string;
+  created_at: Timestamp;
+  last_used_at: Timestamp;
+  document_reference: DocumentReference;
+}
+
+export interface CachedCredential {
+  id: string;
+  url: string;
+  title: string;
+  username: string;
+  itemKeyCipher: string;
+  passwordCipher: string;
+  note?: string;
+}

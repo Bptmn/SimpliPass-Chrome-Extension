@@ -1,0 +1,16 @@
+{
+	// …existing comments…
+	
+	"Cursor: Code-Only Mode": {
+	  "scope": "",
+	  "prefix": "codeonly",
+	  "body": [
+		"// ONLY OUTPUT CODE. NO EXPLANATIONS.",
+		"// PERFORM ALL REQUESTED OPERATIONS DIRECTLY: create, modify, remove files or code as needed.",
+		"// AT THE END, PROVIDE A BRIEF BULLETED SUMMARY OF WHAT WAS CHANGED.",
+		"$0"
+	  ],
+	  "description": "Tell Cursor to only output code, execute changes, and summarize actions."
+	}
+  }
+  

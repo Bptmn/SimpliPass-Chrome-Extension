@@ -1,0 +1,40 @@
+{
+  "name": "simplipass-chrome-extension",
+  "version": "1.0.0",
+  "description": "SimpliPass Chrome Extension",
+  "main": "background/background.js",
+  "scripts": {
+    "dev": "webpack --watch --mode=development",
+    "build": "webpack --mode=production",
+    "dev:popup": "vite",
+    "build:popup": "vite build",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@stablelib/chacha20poly1305": "^2.0.1",
+    "@stablelib/random": "^2.0.1",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "amazon-cognito-identity-js": "^6.0.0",
+    "firebase": "^10.8.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.6.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "@babel/preset-react": "^7.23.0",
+    "@babel/preset-typescript": "^7.23.0",
+    "@types/chrome": "^0.0.326",
+    "@types/node": "^20.0.0",
+    "babel-loader": "^9.1.3",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^6.8.1",
+    "style-loader": "^3.3.3",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.2.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
+}
