@@ -1,58 +1,100 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { passwordGenerator } from '../../../utils/passwordGenerator';
+import { checkPasswordStrength } from '../../../utils/checkPasswordStrength';
 import './generatorPage.css';
 
 export const GeneratorPage: React.FC = () => {
-  const [length, setLength] = useState(12);
-  const [uppercase, setUppercase] = useState(true);
-  const [numbers, setNumbers] = useState(true);
-  const [symbols, setSymbols] = useState(true);
-  const [password, setPassword] = useState('GeneratedPassword123');
-  const [strength, setStrength] = useState('Strong');
+  const [hasUppercase, setHasUppercase] = useState(true);
+  const [hasNumbers, setHasNumbers] = useState(true);
+  const [hasLowercase] = useState(true); // Always true as in Flutter code
+  const [hasSpecialCharacters, setHasSpecialCharacters] = useState(true);
+  const [passwordWidth, setPasswordWidth] = useState(12);
+  const [generatedPassword, setGeneratedPassword] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState<'weak' | 'average' | 'strong' | 'perfect'>('weak');
+  const [toast, setToast] = useState('');
 
-  // Dummy regenerate handler
-  const regenerate = () => {
-    setPassword('GeneratedPassword' + Math.floor(Math.random() * 1000));
-    setStrength('Strong');
+  // Generate password and check strength on mount and whenever options change
+  useEffect(() => {
+    const pwd = passwordGenerator(
+      hasNumbers,
+      hasUppercase,
+      hasLowercase,
+      hasSpecialCharacters,
+      passwordWidth
+    );
+    setGeneratedPassword(pwd);
+    setPasswordStrength(checkPasswordStrength(pwd));
+  }, [hasNumbers, hasUppercase, hasLowercase, hasSpecialCharacters, passwordWidth]);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(generatedPassword);
+    setToast('Mot de passe copié');
+    setTimeout(() => setToast(''), 2000);
+  };
+
+  const handleRegenerate = () => {
+    const pwd = passwordGenerator(
+      hasNumbers,
+      hasUppercase,
+      hasLowercase,
+      hasSpecialCharacters,
+      passwordWidth
+    );
+    setGeneratedPassword(pwd);
+    setPasswordStrength(checkPasswordStrength(pwd));
   };
 
   return (
     <div className="generator-page">
-      <div className="header-bar">
-        <button className="btn back-btn">←</button>
-        <h1>Générateur de mot de passe</h1>
-        <div className="spacer"></div>
+      <h2>Générateur de mots de passe</h2>
+      <div className="generated-password-card">
+        <div className="password-label">Mot de passe</div>
+        <div className="password-text">{generatedPassword}</div>
+        <div className="strength-label strength-{passwordStrength}">
+          Sécurité : {passwordStrength === 'weak' ? 'faible' : passwordStrength === 'average' ? 'moyenne' : passwordStrength === 'perfect' ? 'parfaite !' : 'forte'}
+        </div>
+        <button className="copy-btn" onClick={handleCopy} aria-label="Copier le mot de passe">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+          <span>Copier</span>
+        </button>
       </div>
-      <div className="generated-password-card card">
-        <div className="password-text">{password}</div>
-        <div className="strength-label">{strength}</div>
-        <button className="btn copy-btn">Copy</button>
-      </div>
-      <div className="length-slider">
-        <label>Longueur : <span id="length-value">{length}</span></label>
+      <div className="slider-section">
+        <label htmlFor="password-length">Longueur : {passwordWidth}</label>
         <input
+          id="password-length"
           type="range"
-          min={8}
-          max={32}
-          value={length}
-          onChange={e => setLength(Number(e.target.value))}
-          id="length-slider"
+          min={5}
+          max={25}
+          value={passwordWidth}
+          onChange={e => setPasswordWidth(Number(e.target.value))}
         />
       </div>
-      <div className="options-card card">
+      <div className="options-section">
         <div className="option-row">
-          <label>Uppercase</label>
-          <input type="checkbox" checked={uppercase} onChange={e => setUppercase(e.target.checked)} />
+          <span>Lettres majuscules (A-Z)</span>
+          <input type="checkbox" checked={hasUppercase} onChange={e => setHasUppercase(e.target.checked)} />
         </div>
         <div className="option-row">
-          <label>Numbers</label>
-          <input type="checkbox" checked={numbers} onChange={e => setNumbers(e.target.checked)} />
+          <span>Chiffres (0-9)</span>
+          <input type="checkbox" checked={hasNumbers} onChange={e => setHasNumbers(e.target.checked)} />
         </div>
         <div className="option-row">
-          <label>Symbols</label>
-          <input type="checkbox" checked={symbols} onChange={e => setSymbols(e.target.checked)} />
+          <span>Symboles (@!&*)</span>
+          <input type="checkbox" checked={hasSpecialCharacters} onChange={e => setHasSpecialCharacters(e.target.checked)} />
         </div>
       </div>
-      <button className="btn regenerate-btn" onClick={regenerate}>Regenerate</button>
+      <button className="regenerate-btn" onClick={handleRegenerate}>
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <path d="M23 4v6h-6" />
+          <path d="M1 20v-6h6" />
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+        </svg>
+        Générer à nouveau
+      </button>
+      {toast && <div className="toast show">{toast}</div>}
     </div>
   );
 }; 

@@ -19,7 +19,8 @@
     "firebase": "^10.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^7.6.2"
+    "react-router-dom": "^7.6.2",
+    "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",
@@ -28,6 +29,7 @@
     "@babel/preset-typescript": "^7.23.0",
     "@types/chrome": "^0.0.326",
     "@types/node": "^20.0.0",
+    "@types/zxcvbn": "^4.4.5",
     "babel-loader": "^9.1.3",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^6.8.1",

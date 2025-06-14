@@ -8,6 +8,8 @@ import { deriveKey } from '../../../utils/crypto';
 import { storeUserSecretKey } from '../../../utils/indexdb';
 import styles from './LoginPage.module.css';
 
+console.log('Firebase Config:', firebaseConfig);
+
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,6 +28,7 @@ const LoginPage: React.FC = () => {
       }
 
       const payload = JSON.parse(atob(parts[1]));
+      console.log('JWT payload:', payload);
       const firebaseToken = payload.firebaseToken;
       
       if (!firebaseToken) {
@@ -84,7 +87,7 @@ const LoginPage: React.FC = () => {
 
           // Extract Firebase token from Cognito JWT
           const firebaseToken = extractFirebaseTokenFromJWT(cognitoJwt);
-          console.log('Firebase token extracted from JWT');
+          console.log('Firebase token extracted from JWT:', firebaseToken);
 
           // Get user salt from Cognito attributes
           const userAttributes = await new Promise<CognitoUserAttribute[]>((resolve, reject) => {
@@ -118,11 +121,21 @@ const LoginPage: React.FC = () => {
 
           // Sign in to Firebase with the custom token
           const auth = getAuth();
+          console.log('Attempting Firebase sign in with custom token...');
+          console.log('Current Firebase auth state:', auth.currentUser);
+          console.log('Firebase app:', auth.app);
           await signInWithCustomToken(auth, firebaseToken);
           console.log('Firebase login successful');
           navigate('/home');
         } catch (error) {
           console.error('Authentication error:', error);
+          if (error instanceof Error) {
+            console.error('Error details:', {
+              name: error.name,
+              message: error.message,
+              stack: error.stack
+            });
+          }
           setEmailError('Authentication failed. Please try again.');
         } finally {
           setIsLoading(false);
