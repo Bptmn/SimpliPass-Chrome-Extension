@@ -8,7 +8,6 @@ import { deriveKey } from '../../../utils/crypto';
 import { storeUserSecretKey } from '../../../utils/indexdb';
 import styles from './LoginPage.module.css';
 
-console.log('Firebase Config:', firebaseConfig);
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -87,7 +86,6 @@ const LoginPage: React.FC = () => {
 
           // Extract Firebase token from Cognito JWT
           const firebaseToken = extractFirebaseTokenFromJWT(cognitoJwt);
-          console.log('Firebase token extracted from JWT:', firebaseToken);
 
           // Get user salt from Cognito attributes
           const userAttributes = await new Promise<CognitoUserAttribute[]>((resolve, reject) => {
@@ -109,21 +107,17 @@ const LoginPage: React.FC = () => {
             throw new Error('User salt not found in Cognito attributes');
           }
           const userSalt = saltAttribute.getValue();
-          console.log('User salt retrieved from Cognito');
 
           // Derive user password using salt
           const userSecretKey = await deriveKey(password, userSalt);
-          console.log('User secret key derived');
 
           // Store userSecretKey in IndexedDB
           await storeUserSecretKey(userSecretKey);
-          console.log('User secret key stored in IndexedDB');
 
           // Sign in to Firebase with the custom token
-          const auth = getAuth();
+        const auth = getAuth();
           console.log('Attempting Firebase sign in with custom token...');
           console.log('Current Firebase auth state:', auth.currentUser);
-          console.log('Firebase app:', auth.app);
           await signInWithCustomToken(auth, firebaseToken);
           console.log('Firebase login successful');
           navigate('/home');

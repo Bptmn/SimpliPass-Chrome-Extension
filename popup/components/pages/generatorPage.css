@@ -1,51 +1,50 @@
-.generator-page {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-}
+/* Generator Page Specific Styles */
+
 
 .generated-password-card {
-  width: 100%;
-  background: var(--bg-light, #f1f4f8);
-  border-radius: 14px;
-  padding: 15px 10px;
-  margin-bottom: 18px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
+  gap: 12px;
 }
 
 .password-label {
-  font-size: 0.95em;
-  color: var(--color-secondary, #4f86a2);
-  margin-bottom: 3px;
+  font-size: 14px;
+  color: var(--color-secondary);
   font-weight: 500;
+  margin: 0;
+}
+
+.password-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .password-text {
-  font-size: 1.2em;
-  color: var(--color-text, #222);
+  flex: 1;
+  font-size: 16px;
+  color: var(--color-text);
   word-break: break-all;
-  margin-bottom: 5px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  background: var(--bg-white);
+  padding: 12px;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--color-border);
+  min-height: 20px;
 }
 
 .strength-label {
-  font-size: 0.95em;
+  font-size: 14px;
   font-weight: 500;
   display: flex;
   align-items: center;
   gap: 6px;
 }
+
 .strength-weak { color: #e57373; }
 .strength-average { color: #ffb300; }
-.strength-strong { color: #4f86a2; }
-.strength-perfect { color: #2eae97; }
+.strength-strong { color: var(--color-secondary); }
+.strength-perfect { color: var(--color-primary); }
 
 .copy-btn {
   display: flex;
@@ -53,100 +52,86 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  background: var(--color-secondary, #4f86a2);
+  background: var(--color-primary);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  width: 100px;
-  height: 40px;
+  border-radius: var(--radius-btn);
+  width: 48px;
+  height: 48px;
   font-size: 1em;
   cursor: pointer;
-  margin: 0 auto;
+  margin: 0;
   transition: background 0.2s;
+  padding: 0;
+  flex-shrink: 0;
 }
+
 .copy-btn:hover {
-  background: var(--color-primary, #2eae97);
+  background: #249e85;
 }
+
 .copy-btn svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 
 .slider-section {
-  width: 100%;
-  margin: 18px 0 10px 0;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  gap: 12px;
 }
+
 .slider-section label {
-  font-size: 0.95em;
-  margin-bottom: 4px;
-  color: var(--color-secondary, #4f86a2);
-}
-.slider-section input[type="range"] {
-  width: 100%;
+  font-size: 14px;
+  color: var(--color-secondary);
+  font-weight: 500;
   margin: 0;
 }
 
-.options-section {
+.slider-section input[type="range"] {
   width: 100%;
-  background: var(--bg-light, #f1f4f8);
-  border-radius: 14px;
-  padding: 10px 0;
-  margin-bottom: 18px;
-  box-sizing: border-box;
+  margin: 0;
+  accent-color: var(--color-primary);
+  height: 6px;
+  border-radius: 3px;
 }
+
+.options-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .option-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 15px;
-  font-size: 1em;
+  font-size: 16px;
+  color: var(--color-text);
 }
+
+.option-row span {
+  flex: 1;
+  font-weight: 500;
+}
+
 .option-row input[type="checkbox"] {
-  width: 22px;
-  height: 22px;
-  accent-color: var(--color-primary, #2eae97);
+  width: 24px;
+  height: 24px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .regenerate-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  background: var(--color-primary, #2eae97);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  height: 40px;
-  font-size: 1em;
-  padding: 0 24px;
-  cursor: pointer;
-  margin: 0 auto 10px auto;
-  transition: background 0.2s;
+  font-weight: 600;
 }
-.regenerate-btn:hover {
-  background: #249e85;
-}
+
 .regenerate-btn svg {
   width: 20px;
   height: 20px;
-}
-
-.toast {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--color-primary, #2eae97);
-  color: #fff;
-  padding: 10px 24px;
-  border-radius: 8px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-  z-index: 9999;
-}
-.toast.show {
-  opacity: 1;
 }

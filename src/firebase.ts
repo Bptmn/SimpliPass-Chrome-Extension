@@ -20,11 +20,11 @@ export const initializeFirebase = () => {
       measurementId: firebaseConfig.measurementId ? 'set' : 'not set'
     });
     
-    if (!getApps().length) {
-      app = initializeApp(firebaseConfig);
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
       console.log('Firebase app initialized');
-    } else {
-      app = getApps()[0];
+} else {
+  app = getApps()[0];
       console.log('Using existing Firebase app');
     }
     

@@ -14,11 +14,16 @@ import { getUserSecretKey } from '../utils/indexdb';
 import { getAllCredentials } from './firestoreCredentialService';
 import { decryptAllCredentials } from './decryptCredentials';
 import { encryptData } from '../utils/crypto';
+import { db, auth } from './firebase';
 
 const DB_NAME = 'SimpliPassCache';
 const STORE_NAME = 'credentials';
 const DB_VERSION = 1;
 
+/**
+ * Opens the IndexedDB cache database.
+ * @returns Promise resolving to the IDBDatabase instance.
+ */
 export function openCacheDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -33,6 +38,11 @@ export function openCacheDB(): Promise<IDBDatabase> {
   });
 }
 
+/**
+ * Saves an array of cached credentials to IndexedDB.
+ * @param cached Array of CachedCredential objects.
+ * @returns Promise<void>
+ */
 export async function saveCachedCredentials(cached: CachedCredential[]): Promise<void> {
   const db = await openCacheDB();
   return new Promise((resolve, reject) => {
@@ -49,6 +59,10 @@ export async function saveCachedCredentials(cached: CachedCredential[]): Promise
   });
 }
 
+/**
+ * Retrieves all cached credentials from IndexedDB.
+ * @returns Promise resolving to an array of CachedCredential objects.
+ */
 export async function getAllCachedCredentials(): Promise<CachedCredential[]> {
   const db = await openCacheDB();
   return new Promise((resolve, reject) => {
@@ -63,6 +77,11 @@ export async function getAllCachedCredentials(): Promise<CachedCredential[]> {
   });
 }
 
+/**
+ * Retrieves a single cached credential by its ID.
+ * @param id Credential ID
+ * @returns Promise resolving to the CachedCredential or null if not found.
+ */
 export async function getCachedCredential(id: string): Promise<CachedCredential | null> {
   const db = await openCacheDB();
   return new Promise((resolve, reject) => {
@@ -76,6 +95,8 @@ export async function getCachedCredential(id: string): Promise<CachedCredential 
 
 /**
  * Fetches all encrypted credentials from Firestore, decrypts, re-encrypts, stores, and returns them.
+ * @param user The current authenticated user.
+ * @returns Promise resolving to an array of CachedCredential objects.
  */
 export async function refreshCredentialCache(user: Auth['currentUser']): Promise<CachedCredential[]> {
   if (!user) throw new Error('No user logged in');
@@ -110,6 +131,8 @@ export async function refreshCredentialCache(user: Auth['currentUser']): Promise
 
 /**
  * Always returns the cached credentials. If cache is empty, refreshes it first.
+ * @param user The current authenticated user.
+ * @returns Promise resolving to an array of CachedCredential objects.
  */
 export async function getAllCachedCredentialsWithFallback(user: Auth['currentUser']): Promise<CachedCredential[]> {
   const db = await openCacheDB();
@@ -127,8 +150,52 @@ export async function getAllCachedCredentialsWithFallback(user: Auth['currentUse
           return;
         }
       }
+      
+      // Log every credential's URL when retrieved from cache
+      console.log('[Cache] Retrieved credentials from cache:');
+      creds.forEach(cred => {
+        console.log(`[Cache] Credential ID: ${cred.id}, URL: ${cred.url}, Title: ${cred.title}`);
+      });
+      
       resolve(creds);
     };
     request.onerror = () => reject(request.error);
   });
+}
+
+/**
+ * Get cached credentials filtered by domain
+ * @param domain The root domain to filter by
+ * @returns Promise resolving to an array of CachedCredential objects matching the domain
+ */
+export async function getCachedCredentialsByDomain(domain: string): Promise<CachedCredential[]> {
+  let allCreds = await getAllCachedCredentials();
+  if (!allCreds || allCreds.length === 0 && auth.currentUser) {
+    try {
+      allCreds = await refreshCredentialCache(auth.currentUser);
+    } catch (e) {
+      // If refresh fails, fallback to empty
+      allCreds = [];
+    }
+  }
+  return allCreds.filter(cred => {
+    // Extract domain from credential URL and compare
+    try {
+      const url = new URL(cred.url);
+      const credDomain = getRootDomain(url.hostname);
+      return credDomain === domain;
+    } catch {
+      // If URL parsing fails, try direct string comparison
+      return cred.url.includes(domain);
+    }
+  });
+}
+
+/**
+ * Helper function to extract root domain from hostname (same as content script)
+ */
+function getRootDomain(hostname: string): string {
+  const parts = hostname.split('.').filter(Boolean);
+  if (parts.length <= 2) return hostname.replace(/^www\./, '');
+  return parts.slice(-2).join('.');
 } 

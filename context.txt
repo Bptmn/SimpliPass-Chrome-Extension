@@ -1,0 +1,130 @@
+# SimpliPass Chrome Extension – Project Overview
+
+I want you to always perform all necessary actions, do not explain and ask if I want the modification.
+Never modify anything inside the Dist folder
+
+Project explanation:
+
+## 1. Project Purpose  
+SimpliPass is a zero-knowledge password manager implemented as a Chrome Extension. It enables users to securely store, generate, and autofill credentials on any website, without ever exposing plaintext passwords to our servers or storage. All encryption and decryption happen locally, using keys derived from the user’s master password.
+
+## 2. Key Objectives  
+- **Zero-Knowledge Security**  
+  - Master password and vault keys are never sent or stored on remote servers in plaintext.  
+  - Encryption/decryption performed entirely in-browser via Web Crypto API.  
+- **Seamless Autofill & Matching**  
+  - Detect login forms on any page and offer matching credentials.  
+  - Provide both a popup UI and in-page suggestions for maximum convenience.  
+- **Offline-First & Performance**  
+  - Cache encrypted vault data locally (IndexedDB) so the extension works even offline.  
+  - On-demand decryption for fast form injection without repeated network calls.  
+
+## 3. Core Features  
+1. **Secure Authentication**  
+   - OAuth2 Authorization Code + PKCE against AWS Cognito for user sign-in.  
+   - Custom JWT exchange to sign into Firebase for storing encrypted vault data.  
+2. **Vault Management**  
+   - Store credentials (`url`, `username`, `password`, `notes`) encrypted in Firestore.  
+   - Local double-envelope caching: re-encrypt item-keys and passwords for offline access.  
+3. **Form Detection & Autofill**  
+   - Content script scans pages for `<form>` with `input[type="password"]`.  
+   - Popup and floating in-page picker show matching credentials by domain.  
+   - One-click inject of username and password fields.  
+4. **Password Generator**  
+   - Customizable length, character sets, and strength indicators.  
+   - Copy to clipboard and immediate use in forms.  
+5. **Settings & Preferences**  
+   - Theme (light/dark), account management, subscription info.  
+   - Secure “remember me” option via encrypted IndexedDB tokens.  
+
+## 4. Architecture & Technology Stack  
+| Layer                | Technology                     |
+|----------------------|--------------------------------|
+| Extension Platform   | Chrome Extension Manifest V3   |
+| Authentication       | AWS Cognito (OAuth2 + PKCE)    |
+| Backend Token Exchange | Firebase Custom JWT          |
+| Data Storage         | Firestore (encrypted vault)    |
+| Local Cache          | IndexedDB via Web Crypto API   |
+| UI Framework         | React + TypeScript (Popup)     |
+| Content Injection    | Content Scripts + Messaging    |
+| Build & Bundling     | Vite / Rollup                  |
+
+## 5. Design Principles  
+- **Consistency**  
+  - Use a shared design system (`docs/PRD.md`) for colors, typography, spacing.  
+  - Reusable React components for common UI patterns (buttons, cards, inputs).  
+- **Accessibility**  
+  - ARIA labels on interactive elements.  
+  - Keyboard-navigable popups and lists.  
+- **Performance**  
+  - Virtualize lists when vault grows large.  
+  - Minimize background script memory footprint; clear caches on lock.  
+- **Maintainability**  
+  - Clear project structure: `/src/components`, `/src/db`, `/src/popup`, `/content-script.js`, `/background.js`.  
+  - TDD approach: Jest + React Testing Library for UI logic.  
+
+## 6. AI Collaboration Guidelines  
+- **Role**: You are SimpliPass’s “Senior UX Engineer & Secure-Architecture Advisor.”  
+- **Behavior**  
+  1. **Code-Only Responses**: Provide complete code diffs or new files; avoid prose advice unless explicitly requested.  
+  2. **Design Coherence**: Uphold the PRD style tokens and component conventions.  
+  3. **Proactive Improvement**: Suggest refactors, performance tweaks, and accessibility enhancements.  
+  4. **Iterative Testing**: Generate tests first, then implementation; update tests when features expand.  
+- **Prompting**: Always begin with the “codeonly” snippet and reference this overview to maintain alignment with project goals.
+
+---
+
+Best coding practices:
+
+1. **Single Responsibility & Modularity**  
+   - Ensure each function or React component does one thing and does it well.  
+   - Extract repeated logic into reusable hooks or utilities.  
+
+2. **Clear Separation of Concerns**  
+   - UI components handle rendering and user interactions only.  
+   - Business logic (crypto, API calls, data transformations) lives in plain TS modules.  
+   - Messaging and side-effects (chrome runtime calls) centralized in content or background scripts.
+
+3. **Predictable and Descriptive Naming**  
+   - Use consistent, descriptive names for variables, functions, and components (e.g. `usePageInfo`, `decryptCredential`).  
+   - Prefix message types and actions clearly (`PAGE_INFO`, `INJECT_CREDENTIAL`).
+
+4. **Type Safety & Explicit Interfaces**  
+   - Enable TypeScript’s strict mode.  
+   - Define clear interfaces for data contracts (`PageState`, `CredentialMeta`).  
+   - Avoid `any`; prefer precise union or generic types.
+
+5. **Security-First Mindset**  
+   - Zero-knowledge: never persist plaintext secrets.  
+   - Always sanitize any user-input or DOM-derived data before use.  
+   - Use Web Crypto API for all encryption and decryption; do not polyfill.
+
+6. **Consistent Styling & Theming**  
+   - Centralize design tokens (colors, spacing, typography) in a single module.  
+   - Co-locate CSS modules with components; avoid inline styles.  
+   - Enforce a theme with CSS variables or a context provider.
+
+7. **Accessibility & UX Quality**  
+   - Label all interactive elements with ARIA attributes.  
+   - Ensure keyboard navigation, focus management, and screen-reader compatibility.  
+   - Provide clear loading and error states in UI.
+
+8. **Performance & Resource Management**  
+   - Lazy-load heavy modules or large lists (use React lazy + Suspense or virtualization).  
+   - Minimize background worker memory footprint; clear caches on lock.  
+   - Debounce or throttle DOM observers and expensive computations.
+
+9. **Robust Testing & Validation**  
+   - Adopt test-first or test-driven development for critical logic.  
+   - Use Jest and React Testing Library for components; mock Chrome APIs.  
+   - Maintain ≥80% coverage on utils and core flows.
+
+10. **Documentation & Comments**  
+    - Document public APIs and complex algorithms with concise JSDoc.  
+    - Avoid commented-out code; keep codebase clean.  
+    - Maintain a high-level README or PRD for overall architecture.
+
+11. **CI/CD & Quality Gates**  
+    - Integrate ESLint, Prettier, and type-checking in pre-commit hooks (Husky).  
+    - Run tests and linting on every pull request.  
+    - Enforce branch protection to prevent regressions.

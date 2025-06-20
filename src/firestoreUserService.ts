@@ -1,7 +1,6 @@
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, getDocs, DocumentReference } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, getDocs, DocumentReference } from "firebase/firestore";
 import { User } from "./types";
-
-const db = getFirestore();
+import { db } from "./firebase";
 
 /**
  * Get a single user by uid

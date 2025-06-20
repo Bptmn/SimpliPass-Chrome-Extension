@@ -1,5 +1,5 @@
 .loginBackground {
-  background: #fff;
+  background: var(--bg-white);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -7,7 +7,7 @@
 }
 
 .loginCard {
-  background: #fff;
+  background: var(--bg-white);
   max-width: 360px;
   width: 100%;
   padding: 24px 16px;
@@ -29,19 +29,19 @@
   letter-spacing: 0.01em;
 }
 .loginDot {
-  color: #4f86a2;
+  color: var(--color-secondary);
   margin-right: 2px;
 }
 .loginSimpli {
-  color: #4f86a2;
+  color: var(--color-secondary);
 }
 .loginPass {
-  color: #2eae97;
+  color: var(--color-primary);
 }
 
 .loginLabel {
   font-size: 14px;
-  color: #4f86a2;
+  color: var(--color-secondary);
   margin-bottom: 8px;
   font-weight: 500;
 }
@@ -56,22 +56,22 @@
 .loginInput {
   width: 100%;
   height: 48px;
-  background: #f1f4f8;
+  background: var(--bg-light);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   padding: 0 44px 0 44px;
   font-size: 16px;
-  color: #2eae97;
+  color: var(--color-primary);
   outline: none;
   font-weight: 500;
   transition: box-shadow 0.2s;
 }
 .loginInput:focus {
-  box-shadow: 0 0 0 2px #2eae9733;
+  box-shadow: 0 0 0 2px rgba(46, 174, 151, 0.2);
 }
 
 .loginInput::placeholder {
-  color: #74787a;
+  color: var(--color-accent);
   opacity: 1;
   font-weight: 400;
 }
@@ -84,6 +84,7 @@
   display: flex;
   align-items: center;
   pointer-events: none;
+  color: var(--color-accent);
 }
 
 .loginClearBtn {
@@ -95,14 +96,14 @@
   align-items: center;
   background: none;
   border: none;
-  color: #74787a;
+  color: var(--color-accent);
   font-size: 22px;
   cursor: pointer;
   padding: 0 4px;
   transition: color 0.15s;
 }
 .loginClearBtn:hover {
-  color: #2eae97;
+  color: var(--color-primary);
 }
 
 .loginCheckboxRow {
@@ -125,17 +126,17 @@
 .loginCustomCheckbox {
   width: 20px;
   height: 20px;
-  border: 2px solid #2eae97;
+  border: 2px solid var(--color-primary);
   border-radius: 4px;
-  background: #fff;
+  background: var(--bg-white);
   display: inline-block;
   position: relative;
   margin-right: 8px;
   transition: background 0.15s, border-color 0.15s;
 }
 .loginCheckbox:checked + .loginCustomCheckbox {
-  background: #2eae97;
-  border-color: #2eae97;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 .loginCheckbox:checked + .loginCustomCheckbox::after {
   content: '';
@@ -144,14 +145,14 @@
   top: 1px;
   width: 6px;
   height: 12px;
-  border: solid #fff;
+  border: solid var(--bg-white);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
 .loginCheckboxText {
   font-size: 15px;
-  color: #2eae97;
+  color: var(--color-primary);
   margin-left: 8px;
   font-weight: 500;
 }
@@ -165,25 +166,25 @@
   align-items: center;
   background: none;
   border: none;
-  color: #74787a;
+  color: var(--color-accent);
   font-size: 20px;
   cursor: pointer;
   padding: 0 4px;
   transition: color 0.15s;
 }
 .loginEyeBtn:hover {
-  color: #2eae97;
+  color: var(--color-primary);
 }
 
 .loginSubmitBtn {
   width: 100%;
   height: 48px;
-  background: #2eae97;
+  background: var(--color-primary);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   font-size: 18px;
   font-weight: 600;
-  color: #fff;
+  color: var(--bg-white);
   margin-top: 24px;
   cursor: pointer;
   transition: background 0.15s;
@@ -196,7 +197,7 @@
 }
 
 .loginSubmitBtn:disabled {
-  background-color: #cccccc;
+  background-color: var(--color-border);
   cursor: not-allowed;
 }
 
@@ -224,13 +225,13 @@
 }
 
 .errorMessage {
-  color: #ff4d4f;
+  color: var(--color-error);
   font-size: 14px;
   margin-top: 4px;
   margin-bottom: 8px;
 }
 
 .inputError {
-  border: 1px solid #ff4d4f !important;
-  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;
+  border: 1px solid var(--color-error) !important;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2) !important;
 } 

@@ -5,8 +5,9 @@ import Navbar from './components/common/navBar';
 import { HelperBar } from './components/common/HelperBar';
 import { HomePage } from './components/pages/homePage';
 import { GeneratorPage } from './components/pages/generatorPage';
-import { SettingsPage } from './components/pages/settingsPage';
+import SettingsPage from './components/pages/settingsPage';
 import LoginPage from './components/pages/loginPage';
+import { PageState, CredentialMeta } from '../src/types';
 
 export const PopupApp: React.FC = () => {
   console.log('PopupApp component rendering...');
@@ -14,11 +15,31 @@ export const PopupApp: React.FC = () => {
   const [user, setUser] = useState<typeof auth.currentUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pageState, setPageState] = useState<PageState | null>(null);
+  const [suggestions, setSuggestions] = useState<CredentialMeta[]>([]);
 
   useEffect(() => {
     console.log('PopupApp useEffect running...');
-    console.log('Current auth state:', auth.currentUser);
     
+    // Get current tab and page state
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tab = tabs[0];
+      if (!tab?.id) return;
+
+      chrome.runtime.sendMessage({ type: 'GET_PAGE_STATE', tabId: tab.id }, (state: PageState | null) => {
+        if (state?.domain) {
+          setPageState(state);
+          // Get credential suggestions from storage
+          chrome.storage.local.get(['credentialMetas'], (result) => {
+            const metas = (result.credentialMetas || [])
+              .filter((meta: CredentialMeta) => meta.domain === state.domain);
+            setSuggestions(metas);
+          });
+        }
+      });
+    });
+
+    // Set up auth listener
     try {
       console.log('Setting up auth state listener...');
       const unsubscribe = auth.onAuthStateChanged((u) => {
@@ -43,6 +64,18 @@ export const PopupApp: React.FC = () => {
   }, []);
 
   console.log('Current render state:', { isLoading, error, user });
+
+  const handleInjectCredential = (credentialId: string) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]?.id) {
+        chrome.runtime.sendMessage({
+          type: 'INJECT_CREDENTIAL',
+          credentialId,
+          tabId: tabs[0].id
+        });
+      }
+    });
+  };
 
   if (error) {
     console.log('Rendering error state...');
@@ -76,7 +109,17 @@ export const PopupApp: React.FC = () => {
           ) : (
             <>
               <Route path="/" element={<Navigate to="/home" replace />} />
-              <Route path="/home" element={<HomePage user={user} />} />
+              <Route 
+                path="/home" 
+                element={
+                  <HomePage 
+                    user={user} 
+                    pageState={pageState}
+                    suggestions={suggestions}
+                    onInjectCredential={handleInjectCredential}
+                  />
+                } 
+              />
               <Route path="/generator" element={<GeneratorPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </>

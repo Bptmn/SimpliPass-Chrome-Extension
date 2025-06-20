@@ -31,7 +31,7 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({ cred }) => {
   };
 
   return (
-    <div className="credential-card" onClick={handleClick}>
+    <div className="credential-card" onClick={handleClick} tabIndex={0} aria-label={`Credential for ${cred.title} (${cred.username})`}>
       <div className="card-left">
         <div className="card-icon">{iconLetter}</div>
         <div className="card-info">
@@ -39,12 +39,14 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({ cred }) => {
           <div className="card-username">{cred.username || ''}</div>
         </div>
       </div>
-      <button className="copy-btn" title="Copy password" onClick={handleCopy} aria-label="Copy password">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-        </svg>
-        <span className="copy-btn-text">Copy</span>
+      <button className="btn-copy" title="Copy password" onClick={handleCopy} aria-label="Copy password for this credential">
+        <div className="btn-copy-container">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+          <span>Copy</span>
+        </div>
       </button>
     </div>
   );

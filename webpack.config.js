@@ -1,5 +1,5 @@
 const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 
 module.exports = {
@@ -7,8 +7,8 @@ module.exports = {
   devtool: 'source-map',
   entry: {
     popup: './popup/popup.tsx',
-    background: './background/background.ts',
-    content: './content/content.js',
+    background: './background.ts',
+    'content-script': './content-script.ts',
     init: './popup/init.js'
   },
   output: {
@@ -22,7 +22,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(ts|tsx)$/,
+        test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },
@@ -40,12 +40,13 @@ module.exports = {
       systemvars: true,
       safe: true,
     }),
-    new CopyPlugin({
+    new CopyWebpackPlugin({
       patterns: [
-        { from: 'manifest.json', to: 'manifest.json' },
-        { from: 'popup/popup.html', to: 'popup.html' },
-        { from: 'popup/popup.css', to: 'popup.css' },
-        { from: 'assets', to: 'assets' }
+        { from: 'manifest.json', to: '.' },
+        { from: 'popup/popup.html', to: '.' },
+        { from: 'popup/popup.css', to: '.' },
+        { from: 'assets/icons', to: 'assets/icons' },
+        { from: 'popup/components/common/inPageCredentialPicker.css', to: '.' },
       ],
     }),
   ],

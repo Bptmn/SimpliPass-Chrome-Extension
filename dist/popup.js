@@ -146,63 +146,107 @@ module.exports = insertStyleElement;
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `.credentials-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+___CSS_LOADER_EXPORT___.push([module.id, `/* Home Page Specific Styles */
 
-.suggestions-header {
-  padding: 16px;
-}
-
-.suggestions-header h2 {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--color-primary);
-  margin: 0;
-}
-
-.credential-list {
-  overflow-y: auto;
-  padding: 0;
-  height: calc(100% - 200px); /* Adjust based on other elements */
-  box-sizing: border-box;
-}
-
+/* Search Bar Styles */
 .search-bar {
-  margin: 16px;
+  position: relative;
 }
 
-.search-bar input[type="search"] {
+.search-input {
   width: 100%;
-  height: 40px;
+  height: 48px;
   border-radius: 20px;
   background: var(--bg-light);
   border: none;
-  padding: 0 15px;
+  padding: 0 20px 0 48px;
   font-size: var(--font-size-base);
   box-sizing: border-box;
+  color: var(--color-text);
+  transition: box-shadow 0.2s;
 }
 
-.category-pills {
+.search-input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(46, 174, 151, 0.2);
+}
+
+.search-bar::before {
+  content: '🔍';
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+
+
+/* Credential List */
+.credential-list {
   display: flex;
-  overflow-x: auto;
-  padding: 0 16px;
+  flex-direction: column;
+  gap: var(--element-spacing);
+  width: 100%;
+}
+
+.empty-state {
+  padding: 12px;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.suggestions-section {
+  margin-bottom: 12px;
+}
+
+.suggestion-list {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  margin-bottom: 16px;
+  padding: 4px 0;
+  border-radius: 8px;
 }
 
-.category-pills .pill-btn {
-  background: var(--bg-light);
-  color: var(--color-secondary);
+.suggestion-list .credential-card {
+  margin-bottom: 0;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
-.category-pills .pill-btn.selected {
-  background: var(--color-primary);
-  color: white;
+.suggestion-list .credential-card:hover {
+  transform: translateX(4px);
 }
-`, "",{"version":3,"sources":["webpack://./popup/components/pages/homePage.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,sBAAsB;EACtB,SAAS;AACX;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,eAAe;EACf,gBAAgB;EAChB,2BAA2B;EAC3B,SAAS;AACX;;AAEA;EACE,gBAAgB;EAChB,UAAU;EACV,0BAA0B,EAAE,mCAAmC;EAC/D,sBAAsB;AACxB;;AAEA;EACE,YAAY;AACd;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,mBAAmB;EACnB,2BAA2B;EAC3B,YAAY;EACZ,eAAe;EACf,gCAAgC;EAChC,sBAAsB;AACxB;;AAEA;EACE,aAAa;EACb,gBAAgB;EAChB,eAAe;EACf,QAAQ;EACR,mBAAmB;AACrB;;AAEA;EACE,2BAA2B;EAC3B,6BAA6B;AAC/B;;AAEA;EACE,gCAAgC;EAChC,YAAY;AACd","sourcesContent":[".credentials-list {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n\n.suggestions-header {\n  padding: 16px;\n}\n\n.suggestions-header h2 {\n  font-size: 18px;\n  font-weight: 600;\n  color: var(--color-primary);\n  margin: 0;\n}\n\n.credential-list {\n  overflow-y: auto;\n  padding: 0;\n  height: calc(100% - 200px); /* Adjust based on other elements */\n  box-sizing: border-box;\n}\n\n.search-bar {\n  margin: 16px;\n}\n\n.search-bar input[type=\"search\"] {\n  width: 100%;\n  height: 40px;\n  border-radius: 20px;\n  background: var(--bg-light);\n  border: none;\n  padding: 0 15px;\n  font-size: var(--font-size-base);\n  box-sizing: border-box;\n}\n\n.category-pills {\n  display: flex;\n  overflow-x: auto;\n  padding: 0 16px;\n  gap: 8px;\n  margin-bottom: 16px;\n}\n\n.category-pills .pill-btn {\n  background: var(--bg-light);\n  color: var(--color-secondary);\n}\n\n.category-pills .pill-btn.selected {\n  background: var(--color-primary);\n  color: white;\n}\n"],"sourceRoot":""}]);
+
+.suggestion-list-count-0 {
+  max-height: 40px;
+}
+.suggestion-list-count-1 {
+  max-height: 60px;
+}
+.suggestion-list-count-2 {
+  max-height: 120px;
+}
+
+.suggestion-list .credential-card {
+  font-size: 14px;
+  padding: 6px 8px;
+  min-height: 36px;
+  box-shadow: none;
+  border: 1px solid var(--color-border, #e0e0e0);
+}
+
+.suggestion-list .credential-card:last-child {
+  margin-bottom: 0;
+}
+`, "",{"version":3,"sources":["webpack://./popup/components/pages/homePage.css"],"names":[],"mappings":"AAAA,8BAA8B;;AAE9B,sBAAsB;AACtB;EACE,kBAAkB;AACpB;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,mBAAmB;EACnB,2BAA2B;EAC3B,YAAY;EACZ,sBAAsB;EACtB,gCAAgC;EAChC,sBAAsB;EACtB,wBAAwB;EACxB,2BAA2B;AAC7B;;AAEA;EACE,kCAAkC;AACpC;;AAEA;EACE,aAAa;EACb,6CAA6C;AAC/C;;AAEA;EACE,aAAa;EACb,kBAAkB;EAClB,UAAU;EACV,QAAQ;EACR,2BAA2B;EAC3B,eAAe;EACf,kCAAkC;EAClC,oBAAoB;AACtB;;;;AAIA,oBAAoB;AACpB;EACE,aAAa;EACb,sBAAsB;EACtB,2BAA2B;EAC3B,WAAW;AACb;;AAEA;EACE,aAAa;EACb,kBAAkB;EAClB,kCAAkC;EAClC,eAAe;AACjB;;AAEA;EACE,mBAAmB;AACrB;;AAEA;EACE,aAAa;EACb,sBAAsB;EACtB,QAAQ;EACR,cAAc;EACd,kBAAkB;AACpB;;AAEA;EACE,gBAAgB;EAChB,eAAe;EACf,0BAA0B;AAC5B;;AAEA;EACE,0BAA0B;AAC5B;;AAEA;EACE,gBAAgB;AAClB;AACA;EACE,gBAAgB;AAClB;AACA;EACE,iBAAiB;AACnB;;AAEA;EACE,eAAe;EACf,gBAAgB;EAChB,gBAAgB;EAChB,gBAAgB;EAChB,8CAA8C;AAChD;;AAEA;EACE,gBAAgB;AAClB","sourcesContent":["/* Home Page Specific Styles */\n\n/* Search Bar Styles */\n.search-bar {\n  position: relative;\n}\n\n.search-input {\n  width: 100%;\n  height: 48px;\n  border-radius: 20px;\n  background: var(--bg-light);\n  border: none;\n  padding: 0 20px 0 48px;\n  font-size: var(--font-size-base);\n  box-sizing: border-box;\n  color: var(--color-text);\n  transition: box-shadow 0.2s;\n}\n\n.search-input::placeholder {\n  color: var(--color-text-secondary);\n}\n\n.search-input:focus {\n  outline: none;\n  box-shadow: 0 0 0 2px rgba(46, 174, 151, 0.2);\n}\n\n.search-bar::before {\n  content: '🔍';\n  position: absolute;\n  left: 16px;\n  top: 50%;\n  transform: translateY(-50%);\n  font-size: 16px;\n  color: var(--color-text-secondary);\n  pointer-events: none;\n}\n\n\n\n/* Credential List */\n.credential-list {\n  display: flex;\n  flex-direction: column;\n  gap: var(--element-spacing);\n  width: 100%;\n}\n\n.empty-state {\n  padding: 12px;\n  text-align: center;\n  color: var(--color-text-secondary);\n  font-size: 14px;\n}\n\n.suggestions-section {\n  margin-bottom: 12px;\n}\n\n.suggestion-list {\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  padding: 4px 0;\n  border-radius: 8px;\n}\n\n.suggestion-list .credential-card {\n  margin-bottom: 0;\n  cursor: pointer;\n  transition: transform 0.2s;\n}\n\n.suggestion-list .credential-card:hover {\n  transform: translateX(4px);\n}\n\n.suggestion-list-count-0 {\n  max-height: 40px;\n}\n.suggestion-list-count-1 {\n  max-height: 60px;\n}\n.suggestion-list-count-2 {\n  max-height: 120px;\n}\n\n.suggestion-list .credential-card {\n  font-size: 14px;\n  padding: 6px 8px;\n  min-height: 36px;\n  box-shadow: none;\n  border: 1px solid var(--color-border, #e0e0e0);\n}\n\n.suggestion-list .credential-card:last-child {\n  margin-bottom: 0;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -944,31 +988,35 @@ module.exports = function (item) {
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `.error-boundary {
+___CSS_LOADER_EXPORT___.push([module.id, `/* Error Boundary Component Styles */
+.error-boundary {
   padding: 20px;
   margin: 20px;
-  border: 1px solid #dc3545;
-  border-radius: 4px;
-  background-color: #fff;
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-card);
+  background-color: var(--bg-white);
+  box-shadow: var(--shadow-card);
 }
 
 .error-boundary h2 {
-  color: #dc3545;
+  color: var(--color-error);
   margin-bottom: 15px;
   font-size: 18px;
+  font-weight: 600;
 }
 
 .error-boundary details {
   margin-top: 10px;
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .error-boundary summary {
   cursor: pointer;
-  color: #dc3545;
+  color: var(--color-error);
   margin-bottom: 10px;
-} `, "",{"version":3,"sources":["webpack://./popup/components/common/errorBoundary.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,yBAAyB;EACzB,kBAAkB;EAClB,sBAAsB;AACxB;;AAEA;EACE,cAAc;EACd,mBAAmB;EACnB,eAAe;AACjB;;AAEA;EACE,gBAAgB;EAChB,eAAe;EACf,WAAW;AACb;;AAEA;EACE,eAAe;EACf,cAAc;EACd,mBAAmB;AACrB","sourcesContent":[".error-boundary {\n  padding: 20px;\n  margin: 20px;\n  border: 1px solid #dc3545;\n  border-radius: 4px;\n  background-color: #fff;\n}\n\n.error-boundary h2 {\n  color: #dc3545;\n  margin-bottom: 15px;\n  font-size: 18px;\n}\n\n.error-boundary details {\n  margin-top: 10px;\n  font-size: 14px;\n  color: #666;\n}\n\n.error-boundary summary {\n  cursor: pointer;\n  color: #dc3545;\n  margin-bottom: 10px;\n} "],"sourceRoot":""}]);
+  font-weight: 500;
+} `, "",{"version":3,"sources":["webpack://./popup/components/common/errorBoundary.css"],"names":[],"mappings":"AAAA,oCAAoC;AACpC;EACE,aAAa;EACb,YAAY;EACZ,oCAAoC;EACpC,iCAAiC;EACjC,iCAAiC;EACjC,8BAA8B;AAChC;;AAEA;EACE,yBAAyB;EACzB,mBAAmB;EACnB,eAAe;EACf,gBAAgB;AAClB;;AAEA;EACE,gBAAgB;EAChB,eAAe;EACf,kCAAkC;AACpC;;AAEA;EACE,eAAe;EACf,yBAAyB;EACzB,mBAAmB;EACnB,gBAAgB;AAClB","sourcesContent":["/* Error Boundary Component Styles */\n.error-boundary {\n  padding: 20px;\n  margin: 20px;\n  border: 1px solid var(--color-error);\n  border-radius: var(--radius-card);\n  background-color: var(--bg-white);\n  box-shadow: var(--shadow-card);\n}\n\n.error-boundary h2 {\n  color: var(--color-error);\n  margin-bottom: 15px;\n  font-size: 18px;\n  font-weight: 600;\n}\n\n.error-boundary details {\n  margin-top: 10px;\n  font-size: 14px;\n  color: var(--color-text-secondary);\n}\n\n.error-boundary summary {\n  cursor: pointer;\n  color: var(--color-error);\n  margin-bottom: 10px;\n  font-weight: 500;\n} "],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -992,7 +1040,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.error-boundary {
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `.uvw2FjWL4Ok7hLc2VvSB {
-  background: #fff;
+  background: var(--bg-white);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -1000,7 +1048,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.uvw2FjWL4Ok7hLc2VvSB {
 }
 
 .cceUXLg9_paOc9O_o8Mk {
-  background: #fff;
+  background: var(--bg-white);
   max-width: 360px;
   width: 100%;
   padding: 24px 16px;
@@ -1022,19 +1070,19 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.uvw2FjWL4Ok7hLc2VvSB {
   letter-spacing: 0.01em;
 }
 .QYa9Z6WybOwoIvQjioXn {
-  color: #4f86a2;
+  color: var(--color-secondary);
   margin-right: 2px;
 }
 .WR8HZZ5PtUvs5QytZkmi {
-  color: #4f86a2;
+  color: var(--color-secondary);
 }
 .DVqrBbIQXHxKYtSfI3dI {
-  color: #2eae97;
+  color: var(--color-primary);
 }
 
 .uDUPa9Z1BSFfAbUUjORe {
   font-size: 14px;
-  color: #4f86a2;
+  color: var(--color-secondary);
   margin-bottom: 8px;
   font-weight: 500;
 }
@@ -1049,22 +1097,22 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.uvw2FjWL4Ok7hLc2VvSB {
 .W_QMfBwplKPQ4i6D1LLD {
   width: 100%;
   height: 48px;
-  background: #f1f4f8;
+  background: var(--bg-light);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   padding: 0 44px 0 44px;
   font-size: 16px;
-  color: #2eae97;
+  color: var(--color-primary);
   outline: none;
   font-weight: 500;
   transition: box-shadow 0.2s;
 }
 .W_QMfBwplKPQ4i6D1LLD:focus {
-  box-shadow: 0 0 0 2px #2eae9733;
+  box-shadow: 0 0 0 2px rgba(46, 174, 151, 0.2);
 }
 
 .W_QMfBwplKPQ4i6D1LLD::placeholder {
-  color: #74787a;
+  color: var(--color-accent);
   opacity: 1;
   font-weight: 400;
 }
@@ -1077,6 +1125,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.uvw2FjWL4Ok7hLc2VvSB {
   display: flex;
   align-items: center;
   pointer-events: none;
+  color: var(--color-accent);
 }
 
 .Q9ppHXdePr8bxmo_DbeZ {
@@ -1088,14 +1137,14 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.uvw2FjWL4Ok7hLc2VvSB {
   align-items: center;
   background: none;
   border: none;
-  color: #74787a;
+  color: var(--color-accent);
   font-size: 22px;
   cursor: pointer;
   padding: 0 4px;
   transition: color 0.15s;
 }
 .Q9ppHXdePr8bxmo_DbeZ:hover {
-  color: #2eae97;
+  color: var(--color-primary);
 }
 
 .m248TpbgUV20_i0XtN0h {
@@ -1118,17 +1167,17 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.uvw2FjWL4Ok7hLc2VvSB {
 .LB8RukJI3xkjJ_UxpYix {
   width: 20px;
   height: 20px;
-  border: 2px solid #2eae97;
+  border: 2px solid var(--color-primary);
   border-radius: 4px;
-  background: #fff;
+  background: var(--bg-white);
   display: inline-block;
   position: relative;
   margin-right: 8px;
   transition: background 0.15s, border-color 0.15s;
 }
 .UJwJ6mdgxOVaAVcLUos1:checked + .LB8RukJI3xkjJ_UxpYix {
-  background: #2eae97;
-  border-color: #2eae97;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 .UJwJ6mdgxOVaAVcLUos1:checked + .LB8RukJI3xkjJ_UxpYix::after {
   content: '';
@@ -1137,14 +1186,14 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.uvw2FjWL4Ok7hLc2VvSB {
   top: 1px;
   width: 6px;
   height: 12px;
-  border: solid #fff;
+  border: solid var(--bg-white);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
 .vOe4yaMcH1p79hUDDAHE {
   font-size: 15px;
-  color: #2eae97;
+  color: var(--color-primary);
   margin-left: 8px;
   font-weight: 500;
 }
@@ -1158,25 +1207,25 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.uvw2FjWL4Ok7hLc2VvSB {
   align-items: center;
   background: none;
   border: none;
-  color: #74787a;
+  color: var(--color-accent);
   font-size: 20px;
   cursor: pointer;
   padding: 0 4px;
   transition: color 0.15s;
 }
 .m5jVdDRVshCvWzLFegwt:hover {
-  color: #2eae97;
+  color: var(--color-primary);
 }
 
 .cotOivikrAHdvHUmMJVQ {
   width: 100%;
   height: 48px;
-  background: #2eae97;
+  background: var(--color-primary);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   font-size: 18px;
   font-weight: 600;
-  color: #fff;
+  color: var(--bg-white);
   margin-top: 24px;
   cursor: pointer;
   transition: background 0.15s;
@@ -1189,7 +1238,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.uvw2FjWL4Ok7hLc2VvSB {
 }
 
 .cotOivikrAHdvHUmMJVQ:disabled {
-  background-color: #cccccc;
+  background-color: var(--color-border);
   cursor: not-allowed;
 }
 
@@ -1217,16 +1266,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.uvw2FjWL4Ok7hLc2VvSB {
 }
 
 .ujfk2QcXPngJXe4rleY6 {
-  color: #ff4d4f;
+  color: var(--color-error);
   font-size: 14px;
   margin-top: 4px;
   margin-bottom: 8px;
 }
 
 .WlzZ_FyR0a69cH_Z881_ {
-  border: 1px solid #ff4d4f !important;
-  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;
-} `, "",{"version":3,"sources":["webpack://./popup/components/pages/LoginPage.module.css"],"names":[],"mappings":"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","sourcesContent":[".loginBackground {\n  background: #fff;\n  min-height: 100vh;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.loginCard {\n  background: #fff;\n  max-width: 360px;\n  width: 100%;\n  padding: 24px 16px;\n  border-radius: 0;\n  box-shadow: none;\n  display: flex;\n  flex-direction: column;\n  align-items: stretch;\n}\n\n.loginLogo {\n  display: flex;\n  justify-content: center;\n  align-items: baseline;\n  font-size: 32px;\n  font-weight: 600;\n  line-height: 1.2;\n  margin-bottom: 32px;\n  letter-spacing: 0.01em;\n}\n.loginDot {\n  color: #4f86a2;\n  margin-right: 2px;\n}\n.loginSimpli {\n  color: #4f86a2;\n}\n.loginPass {\n  color: #2eae97;\n}\n\n.loginLabel {\n  font-size: 14px;\n  color: #4f86a2;\n  margin-bottom: 8px;\n  font-weight: 500;\n}\n\n.loginInputWrapper {\n  position: relative;\n  display: flex;\n  align-items: center;\n  margin-bottom: 0;\n}\n\n.loginInput {\n  width: 100%;\n  height: 48px;\n  background: #f1f4f8;\n  border: none;\n  border-radius: 12px;\n  padding: 0 44px 0 44px;\n  font-size: 16px;\n  color: #2eae97;\n  outline: none;\n  font-weight: 500;\n  transition: box-shadow 0.2s;\n}\n.loginInput:focus {\n  box-shadow: 0 0 0 2px #2eae9733;\n}\n\n.loginInput::placeholder {\n  color: #74787a;\n  opacity: 1;\n  font-weight: 400;\n}\n\n.loginInputIcon {\n  position: absolute;\n  left: 16px;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  pointer-events: none;\n}\n\n.loginClearBtn {\n  position: absolute;\n  right: 12px;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  background: none;\n  border: none;\n  color: #74787a;\n  font-size: 22px;\n  cursor: pointer;\n  padding: 0 4px;\n  transition: color 0.15s;\n}\n.loginClearBtn:hover {\n  color: #2eae97;\n}\n\n.loginCheckboxRow {\n  margin: 16px 0;\n  display: flex;\n  align-items: center;\n}\n\n.loginCheckboxLabel {\n  display: flex;\n  align-items: center;\n  cursor: pointer;\n  user-select: none;\n}\n\n.loginCheckbox {\n  display: none;\n}\n\n.loginCustomCheckbox {\n  width: 20px;\n  height: 20px;\n  border: 2px solid #2eae97;\n  border-radius: 4px;\n  background: #fff;\n  display: inline-block;\n  position: relative;\n  margin-right: 8px;\n  transition: background 0.15s, border-color 0.15s;\n}\n.loginCheckbox:checked + .loginCustomCheckbox {\n  background: #2eae97;\n  border-color: #2eae97;\n}\n.loginCheckbox:checked + .loginCustomCheckbox::after {\n  content: '';\n  position: absolute;\n  left: 5px;\n  top: 1px;\n  width: 6px;\n  height: 12px;\n  border: solid #fff;\n  border-width: 0 2px 2px 0;\n  transform: rotate(45deg);\n}\n\n.loginCheckboxText {\n  font-size: 15px;\n  color: #2eae97;\n  margin-left: 8px;\n  font-weight: 500;\n}\n\n.loginEyeBtn {\n  position: absolute;\n  right: 12px;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  background: none;\n  border: none;\n  color: #74787a;\n  font-size: 20px;\n  cursor: pointer;\n  padding: 0 4px;\n  transition: color 0.15s;\n}\n.loginEyeBtn:hover {\n  color: #2eae97;\n}\n\n.loginSubmitBtn {\n  width: 100%;\n  height: 48px;\n  background: #2eae97;\n  border: none;\n  border-radius: 12px;\n  font-size: 18px;\n  font-weight: 600;\n  color: #fff;\n  margin-top: 24px;\n  cursor: pointer;\n  transition: background 0.15s;\n  box-shadow: none;\n  position: relative;\n}\n\n.loginSubmitBtn:hover:not(:disabled) {\n  background: #28a386;\n}\n\n.loginSubmitBtn:disabled {\n  background-color: #cccccc;\n  cursor: not-allowed;\n}\n\n.loginSubmitBtn.loading {\n  color: transparent;\n}\n\n.spinner {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  width: 20px;\n  height: 20px;\n  border: 3px solid rgba(255, 255, 255, 0.3);\n  border-radius: 50%;\n  border-top-color: white;\n  animation: spin 1s ease-in-out infinite;\n}\n\n@keyframes spin {\n  to {\n    transform: translate(-50%, -50%) rotate(360deg);\n  }\n}\n\n.errorMessage {\n  color: #ff4d4f;\n  font-size: 14px;\n  margin-top: 4px;\n  margin-bottom: 8px;\n}\n\n.inputError {\n  border: 1px solid #ff4d4f !important;\n  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;\n} "],"sourceRoot":""}]);
+  border: 1px solid var(--color-error) !important;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2) !important;
+} `, "",{"version":3,"sources":["webpack://./popup/components/pages/LoginPage.module.css"],"names":[],"mappings":"AAAA;EACE,2BAA2B;EAC3B,iBAAiB;EACjB,aAAa;EACb,mBAAmB;EACnB,uBAAuB;AACzB;;AAEA;EACE,2BAA2B;EAC3B,gBAAgB;EAChB,WAAW;EACX,kBAAkB;EAClB,gBAAgB;EAChB,gBAAgB;EAChB,aAAa;EACb,sBAAsB;EACtB,oBAAoB;AACtB;;AAEA;EACE,aAAa;EACb,uBAAuB;EACvB,qBAAqB;EACrB,eAAe;EACf,gBAAgB;EAChB,gBAAgB;EAChB,mBAAmB;EACnB,sBAAsB;AACxB;AACA;EACE,6BAA6B;EAC7B,iBAAiB;AACnB;AACA;EACE,6BAA6B;AAC/B;AACA;EACE,2BAA2B;AAC7B;;AAEA;EACE,eAAe;EACf,6BAA6B;EAC7B,kBAAkB;EAClB,gBAAgB;AAClB;;AAEA;EACE,kBAAkB;EAClB,aAAa;EACb,mBAAmB;EACnB,gBAAgB;AAClB;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,2BAA2B;EAC3B,YAAY;EACZ,iCAAiC;EACjC,sBAAsB;EACtB,eAAe;EACf,2BAA2B;EAC3B,aAAa;EACb,gBAAgB;EAChB,2BAA2B;AAC7B;AACA;EACE,6CAA6C;AAC/C;;AAEA;EACE,0BAA0B;EAC1B,UAAU;EACV,gBAAgB;AAClB;;AAEA;EACE,kBAAkB;EAClB,UAAU;EACV,MAAM;EACN,SAAS;EACT,aAAa;EACb,mBAAmB;EACnB,oBAAoB;EACpB,0BAA0B;AAC5B;;AAEA;EACE,kBAAkB;EAClB,WAAW;EACX,MAAM;EACN,SAAS;EACT,aAAa;EACb,mBAAmB;EACnB,gBAAgB;EAChB,YAAY;EACZ,0BAA0B;EAC1B,eAAe;EACf,eAAe;EACf,cAAc;EACd,uBAAuB;AACzB;AACA;EACE,2BAA2B;AAC7B;;AAEA;EACE,cAAc;EACd,aAAa;EACb,mBAAmB;AACrB;;AAEA;EACE,aAAa;EACb,mBAAmB;EACnB,eAAe;EACf,iBAAiB;AACnB;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,sCAAsC;EACtC,kBAAkB;EAClB,2BAA2B;EAC3B,qBAAqB;EACrB,kBAAkB;EAClB,iBAAiB;EACjB,gDAAgD;AAClD;AACA;EACE,gCAAgC;EAChC,kCAAkC;AACpC;AACA;EACE,WAAW;EACX,kBAAkB;EAClB,SAAS;EACT,QAAQ;EACR,UAAU;EACV,YAAY;EACZ,6BAA6B;EAC7B,yBAAyB;EACzB,wBAAwB;AAC1B;;AAEA;EACE,eAAe;EACf,2BAA2B;EAC3B,gBAAgB;EAChB,gBAAgB;AAClB;;AAEA;EACE,kBAAkB;EAClB,WAAW;EACX,MAAM;EACN,SAAS;EACT,aAAa;EACb,mBAAmB;EACnB,gBAAgB;EAChB,YAAY;EACZ,0BAA0B;EAC1B,eAAe;EACf,eAAe;EACf,cAAc;EACd,uBAAuB;AACzB;AACA;EACE,2BAA2B;AAC7B;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,gCAAgC;EAChC,YAAY;EACZ,iCAAiC;EACjC,eAAe;EACf,gBAAgB;EAChB,sBAAsB;EACtB,gBAAgB;EAChB,eAAe;EACf,4BAA4B;EAC5B,gBAAgB;EAChB,kBAAkB;AACpB;;AAEA;EACE,mBAAmB;AACrB;;AAEA;EACE,qCAAqC;EACrC,mBAAmB;AACrB;;AAEA;EACE,kBAAkB;AACpB;;AAEA;EACE,kBAAkB;EAClB,QAAQ;EACR,SAAS;EACT,gCAAgC;EAChC,WAAW;EACX,YAAY;EACZ,0CAA0C;EAC1C,kBAAkB;EAClB,uBAAuB;EACvB,uDAAuC;AACzC;;AAEA;EACE;IACE,+CAA+C;EACjD;AACF;;AAEA;EACE,yBAAyB;EACzB,eAAe;EACf,eAAe;EACf,kBAAkB;AACpB;;AAEA;EACE,+CAA+C;EAC/C,uDAAuD;AACzD","sourcesContent":[".loginBackground {\n  background: var(--bg-white);\n  min-height: 100vh;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.loginCard {\n  background: var(--bg-white);\n  max-width: 360px;\n  width: 100%;\n  padding: 24px 16px;\n  border-radius: 0;\n  box-shadow: none;\n  display: flex;\n  flex-direction: column;\n  align-items: stretch;\n}\n\n.loginLogo {\n  display: flex;\n  justify-content: center;\n  align-items: baseline;\n  font-size: 32px;\n  font-weight: 600;\n  line-height: 1.2;\n  margin-bottom: 32px;\n  letter-spacing: 0.01em;\n}\n.loginDot {\n  color: var(--color-secondary);\n  margin-right: 2px;\n}\n.loginSimpli {\n  color: var(--color-secondary);\n}\n.loginPass {\n  color: var(--color-primary);\n}\n\n.loginLabel {\n  font-size: 14px;\n  color: var(--color-secondary);\n  margin-bottom: 8px;\n  font-weight: 500;\n}\n\n.loginInputWrapper {\n  position: relative;\n  display: flex;\n  align-items: center;\n  margin-bottom: 0;\n}\n\n.loginInput {\n  width: 100%;\n  height: 48px;\n  background: var(--bg-light);\n  border: none;\n  border-radius: var(--radius-card);\n  padding: 0 44px 0 44px;\n  font-size: 16px;\n  color: var(--color-primary);\n  outline: none;\n  font-weight: 500;\n  transition: box-shadow 0.2s;\n}\n.loginInput:focus {\n  box-shadow: 0 0 0 2px rgba(46, 174, 151, 0.2);\n}\n\n.loginInput::placeholder {\n  color: var(--color-accent);\n  opacity: 1;\n  font-weight: 400;\n}\n\n.loginInputIcon {\n  position: absolute;\n  left: 16px;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  pointer-events: none;\n  color: var(--color-accent);\n}\n\n.loginClearBtn {\n  position: absolute;\n  right: 12px;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  background: none;\n  border: none;\n  color: var(--color-accent);\n  font-size: 22px;\n  cursor: pointer;\n  padding: 0 4px;\n  transition: color 0.15s;\n}\n.loginClearBtn:hover {\n  color: var(--color-primary);\n}\n\n.loginCheckboxRow {\n  margin: 16px 0;\n  display: flex;\n  align-items: center;\n}\n\n.loginCheckboxLabel {\n  display: flex;\n  align-items: center;\n  cursor: pointer;\n  user-select: none;\n}\n\n.loginCheckbox {\n  display: none;\n}\n\n.loginCustomCheckbox {\n  width: 20px;\n  height: 20px;\n  border: 2px solid var(--color-primary);\n  border-radius: 4px;\n  background: var(--bg-white);\n  display: inline-block;\n  position: relative;\n  margin-right: 8px;\n  transition: background 0.15s, border-color 0.15s;\n}\n.loginCheckbox:checked + .loginCustomCheckbox {\n  background: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.loginCheckbox:checked + .loginCustomCheckbox::after {\n  content: '';\n  position: absolute;\n  left: 5px;\n  top: 1px;\n  width: 6px;\n  height: 12px;\n  border: solid var(--bg-white);\n  border-width: 0 2px 2px 0;\n  transform: rotate(45deg);\n}\n\n.loginCheckboxText {\n  font-size: 15px;\n  color: var(--color-primary);\n  margin-left: 8px;\n  font-weight: 500;\n}\n\n.loginEyeBtn {\n  position: absolute;\n  right: 12px;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  background: none;\n  border: none;\n  color: var(--color-accent);\n  font-size: 20px;\n  cursor: pointer;\n  padding: 0 4px;\n  transition: color 0.15s;\n}\n.loginEyeBtn:hover {\n  color: var(--color-primary);\n}\n\n.loginSubmitBtn {\n  width: 100%;\n  height: 48px;\n  background: var(--color-primary);\n  border: none;\n  border-radius: var(--radius-card);\n  font-size: 18px;\n  font-weight: 600;\n  color: var(--bg-white);\n  margin-top: 24px;\n  cursor: pointer;\n  transition: background 0.15s;\n  box-shadow: none;\n  position: relative;\n}\n\n.loginSubmitBtn:hover:not(:disabled) {\n  background: #28a386;\n}\n\n.loginSubmitBtn:disabled {\n  background-color: var(--color-border);\n  cursor: not-allowed;\n}\n\n.loginSubmitBtn.loading {\n  color: transparent;\n}\n\n.spinner {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  width: 20px;\n  height: 20px;\n  border: 3px solid rgba(255, 255, 255, 0.3);\n  border-radius: 50%;\n  border-top-color: white;\n  animation: spin 1s ease-in-out infinite;\n}\n\n@keyframes spin {\n  to {\n    transform: translate(-50%, -50%) rotate(360deg);\n  }\n}\n\n.errorMessage {\n  color: var(--color-error);\n  font-size: 14px;\n  margin-top: 4px;\n  margin-bottom: 8px;\n}\n\n.inputError {\n  border: 1px solid var(--color-error) !important;\n  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2) !important;\n} "],"sourceRoot":""}]);
 // Exports
 ___CSS_LOADER_EXPORT___.locals = {
 	"loginBackground": `uvw2FjWL4Ok7hLc2VvSB`,
@@ -2772,54 +2821,53 @@ module.exports = matching;
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `.generator-page {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-}
+___CSS_LOADER_EXPORT___.push([module.id, `/* Generator Page Specific Styles */
+
 
 .generated-password-card {
-  width: 100%;
-  background: var(--bg-light, #f1f4f8);
-  border-radius: 14px;
-  padding: 15px 10px;
-  margin-bottom: 18px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
+  gap: 12px;
 }
 
 .password-label {
-  font-size: 0.95em;
-  color: var(--color-secondary, #4f86a2);
-  margin-bottom: 3px;
+  font-size: 14px;
+  color: var(--color-secondary);
   font-weight: 500;
+  margin: 0;
+}
+
+.password-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .password-text {
-  font-size: 1.2em;
-  color: var(--color-text, #222);
+  flex: 1;
+  font-size: 16px;
+  color: var(--color-text);
   word-break: break-all;
-  margin-bottom: 5px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  background: var(--bg-white);
+  padding: 12px;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--color-border);
+  min-height: 20px;
 }
 
 .strength-label {
-  font-size: 0.95em;
+  font-size: 14px;
   font-weight: 500;
   display: flex;
   align-items: center;
   gap: 6px;
 }
+
 .strength-weak { color: #e57373; }
 .strength-average { color: #ffb300; }
-.strength-strong { color: #4f86a2; }
-.strength-perfect { color: #2eae97; }
+.strength-strong { color: var(--color-secondary); }
+.strength-perfect { color: var(--color-primary); }
 
 .copy-btn {
   display: flex;
@@ -2827,104 +2875,90 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.generator-page {
   align-items: center;
   justify-content: center;
   gap: 2px;
-  background: var(--color-secondary, #4f86a2);
+  background: var(--color-primary);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  width: 100px;
-  height: 40px;
+  border-radius: var(--radius-btn);
+  width: 48px;
+  height: 48px;
   font-size: 1em;
   cursor: pointer;
-  margin: 0 auto;
+  margin: 0;
   transition: background 0.2s;
+  padding: 0;
+  flex-shrink: 0;
 }
+
 .copy-btn:hover {
-  background: var(--color-primary, #2eae97);
+  background: #249e85;
 }
+
 .copy-btn svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 
 .slider-section {
-  width: 100%;
-  margin: 18px 0 10px 0;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  gap: 12px;
 }
+
 .slider-section label {
-  font-size: 0.95em;
-  margin-bottom: 4px;
-  color: var(--color-secondary, #4f86a2);
-}
-.slider-section input[type="range"] {
-  width: 100%;
+  font-size: 14px;
+  color: var(--color-secondary);
+  font-weight: 500;
   margin: 0;
 }
 
-.options-section {
+.slider-section input[type="range"] {
   width: 100%;
-  background: var(--bg-light, #f1f4f8);
-  border-radius: 14px;
-  padding: 10px 0;
-  margin-bottom: 18px;
-  box-sizing: border-box;
+  margin: 0;
+  accent-color: var(--color-primary);
+  height: 6px;
+  border-radius: 3px;
 }
+
+.options-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .option-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 15px;
-  font-size: 1em;
+  font-size: 16px;
+  color: var(--color-text);
 }
+
+.option-row span {
+  flex: 1;
+  font-weight: 500;
+}
+
 .option-row input[type="checkbox"] {
-  width: 22px;
-  height: 22px;
-  accent-color: var(--color-primary, #2eae97);
+  width: 24px;
+  height: 24px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .regenerate-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  background: var(--color-primary, #2eae97);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  height: 40px;
-  font-size: 1em;
-  padding: 0 24px;
-  cursor: pointer;
-  margin: 0 auto 10px auto;
-  transition: background 0.2s;
+  font-weight: 600;
 }
-.regenerate-btn:hover {
-  background: #249e85;
-}
+
 .regenerate-btn svg {
   width: 20px;
   height: 20px;
 }
-
-.toast {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--color-primary, #2eae97);
-  color: #fff;
-  padding: 10px 24px;
-  border-radius: 8px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-  z-index: 9999;
-}
-.toast.show {
-  opacity: 1;
-}
-`, "",{"version":3,"sources":["webpack://./popup/components/pages/generatorPage.css"],"names":[],"mappings":"AAAA;EACE,gBAAgB;EAChB,cAAc;EACd,aAAa;EACb,aAAa;EACb,sBAAsB;EACtB,mBAAmB;EACnB,sBAAsB;AACxB;;AAEA;EACE,WAAW;EACX,oCAAoC;EACpC,mBAAmB;EACnB,kBAAkB;EAClB,mBAAmB;EACnB,aAAa;EACb,sBAAsB;EACtB,SAAS;EACT,sBAAsB;EACtB,gBAAgB;AAClB;;AAEA;EACE,iBAAiB;EACjB,sCAAsC;EACtC,kBAAkB;EAClB,gBAAgB;AAClB;;AAEA;EACE,gBAAgB;EAChB,8BAA8B;EAC9B,qBAAqB;EACrB,kBAAkB;AACpB;;AAEA;EACE,iBAAiB;EACjB,gBAAgB;EAChB,aAAa;EACb,mBAAmB;EACnB,QAAQ;AACV;AACA,iBAAiB,cAAc,EAAE;AACjC,oBAAoB,cAAc,EAAE;AACpC,mBAAmB,cAAc,EAAE;AACnC,oBAAoB,cAAc,EAAE;;AAEpC;EACE,aAAa;EACb,sBAAsB;EACtB,mBAAmB;EACnB,uBAAuB;EACvB,QAAQ;EACR,2CAA2C;EAC3C,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,YAAY;EACZ,YAAY;EACZ,cAAc;EACd,eAAe;EACf,cAAc;EACd,2BAA2B;AAC7B;AACA;EACE,yCAAyC;AAC3C;AACA;EACE,WAAW;EACX,YAAY;AACd;;AAEA;EACE,WAAW;EACX,qBAAqB;EACrB,aAAa;EACb,sBAAsB;EACtB,oBAAoB;AACtB;AACA;EACE,iBAAiB;EACjB,kBAAkB;EAClB,sCAAsC;AACxC;AACA;EACE,WAAW;EACX,SAAS;AACX;;AAEA;EACE,WAAW;EACX,oCAAoC;EACpC,mBAAmB;EACnB,eAAe;EACf,mBAAmB;EACnB,sBAAsB;AACxB;AACA;EACE,aAAa;EACb,mBAAmB;EACnB,8BAA8B;EAC9B,iBAAiB;EACjB,cAAc;AAChB;AACA;EACE,WAAW;EACX,YAAY;EACZ,2CAA2C;AAC7C;;AAEA;EACE,aAAa;EACb,mBAAmB;EACnB,QAAQ;EACR,yCAAyC;EACzC,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,YAAY;EACZ,cAAc;EACd,eAAe;EACf,eAAe;EACf,wBAAwB;EACxB,2BAA2B;AAC7B;AACA;EACE,mBAAmB;AACrB;AACA;EACE,WAAW;EACX,YAAY;AACd;;AAEA;EACE,eAAe;EACf,YAAY;EACZ,SAAS;EACT,2BAA2B;EAC3B,yCAAyC;EACzC,WAAW;EACX,kBAAkB;EAClB,kBAAkB;EAClB,UAAU;EACV,oBAAoB;EACpB,wBAAwB;EACxB,aAAa;AACf;AACA;EACE,UAAU;AACZ","sourcesContent":[".generator-page {\n  max-width: 500px;\n  margin: 0 auto;\n  padding: 16px;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  box-sizing: border-box;\n}\n\n.generated-password-card {\n  width: 100%;\n  background: var(--bg-light, #f1f4f8);\n  border-radius: 14px;\n  padding: 15px 10px;\n  margin-bottom: 18px;\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n\n.password-label {\n  font-size: 0.95em;\n  color: var(--color-secondary, #4f86a2);\n  margin-bottom: 3px;\n  font-weight: 500;\n}\n\n.password-text {\n  font-size: 1.2em;\n  color: var(--color-text, #222);\n  word-break: break-all;\n  margin-bottom: 5px;\n}\n\n.strength-label {\n  font-size: 0.95em;\n  font-weight: 500;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.strength-weak { color: #e57373; }\n.strength-average { color: #ffb300; }\n.strength-strong { color: #4f86a2; }\n.strength-perfect { color: #2eae97; }\n\n.copy-btn {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 2px;\n  background: var(--color-secondary, #4f86a2);\n  color: #fff;\n  border: none;\n  border-radius: 8px;\n  width: 100px;\n  height: 40px;\n  font-size: 1em;\n  cursor: pointer;\n  margin: 0 auto;\n  transition: background 0.2s;\n}\n.copy-btn:hover {\n  background: var(--color-primary, #2eae97);\n}\n.copy-btn svg {\n  width: 20px;\n  height: 20px;\n}\n\n.slider-section {\n  width: 100%;\n  margin: 18px 0 10px 0;\n  display: flex;\n  flex-direction: column;\n  align-items: stretch;\n}\n.slider-section label {\n  font-size: 0.95em;\n  margin-bottom: 4px;\n  color: var(--color-secondary, #4f86a2);\n}\n.slider-section input[type=\"range\"] {\n  width: 100%;\n  margin: 0;\n}\n\n.options-section {\n  width: 100%;\n  background: var(--bg-light, #f1f4f8);\n  border-radius: 14px;\n  padding: 10px 0;\n  margin-bottom: 18px;\n  box-sizing: border-box;\n}\n.option-row {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 15px;\n  font-size: 1em;\n}\n.option-row input[type=\"checkbox\"] {\n  width: 22px;\n  height: 22px;\n  accent-color: var(--color-primary, #2eae97);\n}\n\n.regenerate-btn {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background: var(--color-primary, #2eae97);\n  color: #fff;\n  border: none;\n  border-radius: 8px;\n  height: 40px;\n  font-size: 1em;\n  padding: 0 24px;\n  cursor: pointer;\n  margin: 0 auto 10px auto;\n  transition: background 0.2s;\n}\n.regenerate-btn:hover {\n  background: #249e85;\n}\n.regenerate-btn svg {\n  width: 20px;\n  height: 20px;\n}\n\n.toast {\n  position: fixed;\n  bottom: 80px;\n  left: 50%;\n  transform: translateX(-50%);\n  background: var(--color-primary, #2eae97);\n  color: #fff;\n  padding: 10px 24px;\n  border-radius: 8px;\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity 0.3s;\n  z-index: 9999;\n}\n.toast.show {\n  opacity: 1;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./popup/components/pages/generatorPage.css"],"names":[],"mappings":"AAAA,mCAAmC;;;AAGnC;EACE,aAAa;EACb,sBAAsB;EACtB,SAAS;AACX;;AAEA;EACE,eAAe;EACf,6BAA6B;EAC7B,gBAAgB;EAChB,SAAS;AACX;;AAEA;EACE,aAAa;EACb,mBAAmB;EACnB,SAAS;AACX;;AAEA;EACE,OAAO;EACP,eAAe;EACf,wBAAwB;EACxB,qBAAqB;EACrB,wDAAwD;EACxD,2BAA2B;EAC3B,aAAa;EACb,gCAAgC;EAChC,qCAAqC;EACrC,gBAAgB;AAClB;;AAEA;EACE,eAAe;EACf,gBAAgB;EAChB,aAAa;EACb,mBAAmB;EACnB,QAAQ;AACV;;AAEA,iBAAiB,cAAc,EAAE;AACjC,oBAAoB,cAAc,EAAE;AACpC,mBAAmB,6BAA6B,EAAE;AAClD,oBAAoB,2BAA2B,EAAE;;AAEjD;EACE,aAAa;EACb,sBAAsB;EACtB,mBAAmB;EACnB,uBAAuB;EACvB,QAAQ;EACR,gCAAgC;EAChC,WAAW;EACX,YAAY;EACZ,gCAAgC;EAChC,WAAW;EACX,YAAY;EACZ,cAAc;EACd,eAAe;EACf,SAAS;EACT,2BAA2B;EAC3B,UAAU;EACV,cAAc;AAChB;;AAEA;EACE,mBAAmB;AACrB;;AAEA;EACE,WAAW;EACX,YAAY;AACd;;AAEA;EACE,aAAa;EACb,sBAAsB;EACtB,SAAS;AACX;;AAEA;EACE,eAAe;EACf,6BAA6B;EAC7B,gBAAgB;EAChB,SAAS;AACX;;AAEA;EACE,WAAW;EACX,SAAS;EACT,kCAAkC;EAClC,WAAW;EACX,kBAAkB;AACpB;;AAEA;EACE,aAAa;EACb,sBAAsB;EACtB,SAAS;AACX;;AAEA;EACE,aAAa;EACb,mBAAmB;EACnB,8BAA8B;EAC9B,eAAe;EACf,wBAAwB;AAC1B;;AAEA;EACE,OAAO;EACP,gBAAgB;AAClB;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,kCAAkC;EAClC,eAAe;EACf,cAAc;AAChB;;AAEA;EACE,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,QAAQ;EACR,gBAAgB;AAClB;;AAEA;EACE,WAAW;EACX,YAAY;AACd","sourcesContent":["/* Generator Page Specific Styles */\n\n\n.generated-password-card {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n\n.password-label {\n  font-size: 14px;\n  color: var(--color-secondary);\n  font-weight: 500;\n  margin: 0;\n}\n\n.password-display {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n.password-text {\n  flex: 1;\n  font-size: 16px;\n  color: var(--color-text);\n  word-break: break-all;\n  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;\n  background: var(--bg-white);\n  padding: 12px;\n  border-radius: var(--radius-btn);\n  border: 1px solid var(--color-border);\n  min-height: 20px;\n}\n\n.strength-label {\n  font-size: 14px;\n  font-weight: 500;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n\n.strength-weak { color: #e57373; }\n.strength-average { color: #ffb300; }\n.strength-strong { color: var(--color-secondary); }\n.strength-perfect { color: var(--color-primary); }\n\n.copy-btn {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 2px;\n  background: var(--color-primary);\n  color: #fff;\n  border: none;\n  border-radius: var(--radius-btn);\n  width: 48px;\n  height: 48px;\n  font-size: 1em;\n  cursor: pointer;\n  margin: 0;\n  transition: background 0.2s;\n  padding: 0;\n  flex-shrink: 0;\n}\n\n.copy-btn:hover {\n  background: #249e85;\n}\n\n.copy-btn svg {\n  width: 22px;\n  height: 22px;\n}\n\n.slider-section {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n\n.slider-section label {\n  font-size: 14px;\n  color: var(--color-secondary);\n  font-weight: 500;\n  margin: 0;\n}\n\n.slider-section input[type=\"range\"] {\n  width: 100%;\n  margin: 0;\n  accent-color: var(--color-primary);\n  height: 6px;\n  border-radius: 3px;\n}\n\n.options-section {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n.option-row {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  font-size: 16px;\n  color: var(--color-text);\n}\n\n.option-row span {\n  flex: 1;\n  font-weight: 500;\n}\n\n.option-row input[type=\"checkbox\"] {\n  width: 24px;\n  height: 24px;\n  accent-color: var(--color-primary);\n  cursor: pointer;\n  flex-shrink: 0;\n}\n\n.regenerate-btn {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  font-weight: 600;\n}\n\n.regenerate-btn svg {\n  width: 20px;\n  height: 20px;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4029,20 +4063,36 @@ module.exports = feedback;
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 ___CSS_LOADER_EXPORT___.push([module.id, "@import url(https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap);"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `:root {
+___CSS_LOADER_EXPORT___.push([module.id, `/* CSS Variables - Global Design System */
+:root {
   --color-primary: #2eae97;        /* Teal */
   --color-secondary: #4f86a2;      /* Blue */
   --color-accent: #74787a;         /* Gray */
+  --color-text: #202124;           /* Dark text */
+  --color-text-secondary: #5f6368; /* Secondary text */
+  --color-error: #dc3545;          /* Error red */
   --bg-white: #ffffff;
   --bg-light: #f1f4f8;
+  --bg-card: #f8f9fa;
+  --color-border: #e0e0e0;
   --radius-card: 12px;
   --radius-pill: 20px;
   --radius-btn: 8px;
   --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-size-base: 16px;
-  /* Design system variables will be injected here */
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-card-hover: 0 4px 16px rgba(26,115,232,0.10);
+  
+  /* Layout Variables */
+  --page-padding: 20px;
+  --content-max-width: 100%;
+  --section-spacing: 16px;
+  --element-spacing: 12px;
+  --navbar-height: 60px;
+  --helper-bar-height: 60px;
 }
 
+/* Global Reset and Base Styles */
 html, body {
   width: 350px;
   height: 550px;
@@ -4059,6 +4109,7 @@ body {
   color: var(--color-text);
 }
 
+/* Main Container Layout */
 .container {
   width: 350px;
   height: 550px;
@@ -4072,63 +4123,67 @@ body {
   margin: 0 auto;
 }
 
-/* Top Navbar */
-.navbar {
-  width: 100%;
-  height: 60px;
-  min-height: 60px;
-  max-height: 60px;
-  background-color: var(--color-background, var(--bg-white));
-  border-bottom: 1px solid var(--color-border, var(--bg-light));
-  z-index: 1000;
-  padding: 0.5rem 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-}
-
-.navbar ul {
-  display: flex;
-  justify-content: space-around;
-  list-style: none;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-.navbar li {
-  margin: 0;
-  padding: 0;
-}
-
-.navbar a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-  color: var(--color-text);
-  padding: 0.5rem;
-  font-size: 0.75rem;
-  gap: 0.25rem;
-}
-
-.navbar a.active {
-  color: var(--color-primary);
-}
-
-.navbar svg {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
 /* Main Content Area */
 #content {
   width: 100%;
-  height: 440px;
-  min-height: 440px;
-  max-height: 440px;
+  flex: 1;
   overflow-y: auto;
-  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Common Page Layout Classes */
+.page-container {
+  padding: 20px 20px 0;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.page-content {
+  width: 100%;
+  max-width: var(--content-max-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-spacing);
+  flex: 1;
+}
+
+.page-header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--element-spacing);
+  margin-bottom: var(--section-spacing);
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-secondary);
+  margin: 0;
+  text-align: center;
+  padding: var(--section-spacing) 0;
+}
+
+.page-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--element-spacing);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+/* Full-width elements */
+.full-width {
+  width: 100%;
   box-sizing: border-box;
 }
 
@@ -4144,7 +4199,7 @@ body {
   align-items: center;
 }
 
-/* Loading and error states */
+/* Global Loading and Error States */
 .loading {
   display: flex;
   justify-content: center;
@@ -4170,24 +4225,48 @@ body {
   line-height: 1.5;
 }
 
-/* --- Utility and component classes from original popup.css below --- */
-
+/* Common Utility Classes */
 .card {
-  background: var(--bg-light);
+  background: var(--bg-card);
   border-radius: var(--radius-card);
-  padding: 12px;
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
-  padding: 0 16px;
+  height: 48px;
+  padding: 0 24px;
   font-size: var(--font-size-base);
+  font-weight: 500;
   border: none;
   border-radius: var(--radius-btn);
   cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #28a386;
+}
+
+.btn-secondary {
+  background: var(--color-secondary);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #3d6b85;
 }
 
 .pill-btn {
@@ -4196,168 +4275,51 @@ body {
   border-radius: var(--radius-pill);
   font-size: 14px;
   font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-h1 {
-  margin: 0;
-  font-size: 24px;
-  color: #1a73e8;
-  font-weight: 600;
-}
-
-.subtitle {
-  margin: 8px 0 0;
-  color: #5f6368;
-  font-size: 14px;
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
+/* Form Elements */
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-label {
-  font-size: 14px;
-  color: #202124;
-  font-weight: 500;
-}
-
-input {
-  padding: 12px;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: border-color 0.2s;
-}
-
-input:focus {
-  outline: none;
-  border-color: #1a73e8;
-}
-
-input::placeholder {
-  color: #80868b;
-}
-
-.form-footer {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-}
-
-.login-button {
   width: 100%;
-  padding: 12px;
-  background-color: #1a73e8;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.login-button:hover {
-  background-color: #1557b0;
-}
-
-.forgot-password {
-  color: #1a73e8;
-  text-decoration: none;
-  font-size: 13px;
-}
-
-.forgot-password:hover {
-  text-decoration: underline;
-}
-
-.credential-card {
-  background: #f8f9fa;
-  border-radius: 16px;
-  padding: 12px 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: box-shadow 0.2s;
-  cursor: pointer;
-}
-
-.credential-card:hover {
-  box-shadow: 0 4px 16px rgba(26,115,232,0.10);
-}
-
-.card-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.card-icon {
-  width: 37px;
-  height: 37px;
-  background: #e3eafc;
-  color: #1a73e8;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 1.2em;
-  border: 1px solid #dbeafe;
-}
-
-.card-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
 }
 
-.card-title {
-  font-weight: 600;
-  font-size: 1.05em;
-  color: #222;
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-secondary);
 }
 
-.card-username {
-  color: #5f6368;
-  font-size: 0.97em;
+.form-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background: var(--bg-white);
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.copy-btn {
-  background: #1a73e8;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 0.95em;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.copy-btn:hover {
-  background: #1557b0;
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(46, 174, 151, 0.2);
 }
 
+/* Common Toast Notification */
 .toast {
   position: fixed;
   bottom: 32px;
   left: 50%;
   transform: translateX(-50%);
-  background: #1a73e8;
+  background: var(--color-primary);
   color: #fff;
   padding: 10px 24px;
   border-radius: 8px;
@@ -4366,299 +4328,41 @@ input::placeholder {
   transition: opacity 0.3s;
   z-index: 9999;
 }
+
 .toast.show {
   opacity: 1;
 }
 
-.search-bar {
-  margin: 16px;
-}
-
-.search-bar input[type="search"] {
-  width: 100%;
-  height: 40px;
-  border-radius: 20px;
-  background: var(--bg-light);
-  border: none;
-  padding-left: 40px;
+/* Common Form Elements */
+input, textarea, select {
+  font-family: inherit;
   font-size: var(--font-size-base);
 }
 
-.category-pills {
-  display: flex;
-  overflow-x: auto;
-  padding: 0 16px;
-  gap: 8px;
-  margin-bottom: 16px;
+input:focus, textarea:focus, select:focus {
+  outline: none;
 }
 
-.category-pills .pill-btn {
-  background: var(--bg-light);
-  color: var(--color-secondary);
-}
-
-.category-pills .pill-btn.selected {
-  background: var(--color-primary);
-  color: white;
-}
-
-.credential-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 68px;
-  margin-bottom: 8px;
-  padding: 0 12px;
-  background: var(--bg-light);
-  border-radius: var(--radius-card);
-}
-
-.credential-card .icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--color-secondary);
-}
-
-.credential-card .info {
-  flex: 1;
-  margin-left: 12px;
-}
-
-.credential-card .title {
-  font-size: 18px;
-  color: var(--color-secondary);
-  margin: 0;
-}
-
-.credential-card .subtitle {
-  font-size: 14px;
-  color: var(--color-accent);
-  margin: 0;
-}
-
-.credential-card .copy-btn {
-  width: 40px;
-  height: 40px;
-  background: var(--color-primary);
-  border: none;
-  border-radius: var(--radius-btn);
-  cursor: pointer;
-}
-
-.nav-item {
-  color: var(--color-accent);
-  cursor: pointer;
-}
-
-.nav-item.active {
-  color: var(--color-primary);
-}
-
-.header-bar {
-  height: 56px;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  background: var(--bg-white);
-  border-bottom: 1px solid var(--bg-light);
-}
-
-.header-bar .back-btn {
-  background: transparent;
-  color: var(--color-secondary);
-  font-size: 20px;
-}
-
-.header-bar h1 {
-  flex: 1;
-  text-align: center;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--color-secondary);
-  margin: 0;
-}
-
-.header-bar .spacer {
-  width: 40px;
-}
-
-.bottom-sheet {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 60%;
-  background: var(--bg-white);
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-  transform: translateY(100%);
-  transition: transform 300ms ease-out;
-  z-index: 1000;
-}
-
-.bottom-sheet.open {
-  transform: translateY(0);
-}
-
-.drag-handle {
-  width: 40px;
-  height: 4px;
-  background: var(--bg-light);
-  border-radius: 2px;
-  margin: 8px auto;
-}
-
-.bottom-sheet-header {
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  gap: 12px;
-}
-
-.bottom-sheet-header .site-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--color-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 600;
-}
-
-.bottom-sheet-header h2 {
-  flex: 1;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--color-secondary);
-  margin: 0;
-}
-
-.bottom-sheet-header .close-btn {
-  background: transparent;
-  border: 1px solid var(--color-secondary);
-  color: var(--color-secondary);
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.details-card {
-  margin: 16px;
-  padding: 12px;
-  border-radius: 12px;
-  background: var(--bg-light);
-}
-
-.detail-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-  gap: 8px;
-}
-
-.detail-row:last-child {
-  margin-bottom: 0;
-}
-
-.detail-label {
-  font-size: 14px;
-  color: var(--color-accent);
-  min-width: 80px;
-}
-
-.detail-value {
-  flex: 1;
-  font-size: 16px;
-  color: var(--color-secondary);
-}
-
-.detail-value.password {
-  font-size: 18px;
-  letter-spacing: 2px;
-}
-
-.detail-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.detail-actions .btn {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.detail-actions .btn.copy {
-  background: var(--color-primary);
-  color: white;
-}
-
-.detail-actions .btn.toggle {
-  background: transparent;
-  color: var(--color-accent);
-}
-
-.note-field {
-  width: 100%;
-  min-height: 80px;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background: var(--bg-white);
-  font-size: 14px;
-  color: var(--color-secondary);
-  resize: none;
-  margin-top: 12px;
-}
-
-.bottom-sheet-actions {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-  right: 16px;
-  display: flex;
-  gap: 12px;
-}
-
-.bottom-sheet-actions .btn {
-  flex: 1;
-  height: 40px;
-}
-
-.bottom-sheet-actions .btn.edit {
-  background: var(--color-accent);
-  color: white;
-}
-
-.bottom-sheet-actions .btn.delete {
-  background: #e04f5f;
-  color: white;
-}
-
+/* Overlay for modals/bottom sheets */
 .overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.5);
   opacity: 0;
   pointer-events: none;
   transition: opacity 300ms ease-out;
+  z-index: 999;
 }
 
 .overlay.open {
   opacity: 1;
-  pointer-events: auto;
-} `, "",{"version":3,"sources":["webpack://./popup/popup.css"],"names":[],"mappings":"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","sourcesContent":["@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');\n\n:root {\n  --color-primary: #2eae97;        /* Teal */\n  --color-secondary: #4f86a2;      /* Blue */\n  --color-accent: #74787a;         /* Gray */\n  --bg-white: #ffffff;\n  --bg-light: #f1f4f8;\n  --radius-card: 12px;\n  --radius-pill: 20px;\n  --radius-btn: 8px;\n  --font-base: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;\n  --font-size-base: 16px;\n  /* Design system variables will be injected here */\n}\n\nhtml, body {\n  width: 350px;\n  height: 550px;\n  min-width: 350px;\n  min-height: 550px;\n  margin: 0;\n  padding: 0;\n  overflow: hidden;\n}\n\nbody {\n  font-family: 'Inter', var(--font-base), sans-serif;\n  background: var(--bg-light);\n  color: var(--color-text);\n}\n\n.container {\n  width: 350px;\n  height: 550px;\n  min-width: 350px;\n  min-height: 550px;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  background: var(--bg-white);\n  position: relative;\n  margin: 0 auto;\n}\n\n/* Top Navbar */\n.navbar {\n  width: 100%;\n  height: 60px;\n  min-height: 60px;\n  max-height: 60px;\n  background-color: var(--color-background, var(--bg-white));\n  border-bottom: 1px solid var(--color-border, var(--bg-light));\n  z-index: 1000;\n  padding: 0.5rem 1rem;\n  display: flex;\n  align-items: center;\n  justify-content: space-around;\n}\n\n.navbar ul {\n  display: flex;\n  justify-content: space-around;\n  list-style: none;\n  width: 100%;\n  margin: 0;\n  padding: 0;\n}\n\n.navbar li {\n  margin: 0;\n  padding: 0;\n}\n\n.navbar a {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-decoration: none;\n  color: var(--color-text);\n  padding: 0.5rem;\n  font-size: 0.75rem;\n  gap: 0.25rem;\n}\n\n.navbar a.active {\n  color: var(--color-primary);\n}\n\n.navbar svg {\n  width: 1.5rem;\n  height: 1.5rem;\n}\n\n/* Main Content Area */\n#content {\n  width: 100%;\n  height: 440px;\n  min-height: 440px;\n  max-height: 440px;\n  overflow-y: auto;\n  padding: 1rem;\n  box-sizing: border-box;\n}\n\n/* Login page should fill the window */\n.login-page-container {\n  width: 350px;\n  height: 550px;\n  min-width: 350px;\n  min-height: 550px;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n}\n\n/* Loading and error states */\n.loading {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 100%;\n  font-size: 1rem;\n  color: var(--color-text);\n}\n\n.error-message {\n  padding: 1rem;\n  text-align: center;\n  color: var(--color-error);\n}\n\n.error-message h2 {\n  margin-bottom: 0.5rem;\n  font-size: 1.25rem;\n}\n\n.error-message p {\n  font-size: 0.875rem;\n  line-height: 1.5;\n}\n\n/* --- Utility and component classes from original popup.css below --- */\n\n.card {\n  background: var(--bg-light);\n  border-radius: var(--radius-card);\n  padding: 12px;\n}\n\n.btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  height: 40px;\n  padding: 0 16px;\n  font-size: var(--font-size-base);\n  border: none;\n  border-radius: var(--radius-btn);\n  cursor: pointer;\n}\n\n.pill-btn {\n  height: 40px;\n  padding: 0 16px;\n  border-radius: var(--radius-pill);\n  font-size: 14px;\n  font-weight: 500;\n}\n\n.header {\n  text-align: center;\n  margin-bottom: 10px;\n}\n\nh1 {\n  margin: 0;\n  font-size: 24px;\n  color: #1a73e8;\n  font-weight: 600;\n}\n\n.subtitle {\n  margin: 8px 0 0;\n  color: #5f6368;\n  font-size: 14px;\n}\n\n.login-form {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n.form-group {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n\nlabel {\n  font-size: 14px;\n  color: #202124;\n  font-weight: 500;\n}\n\ninput {\n  padding: 12px;\n  border: 1px solid #dadce0;\n  border-radius: 4px;\n  font-size: 14px;\n  transition: border-color 0.2s;\n}\n\ninput:focus {\n  outline: none;\n  border-color: #1a73e8;\n}\n\ninput::placeholder {\n  color: #80868b;\n}\n\n.form-footer {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  align-items: center;\n}\n\n.login-button {\n  width: 100%;\n  padding: 12px;\n  background-color: #1a73e8;\n  color: white;\n  border: none;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 500;\n  cursor: pointer;\n  transition: background-color 0.2s;\n}\n\n.login-button:hover {\n  background-color: #1557b0;\n}\n\n.forgot-password {\n  color: #1a73e8;\n  text-decoration: none;\n  font-size: 13px;\n}\n\n.forgot-password:hover {\n  text-decoration: underline;\n}\n\n.credential-card {\n  background: #f8f9fa;\n  border-radius: 16px;\n  padding: 12px 16px;\n  box-shadow: 0 2px 8px rgba(0,0,0,0.04);\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  transition: box-shadow 0.2s;\n  cursor: pointer;\n}\n\n.credential-card:hover {\n  box-shadow: 0 4px 16px rgba(26,115,232,0.10);\n}\n\n.card-left {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n.card-icon {\n  width: 37px;\n  height: 37px;\n  background: #e3eafc;\n  color: #1a73e8;\n  border-radius: 10px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-weight: bold;\n  font-size: 1.2em;\n  border: 1px solid #dbeafe;\n}\n\n.card-info {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n\n.card-title {\n  font-weight: 600;\n  font-size: 1.05em;\n  color: #222;\n}\n\n.card-username {\n  color: #5f6368;\n  font-size: 0.97em;\n}\n\n.copy-btn {\n  background: #1a73e8;\n  color: white;\n  border: none;\n  border-radius: 8px;\n  padding: 8px 14px;\n  font-size: 0.95em;\n  cursor: pointer;\n  transition: background 0.2s;\n}\n.copy-btn:hover {\n  background: #1557b0;\n}\n\n.toast {\n  position: fixed;\n  bottom: 32px;\n  left: 50%;\n  transform: translateX(-50%);\n  background: #1a73e8;\n  color: #fff;\n  padding: 10px 24px;\n  border-radius: 8px;\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity 0.3s;\n  z-index: 9999;\n}\n.toast.show {\n  opacity: 1;\n}\n\n.search-bar {\n  margin: 16px;\n}\n\n.search-bar input[type=\"search\"] {\n  width: 100%;\n  height: 40px;\n  border-radius: 20px;\n  background: var(--bg-light);\n  border: none;\n  padding-left: 40px;\n  font-size: var(--font-size-base);\n}\n\n.category-pills {\n  display: flex;\n  overflow-x: auto;\n  padding: 0 16px;\n  gap: 8px;\n  margin-bottom: 16px;\n}\n\n.category-pills .pill-btn {\n  background: var(--bg-light);\n  color: var(--color-secondary);\n}\n\n.category-pills .pill-btn.selected {\n  background: var(--color-primary);\n  color: white;\n}\n\n.credential-card {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 68px;\n  margin-bottom: 8px;\n  padding: 0 12px;\n  background: var(--bg-light);\n  border-radius: var(--radius-card);\n}\n\n.credential-card .icon {\n  width: 32px;\n  height: 32px;\n  border-radius: 50%;\n  background: var(--color-secondary);\n}\n\n.credential-card .info {\n  flex: 1;\n  margin-left: 12px;\n}\n\n.credential-card .title {\n  font-size: 18px;\n  color: var(--color-secondary);\n  margin: 0;\n}\n\n.credential-card .subtitle {\n  font-size: 14px;\n  color: var(--color-accent);\n  margin: 0;\n}\n\n.credential-card .copy-btn {\n  width: 40px;\n  height: 40px;\n  background: var(--color-primary);\n  border: none;\n  border-radius: var(--radius-btn);\n  cursor: pointer;\n}\n\n.nav-item {\n  color: var(--color-accent);\n  cursor: pointer;\n}\n\n.nav-item.active {\n  color: var(--color-primary);\n}\n\n.header-bar {\n  height: 56px;\n  display: flex;\n  align-items: center;\n  padding: 0 16px;\n  background: var(--bg-white);\n  border-bottom: 1px solid var(--bg-light);\n}\n\n.header-bar .back-btn {\n  background: transparent;\n  color: var(--color-secondary);\n  font-size: 20px;\n}\n\n.header-bar h1 {\n  flex: 1;\n  text-align: center;\n  font-size: 20px;\n  font-weight: 600;\n  color: var(--color-secondary);\n  margin: 0;\n}\n\n.header-bar .spacer {\n  width: 40px;\n}\n\n.bottom-sheet {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n  height: 60%;\n  background: var(--bg-white);\n  border-top-left-radius: 16px;\n  border-top-right-radius: 16px;\n  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);\n  transform: translateY(100%);\n  transition: transform 300ms ease-out;\n  z-index: 1000;\n}\n\n.bottom-sheet.open {\n  transform: translateY(0);\n}\n\n.drag-handle {\n  width: 40px;\n  height: 4px;\n  background: var(--bg-light);\n  border-radius: 2px;\n  margin: 8px auto;\n}\n\n.bottom-sheet-header {\n  display: flex;\n  align-items: center;\n  padding: 16px;\n  gap: 12px;\n}\n\n.bottom-sheet-header .site-icon {\n  width: 32px;\n  height: 32px;\n  border-radius: 50%;\n  background: var(--color-secondary);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  color: white;\n  font-weight: 600;\n}\n\n.bottom-sheet-header h2 {\n  flex: 1;\n  font-size: 20px;\n  font-weight: 600;\n  color: var(--color-secondary);\n  margin: 0;\n}\n\n.bottom-sheet-header .close-btn {\n  background: transparent;\n  border: 1px solid var(--color-secondary);\n  color: var(--color-secondary);\n  padding: 8px 16px;\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n\n.details-card {\n  margin: 16px;\n  padding: 12px;\n  border-radius: 12px;\n  background: var(--bg-light);\n}\n\n.detail-row {\n  display: flex;\n  align-items: center;\n  margin-bottom: 12px;\n  gap: 8px;\n}\n\n.detail-row:last-child {\n  margin-bottom: 0;\n}\n\n.detail-label {\n  font-size: 14px;\n  color: var(--color-accent);\n  min-width: 80px;\n}\n\n.detail-value {\n  flex: 1;\n  font-size: 16px;\n  color: var(--color-secondary);\n}\n\n.detail-value.password {\n  font-size: 18px;\n  letter-spacing: 2px;\n}\n\n.detail-actions {\n  display: flex;\n  gap: 8px;\n}\n\n.detail-actions .btn {\n  width: 40px;\n  height: 40px;\n  padding: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.detail-actions .btn.copy {\n  background: var(--color-primary);\n  color: white;\n}\n\n.detail-actions .btn.toggle {\n  background: transparent;\n  color: var(--color-accent);\n}\n\n.note-field {\n  width: 100%;\n  min-height: 80px;\n  padding: 12px;\n  border: none;\n  border-radius: 8px;\n  background: var(--bg-white);\n  font-size: 14px;\n  color: var(--color-secondary);\n  resize: none;\n  margin-top: 12px;\n}\n\n.bottom-sheet-actions {\n  position: absolute;\n  bottom: 16px;\n  left: 16px;\n  right: 16px;\n  display: flex;\n  gap: 12px;\n}\n\n.bottom-sheet-actions .btn {\n  flex: 1;\n  height: 40px;\n}\n\n.bottom-sheet-actions .btn.edit {\n  background: var(--color-accent);\n  color: white;\n}\n\n.bottom-sheet-actions .btn.delete {\n  background: #e04f5f;\n  color: white;\n}\n\n.overlay {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.5);\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity 300ms ease-out;\n}\n\n.overlay.open {\n  opacity: 1;\n  pointer-events: auto;\n} "],"sourceRoot":""}]);
+  pointer-events: all;
+}
+
+ `, "",{"version":3,"sources":["webpack://./popup/popup.css"],"names":[],"mappings":"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","sourcesContent":["@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');\n\n/* CSS Variables - Global Design System */\n:root {\n  --color-primary: #2eae97;        /* Teal */\n  --color-secondary: #4f86a2;      /* Blue */\n  --color-accent: #74787a;         /* Gray */\n  --color-text: #202124;           /* Dark text */\n  --color-text-secondary: #5f6368; /* Secondary text */\n  --color-error: #dc3545;          /* Error red */\n  --bg-white: #ffffff;\n  --bg-light: #f1f4f8;\n  --bg-card: #f8f9fa;\n  --color-border: #e0e0e0;\n  --radius-card: 12px;\n  --radius-pill: 20px;\n  --radius-btn: 8px;\n  --font-base: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;\n  --font-size-base: 16px;\n  --shadow-card: 0 2px 8px rgba(0,0,0,0.04);\n  --shadow-card-hover: 0 4px 16px rgba(26,115,232,0.10);\n  \n  /* Layout Variables */\n  --page-padding: 20px;\n  --content-max-width: 100%;\n  --section-spacing: 16px;\n  --element-spacing: 12px;\n  --navbar-height: 60px;\n  --helper-bar-height: 60px;\n}\n\n/* Global Reset and Base Styles */\nhtml, body {\n  width: 350px;\n  height: 550px;\n  min-width: 350px;\n  min-height: 550px;\n  margin: 0;\n  padding: 0;\n  overflow: hidden;\n}\n\nbody {\n  font-family: 'Inter', var(--font-base), sans-serif;\n  background: var(--bg-light);\n  color: var(--color-text);\n}\n\n/* Main Container Layout */\n.container {\n  width: 350px;\n  height: 550px;\n  min-width: 350px;\n  min-height: 550px;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  background: var(--bg-white);\n  position: relative;\n  margin: 0 auto;\n}\n\n/* Main Content Area */\n#content {\n  width: 100%;\n  flex: 1;\n  overflow-y: auto;\n  box-sizing: border-box;\n  display: flex;\n  flex-direction: column;\n}\n\n/* Common Page Layout Classes */\n.page-container {\n  padding: 20px 20px 0;\n  height: 100%;\n  overflow-y: auto;\n  box-sizing: border-box;\n}\n\n.page-content {\n  width: 100%;\n  max-width: var(--content-max-width);\n  display: flex;\n  flex-direction: column;\n  gap: var(--section-spacing);\n  flex: 1;\n}\n\n.page-header {\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  gap: var(--element-spacing);\n  margin-bottom: var(--section-spacing);\n}\n\n.page-title {\n  font-size: 24px;\n  font-weight: 600;\n  color: var(--color-secondary);\n  margin: 0;\n  text-align: center;\n  padding: var(--section-spacing) 0;\n}\n\n.page-section {\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  gap: var(--element-spacing);\n}\n\n.section-title {\n  font-size: 18px;\n  font-weight: 600;\n  color: var(--color-primary);\n  margin: 0;\n}\n\n/* Full-width elements */\n.full-width {\n  width: 100%;\n  box-sizing: border-box;\n}\n\n/* Login page should fill the window */\n.login-page-container {\n  width: 350px;\n  height: 550px;\n  min-width: 350px;\n  min-height: 550px;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n}\n\n/* Global Loading and Error States */\n.loading {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 100%;\n  font-size: 1rem;\n  color: var(--color-text);\n}\n\n.error-message {\n  padding: 1rem;\n  text-align: center;\n  color: var(--color-error);\n}\n\n.error-message h2 {\n  margin-bottom: 0.5rem;\n  font-size: 1.25rem;\n}\n\n.error-message p {\n  font-size: 0.875rem;\n  line-height: 1.5;\n}\n\n/* Common Utility Classes */\n.card {\n  background: var(--bg-card);\n  border-radius: var(--radius-card);\n  padding: 16px;\n  box-shadow: var(--shadow-card);\n  width: 100%;\n  box-sizing: border-box;\n}\n\n.btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  height: 48px;\n  padding: 0 24px;\n  font-size: var(--font-size-base);\n  font-weight: 500;\n  border: none;\n  border-radius: var(--radius-btn);\n  cursor: pointer;\n  transition: background-color 0.2s, color 0.2s;\n  width: 100%;\n  box-sizing: border-box;\n}\n\n.btn-primary {\n  background: var(--color-primary);\n  color: white;\n}\n\n.btn-primary:hover {\n  background: #28a386;\n}\n\n.btn-secondary {\n  background: var(--color-secondary);\n  color: white;\n}\n\n.btn-secondary:hover {\n  background: #3d6b85;\n}\n\n.pill-btn {\n  height: 40px;\n  padding: 0 16px;\n  border-radius: var(--radius-pill);\n  font-size: 14px;\n  font-weight: 500;\n  border: none;\n  cursor: pointer;\n  transition: background-color 0.2s, color 0.2s;\n}\n\n/* Form Elements */\n.form-group {\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n.form-label {\n  font-size: 14px;\n  font-weight: 500;\n  color: var(--color-secondary);\n}\n\n.form-input {\n  width: 100%;\n  height: 48px;\n  padding: 0 16px;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-btn);\n  font-size: var(--font-size-base);\n  color: var(--color-text);\n  background: var(--bg-white);\n  box-sizing: border-box;\n  transition: border-color 0.2s, box-shadow 0.2s;\n}\n\n.form-input:focus {\n  outline: none;\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 2px rgba(46, 174, 151, 0.2);\n}\n\n/* Common Toast Notification */\n.toast {\n  position: fixed;\n  bottom: 32px;\n  left: 50%;\n  transform: translateX(-50%);\n  background: var(--color-primary);\n  color: #fff;\n  padding: 10px 24px;\n  border-radius: 8px;\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity 0.3s;\n  z-index: 9999;\n}\n\n.toast.show {\n  opacity: 1;\n}\n\n/* Common Form Elements */\ninput, textarea, select {\n  font-family: inherit;\n  font-size: var(--font-size-base);\n}\n\ninput:focus, textarea:focus, select:focus {\n  outline: none;\n}\n\n/* Overlay for modals/bottom sheets */\n.overlay {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(0, 0, 0, 0.5);\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity 300ms ease-out;\n  z-index: 999;\n}\n\n.overlay.open {\n  opacity: 1;\n  pointer-events: all;\n}\n\n "],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4681,7 +4385,8 @@ input::placeholder {
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `.settings-page h1 {
+___CSS_LOADER_EXPORT___.push([module.id, `/* Settings Page Specific Styles */
+.settings-page h1 {
   text-align: center;
   font-size: 24px;
   font-weight: 600;
@@ -4691,15 +4396,22 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.settings-page h1 {
 }
 
 .profile-card {
-  margin: 0 16px 16px;
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
 }
 
 .profile-card .user-icon {
   font-size: 24px;
   color: var(--color-primary);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-light);
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .profile-card .user-info {
@@ -4708,80 +4420,73 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.settings-page h1 {
 
 .profile-card .user-email {
   font-size: 16px;
-  color: var(--color-accent);
+  color: var(--color-text);
+  font-weight: 600;
+  margin: 0 0 4px 0;
 }
 
 .profile-card .user-subscription {
   font-size: 14px;
   color: var(--color-primary);
+  margin: 0 0 2px 0;
 }
 
-.theme-toggle {
-  margin: 0 16px 16px;
-  padding: 8px;
-  border-radius: 20px;
-  display: flex;
-  gap: 8px;
-}
-
-.theme-toggle .btn {
-  flex: 1;
-  border-radius: 16px;
-}
-
-.theme-toggle .btn.active {
-  background: var(--color-primary);
-  color: white;
-}
-
-.theme-toggle .btn:not(.active) {
-  background: transparent;
-  color: var(--color-accent);
+.profile-card .user-status {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 0;
 }
 
 .menu-list {
-  margin: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--element-spacing);
 }
 
 .menu-item {
-  height: 48px;
-  padding: 0 16px;
-  margin-bottom: 12px;
+  height: 56px;
+  padding: 0 20px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+  text-align: left;
+  width: 100%;
+}
+
+.menu-item:hover {
+  background: var(--bg-light);
 }
 
 .menu-item .menu-icon {
-  font-size: 20px;
-  color: var(--color-primary);
-  margin-right: 12px;
+  color: var(--color-secondary);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
 }
 
 .menu-item .menu-label {
-  flex: 1;
   font-size: 16px;
-  color: var(--color-accent);
+  color: var(--color-primary);
+  flex: 1;
+  font-weight: 500;
 }
 
 .menu-item .menu-arrow {
   color: var(--color-accent);
+  font-size: 16px;
+  flex-shrink: 0;
 }
 
-.feedback-btn {
-  width: calc(100% - 32px);
-  margin: 16px;
-  background: var(--color-primary);
-  color: white;
-}
 
-.logout-btn {
-  width: calc(100% - 32px);
-  margin: 0 16px 16px;
-  background: var(--color-secondary);
-  color: white;
-}
-`, "",{"version":3,"sources":["webpack://./popup/components/pages/settingsPage.css"],"names":[],"mappings":"AAAA;EACE,kBAAkB;EAClB,eAAe;EACf,gBAAgB;EAChB,6BAA6B;EAC7B,aAAa;EACb,SAAS;AACX;;AAEA;EACE,mBAAmB;EACnB,aAAa;EACb,SAAS;EACT,mBAAmB;AACrB;;AAEA;EACE,eAAe;EACf,2BAA2B;AAC7B;;AAEA;EACE,OAAO;AACT;;AAEA;EACE,eAAe;EACf,0BAA0B;AAC5B;;AAEA;EACE,eAAe;EACf,2BAA2B;AAC7B;;AAEA;EACE,mBAAmB;EACnB,YAAY;EACZ,mBAAmB;EACnB,aAAa;EACb,QAAQ;AACV;;AAEA;EACE,OAAO;EACP,mBAAmB;AACrB;;AAEA;EACE,gCAAgC;EAChC,YAAY;AACd;;AAEA;EACE,uBAAuB;EACvB,0BAA0B;AAC5B;;AAEA;EACE,cAAc;AAChB;;AAEA;EACE,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,aAAa;EACb,8BAA8B;EAC9B,mBAAmB;AACrB;;AAEA;EACE,eAAe;EACf,2BAA2B;EAC3B,kBAAkB;AACpB;;AAEA;EACE,OAAO;EACP,eAAe;EACf,0BAA0B;AAC5B;;AAEA;EACE,0BAA0B;AAC5B;;AAEA;EACE,wBAAwB;EACxB,YAAY;EACZ,gCAAgC;EAChC,YAAY;AACd;;AAEA;EACE,wBAAwB;EACxB,mBAAmB;EACnB,kCAAkC;EAClC,YAAY;AACd","sourcesContent":[".settings-page h1 {\n  text-align: center;\n  font-size: 24px;\n  font-weight: 600;\n  color: var(--color-secondary);\n  padding: 16px;\n  margin: 0;\n}\n\n.profile-card {\n  margin: 0 16px 16px;\n  display: flex;\n  gap: 12px;\n  align-items: center;\n}\n\n.profile-card .user-icon {\n  font-size: 24px;\n  color: var(--color-primary);\n}\n\n.profile-card .user-info {\n  flex: 1;\n}\n\n.profile-card .user-email {\n  font-size: 16px;\n  color: var(--color-accent);\n}\n\n.profile-card .user-subscription {\n  font-size: 14px;\n  color: var(--color-primary);\n}\n\n.theme-toggle {\n  margin: 0 16px 16px;\n  padding: 8px;\n  border-radius: 20px;\n  display: flex;\n  gap: 8px;\n}\n\n.theme-toggle .btn {\n  flex: 1;\n  border-radius: 16px;\n}\n\n.theme-toggle .btn.active {\n  background: var(--color-primary);\n  color: white;\n}\n\n.theme-toggle .btn:not(.active) {\n  background: transparent;\n  color: var(--color-accent);\n}\n\n.menu-list {\n  margin: 0 16px;\n}\n\n.menu-item {\n  height: 48px;\n  padding: 0 16px;\n  margin-bottom: 12px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n\n.menu-item .menu-icon {\n  font-size: 20px;\n  color: var(--color-primary);\n  margin-right: 12px;\n}\n\n.menu-item .menu-label {\n  flex: 1;\n  font-size: 16px;\n  color: var(--color-accent);\n}\n\n.menu-item .menu-arrow {\n  color: var(--color-accent);\n}\n\n.feedback-btn {\n  width: calc(100% - 32px);\n  margin: 16px;\n  background: var(--color-primary);\n  color: white;\n}\n\n.logout-btn {\n  width: calc(100% - 32px);\n  margin: 0 16px 16px;\n  background: var(--color-secondary);\n  color: white;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./popup/components/pages/settingsPage.css"],"names":[],"mappings":"AAAA,kCAAkC;AAClC;EACE,kBAAkB;EAClB,eAAe;EACf,gBAAgB;EAChB,6BAA6B;EAC7B,aAAa;EACb,SAAS;AACX;;AAEA;EACE,aAAa;EACb,SAAS;EACT,mBAAmB;AACrB;;AAEA;EACE,eAAe;EACf,2BAA2B;EAC3B,WAAW;EACX,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,2BAA2B;EAC3B,kBAAkB;EAClB,cAAc;AAChB;;AAEA;EACE,OAAO;AACT;;AAEA;EACE,eAAe;EACf,wBAAwB;EACxB,gBAAgB;EAChB,iBAAiB;AACnB;;AAEA;EACE,eAAe;EACf,2BAA2B;EAC3B,iBAAiB;AACnB;;AAEA;EACE,eAAe;EACf,kCAAkC;EAClC,SAAS;AACX;;AAEA;EACE,aAAa;EACb,sBAAsB;EACtB,2BAA2B;AAC7B;;AAEA;EACE,YAAY;EACZ,eAAe;EACf,aAAa;EACb,mBAAmB;EACnB,2BAA2B;EAC3B,SAAS;EACT,eAAe;EACf,iCAAiC;EACjC,YAAY;EACZ,gBAAgB;EAChB,WAAW;AACb;;AAEA;EACE,2BAA2B;AAC7B;;AAEA;EACE,6BAA6B;EAC7B,WAAW;EACX,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,eAAe;EACf,cAAc;AAChB;;AAEA;EACE,eAAe;EACf,2BAA2B;EAC3B,OAAO;EACP,gBAAgB;AAClB;;AAEA;EACE,0BAA0B;EAC1B,eAAe;EACf,cAAc;AAChB","sourcesContent":["/* Settings Page Specific Styles */\n.settings-page h1 {\n  text-align: center;\n  font-size: 24px;\n  font-weight: 600;\n  color: var(--color-secondary);\n  padding: 16px;\n  margin: 0;\n}\n\n.profile-card {\n  display: flex;\n  gap: 16px;\n  align-items: center;\n}\n\n.profile-card .user-icon {\n  font-size: 24px;\n  color: var(--color-primary);\n  width: 48px;\n  height: 48px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: var(--bg-light);\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n\n.profile-card .user-info {\n  flex: 1;\n}\n\n.profile-card .user-email {\n  font-size: 16px;\n  color: var(--color-text);\n  font-weight: 600;\n  margin: 0 0 4px 0;\n}\n\n.profile-card .user-subscription {\n  font-size: 14px;\n  color: var(--color-primary);\n  margin: 0 0 2px 0;\n}\n\n.profile-card .user-status {\n  font-size: 14px;\n  color: var(--color-text-secondary);\n  margin: 0;\n}\n\n.menu-list {\n  display: flex;\n  flex-direction: column;\n  gap: var(--element-spacing);\n}\n\n.menu-item {\n  height: 56px;\n  padding: 0 20px;\n  display: flex;\n  align-items: center;\n  justify-content: flex-start;\n  gap: 16px;\n  cursor: pointer;\n  transition: background-color 0.2s;\n  border: none;\n  text-align: left;\n  width: 100%;\n}\n\n.menu-item:hover {\n  background: var(--bg-light);\n}\n\n.menu-item .menu-icon {\n  color: var(--color-secondary);\n  width: 24px;\n  height: 24px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 18px;\n  flex-shrink: 0;\n}\n\n.menu-item .menu-label {\n  font-size: 16px;\n  color: var(--color-primary);\n  flex: 1;\n  font-weight: 500;\n}\n\n.menu-item .menu-arrow {\n  color: var(--color-accent);\n  font-size: 16px;\n  flex-shrink: 0;\n}\n\n\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4832,11 +4537,12 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `.helperBar {
+___CSS_LOADER_EXPORT___.push([module.id, `/* Helper Bar Component Styles */
+.helperBar {
   width: 100%;
   height: 60px;
-  background-color: var(--color-background, #fff);
-  border-top: 1px solid var(--color-border, #e0e0e0);
+  background-color: var(--bg-white);
+  border-top: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4848,7 +4554,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.helperBar {
 .helper-btn {
   background: none;
   border: none;
-  color: var(--color-text, #333);
+  color: var(--color-text);
   cursor: pointer;
   width: 48px;
   height: 40px;
@@ -4859,13 +4565,14 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.helperBar {
   gap: 2px;
   font-size: 0.85em;
   transition: color 0.2s, background 0.2s;
-  border-radius: 8px;
+  border-radius: var(--radius-btn);
   box-sizing: border-box;
   overflow: hidden;
 }
+
 .helper-btn:hover {
-  background: #f1f4f8;
-  color: var(--color-primary, #2eae97);
+  background: var(--bg-light);
+  color: var(--color-primary);
 }
 
 .helper-btn svg {
@@ -4881,7 +4588,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.helperBar {
   text-overflow: ellipsis;
   text-align: center;
   width: 100%;
-} `, "",{"version":3,"sources":["webpack://./popup/components/common/helperBar.css"],"names":[],"mappings":"AAAA;EACE,WAAW;EACX,YAAY;EACZ,+CAA+C;EAC/C,kDAAkD;EAClD,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,SAAS;EACT,sBAAsB;EACtB,gBAAgB;AAClB;;AAEA;EACE,gBAAgB;EAChB,YAAY;EACZ,8BAA8B;EAC9B,eAAe;EACf,WAAW;EACX,YAAY;EACZ,aAAa;EACb,sBAAsB;EACtB,mBAAmB;EACnB,uBAAuB;EACvB,QAAQ;EACR,iBAAiB;EACjB,uCAAuC;EACvC,kBAAkB;EAClB,sBAAsB;EACtB,gBAAgB;AAClB;AACA;EACE,mBAAmB;EACnB,oCAAoC;AACtC;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,cAAc;AAChB;;AAEA;EACE,iBAAiB;EACjB,mBAAmB;EACnB,gBAAgB;EAChB,uBAAuB;EACvB,kBAAkB;EAClB,WAAW;AACb","sourcesContent":[".helperBar {\n  width: 100%;\n  height: 60px;\n  background-color: var(--color-background, #fff);\n  border-top: 1px solid var(--color-border, #e0e0e0);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 32px;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n\n.helper-btn {\n  background: none;\n  border: none;\n  color: var(--color-text, #333);\n  cursor: pointer;\n  width: 48px;\n  height: 40px;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 2px;\n  font-size: 0.85em;\n  transition: color 0.2s, background 0.2s;\n  border-radius: 8px;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n.helper-btn:hover {\n  background: #f1f4f8;\n  color: var(--color-primary, #2eae97);\n}\n\n.helper-btn svg {\n  width: 22px;\n  height: 22px;\n  display: block;\n}\n\n.helper-btn-text {\n  font-size: 0.75em;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  text-align: center;\n  width: 100%;\n} "],"sourceRoot":""}]);
+} `, "",{"version":3,"sources":["webpack://./popup/components/common/helperBar.css"],"names":[],"mappings":"AAAA,gCAAgC;AAChC;EACE,WAAW;EACX,YAAY;EACZ,iCAAiC;EACjC,yCAAyC;EACzC,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,SAAS;EACT,sBAAsB;EACtB,gBAAgB;AAClB;;AAEA;EACE,gBAAgB;EAChB,YAAY;EACZ,wBAAwB;EACxB,eAAe;EACf,WAAW;EACX,YAAY;EACZ,aAAa;EACb,sBAAsB;EACtB,mBAAmB;EACnB,uBAAuB;EACvB,QAAQ;EACR,iBAAiB;EACjB,uCAAuC;EACvC,gCAAgC;EAChC,sBAAsB;EACtB,gBAAgB;AAClB;;AAEA;EACE,2BAA2B;EAC3B,2BAA2B;AAC7B;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,cAAc;AAChB;;AAEA;EACE,iBAAiB;EACjB,mBAAmB;EACnB,gBAAgB;EAChB,uBAAuB;EACvB,kBAAkB;EAClB,WAAW;AACb","sourcesContent":["/* Helper Bar Component Styles */\n.helperBar {\n  width: 100%;\n  height: 60px;\n  background-color: var(--bg-white);\n  border-top: 1px solid var(--color-border);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 32px;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n\n.helper-btn {\n  background: none;\n  border: none;\n  color: var(--color-text);\n  cursor: pointer;\n  width: 48px;\n  height: 40px;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 2px;\n  font-size: 0.85em;\n  transition: color 0.2s, background 0.2s;\n  border-radius: var(--radius-btn);\n  box-sizing: border-box;\n  overflow: hidden;\n}\n\n.helper-btn:hover {\n  background: var(--bg-light);\n  color: var(--color-primary);\n}\n\n.helper-btn svg {\n  width: 22px;\n  height: 22px;\n  display: block;\n}\n\n.helper-btn-text {\n  font-size: 0.75em;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  text-align: center;\n  width: 100%;\n} "],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4956,13 +4663,18 @@ module.exports = zxcvbn;
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `.A90UVgIrxU1ASSeNZftQ {
+  width: 100%;
   height: 60px;
-  background-color: var(--primary-background);
-  border-bottom: 1px solid var(--border-color);
+  min-height: 60px;
+  max-height: 60px;
+  background-color: var(--bg-white);
+  border-bottom: 1px solid var(--color-border);
+  z-index: 1000;
+  padding: 0.5rem 1rem;
   display: flex;
-  justify-content: space-around;
   align-items: center;
-  padding: 0 16px;
+  justify-content: space-around;
+  box-sizing: border-box;
 }
 
 .RjWKCk6M8Tf_y_pozRcj {
@@ -4974,17 +4686,18 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.A90UVgIrxU1ASSeNZftQ {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--tertiary-text);
+  color: var(--color-accent);
   transition: color 0.2s ease;
   padding: 0;
+  text-decoration: none;
 }
 
 .RjWKCk6M8Tf_y_pozRcj:hover {
-  color: var(--primary);
+  color: var(--color-primary);
 }
 
 .RjWKCk6M8Tf_y_pozRcj.RCFYG0P19bW18VnBxhIq {
-  color: var(--primary);
+  color: var(--color-primary);
 }
 
 .nAa4VbXPjo3SC35x108x {
@@ -4997,8 +4710,14 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.A90UVgIrxU1ASSeNZftQ {
 .nAa4VbXPjo3SC35x108x span {
   font-size: 12px;
   font-weight: 500;
-  font-family: var(--font-family-primary);
-} `, "",{"version":3,"sources":["webpack://./popup/components/common/Navbar.module.css"],"names":[],"mappings":"AAAA;EACE,YAAY;EACZ,2CAA2C;EAC3C,4CAA4C;EAC5C,aAAa;EACb,6BAA6B;EAC7B,mBAAmB;EACnB,eAAe;AACjB;;AAEA;EACE,OAAO;EACP,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,gBAAgB;EAChB,YAAY;EACZ,eAAe;EACf,2BAA2B;EAC3B,2BAA2B;EAC3B,UAAU;AACZ;;AAEA;EACE,qBAAqB;AACvB;;AAEA;EACE,qBAAqB;AACvB;;AAEA;EACE,aAAa;EACb,sBAAsB;EACtB,mBAAmB;EACnB,QAAQ;AACV;;AAEA;EACE,eAAe;EACf,gBAAgB;EAChB,uCAAuC;AACzC","sourcesContent":[".navbar {\n  height: 60px;\n  background-color: var(--primary-background);\n  border-bottom: 1px solid var(--border-color);\n  display: flex;\n  justify-content: space-around;\n  align-items: center;\n  padding: 0 16px;\n}\n\n.navItem {\n  flex: 1;\n  height: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: none;\n  border: none;\n  cursor: pointer;\n  color: var(--tertiary-text);\n  transition: color 0.2s ease;\n  padding: 0;\n}\n\n.navItem:hover {\n  color: var(--primary);\n}\n\n.navItem.active {\n  color: var(--primary);\n}\n\n.navContent {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 4px;\n}\n\n.navContent span {\n  font-size: 12px;\n  font-weight: 500;\n  font-family: var(--font-family-primary);\n} "],"sourceRoot":""}]);
+  font-family: 'Inter', var(--font-base), sans-serif;
+}
+
+.nAa4VbXPjo3SC35x108x svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+} `, "",{"version":3,"sources":["webpack://./popup/components/common/Navbar.module.css"],"names":[],"mappings":"AAAA;EACE,WAAW;EACX,YAAY;EACZ,gBAAgB;EAChB,gBAAgB;EAChB,iCAAiC;EACjC,4CAA4C;EAC5C,aAAa;EACb,oBAAoB;EACpB,aAAa;EACb,mBAAmB;EACnB,6BAA6B;EAC7B,sBAAsB;AACxB;;AAEA;EACE,OAAO;EACP,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,gBAAgB;EAChB,YAAY;EACZ,eAAe;EACf,0BAA0B;EAC1B,2BAA2B;EAC3B,UAAU;EACV,qBAAqB;AACvB;;AAEA;EACE,2BAA2B;AAC7B;;AAEA;EACE,2BAA2B;AAC7B;;AAEA;EACE,aAAa;EACb,sBAAsB;EACtB,mBAAmB;EACnB,QAAQ;AACV;;AAEA;EACE,eAAe;EACf,gBAAgB;EAChB,kDAAkD;AACpD;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,cAAc;AAChB","sourcesContent":[".navbar {\n  width: 100%;\n  height: 60px;\n  min-height: 60px;\n  max-height: 60px;\n  background-color: var(--bg-white);\n  border-bottom: 1px solid var(--color-border);\n  z-index: 1000;\n  padding: 0.5rem 1rem;\n  display: flex;\n  align-items: center;\n  justify-content: space-around;\n  box-sizing: border-box;\n}\n\n.navItem {\n  flex: 1;\n  height: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: none;\n  border: none;\n  cursor: pointer;\n  color: var(--color-accent);\n  transition: color 0.2s ease;\n  padding: 0;\n  text-decoration: none;\n}\n\n.navItem:hover {\n  color: var(--color-primary);\n}\n\n.navItem.active {\n  color: var(--color-primary);\n}\n\n.navContent {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 4px;\n}\n\n.navContent span {\n  font-size: 12px;\n  font-weight: 500;\n  font-family: 'Inter', var(--font-base), sans-serif;\n}\n\n.navContent svg {\n  width: 22px;\n  height: 22px;\n  display: block;\n} "],"sourceRoot":""}]);
 // Exports
 ___CSS_LOADER_EXPORT___.locals = {
 	"navbar": `A90UVgIrxU1ASSeNZftQ`,
@@ -7367,98 +7086,104 @@ function isnan (val) {
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `.credential-card {
-  background: #f8f9fa;
-  border-radius: 16px;
-  padding: 12px 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  background: var(--bg-light); 
+  border-radius: 12px;
+  padding: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: box-shadow 0.2s;
-  cursor: pointer;
-  height: 68px;
-  margin-bottom: 8px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.credential-card:hover {
-  box-shadow: 0 4px 16px rgba(26,115,232,0.10);
 }
 
 .card-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .card-icon {
   width: 37px;
   height: 37px;
-  background: #e3eafc;
-  color: #1a73e8;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 1.2em;
-  border: 1px solid #dbeafe;
+  color: var(--color-accent);
+  border: 1px solid var(--color-border);
 }
 
-.card-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.card-icon img {
+  width: 24px;
+  height: 24px;
+}
+
+.card-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .card-title {
-  font-weight: 600;
-  font-size: 1.05em;
-  color: #222;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-secondary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-username {
-  color: #5f6368;
-  font-size: 0.97em;
+  font-size: 14px;
+  color: var(--color-accent);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.copy-btn {
-  background: #1a73e8;
-  color: white;
+.btn-copy {
+  width: 45px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
   border: none;
-  border-radius: 8px;
-  width: 48px;
-  height: 48px;
+  cursor: pointer;
+  padding: 0;
+  color: var(--color-text);
+  transition: color 0.2s;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background-color: var(--color-primary);
+}
+
+.btn-copy-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2px;
-  font-size: 0.85em;
-  cursor: pointer;
-  transition: background 0.2s;
-  overflow: hidden;
-  padding: 0;
-}
-.copy-btn:hover {
-  background: #1557b0;
-}
-
-.copy-btn svg {
-  width: 20px;
-  height: 20px;
-  display: block;
-}
-
-.copy-btn-text {
-  font-size: 0.75em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
   width: 100%;
-} `, "",{"version":3,"sources":["webpack://./popup/components/common/credentialCard.css"],"names":[],"mappings":"AAAA;EACE,mBAAmB;EACnB,mBAAmB;EACnB,kBAAkB;EAClB,sCAAsC;EACtC,aAAa;EACb,mBAAmB;EACnB,8BAA8B;EAC9B,2BAA2B;EAC3B,eAAe;EACf,YAAY;EACZ,kBAAkB;EAClB,sBAAsB;EACtB,gBAAgB;AAClB;;AAEA;EACE,4CAA4C;AAC9C;;AAEA;EACE,aAAa;EACb,mBAAmB;EACnB,SAAS;AACX;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,mBAAmB;EACnB,cAAc;EACd,mBAAmB;EACnB,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,iBAAiB;EACjB,gBAAgB;EAChB,yBAAyB;AAC3B;;AAEA;EACE,aAAa;EACb,sBAAsB;EACtB,QAAQ;AACV;;AAEA;EACE,gBAAgB;EAChB,iBAAiB;EACjB,WAAW;AACb;;AAEA;EACE,cAAc;EACd,iBAAiB;AACnB;;AAEA;EACE,mBAAmB;EACnB,YAAY;EACZ,YAAY;EACZ,kBAAkB;EAClB,WAAW;EACX,YAAY;EACZ,aAAa;EACb,sBAAsB;EACtB,mBAAmB;EACnB,uBAAuB;EACvB,QAAQ;EACR,iBAAiB;EACjB,eAAe;EACf,2BAA2B;EAC3B,gBAAgB;EAChB,UAAU;AACZ;AACA;EACE,mBAAmB;AACrB;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,cAAc;AAChB;;AAEA;EACE,iBAAiB;EACjB,mBAAmB;EACnB,gBAAgB;EAChB,uBAAuB;EACvB,kBAAkB;EAClB,WAAW;AACb","sourcesContent":[".credential-card {\n  background: #f8f9fa;\n  border-radius: 16px;\n  padding: 12px 16px;\n  box-shadow: 0 2px 8px rgba(0,0,0,0.04);\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  transition: box-shadow 0.2s;\n  cursor: pointer;\n  height: 68px;\n  margin-bottom: 8px;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n\n.credential-card:hover {\n  box-shadow: 0 4px 16px rgba(26,115,232,0.10);\n}\n\n.card-left {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n.card-icon {\n  width: 37px;\n  height: 37px;\n  background: #e3eafc;\n  color: #1a73e8;\n  border-radius: 10px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-weight: bold;\n  font-size: 1.2em;\n  border: 1px solid #dbeafe;\n}\n\n.card-info {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n\n.card-title {\n  font-weight: 600;\n  font-size: 1.05em;\n  color: #222;\n}\n\n.card-username {\n  color: #5f6368;\n  font-size: 0.97em;\n}\n\n.copy-btn {\n  background: #1a73e8;\n  color: white;\n  border: none;\n  border-radius: 8px;\n  width: 48px;\n  height: 48px;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 2px;\n  font-size: 0.85em;\n  cursor: pointer;\n  transition: background 0.2s;\n  overflow: hidden;\n  padding: 0;\n}\n.copy-btn:hover {\n  background: #1557b0;\n}\n\n.copy-btn svg {\n  width: 20px;\n  height: 20px;\n  display: block;\n}\n\n.copy-btn-text {\n  font-size: 0.75em;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  text-align: center;\n  width: 100%;\n} "],"sourceRoot":""}]);
+  height: 100%;
+}
+
+.btn-copy:hover {
+  color: var(--color-primary);
+}
+
+.btn-copy svg {
+  width: 16px;
+  height: 16px;
+  color: var(--color-white);
+}
+
+.btn-copy span {
+  font-size: 10px;
+  line-height: 1;
+  color: var(--color-white);
+} `, "",{"version":3,"sources":["webpack://./popup/components/common/credentialCard.css"],"names":[],"mappings":"AAAA;EACE,2BAA2B;EAC3B,mBAAmB;EACnB,YAAY;EACZ,mBAAmB;EACnB,wCAAwC;EACxC,aAAa;EACb,mBAAmB;EACnB,8BAA8B;AAChC;;AAEA;EACE,aAAa;EACb,mBAAmB;EACnB,SAAS;AACX;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,mBAAmB;EACnB,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,0BAA0B;EAC1B,qCAAqC;AACvC;;AAEA;EACE,WAAW;EACX,YAAY;AACd;;AAEA;EACE,OAAO;EACP,YAAY;AACd;;AAEA;EACE,eAAe;EACf,gBAAgB;EAChB,6BAA6B;EAC7B,SAAS;EACT,mBAAmB;EACnB,gBAAgB;EAChB,uBAAuB;AACzB;;AAEA;EACE,eAAe;EACf,0BAA0B;EAC1B,SAAS;EACT,mBAAmB;EACnB,gBAAgB;EAChB,uBAAuB;AACzB;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,gBAAgB;EAChB,YAAY;EACZ,eAAe;EACf,UAAU;EACV,wBAAwB;EACxB,sBAAsB;EACtB,qCAAqC;EACrC,mBAAmB;EACnB,sCAAsC;AACxC;;AAEA;EACE,aAAa;EACb,sBAAsB;EACtB,mBAAmB;EACnB,uBAAuB;EACvB,QAAQ;EACR,WAAW;EACX,YAAY;AACd;;AAEA;EACE,2BAA2B;AAC7B;;AAEA;EACE,WAAW;EACX,YAAY;EACZ,yBAAyB;AAC3B;;AAEA;EACE,eAAe;EACf,cAAc;EACd,yBAAyB;AAC3B","sourcesContent":[".credential-card {\n  background: var(--bg-light); \n  border-radius: 12px;\n  padding: 8px;\n  margin-bottom: 12px;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.card-left {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n\n.card-icon {\n  width: 37px;\n  height: 37px;\n  border-radius: 10px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  color: var(--color-accent);\n  border: 1px solid var(--color-border);\n}\n\n.card-icon img {\n  width: 24px;\n  height: 24px;\n}\n\n.card-content {\n  flex: 1;\n  min-width: 0;\n}\n\n.card-title {\n  font-size: 18px;\n  font-weight: 500;\n  color: var(--color-secondary);\n  margin: 0;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.card-username {\n  font-size: 14px;\n  color: var(--color-accent);\n  margin: 0;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.btn-copy {\n  width: 45px;\n  height: 40px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: none;\n  border: none;\n  cursor: pointer;\n  padding: 0;\n  color: var(--color-text);\n  transition: color 0.2s;\n  border: 1px solid var(--color-border);\n  border-radius: 10px;\n  background-color: var(--color-primary);\n}\n\n.btn-copy-container {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 2px;\n  width: 100%;\n  height: 100%;\n}\n\n.btn-copy:hover {\n  color: var(--color-primary);\n}\n\n.btn-copy svg {\n  width: 16px;\n  height: 16px;\n  color: var(--color-white);\n}\n\n.btn-copy span {\n  font-size: 10px;\n  line-height: 1;\n  color: var(--color-white);\n} "],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -30324,7 +30049,7 @@ function beforeAuthStateChanged(auth, callback, onAbort) {
  * @public
  */
 function onAuthStateChanged(auth, nextOrObserver, error, completed) {
-    return getModularInstance(auth).onAuthStateChanged(nextOrObserver, error, completed);
+    return index_esm2017_getModularInstance(auth).onAuthStateChanged(nextOrObserver, error, completed);
 }
 /**
  * Sets the current language to the default device/browser preference.
@@ -56803,7 +56528,7 @@ console.log('Firebase Config Values:', {
 
 let app;
 let auth;
-let db;
+let firebase_db;
 const initializeFirebase = () => {
     try {
         console.log('Initializing Firebase with config:', {
@@ -56825,9 +56550,9 @@ const initializeFirebase = () => {
             console.log('Using existing Firebase app');
         }
         auth = getAuth(app);
-        db = getFirestore(app);
+        firebase_db = getFirestore(app);
         console.log('Firebase services initialized');
-        return { app, auth, db };
+        return { app, auth, db: firebase_db };
     }
     catch (error) {
         console.error('Firebase initialization error:', error);
@@ -56906,17 +56631,17 @@ var update = injectStylesIntoStyleTag_default()(Navbar_module/* default */.A, op
 const navItems = [
     {
         path: '/home',
-        icon: ((0,jsx_runtime.jsxs)("svg", { width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [(0,jsx_runtime.jsx)("path", { d: "M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }), (0,jsx_runtime.jsx)("path", { d: "M9 22V12h6v10", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" })] })),
+        icon: ((0,jsx_runtime.jsxs)("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [(0,jsx_runtime.jsx)("path", { d: "M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }), (0,jsx_runtime.jsx)("path", { d: "M9 22V12h6v10", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" })] })),
         label: 'Home'
     },
     {
         path: '/generator',
-        icon: ((0,jsx_runtime.jsxs)("svg", { width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [(0,jsx_runtime.jsx)("path", { d: "M12 15a3 3 0 100-6 3 3 0 000 6z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }), (0,jsx_runtime.jsx)("path", { d: "M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" })] })),
+        icon: ((0,jsx_runtime.jsxs)("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [(0,jsx_runtime.jsx)("path", { d: "M12 15a3 3 0 100-6 3 3 0 000 6z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }), (0,jsx_runtime.jsx)("path", { d: "M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" })] })),
         label: 'Generator'
     },
     {
         path: '/settings',
-        icon: ((0,jsx_runtime.jsxs)("svg", { width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [(0,jsx_runtime.jsx)("path", { d: "M12 15a3 3 0 100-6 3 3 0 000 6z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }), (0,jsx_runtime.jsx)("path", { d: "M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" })] })),
+        icon: ((0,jsx_runtime.jsxs)("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [(0,jsx_runtime.jsx)("path", { d: "M12 15a3 3 0 100-6 3 3 0 000 6z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }), (0,jsx_runtime.jsx)("path", { d: "M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" })] })),
         label: 'Settings'
     }
 ];
@@ -56977,7 +56702,7 @@ const HelperBar = () => {
         console.log('Refresh clicked');
         window.location.reload();
     };
-    return ((0,jsx_runtime.jsxs)("div", { className: "helperBar", children: [(0,jsx_runtime.jsxs)("button", { className: "helper-btn", onClick: handleAddCredential, title: "Add Credential", children: [(0,jsx_runtime.jsxs)("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [(0,jsx_runtime.jsx)("rect", { x: "9", y: "11", width: "6", height: "2", rx: "1" }), (0,jsx_runtime.jsx)("rect", { x: "11", y: "9", width: "2", height: "6", rx: "1" })] }), (0,jsx_runtime.jsx)("span", { className: "helper-btn-text", children: "Add" })] }), (0,jsx_runtime.jsxs)("button", { className: "helper-btn", onClick: handleFAQ, title: "FAQ", children: [(0,jsx_runtime.jsxs)("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [(0,jsx_runtime.jsx)("circle", { cx: "12", cy: "12", r: "10" }), (0,jsx_runtime.jsx)("path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" }), (0,jsx_runtime.jsx)("line", { x1: "12", y1: "17", x2: "12.01", y2: "17" })] }), (0,jsx_runtime.jsx)("span", { className: "helper-btn-text", children: "FAQ" })] }), (0,jsx_runtime.jsxs)("button", { className: "helper-btn", onClick: handleRefresh, title: "Refresh", children: [(0,jsx_runtime.jsxs)("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [(0,jsx_runtime.jsx)("path", { d: "M23 4v6h-6" }), (0,jsx_runtime.jsx)("path", { d: "M1 20v-6h6" }), (0,jsx_runtime.jsx)("path", { d: "M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" })] }), (0,jsx_runtime.jsx)("span", { className: "helper-btn-text", children: "Refresh" })] })] }));
+    return ((0,jsx_runtime.jsxs)("div", { className: "helperBar", style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }, children: [(0,jsx_runtime.jsx)("div", { style: { flex: 1, display: 'flex', justifyContent: 'flex-start' }, children: (0,jsx_runtime.jsxs)("button", { className: "helper-btn", onClick: handleAddCredential, title: "Add Credential", children: [(0,jsx_runtime.jsxs)("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [(0,jsx_runtime.jsx)("rect", { x: "9", y: "11", width: "6", height: "2", rx: "1" }), (0,jsx_runtime.jsx)("rect", { x: "11", y: "9", width: "2", height: "6", rx: "1" })] }), (0,jsx_runtime.jsx)("span", { className: "helper-btn-text", children: "Add" })] }) }), (0,jsx_runtime.jsxs)("div", { style: { flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 16 }, children: [(0,jsx_runtime.jsxs)("button", { className: "helper-btn", onClick: handleFAQ, title: "FAQ", children: [(0,jsx_runtime.jsxs)("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [(0,jsx_runtime.jsx)("circle", { cx: "12", cy: "12", r: "10" }), (0,jsx_runtime.jsx)("path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" }), (0,jsx_runtime.jsx)("line", { x1: "12", y1: "17", x2: "12.01", y2: "17" })] }), (0,jsx_runtime.jsx)("span", { className: "helper-btn-text", children: "FAQ" })] }), (0,jsx_runtime.jsxs)("button", { className: "helper-btn", onClick: handleRefresh, title: "Refresh", children: [(0,jsx_runtime.jsxs)("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [(0,jsx_runtime.jsx)("path", { d: "M23 4v6h-6" }), (0,jsx_runtime.jsx)("path", { d: "M1 20v-6h6" }), (0,jsx_runtime.jsx)("path", { d: "M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" })] }), (0,jsx_runtime.jsx)("span", { className: "helper-btn-text", children: "Refresh" })] })] })] }));
 };
 
 ;// ./utils/indexdb.ts
@@ -57065,13 +56790,13 @@ var firestoreCredentialService_rest = (undefined && undefined.__rest) || functio
     return t;
 };
 
-const firestoreCredentialService_db = getFirestore();
+
 /**
  * Get a single credential by userId and credentialId
  */
 function getCredential(userId, credentialId) {
     return firestoreCredentialService_awaiter(this, void 0, void 0, function* () {
-        const credRef = doc(firestoreCredentialService_db, "users", userId, "my_credentials", credentialId);
+        const credRef = doc(db, "users", userId, "my_credentials", credentialId);
         const credSnap = yield getDoc(credRef);
         if (!credSnap.exists())
             return null;
@@ -57091,7 +56816,7 @@ function getCredential(userId, credentialId) {
  */
 function getAllCredentials(userId) {
     return firestoreCredentialService_awaiter(this, void 0, void 0, function* () {
-        const credsCol = index_esm2017_collection(firestoreCredentialService_db, "users", userId, "my_credentials");
+        const credsCol = index_esm2017_collection(initializedDb, "users", userId, "my_credentials");
         const credsSnap = yield getDocs(credsCol);
         return credsSnap.docs.map(docSnap => {
             const data = docSnap.data();
@@ -57111,7 +56836,7 @@ function getAllCredentials(userId) {
  */
 function createCredential(userId, data) {
     return firestoreCredentialService_awaiter(this, void 0, void 0, function* () {
-        const credsCol = collection(firestoreCredentialService_db, "users", userId, "my_credentials");
+        const credsCol = collection(db, "users", userId, "my_credentials");
         // Remove document_reference before storing
         const { document_reference } = data, dataToStore = firestoreCredentialService_rest(data, ["document_reference"]);
         const docRef = yield addDoc(credsCol, dataToStore);
@@ -57123,7 +56848,7 @@ function createCredential(userId, data) {
  */
 function updateCredential(userId, credentialId, data) {
     return firestoreCredentialService_awaiter(this, void 0, void 0, function* () {
-        const credRef = doc(firestoreCredentialService_db, "users", userId, "my_credentials", credentialId);
+        const credRef = doc(db, "users", userId, "my_credentials", credentialId);
         // Remove document_reference before updating
         const { document_reference } = data, dataToUpdate = firestoreCredentialService_rest(data, ["document_reference"]);
         yield updateDoc(credRef, dataToUpdate);
@@ -57134,7 +56859,7 @@ function updateCredential(userId, credentialId, data) {
  */
 function deleteCredential(userId, credentialId) {
     return firestoreCredentialService_awaiter(this, void 0, void 0, function* () {
-        const credRef = doc(firestoreCredentialService_db, "users", userId, "my_credentials", credentialId);
+        const credRef = doc(db, "users", userId, "my_credentials", credentialId);
         yield deleteDoc(credRef);
     });
 }
@@ -58762,9 +58487,14 @@ var cache_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _ar
 
 
 
+
 const cache_DB_NAME = 'SimpliPassCache';
 const cache_STORE_NAME = 'credentials';
 const cache_DB_VERSION = 1;
+/**
+ * Opens the IndexedDB cache database.
+ * @returns Promise resolving to the IDBDatabase instance.
+ */
 function openCacheDB() {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(cache_DB_NAME, cache_DB_VERSION);
@@ -58778,6 +58508,11 @@ function openCacheDB() {
         request.onerror = () => reject(request.error);
     });
 }
+/**
+ * Saves an array of cached credentials to IndexedDB.
+ * @param cached Array of CachedCredential objects.
+ * @returns Promise<void>
+ */
 function saveCachedCredentials(cached) {
     return cache_awaiter(this, void 0, void 0, function* () {
         const db = yield openCacheDB();
@@ -58795,6 +58530,10 @@ function saveCachedCredentials(cached) {
         });
     });
 }
+/**
+ * Retrieves all cached credentials from IndexedDB.
+ * @returns Promise resolving to an array of CachedCredential objects.
+ */
 function getAllCachedCredentials() {
     return cache_awaiter(this, void 0, void 0, function* () {
         const db = yield openCacheDB();
@@ -58810,6 +58549,11 @@ function getAllCachedCredentials() {
         });
     });
 }
+/**
+ * Retrieves a single cached credential by its ID.
+ * @param id Credential ID
+ * @returns Promise resolving to the CachedCredential or null if not found.
+ */
 function getCachedCredential(id) {
     return cache_awaiter(this, void 0, void 0, function* () {
         const db = yield openCacheDB();
@@ -58824,6 +58568,8 @@ function getCachedCredential(id) {
 }
 /**
  * Fetches all encrypted credentials from Firestore, decrypts, re-encrypts, stores, and returns them.
+ * @param user The current authenticated user.
+ * @returns Promise resolving to an array of CachedCredential objects.
  */
 function refreshCredentialCache(user) {
     return cache_awaiter(this, void 0, void 0, function* () {
@@ -58857,6 +58603,8 @@ function refreshCredentialCache(user) {
 }
 /**
  * Always returns the cached credentials. If cache is empty, refreshes it first.
+ * @param user The current authenticated user.
+ * @returns Promise resolving to an array of CachedCredential objects.
  */
 function getAllCachedCredentialsWithFallback(user) {
     return cache_awaiter(this, void 0, void 0, function* () {
@@ -58876,11 +58624,56 @@ function getAllCachedCredentialsWithFallback(user) {
                         return;
                     }
                 }
+                // Log every credential's URL when retrieved from cache
+                console.log('[Cache] Retrieved credentials from cache:');
+                creds.forEach(cred => {
+                    console.log(`[Cache] Credential ID: ${cred.id}, URL: ${cred.url}, Title: ${cred.title}`);
+                });
                 resolve(creds);
             });
             request.onerror = () => reject(request.error);
         }));
     });
+}
+/**
+ * Get cached credentials filtered by domain
+ * @param domain The root domain to filter by
+ * @returns Promise resolving to an array of CachedCredential objects matching the domain
+ */
+function getCachedCredentialsByDomain(domain) {
+    return cache_awaiter(this, void 0, void 0, function* () {
+        let allCreds = yield getAllCachedCredentials();
+        if (!allCreds || allCreds.length === 0 && initializedAuth.currentUser) {
+            try {
+                allCreds = yield refreshCredentialCache(initializedAuth.currentUser);
+            }
+            catch (e) {
+                // If refresh fails, fallback to empty
+                allCreds = [];
+            }
+        }
+        return allCreds.filter(cred => {
+            // Extract domain from credential URL and compare
+            try {
+                const url = new URL(cred.url);
+                const credDomain = getRootDomain(url.hostname);
+                return credDomain === domain;
+            }
+            catch (_a) {
+                // If URL parsing fails, try direct string comparison
+                return cred.url.includes(domain);
+            }
+        });
+    });
+}
+/**
+ * Helper function to extract root domain from hostname (same as content script)
+ */
+function getRootDomain(hostname) {
+    const parts = hostname.split('.').filter(Boolean);
+    if (parts.length <= 2)
+        return hostname.replace(/^www\./, '');
+    return parts.slice(-2).join('.');
 }
 
 // EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./popup/components/common/credentialCard.css
@@ -58950,7 +58743,7 @@ const CredentialCard = ({ cred }) => {
     const handleClick = () => {
         // Optionally show credential details
     };
-    return ((0,jsx_runtime.jsxs)("div", { className: "credential-card", onClick: handleClick, children: [(0,jsx_runtime.jsxs)("div", { className: "card-left", children: [(0,jsx_runtime.jsx)("div", { className: "card-icon", children: iconLetter }), (0,jsx_runtime.jsxs)("div", { className: "card-info", children: [(0,jsx_runtime.jsx)("div", { className: "card-title", children: cred.title || 'Title' }), (0,jsx_runtime.jsx)("div", { className: "card-username", children: cred.username || '' })] })] }), (0,jsx_runtime.jsxs)("button", { className: "copy-btn", title: "Copy password", onClick: handleCopy, "aria-label": "Copy password", children: [(0,jsx_runtime.jsxs)("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [(0,jsx_runtime.jsx)("rect", { x: "9", y: "9", width: "13", height: "13", rx: "2", ry: "2" }), (0,jsx_runtime.jsx)("path", { d: "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" })] }), (0,jsx_runtime.jsx)("span", { className: "copy-btn-text", children: "Copy" })] })] }));
+    return ((0,jsx_runtime.jsxs)("div", { className: "credential-card", onClick: handleClick, tabIndex: 0, "aria-label": `Credential for ${cred.title} (${cred.username})`, children: [(0,jsx_runtime.jsxs)("div", { className: "card-left", children: [(0,jsx_runtime.jsx)("div", { className: "card-icon", children: iconLetter }), (0,jsx_runtime.jsxs)("div", { className: "card-info", children: [(0,jsx_runtime.jsx)("div", { className: "card-title", children: cred.title || 'Title' }), (0,jsx_runtime.jsx)("div", { className: "card-username", children: cred.username || '' })] })] }), (0,jsx_runtime.jsx)("button", { className: "btn-copy", title: "Copy password", onClick: handleCopy, "aria-label": "Copy password for this credential", children: (0,jsx_runtime.jsxs)("div", { className: "btn-copy-container", children: [(0,jsx_runtime.jsxs)("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", width: "22", height: "22", children: [(0,jsx_runtime.jsx)("rect", { x: "9", y: "9", width: "13", height: "13", rx: "2", ry: "2" }), (0,jsx_runtime.jsx)("path", { d: "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" })] }), (0,jsx_runtime.jsx)("span", { children: "Copy" })] }) })] }));
 };
 
 // EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./popup/components/pages/homePage.css
@@ -58999,9 +58792,12 @@ var homePage_awaiter = (undefined && undefined.__awaiter) || function (thisArg, 
 
 
 
-const HomePage = ({ user }) => {
+const HomePage = ({ user, pageState, suggestions, onInjectCredential }) => {
     const [allCreds, setAllCreds] = (0,react.useState)([]);
+    const [domainSuggestions, setDomainSuggestions] = (0,react.useState)([]);
     const [filter, setFilter] = (0,react.useState)('');
+    // This useEffect hook runs when the component mounts or when 'user' changes
+    // It fetches all cached credentials for the current user
     (0,react.useEffect)(() => {
         (() => homePage_awaiter(void 0, void 0, void 0, function* () {
             if (!user)
@@ -59010,8 +58806,34 @@ const HomePage = ({ user }) => {
             setAllCreds(creds);
         }))();
     }, [user]);
+    // This useEffect hook runs when pageState changes
+    // It filters credentials to show suggestions for the current domain
+    (0,react.useEffect)(() => {
+        (() => homePage_awaiter(void 0, void 0, void 0, function* () {
+            if (!(pageState === null || pageState === void 0 ? void 0 : pageState.domain) || !user) {
+                setDomainSuggestions([]);
+                return;
+            }
+            try {
+                const suggestions = yield getCachedCredentialsByDomain(pageState.domain);
+                setDomainSuggestions(suggestions);
+                console.log(`[HomePage] Found ${suggestions.length} suggestions for domain: ${pageState.domain}`);
+            }
+            catch (error) {
+                console.error('[HomePage] Error getting domain suggestions:', error);
+                setDomainSuggestions([]);
+            }
+        }))();
+    }, [pageState === null || pageState === void 0 ? void 0 : pageState.domain, user]);
     const filtered = allCreds.filter(cred => { var _a; return (_a = cred.title) === null || _a === void 0 ? void 0 : _a.toLowerCase().includes(filter.toLowerCase()); });
-    return ((0,jsx_runtime.jsxs)("div", { className: "home-page", children: [(0,jsx_runtime.jsx)("div", { className: "search-bar", children: (0,jsx_runtime.jsx)("input", { type: "search", placeholder: "Search...", value: filter, onChange: e => setFilter(e.target.value) }) }), (0,jsx_runtime.jsxs)("div", { className: "category-pills", children: [(0,jsx_runtime.jsx)("button", { className: "pill-btn selected", children: "All" }), (0,jsx_runtime.jsx)("button", { className: "pill-btn", children: "Social" }), (0,jsx_runtime.jsx)("button", { className: "pill-btn", children: "Work" }), (0,jsx_runtime.jsx)("button", { className: "pill-btn", children: "Personal" })] }), (0,jsx_runtime.jsx)("div", { className: "suggestions-header", children: (0,jsx_runtime.jsx)("h2", { children: "Suggestions" }) }), (0,jsx_runtime.jsx)("div", { className: "credential-list", children: filtered.length === 0 ? ((0,jsx_runtime.jsx)("div", { children: "No credentials found." })) : (filtered.map(cred => (0,jsx_runtime.jsx)(CredentialCard, { cred: cred }, cred.id))) })] }));
+    return ((0,jsx_runtime.jsx)("div", { className: "page-container", children: (0,jsx_runtime.jsxs)("div", { className: "home-content", children: [(0,jsx_runtime.jsx)("div", { className: "search-bar", children: (0,jsx_runtime.jsx)("div", { className: "search-bar full-width", children: (0,jsx_runtime.jsx)("input", { type: "search", placeholder: "Search...", value: filter, onChange: e => setFilter(e.target.value), className: "search-input", "aria-label": "Search credentials" }) }) }), (0,jsx_runtime.jsxs)("div", { className: "page-section suggestions-section", children: [(0,jsx_runtime.jsx)("h2", { className: "section-title", children: "Suggestions" }), (0,jsx_runtime.jsx)("div", { className: "suggestion-list", role: "list", "aria-label": "Suggested credentials", children: domainSuggestions.length === 0 ? ((0,jsx_runtime.jsx)("div", { className: "empty-state", children: "No suggestions for this page." })) : (domainSuggestions.map(suggestion => ((0,jsx_runtime.jsx)("div", { role: "listitem", onClick: () => onInjectCredential(suggestion.id), tabIndex: 0, "aria-label": `Use credential for ${suggestion.title} (${suggestion.username})`, children: (0,jsx_runtime.jsx)(CredentialCard, { cred: {
+                                        id: suggestion.id,
+                                        title: suggestion.title,
+                                        username: suggestion.username,
+                                        url: suggestion.url,
+                                        itemKeyCipher: suggestion.itemKeyCipher,
+                                        passwordCipher: suggestion.passwordCipher
+                                    } }) }, suggestion.id)))) })] }), (0,jsx_runtime.jsxs)("div", { className: "page-section", children: [(0,jsx_runtime.jsx)("h2", { className: "section-title", children: "All Credentials" }), (0,jsx_runtime.jsx)("div", { className: "credential-list", role: "list", "aria-label": "All credentials", children: filtered.length === 0 ? ((0,jsx_runtime.jsx)("div", { className: "empty-state", children: "No credentials found." })) : (filtered.map(cred => ((0,jsx_runtime.jsx)("div", { role: "listitem", children: (0,jsx_runtime.jsx)(CredentialCard, { cred: cred }) }, cred.id)))) })] })] }) }));
 };
 
 ;// ./utils/passwordGenerator.ts
@@ -59131,7 +58953,7 @@ const GeneratorPage = () => {
         setGeneratedPassword(pwd);
         setPasswordStrength(checkPasswordStrength(pwd));
     };
-    return ((0,jsx_runtime.jsxs)("div", { className: "generator-page", children: [(0,jsx_runtime.jsx)("h2", { children: "G\u00E9n\u00E9rateur de mots de passe" }), (0,jsx_runtime.jsxs)("div", { className: "generated-password-card", children: [(0,jsx_runtime.jsx)("div", { className: "password-label", children: "Mot de passe" }), (0,jsx_runtime.jsx)("div", { className: "password-text", children: generatedPassword }), (0,jsx_runtime.jsxs)("div", { className: "strength-label strength-{passwordStrength}", children: ["S\u00E9curit\u00E9 : ", passwordStrength === 'weak' ? 'faible' : passwordStrength === 'average' ? 'moyenne' : passwordStrength === 'perfect' ? 'parfaite !' : 'forte'] }), (0,jsx_runtime.jsxs)("button", { className: "copy-btn", onClick: handleCopy, "aria-label": "Copier le mot de passe", children: [(0,jsx_runtime.jsxs)("svg", { width: "20", height: "20", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: "2", children: [(0,jsx_runtime.jsx)("rect", { x: "9", y: "9", width: "13", height: "13", rx: "2", ry: "2" }), (0,jsx_runtime.jsx)("path", { d: "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" })] }), (0,jsx_runtime.jsx)("span", { children: "Copier" })] })] }), (0,jsx_runtime.jsxs)("div", { className: "slider-section", children: [(0,jsx_runtime.jsxs)("label", { htmlFor: "password-length", children: ["Longueur : ", passwordWidth] }), (0,jsx_runtime.jsx)("input", { id: "password-length", type: "range", min: 5, max: 25, value: passwordWidth, onChange: e => setPasswordWidth(Number(e.target.value)) })] }), (0,jsx_runtime.jsxs)("div", { className: "options-section", children: [(0,jsx_runtime.jsxs)("div", { className: "option-row", children: [(0,jsx_runtime.jsx)("span", { children: "Lettres majuscules (A-Z)" }), (0,jsx_runtime.jsx)("input", { type: "checkbox", checked: hasUppercase, onChange: e => setHasUppercase(e.target.checked) })] }), (0,jsx_runtime.jsxs)("div", { className: "option-row", children: [(0,jsx_runtime.jsx)("span", { children: "Chiffres (0-9)" }), (0,jsx_runtime.jsx)("input", { type: "checkbox", checked: hasNumbers, onChange: e => setHasNumbers(e.target.checked) })] }), (0,jsx_runtime.jsxs)("div", { className: "option-row", children: [(0,jsx_runtime.jsx)("span", { children: "Symboles (@!&*)" }), (0,jsx_runtime.jsx)("input", { type: "checkbox", checked: hasSpecialCharacters, onChange: e => setHasSpecialCharacters(e.target.checked) })] })] }), (0,jsx_runtime.jsxs)("button", { className: "regenerate-btn", onClick: handleRegenerate, children: [(0,jsx_runtime.jsxs)("svg", { width: "20", height: "20", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: "2", children: [(0,jsx_runtime.jsx)("path", { d: "M23 4v6h-6" }), (0,jsx_runtime.jsx)("path", { d: "M1 20v-6h6" }), (0,jsx_runtime.jsx)("path", { d: "M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" })] }), "G\u00E9n\u00E9rer \u00E0 nouveau"] }), toast && (0,jsx_runtime.jsx)("div", { className: "toast show", children: toast })] }));
+    return ((0,jsx_runtime.jsxs)("div", { className: "page-container", children: [(0,jsx_runtime.jsx)("div", { className: "generator-content", children: (0,jsx_runtime.jsxs)("div", { className: "generator-form", children: [(0,jsx_runtime.jsx)("div", { className: "page-section", children: (0,jsx_runtime.jsxs)("div", { className: "generated-password-card card", children: [(0,jsx_runtime.jsx)("div", { className: "password-label", children: "Mot de passe" }), (0,jsx_runtime.jsxs)("div", { className: "password-display", children: [(0,jsx_runtime.jsx)("div", { className: "password-text", children: generatedPassword }), (0,jsx_runtime.jsx)("button", { className: "copy-btn", onClick: handleCopy, "aria-label": "Copier le mot de passe", children: (0,jsx_runtime.jsxs)("svg", { width: "22", height: "22", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: "2", children: [(0,jsx_runtime.jsx)("rect", { x: "9", y: "9", width: "13", height: "13", rx: "2", ry: "2" }), (0,jsx_runtime.jsx)("path", { d: "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" })] }) })] }), (0,jsx_runtime.jsxs)("div", { className: `strength-label strength-${passwordStrength}`, children: ["S\u00E9curit\u00E9 : ", passwordStrength === 'weak' ? 'faible' : passwordStrength === 'average' ? 'moyenne' : passwordStrength === 'perfect' ? 'parfaite !' : 'forte'] })] }) }), (0,jsx_runtime.jsx)("div", { className: "page-section", children: (0,jsx_runtime.jsxs)("div", { className: "slider-section card", children: [(0,jsx_runtime.jsxs)("label", { htmlFor: "password-length", children: ["Longueur : ", passwordWidth] }), (0,jsx_runtime.jsx)("input", { id: "password-length", type: "range", min: 5, max: 25, value: passwordWidth, onChange: e => setPasswordWidth(Number(e.target.value)) })] }) }), (0,jsx_runtime.jsx)("div", { className: "page-section", children: (0,jsx_runtime.jsxs)("div", { className: "options-section card", children: [(0,jsx_runtime.jsxs)("div", { className: "option-row", children: [(0,jsx_runtime.jsx)("span", { children: "Lettres majuscules (A-Z)" }), (0,jsx_runtime.jsx)("input", { type: "checkbox", checked: hasUppercase, onChange: e => setHasUppercase(e.target.checked) })] }), (0,jsx_runtime.jsxs)("div", { className: "option-row", children: [(0,jsx_runtime.jsx)("span", { children: "Chiffres (0-9)" }), (0,jsx_runtime.jsx)("input", { type: "checkbox", checked: hasNumbers, onChange: e => setHasNumbers(e.target.checked) })] }), (0,jsx_runtime.jsxs)("div", { className: "option-row", children: [(0,jsx_runtime.jsx)("span", { children: "Symboles (@!&*)" }), (0,jsx_runtime.jsx)("input", { type: "checkbox", checked: hasSpecialCharacters, onChange: e => setHasSpecialCharacters(e.target.checked) })] })] }) }), (0,jsx_runtime.jsx)("div", { className: "page-section", children: (0,jsx_runtime.jsxs)("button", { className: "btn btn-primary regenerate-btn", onClick: handleRegenerate, children: [(0,jsx_runtime.jsxs)("svg", { width: "20", height: "20", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: "2", children: [(0,jsx_runtime.jsx)("path", { d: "M23 4v6h-6" }), (0,jsx_runtime.jsx)("path", { d: "M1 20v-6h6" }), (0,jsx_runtime.jsx)("path", { d: "M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" })] }), "G\u00E9n\u00E9rer \u00E0 nouveau"] }) })] }) }), toast && (0,jsx_runtime.jsx)("div", { className: "toast show", children: toast })] }));
 };
 
 ;// ./node_modules/amazon-cognito-identity-js/es/AuthenticationDetails.js
@@ -63264,9 +63086,22 @@ var settingsPage_awaiter = (undefined && undefined.__awaiter) || function (thisA
 
 
 
+
+
 const SettingsPage = () => {
-    const user = initializedAuth.currentUser;
-    const email = (user === null || user === void 0 ? void 0 : user.email) || 'Not logged in';
+    const [email, setEmail] = (0,react.useState)('');
+    (0,react.useEffect)(() => {
+        const auth = getAuth();
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setEmail(user.email || '');
+            }
+            else {
+                setEmail('');
+            }
+        });
+        return () => unsubscribe();
+    }, []);
     const handleLogout = () => settingsPage_awaiter(void 0, void 0, void 0, function* () {
         yield initializedAuth.signOut();
         const pool = new CognitoUserPool({
@@ -63278,8 +63113,9 @@ const SettingsPage = () => {
             cognitoUser.signOut();
         window.location.reload();
     });
-    return ((0,jsx_runtime.jsxs)("div", { className: "settings-page", children: [(0,jsx_runtime.jsx)("h1", { children: "Param\u00E8tres" }), (0,jsx_runtime.jsxs)("div", { className: "profile-card card", children: [(0,jsx_runtime.jsx)("div", { className: "user-icon", children: "\uD83D\uDC64" }), (0,jsx_runtime.jsxs)("div", { className: "user-info", children: [(0,jsx_runtime.jsx)("div", { className: "user-email", children: email }), (0,jsx_runtime.jsx)("div", { className: "user-subscription", children: "Abonnement : Basic" })] })] }), (0,jsx_runtime.jsxs)("div", { className: "theme-toggle card", children: [(0,jsx_runtime.jsx)("button", { className: "btn active", children: "Mode clair" }), (0,jsx_runtime.jsx)("button", { className: "btn", children: "Mode sombre" })] }), (0,jsx_runtime.jsxs)("div", { className: "menu-list", children: [(0,jsx_runtime.jsxs)("div", { className: "menu-item card", children: [(0,jsx_runtime.jsx)("div", { className: "menu-icon", children: "\uD83D\uDD12" }), (0,jsx_runtime.jsx)("div", { className: "menu-label", children: "S\u00E9curit\u00E9" }), (0,jsx_runtime.jsx)("div", { className: "menu-arrow", children: "\u2192" })] }), (0,jsx_runtime.jsxs)("div", { className: "menu-item card", children: [(0,jsx_runtime.jsx)("div", { className: "menu-icon", children: "\uD83D\uDD14" }), (0,jsx_runtime.jsx)("div", { className: "menu-label", children: "Notifications" }), (0,jsx_runtime.jsx)("div", { className: "menu-arrow", children: "\u2192" })] }), (0,jsx_runtime.jsxs)("div", { className: "menu-item card", children: [(0,jsx_runtime.jsx)("div", { className: "menu-icon", children: "\uD83C\uDF10" }), (0,jsx_runtime.jsx)("div", { className: "menu-label", children: "Langue" }), (0,jsx_runtime.jsx)("div", { className: "menu-arrow", children: "\u2192" })] })] }), (0,jsx_runtime.jsx)("button", { className: "btn feedback-btn", children: "Donnez votre avis" }), (0,jsx_runtime.jsx)("button", { className: "btn logout-btn", onClick: handleLogout, children: "Se d\u00E9connecter" })] }));
+    return ((0,jsx_runtime.jsx)("div", { className: "page-container", children: (0,jsx_runtime.jsxs)("div", { className: "page-content", children: [(0,jsx_runtime.jsx)("div", { className: "page-section", children: (0,jsx_runtime.jsxs)("div", { className: "profile-card card", children: [(0,jsx_runtime.jsx)("div", { className: "user-icon", children: "\uD83D\uDC64" }), (0,jsx_runtime.jsxs)("div", { className: "user-info", children: [(0,jsx_runtime.jsx)("div", { className: "user-avatar", children: (0,jsx_runtime.jsx)("span", { children: email.charAt(0).toUpperCase() }) }), (0,jsx_runtime.jsxs)("div", { className: "user-details", children: [(0,jsx_runtime.jsx)("div", { className: "user-email", children: email }), (0,jsx_runtime.jsx)("div", { className: "user-subscription", children: "Abonnement : Basic" })] })] })] }) }), (0,jsx_runtime.jsx)("div", { className: "page-section", children: (0,jsx_runtime.jsxs)("div", { className: "menu-list", children: [(0,jsx_runtime.jsxs)("div", { className: "menu-item card", children: [(0,jsx_runtime.jsx)("div", { className: "menu-icon", children: "\uD83D\uDD12" }), (0,jsx_runtime.jsx)("div", { className: "menu-label", children: "S\u00E9curit\u00E9" }), (0,jsx_runtime.jsx)("div", { className: "menu-arrow", children: "\u2192" })] }), (0,jsx_runtime.jsxs)("div", { className: "menu-item card", children: [(0,jsx_runtime.jsx)("div", { className: "menu-icon", children: "\uD83D\uDD14" }), (0,jsx_runtime.jsx)("div", { className: "menu-label", children: "Notifications" }), (0,jsx_runtime.jsx)("div", { className: "menu-arrow", children: "\u2192" })] }), (0,jsx_runtime.jsxs)("div", { className: "menu-item card", children: [(0,jsx_runtime.jsx)("div", { className: "menu-icon", children: "\uD83C\uDF10" }), (0,jsx_runtime.jsx)("div", { className: "menu-label", children: "Langue" }), (0,jsx_runtime.jsx)("div", { className: "menu-arrow", children: "\u2192" })] })] }) }), (0,jsx_runtime.jsxs)("div", { className: "page-section", children: [(0,jsx_runtime.jsx)("button", { className: "btn btn-primary feedback-btn", children: "Donnez votre avis" }), (0,jsx_runtime.jsx)("button", { className: "btn btn-secondary logout-btn", onClick: handleLogout, children: "Se d\u00E9connecter" })] })] }) }));
 };
+/* harmony default export */ const components_pages_settingsPage = (SettingsPage);
 
 // EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./popup/components/pages/LoginPage.module.css
 var LoginPage_module = __webpack_require__(1615);
@@ -63331,8 +63167,6 @@ var loginPage_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
 
 
 
-
-console.log('Firebase Config:', firebase);
 const LoginPage = () => {
     const [email, setEmail] = (0,react.useState)('');
     const [password, setPassword] = (0,react.useState)('');
@@ -63398,7 +63232,6 @@ const LoginPage = () => {
                     console.log('Cognito authentication successful, JWT obtained');
                     // Extract Firebase token from Cognito JWT
                     const firebaseToken = extractFirebaseTokenFromJWT(cognitoJwt);
-                    console.log('Firebase token extracted from JWT:', firebaseToken);
                     // Get user salt from Cognito attributes
                     const userAttributes = yield new Promise((resolve, reject) => {
                         cognitoUser.getUserAttributes((err, attributes) => {
@@ -63418,18 +63251,14 @@ const LoginPage = () => {
                         throw new Error('User salt not found in Cognito attributes');
                     }
                     const userSalt = saltAttribute.getValue();
-                    console.log('User salt retrieved from Cognito');
                     // Derive user password using salt
                     const userSecretKey = yield deriveKey(password, userSalt);
-                    console.log('User secret key derived');
                     // Store userSecretKey in IndexedDB
                     yield storeUserSecretKey(userSecretKey);
-                    console.log('User secret key stored in IndexedDB');
                     // Sign in to Firebase with the custom token
                     const auth = getAuth();
                     console.log('Attempting Firebase sign in with custom token...');
                     console.log('Current Firebase auth state:', auth.currentUser);
-                    console.log('Firebase app:', auth.app);
                     yield signInWithCustomToken(auth, firebaseToken);
                     console.log('Firebase login successful');
                     navigate('/home');
@@ -63486,9 +63315,28 @@ const PopupApp = () => {
     const [user, setUser] = (0,react.useState)(null);
     const [isLoading, setIsLoading] = (0,react.useState)(true);
     const [error, setError] = (0,react.useState)(null);
+    const [pageState, setPageState] = (0,react.useState)(null);
+    const [suggestions, setSuggestions] = (0,react.useState)([]);
     (0,react.useEffect)(() => {
         console.log('PopupApp useEffect running...');
-        console.log('Current auth state:', initializedAuth.currentUser);
+        // Get current tab and page state
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const tab = tabs[0];
+            if (!(tab === null || tab === void 0 ? void 0 : tab.id))
+                return;
+            chrome.runtime.sendMessage({ type: 'GET_PAGE_STATE', tabId: tab.id }, (state) => {
+                if (state === null || state === void 0 ? void 0 : state.domain) {
+                    setPageState(state);
+                    // Get credential suggestions from storage
+                    chrome.storage.local.get(['credentialMetas'], (result) => {
+                        const metas = (result.credentialMetas || [])
+                            .filter((meta) => meta.domain === state.domain);
+                        setSuggestions(metas);
+                    });
+                }
+            });
+        });
+        // Set up auth listener
         try {
             console.log('Setting up auth state listener...');
             const unsubscribe = initializedAuth.onAuthStateChanged((u) => {
@@ -63512,6 +63360,18 @@ const PopupApp = () => {
         }
     }, []);
     console.log('Current render state:', { isLoading, error, user });
+    const handleInjectCredential = (credentialId) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            var _a;
+            if ((_a = tabs[0]) === null || _a === void 0 ? void 0 : _a.id) {
+                chrome.runtime.sendMessage({
+                    type: 'INJECT_CREDENTIAL',
+                    credentialId,
+                    tabId: tabs[0].id
+                });
+            }
+        });
+    };
     if (error) {
         console.log('Rendering error state...');
         return ((0,jsx_runtime.jsx)("div", { className: "container", children: (0,jsx_runtime.jsxs)("div", { className: "error-message", children: [(0,jsx_runtime.jsx)("h2", { children: "Error" }), (0,jsx_runtime.jsx)("p", { children: error })] }) }));
@@ -63521,7 +63381,7 @@ const PopupApp = () => {
         return ((0,jsx_runtime.jsx)("div", { className: "container", children: (0,jsx_runtime.jsx)("div", { className: "loading", children: "Loading..." }) }));
     }
     console.log('Rendering main content...');
-    return ((0,jsx_runtime.jsxs)("div", { className: "container", children: [user && (0,jsx_runtime.jsx)(navBar, {}), (0,jsx_runtime.jsx)("div", { id: "content", children: (0,jsx_runtime.jsx)(Routes, { children: !user ? ((0,jsx_runtime.jsx)(Route, { path: "*", element: (0,jsx_runtime.jsx)(loginPage, {}) })) : ((0,jsx_runtime.jsxs)(jsx_runtime.Fragment, { children: [(0,jsx_runtime.jsx)(Route, { path: "/", element: (0,jsx_runtime.jsx)(Navigate, { to: "/home", replace: true }) }), (0,jsx_runtime.jsx)(Route, { path: "/home", element: (0,jsx_runtime.jsx)(HomePage, { user: user }) }), (0,jsx_runtime.jsx)(Route, { path: "/generator", element: (0,jsx_runtime.jsx)(GeneratorPage, {}) }), (0,jsx_runtime.jsx)(Route, { path: "/settings", element: (0,jsx_runtime.jsx)(SettingsPage, {}) })] })) }) }), user && (0,jsx_runtime.jsx)(HelperBar, {})] }));
+    return ((0,jsx_runtime.jsxs)("div", { className: "container", children: [user && (0,jsx_runtime.jsx)(navBar, {}), (0,jsx_runtime.jsx)("div", { id: "content", children: (0,jsx_runtime.jsx)(Routes, { children: !user ? ((0,jsx_runtime.jsx)(Route, { path: "*", element: (0,jsx_runtime.jsx)(loginPage, {}) })) : ((0,jsx_runtime.jsxs)(jsx_runtime.Fragment, { children: [(0,jsx_runtime.jsx)(Route, { path: "/", element: (0,jsx_runtime.jsx)(Navigate, { to: "/home", replace: true }) }), (0,jsx_runtime.jsx)(Route, { path: "/home", element: (0,jsx_runtime.jsx)(HomePage, { user: user, pageState: pageState, suggestions: suggestions, onInjectCredential: handleInjectCredential }) }), (0,jsx_runtime.jsx)(Route, { path: "/generator", element: (0,jsx_runtime.jsx)(GeneratorPage, {}) }), (0,jsx_runtime.jsx)(Route, { path: "/settings", element: (0,jsx_runtime.jsx)(components_pages_settingsPage, {}) })] })) }) }), user && (0,jsx_runtime.jsx)(HelperBar, {})] }));
 };
 
 ;// ./src/designSystem.ts

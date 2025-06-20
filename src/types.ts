@@ -2,6 +2,26 @@
 
 import { DocumentReference, Timestamp } from "firebase/firestore";
 
+export interface HomePageProps {
+  user: any;
+  pageState: PageState | null;
+  suggestions: CredentialMeta[];
+  onInjectCredential: (credentialId: string) => void;
+}
+
+export interface PageState {
+  url: string;
+  domain: string;
+  hasLoginForm: boolean;
+}
+
+export interface CredentialMeta {
+  id: string;
+  title: string;
+  username: string;
+  domain: string;
+}
+
 // Represents a decrypted credential item
 export interface ItemCredentialDecrypted {
   createdDateTime: Date;

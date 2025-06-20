@@ -1,7 +1,6 @@
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, getDocs, Firestore, DocumentReference } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, getDocs, Firestore, DocumentReference } from "firebase/firestore";
 import { CredentialEncrypted } from "./types";
-
-const db = getFirestore();
+import { db } from "./firebase";
 
 /**
  * Get a single credential by userId and credentialId

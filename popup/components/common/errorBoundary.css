@@ -1,25 +1,29 @@
+/* Error Boundary Component Styles */
 .error-boundary {
   padding: 20px;
   margin: 20px;
-  border: 1px solid #dc3545;
-  border-radius: 4px;
-  background-color: #fff;
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-card);
+  background-color: var(--bg-white);
+  box-shadow: var(--shadow-card);
 }
 
 .error-boundary h2 {
-  color: #dc3545;
+  color: var(--color-error);
   margin-bottom: 15px;
   font-size: 18px;
+  font-weight: 600;
 }
 
 .error-boundary details {
   margin-top: 10px;
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .error-boundary summary {
   cursor: pointer;
-  color: #dc3545;
+  color: var(--color-error);
   margin-bottom: 10px;
+  font-weight: 500;
 } 

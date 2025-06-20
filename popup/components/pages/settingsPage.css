@@ -1,3 +1,4 @@
+/* Settings Page Specific Styles */
 .settings-page h1 {
   text-align: center;
   font-size: 24px;
@@ -8,15 +9,22 @@
 }
 
 .profile-card {
-  margin: 0 16px 16px;
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
 }
 
 .profile-card .user-icon {
   font-size: 24px;
   color: var(--color-primary);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-light);
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .profile-card .user-info {
@@ -25,76 +33,69 @@
 
 .profile-card .user-email {
   font-size: 16px;
-  color: var(--color-accent);
+  color: var(--color-text);
+  font-weight: 600;
+  margin: 0 0 4px 0;
 }
 
 .profile-card .user-subscription {
   font-size: 14px;
   color: var(--color-primary);
+  margin: 0 0 2px 0;
 }
 
-.theme-toggle {
-  margin: 0 16px 16px;
-  padding: 8px;
-  border-radius: 20px;
-  display: flex;
-  gap: 8px;
-}
-
-.theme-toggle .btn {
-  flex: 1;
-  border-radius: 16px;
-}
-
-.theme-toggle .btn.active {
-  background: var(--color-primary);
-  color: white;
-}
-
-.theme-toggle .btn:not(.active) {
-  background: transparent;
-  color: var(--color-accent);
+.profile-card .user-status {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 0;
 }
 
 .menu-list {
-  margin: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--element-spacing);
 }
 
 .menu-item {
-  height: 48px;
-  padding: 0 16px;
-  margin-bottom: 12px;
+  height: 56px;
+  padding: 0 20px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+  text-align: left;
+  width: 100%;
+}
+
+.menu-item:hover {
+  background: var(--bg-light);
 }
 
 .menu-item .menu-icon {
-  font-size: 20px;
-  color: var(--color-primary);
-  margin-right: 12px;
+  color: var(--color-secondary);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
 }
 
 .menu-item .menu-label {
-  flex: 1;
   font-size: 16px;
-  color: var(--color-accent);
+  color: var(--color-primary);
+  flex: 1;
+  font-weight: 500;
 }
 
 .menu-item .menu-arrow {
   color: var(--color-accent);
+  font-size: 16px;
+  flex-shrink: 0;
 }
 
-.feedback-btn {
-  width: calc(100% - 32px);
-  margin: 16px;
-  background: var(--color-primary);
-  color: white;
-}
 
-.logout-btn {
-  width: calc(100% - 32px);
-  margin: 0 16px 16px;
-  background: var(--color-secondary);
-  color: white;
-}
