@@ -8,7 +8,7 @@
  */
 import { getAllCredentials } from '../src/firestoreCredentialService';
 import { decryptAllCredentials } from '../src/decryptCredentials';
-import { getAllCachedCredentials, saveCachedCredentials } from '../src/cache';
+import { getAllCachedCredentials, saveCachedCredentials, openCacheDB } from '../src/cache';
 import { CachedCredential } from '../src/types';
 import { encryptData } from '../utils/crypto'; // AES-GCM encryption
 import { getUserSecretKey } from './indexdb';
@@ -53,3 +53,14 @@ export async function ensureCredentialCache(user: Auth['currentUser']) {
       await refreshCredentialCache(user);
     }
   }
+
+export async function clearCredentialCache(): Promise<void> {
+  const db = await openCacheDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('credentials', 'readwrite');
+    const store = tx.objectStore('credentials');
+    const clearRequest = store.clear();
+    clearRequest.onsuccess = () => resolve();
+    clearRequest.onerror = () => reject(clearRequest.error);
+  });
+}

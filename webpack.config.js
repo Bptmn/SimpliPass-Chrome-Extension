@@ -45,8 +45,7 @@ module.exports = {
         { from: 'manifest.json', to: '.' },
         { from: 'popup/popup.html', to: '.' },
         { from: 'popup/popup.css', to: '.' },
-        { from: 'assets/icons', to: 'assets/icons' },
-        { from: 'popup/components/common/inPageCredentialPicker.css', to: '.' },
+        { from: 'assets/icons', to: 'assets/icons' }
       ],
     }),
   ],

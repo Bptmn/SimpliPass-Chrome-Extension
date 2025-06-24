@@ -1,50 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-/* CSS Variables - Global Design System */
-:root {
-  --color-primary: #2eae97;        /* Teal */
-  --color-secondary: #4f86a2;      /* Blue */
-  --color-accent: #74787a;         /* Gray */
-  --color-text: #202124;           /* Dark text */
-  --color-text-secondary: #5f6368; /* Secondary text */
-  --color-error: #dc3545;          /* Error red */
-  --bg-white: #ffffff;
-  --bg-light: #f1f4f8;
-  --bg-card: #f8f9fa;
-  --color-border: #e0e0e0;
-  --radius-card: 12px;
-  --radius-pill: 20px;
-  --radius-btn: 8px;
-  --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-size-base: 16px;
-  --shadow-card: 0 2px 8px rgba(0,0,0,0.04);
-  --shadow-card-hover: 0 4px 16px rgba(26,115,232,0.10);
-  
-  /* Layout Variables */
-  --page-padding: 20px;
-  --content-max-width: 100%;
-  --section-spacing: 16px;
-  --element-spacing: 12px;
-  --navbar-height: 60px;
-  --helper-bar-height: 60px;
-}
-
-/* Global Reset and Base Styles */
-html, body {
-  width: 350px;
-  height: 550px;
-  min-width: 350px;
-  min-height: 550px;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-body {
-  font-family: 'Inter', var(--font-base), sans-serif;
-  background: var(--bg-light);
-  color: var(--color-text);
-}
+@import './styles/design-system.css';
 
 /* Main Container Layout */
 .container {
@@ -55,7 +9,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--bg-white);
+  background: var(--primary-background);
   position: relative;
   margin: 0 auto;
 }
@@ -72,7 +26,7 @@ body {
 
 /* Common Page Layout Classes */
 .page-container {
-  padding: 20px 20px 0;
+  padding: 15px 20px 0;
   height: 100%;
   overflow-y: auto;
   box-sizing: border-box;
@@ -98,7 +52,7 @@ body {
 .page-title {
   font-size: 24px;
   font-weight: 600;
-  color: var(--color-secondary);
+  color: var(--color-primary);
   margin: 0;
   text-align: center;
   padding: var(--section-spacing) 0;
@@ -108,13 +62,12 @@ body {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--element-spacing);
 }
 
 .section-title {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--color-secondary);
   margin: 0;
 }
 
@@ -160,143 +113,6 @@ body {
 .error-message p {
   font-size: 0.875rem;
   line-height: 1.5;
-}
-
-/* Common Utility Classes */
-.card {
-  background: var(--bg-card);
-  border-radius: var(--radius-card);
-  padding: 16px;
-  box-shadow: var(--shadow-card);
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 48px;
-  padding: 0 24px;
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  border: none;
-  border-radius: var(--radius-btn);
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.btn-primary {
-  background: var(--color-primary);
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #28a386;
-}
-
-.btn-secondary {
-  background: var(--color-secondary);
-  color: white;
-}
-
-.btn-secondary:hover {
-  background: #3d6b85;
-}
-
-.pill-btn {
-  height: 40px;
-  padding: 0 16px;
-  border-radius: var(--radius-pill);
-  font-size: 14px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-/* Form Elements */
-.form-group {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-secondary);
-}
-
-.form-input {
-  width: 100%;
-  height: 48px;
-  padding: 0 16px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-btn);
-  font-size: var(--font-size-base);
-  color: var(--color-text);
-  background: var(--bg-white);
-  box-sizing: border-box;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(46, 174, 151, 0.2);
-}
-
-/* Common Toast Notification */
-.toast {
-  position: fixed;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--color-primary);
-  color: #fff;
-  padding: 10px 24px;
-  border-radius: 8px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-  z-index: 9999;
-}
-
-.toast.show {
-  opacity: 1;
-}
-
-/* Common Form Elements */
-input, textarea, select {
-  font-family: inherit;
-  font-size: var(--font-size-base);
-}
-
-input:focus, textarea:focus, select:focus {
-  outline: none;
-}
-
-/* Overlay for modals/bottom sheets */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 300ms ease-out;
-  z-index: 999;
-}
-
-.overlay.open {
-  opacity: 1;
-  pointer-events: all;
 }
 
  

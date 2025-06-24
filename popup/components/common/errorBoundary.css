@@ -4,7 +4,7 @@
   margin: 20px;
   border: 1px solid var(--color-error);
   border-radius: var(--radius-card);
-  background-color: var(--bg-white);
+  background-color: var(--primary-background);
   box-shadow: var(--shadow-card);
 }
 

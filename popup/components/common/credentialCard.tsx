@@ -3,12 +3,19 @@ import { CachedCredential } from '../../../src/types';
 import { getUserSecretKey } from '../../../utils/indexdb';
 import { decryptData } from '../../../utils/crypto';
 import './credentialCard.css';
+import { CredentialIcon } from './CredentialIcon';
+import { Icon } from './Icon';
+import { ErrorBanner } from './ErrorBanner';
 
 interface CredentialCardProps {
   cred: CachedCredential;
+  onClick?: () => void;
+  hideCopyBtn?: boolean;
+  onCopy?: () => void;
 }
 
-export const CredentialCard: React.FC<CredentialCardProps> = ({ cred }) => {
+export const CredentialCard: React.FC<CredentialCardProps> = ({ cred, onClick, hideCopyBtn, onCopy }) => {
+  const [error, setError] = React.useState<string | null>(null);
   const iconLetter = cred.title?.charAt(0)?.toUpperCase() || '?';
 
   const handleCopy = async (e: React.MouseEvent) => {
@@ -19,35 +26,46 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({ cred }) => {
       const itemKey = await decryptData(userSecretKey, cred.itemKeyCipher);
       const password = await decryptData(itemKey, cred.passwordCipher);
       await navigator.clipboard.writeText(password);
-      // Optionally show toast
+      if (onCopy) onCopy();
     } catch (e) {
-      // Optionally show error toast
-      console.error(e);
+      setError('Erreur lors de la copie du mot de passe.');
     }
   };
 
-  const handleClick = () => {
-    // Optionally show credential details
-  };
-
   return (
-    <div className="credential-card" onClick={handleClick} tabIndex={0} aria-label={`Credential for ${cred.title} (${cred.username})`}>
-      <div className="card-left">
-        <div className="card-icon">{iconLetter}</div>
-        <div className="card-info">
-          <div className="card-title">{cred.title || 'Title'}</div>
-          <div className="card-username">{cred.username || ''}</div>
+    <>
+      {error && <ErrorBanner message={error} />}
+      <div
+        className="credential-card"
+        onClick={() => { onClick && onClick(); }}
+        tabIndex={0}
+        aria-label={`Credential for ${cred.title} (${cred.username})`}
+        role="button"
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            onClick && onClick();
+          }
+        }}
+      >
+        <div className="card-left">
+          <CredentialIcon
+            title={cred.title || ''}
+            url={cred.url}
+          />
+          <div className="card-info">
+            <div className="card-title">{cred.title || 'Title'}</div>
+            <div className="card-username">{cred.username || ''}</div>
+          </div>
         </div>
+        {!hideCopyBtn && (
+          <button className="btn-copy" title="Copy password" onClick={handleCopy} aria-label="Copy password for this credential">
+            <div className="btn-copy-container">
+              <Icon name="copy" size={25} color={'white'} />
+              <span>copier</span>
+            </div>
+          </button>
+        )}
       </div>
-      <button className="btn-copy" title="Copy password" onClick={handleCopy} aria-label="Copy password for this credential">
-        <div className="btn-copy-container">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-          </svg>
-          <span>Copy</span>
-        </div>
-      </button>
-    </div>
+    </>
   );
 }; 

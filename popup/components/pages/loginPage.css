@@ -1,0 +1,188 @@
+@import '../../styles/design-system.css';
+
+.loginBackground {
+  background: var(--primary-background);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 25px;
+}
+
+.loginFormSection {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.loginCard {
+  background: var(--primary-background);
+  max-width: 360px;
+  width: 100%;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.loginLogo {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  margin-bottom: var(--spacing-xl);
+  letter-spacing: 0.01em;
+}
+.loginDot {
+  color: var(--color-primary);
+  margin-right: 2px;
+}
+.loginSimpli {
+  color: var(--color-primary);
+}
+.loginPass {
+  color: var(--color-secondary);
+}
+
+.loginLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.loginInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.loginInput {
+  composes: input;
+}
+
+.loginInputIcon {
+  position: absolute;
+  left: 16px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  color: var(--color-accent);
+}
+
+.loginClearBtn {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: var(--color-accent);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+.loginClearBtn:hover {
+  color: var(--color-secondary);
+}
+
+.loginCheckboxRow {
+  display: flex;
+  align-items: center;
+  margin-top: var(--spacing-xs);
+}
+
+.loginCheckboxLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.loginCheckbox {
+  display: none;
+}
+
+.loginCustomCheckbox {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-secondary);
+  border-radius: var(--radius-xs);
+  background: var(--primary-background);
+  display: inline-block;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s;
+}
+.loginCheckbox:checked + .loginCustomCheckbox {
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
+}
+.loginCheckbox:checked + .loginCustomCheckbox::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  width: 5px;
+  height: 11px;
+  border: solid var(--primary-background);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.loginCheckboxText {
+  font-size: var(--font-size-md);
+  color: var(--color-secondary);
+  margin-left: 8px;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+}
+
+.loginEyeBtn {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: var(--color-accent);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+.loginEyeBtn:hover {
+  color: var(--color-secondary);
+}
+
+.spinner {
+  composes: spinner;
+}
+
+.errorMessage {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+
+.inputError {
+  border: 1px solid var(--color-error) !important;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2) !important;
+} 

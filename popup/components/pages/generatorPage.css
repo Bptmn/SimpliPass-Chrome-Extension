@@ -1,5 +1,21 @@
 /* Generator Page Specific Styles */
 
+.section-label {
+  font-size: 12px;
+  color: var(--color-accent);
+  font-weight: 500;
+  margin: 0;
+}
+
+.generator-item-spacing {
+  gap: 6px;
+}
+
+.generator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 
 .generated-password-card {
   display: flex;
@@ -26,7 +42,7 @@
   color: var(--color-text);
   word-break: break-all;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  background: var(--bg-white);
+  background: var(--primary-background);
   padding: 12px;
   border-radius: var(--radius-btn);
   border: 1px solid var(--color-border);
@@ -43,8 +59,8 @@
 
 .strength-weak { color: #e57373; }
 .strength-average { color: #ffb300; }
-.strength-strong { color: var(--color-secondary); }
-.strength-perfect { color: var(--color-primary); }
+.strength-strong { color: var(--color-primary); }
+.strength-perfect { color: var(--color-secondary); }
 
 .copy-btn {
   display: flex;
@@ -52,7 +68,7 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  background: var(--color-primary);
+  background: var(--color-secondary);
   color: #fff;
   border: none;
   border-radius: var(--radius-btn);
@@ -66,9 +82,6 @@
   flex-shrink: 0;
 }
 
-.copy-btn:hover {
-  background: #249e85;
-}
 
 .copy-btn svg {
   width: 22px;
@@ -79,6 +92,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding: 15px !important;
 }
 
 .slider-section label {
@@ -99,15 +113,15 @@
 .options-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .option-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 16px;
-  color: var(--color-text);
+  font-size: 14px;
+  color: var(--color-primary);
 }
 
 .option-row span {
@@ -115,12 +129,46 @@
   font-weight: 500;
 }
 
-.option-row input[type="checkbox"] {
-  width: 24px;
-  height: 24px;
-  accent-color: var(--color-primary);
+.option-row .switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 22px;
+}
+
+.option-row .switch input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
   cursor: pointer;
-  flex-shrink: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #ccc;
+  border-radius: 22px;
+  transition: background 0.2s;
+}
+
+.option-row .switch input:checked + .switch-slider {
+  background: var(--color-secondary);
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: '';
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.option-row .switch input:checked + .switch-slider:before {
+  transform: translateX(16px);
 }
 
 .regenerate-btn {

@@ -5,14 +5,10 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { MemoryRouter } from 'react-router-dom';
 import { PopupApp } from './PopupApp';
-import { injectDesignSystem } from '../src/utils/injectDesignSystem';
 import './popup.css';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 console.log('Imports completed');
-
-// Inject design system variables
-injectDesignSystem();
 
 const initializeApp = () => {
   console.log('Initializing app...');

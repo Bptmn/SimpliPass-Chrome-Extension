@@ -3,7 +3,7 @@
   height: 60px;
   min-height: 60px;
   max-height: 60px;
-  background-color: var(--bg-white);
+  background-color: var(--primary-background);
   border-bottom: 1px solid var(--color-border);
   z-index: 1000;
   padding: 0.5rem 1rem;

@@ -1,0 +1,41 @@
+.skeleton-card {
+  display: flex;
+  align-items: center;
+  background: var(--secondary-background);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid var(--color-border, #e0e0e0);
+  padding: 6px 6px;
+  gap: 12px;
+  margin-bottom: 8px;
+  min-height: 48px;
+}
+.skeleton-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #e0e0e0 25%, #f1f4f8 50%, #e0e0e0 75%);
+  animation: shimmer 1.2s infinite linear;
+}
+.skeleton-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.skeleton-title, .skeleton-username {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #e0e0e0 25%, #f1f4f8 50%, #e0e0e0 75%);
+  animation: shimmer 1.2s infinite linear;
+}
+.skeleton-title {
+  width: 60%;
+}
+.skeleton-username {
+  width: 40%;
+}
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+} 

@@ -1,5 +1,33 @@
 # SimpliPass Chrome Extension
 
+## Design System & UI Consistency
+
+This project uses a centralized design system for all UI components and styles. All colors, spacing, typography, and radii are defined as CSS variables in `popup/styles/design-system.css`.
+
+### Design Tokens
+- **Colors:** --color-primary, --color-secondary, --color-accent, --color-error, etc.
+- **Spacing:** --spacing-xs, --spacing-sm, --spacing-md, --spacing-lg, --spacing-xl
+- **Typography:** --font-size-xs, --font-size-md, --font-size-lg, --font-weight-medium, --font-weight-bold
+- **Radii:** --radius-xs, --radius-md, --radius-lg, --radius-pill
+
+### Shared Utility Classes
+- `.btn`, `.btn-primary`, `.btn-secondary` — Use for all buttons
+- `.input` — Use for all text/email/password fields
+- `.card` — Use for all card containers
+- `.empty-state` — For empty list messages
+- `.spinner` — For loading indicators
+- `.ripple-card`, `.btn.ripple` — For ripple effect on click
+- `.text-center`, `.text-accent`, `.text-secondary`, `.text-bold`, `.text-md`, `.text-lg`, `.text-xl` — For typography
+
+### How to Use
+- **Never use hardcoded colors, spacing, or font sizes.** Always use the tokens and utility classes.
+- **All new components must use the shared Button, Input, Card, and utility classes.**
+- **See `popup/styles/design-system.css` for full documentation and examples.**
+
+---
+
+# SimpliPass Chrome Extension
+
 A Chrome extension for password management.
 
 ## Development Setup

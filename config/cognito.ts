@@ -1,5 +1,5 @@
 import { config } from './config';
 
-const cognitoConfig = config.cognito;
+const cognitoConfig = config.Cognito;
 
 export default cognitoConfig; 

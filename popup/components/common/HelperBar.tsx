@@ -1,6 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './helperBar.css';
+import { refreshCredentialCache } from '../../../src/cache';
+import { auth } from '../../../src/firebase';
+import { Icon } from './Icon';
 
 export const HelperBar: React.FC = () => {
   const navigate = useNavigate();
@@ -15,39 +18,47 @@ export const HelperBar: React.FC = () => {
     console.log('FAQ clicked');
   };
 
-  const handleRefresh = () => {
-    // TODO: Implement refresh logic
-    console.log('Refresh clicked');
-    window.location.reload();
+  const handleRefresh = async () => {
+    // Refresh the credential cache from Firestore
+    if (auth.currentUser) {
+      await refreshCredentialCache(auth.currentUser);
+      window.location.reload();
+    } else {
+      console.log('No user logged in, cannot refresh cache');
+    }
   };
 
+  function createRipple(event: React.MouseEvent<HTMLElement>) {
+    const button = event.currentTarget;
+    const circle = document.createElement('span');
+    circle.className = 'ripple-effect';
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    circle.style.width = circle.style.height = `${diameter}px`;
+    const rect = button.getBoundingClientRect();
+    circle.style.left = `${event.clientX - rect.left - diameter / 2}px`;
+    circle.style.top = `${event.clientY - rect.top - diameter / 2}px`;
+    button.appendChild(circle);
+    circle.addEventListener('animationend', () => {
+      circle.remove();
+    });
+  }
+
   return (
-    <div className="helperBar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
-        <button className="helper-btn" onClick={handleAddCredential} title="Add Credential">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="9" y="11" width="6" height="2" rx="1" />
-            <rect x="11" y="9" width="2" height="6" rx="1" />
-          </svg>
-          <span className="helper-btn-text">Add</span>
+    <div className="helperBar">
+      <div className="helperBar-left">
+        <button className="helper-btn" onClick={e => { createRipple(e); handleAddCredential(); }} title="Add Credential" aria-label="Ajouter un identifiant">
+          <Icon name="add" size={25} color={'var(--color-primary)'} />
+          <span className="helper-btn-text">Ajouter</span>
         </button>
       </div>
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
-        <button className="helper-btn" onClick={handleFAQ} title="FAQ">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-          </svg>
-          <span className="helper-btn-text">FAQ</span>
+      <div className="helperBar-right">
+        <button className="helper-btn" onClick={e => { createRipple(e); handleFAQ(); }} title="FAQ" aria-label="Aide">
+          <Icon name="help" size={25} color={'var(--color-primary)'} />
+          <span className="helper-btn-text">Aide</span>
         </button>
-        <button className="helper-btn" onClick={handleRefresh} title="Refresh">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M23 4v6h-6"></path>
-            <path d="M1 20v-6h6"></path>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-          </svg>
-          <span className="helper-btn-text">Refresh</span>
+        <button className="helper-btn" onClick={e => { createRipple(e); handleRefresh(); }} title="Refresh" aria-label="Actualiser les identifiants">
+          <Icon name="refresh" size={25} color={'var(--color-primary)'} />
+          <span className="helper-btn-text">Actualiser</span>
         </button>
       </div>
     </div>

@@ -60,6 +60,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     });
     return true; // async
   }
+
+  // Handle user secret key request from content script
+  if (msg.type === 'GET_USER_SECRET_KEY') {
+    getUserSecretKey().then(key => {
+      sendResponse({ key });
+    }).catch(() => {
+      sendResponse({ key: null });
+    });
+    return true;
+  }
 });
 
 chrome.tabs.onActivated.addListener(activeInfo => {

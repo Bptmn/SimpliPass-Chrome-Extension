@@ -37,7 +37,9 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["inPageCredentialPicker.css"],
+      "resources": [
+        "popovers/PopoverCredentialPicker.css"
+      ],
       "matches": ["<all_urls>"]
     }
   ],

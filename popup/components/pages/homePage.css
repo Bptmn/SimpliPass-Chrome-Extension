@@ -1,15 +1,39 @@
+@import '../../styles/design-system.css';
+
 /* Home Page Specific Styles */
+
+.home-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
 /* Search Bar Styles */
 .search-bar {
   position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.search-bar-icon {
+  position: absolute;
+  left: 10px;
+}
+
+.all-items-section {
+  gap: 10px;
+}
+
+.suggestions-section {
+  gap: 10px;
 }
 
 .search-input {
   width: 100%;
-  height: 48px;
+  height: 42px;
   border-radius: 20px;
-  background: var(--bg-light);
+  background: var(--secondary-background);
   border: none;
   padding: 0 20px 0 48px;
   font-size: var(--font-size-base);
@@ -27,36 +51,13 @@
   box-shadow: 0 0 0 2px rgba(46, 174, 151, 0.2);
 }
 
-.search-bar::before {
-  content: '🔍';
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 16px;
-  color: var(--color-text-secondary);
-  pointer-events: none;
-}
-
-
 
 /* Credential List */
 .credential-list {
   display: flex;
   flex-direction: column;
-  gap: var(--element-spacing);
+  gap: var(--spacing-sm);
   width: 100%;
-}
-
-.empty-state {
-  padding: 12px;
-  text-align: center;
-  color: var(--color-text-secondary);
-  font-size: 14px;
-}
-
-.suggestions-section {
-  margin-bottom: 12px;
 }
 
 .suggestion-list {
@@ -65,16 +66,6 @@
   gap: 8px;
   padding: 4px 0;
   border-radius: 8px;
-}
-
-.suggestion-list .credential-card {
-  margin-bottom: 0;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.suggestion-list .credential-card:hover {
-  transform: translateX(4px);
 }
 
 .suggestion-list-count-0 {
@@ -89,7 +80,6 @@
 
 .suggestion-list .credential-card {
   font-size: 14px;
-  padding: 6px 8px;
   min-height: 36px;
   box-shadow: none;
   border: 1px solid var(--color-border, #e0e0e0);

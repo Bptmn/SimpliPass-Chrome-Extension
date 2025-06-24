@@ -9,9 +9,9 @@ export const config = {
     appId: process.env.REACT_APP_FIREBASE_APP_ID || '',
     measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || ''
   },
-  cognito: {
-    UserPoolId: process.env.REACT_APP_COGNITO_USER_POOL_ID || '',
-    ClientId: process.env.REACT_APP_COGNITO_CLIENT_ID || '',
-    Region: process.env.REACT_APP_COGNITO_REGION || ''
+  Cognito: {
+    userPoolId: process.env.REACT_APP_COGNITO_USER_POOL_ID || '',
+    userPoolClientId: process.env.REACT_APP_COGNITO_CLIENT_ID || '',
+    region: process.env.REACT_APP_COGNITO_REGION || ''
   }
 }; 

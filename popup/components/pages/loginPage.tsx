@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CognitoUser, AuthenticationDetails, CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import { getAuth, signInWithCustomToken } from 'firebase/auth';
+import { fetchUserAttributes } from 'aws-amplify/auth';
 import cognitoConfig from '../../../config/cognito';
 import firebaseConfig from '../../../config/firebase';
 import { deriveKey } from '../../../utils/crypto';
-import { storeUserSecretKey } from '../../../utils/indexdb';
-import styles from './LoginPage.module.css';
+import { storeUserSecretKey, deleteUserSecretKey } from '../../../utils/indexdb';
+import { EmailConfirmationPage } from './emailConfirmationPage';
+import './loginPage.css';
+import { signIn, confirmSignIn, fetchAuthSession } from 'aws-amplify/auth';
+import { refreshCredentialCache } from '../../../src/cache';
+import { clearCredentialCache } from '../../../utils/credentialCache';
+import { ErrorBanner } from '../common/ErrorBanner';
 
+const REMEMBER_EMAIL_KEY = 'simplipass_remembered_email';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -17,7 +23,29 @@ const LoginPage: React.FC = () => {
   const [rememberEmail, setRememberEmail] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [mfaStep, setMfaStep] = useState(false);
+  const [mfaUser, setMfaUser] = useState<any>(null);
+  const [mfaError, setMfaError] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // On mount, check if email is remembered
+    const remembered = localStorage.getItem(REMEMBER_EMAIL_KEY);
+    if (remembered) {
+      setEmail(remembered);
+      setRememberEmail(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    // When rememberEmail or email changes, persist or remove
+    if (rememberEmail && email) {
+      localStorage.setItem(REMEMBER_EMAIL_KEY, email);
+    } else if (!rememberEmail) {
+      localStorage.removeItem(REMEMBER_EMAIL_KEY);
+    }
+  }, [rememberEmail, email]);
 
   const extractFirebaseTokenFromJWT = (jwt: string): string => {
     try {
@@ -25,18 +53,13 @@ const LoginPage: React.FC = () => {
       if (parts.length !== 3) {
         throw new Error('Invalid JWT structure');
       }
-
       const payload = JSON.parse(atob(parts[1]));
-      console.log('JWT payload:', payload);
       const firebaseToken = payload.firebaseToken;
-      
       if (!firebaseToken) {
         throw new Error('Firebase token not found in Cognito ID token claims');
       }
-
       return firebaseToken;
     } catch (error) {
-      console.error('Error extracting Firebase token:', error);
       throw error;
     }
   };
@@ -46,206 +69,224 @@ const LoginPage: React.FC = () => {
     setEmailError('');
     setPasswordError('');
     setIsLoading(true);
+    setError(null);
     let hasError = false;
-
+    console.log('[LOGIN] Email:', email);
+    console.log('[LOGIN] Password:', password ? '***' : '(empty)');
     if (!email) {
       setEmailError('Email is required');
       hasError = true;
     }
-
     if (!password) {
       setPasswordError('Password is required');
       hasError = true;
     }
-
     if (hasError) {
       setIsLoading(false);
       return;
     }
-
-    const userPool = new CognitoUserPool({
-      UserPoolId: cognitoConfig.UserPoolId,
-      ClientId: cognitoConfig.ClientId
-    });
-
-    const cognitoUser = new CognitoUser({
-      Username: email,
-      Pool: userPool
-    });
-
-    const authDetails = new AuthenticationDetails({
-      Username: email,
-      Password: password
-    });
-
-    cognitoUser.authenticateUser(authDetails, {
-      onSuccess: async (result) => {
-        try {
-          const cognitoJwt = result.getIdToken().getJwtToken();
-          console.log('Cognito authentication successful, JWT obtained');
-
-          // Extract Firebase token from Cognito JWT
-          const firebaseToken = extractFirebaseTokenFromJWT(cognitoJwt);
-
-          // Get user salt from Cognito attributes
-          const userAttributes = await new Promise<CognitoUserAttribute[]>((resolve, reject) => {
-            cognitoUser.getUserAttributes((err, attributes) => {
-              if (err) {
-                reject(err);
-                return;
-              }
-              if (!attributes) {
-                reject(new Error('No user attributes found'));
-                return;
-              }
-              resolve(attributes);
-            });
-          });
-
-          const saltAttribute = userAttributes.find((attr: CognitoUserAttribute) => attr.getName() === 'custom:salt');
-          if (!saltAttribute) {
-            throw new Error('User salt not found in Cognito attributes');
-          }
-          const userSalt = saltAttribute.getValue();
-
-          // Derive user password using salt
-          const userSecretKey = await deriveKey(password, userSalt);
-
-          // Store userSecretKey in IndexedDB
-          await storeUserSecretKey(userSecretKey);
-
-          // Sign in to Firebase with the custom token
-        const auth = getAuth();
-          console.log('Attempting Firebase sign in with custom token...');
-          console.log('Current Firebase auth state:', auth.currentUser);
-          await signInWithCustomToken(auth, firebaseToken);
-          console.log('Firebase login successful');
-          navigate('/home');
-        } catch (error) {
-          console.error('Authentication error:', error);
-          if (error instanceof Error) {
-            console.error('Error details:', {
-              name: error.name,
-              message: error.message,
-              stack: error.stack
-            });
-          }
-          setEmailError('Authentication failed. Please try again.');
-        } finally {
-          setIsLoading(false);
-        }
-      },
-      onFailure: (err) => {
-        console.error('Cognito authentication error:', err);
-        setEmailError('Invalid email or password');
+    try {
+      const user = await signIn({ username: email, password });
+      console.log('[LOGIN] signIn user:', user);
+      const mfaSteps = [
+        'CONFIRM_SIGN_IN_WITH_SMS_CODE',
+        'CONFIRM_SIGN_IN_WITH_TOTP_CODE',
+        'CONFIRM_SIGN_IN_WITH_EMAIL_CODE',
+        'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
+        'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED',
+        'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
+      ];
+      if (user.nextStep && mfaSteps.includes(user.nextStep.signInStep)) {
+        setMfaStep(true);
+        setMfaUser(user);
         setIsLoading(false);
+        console.log('[LOGIN] MFA required, nextStep:', user.nextStep);
+      } else {
+        // Authenticated, get tokens
+        const { tokens } = await fetchAuthSession();
+        console.log('[LOGIN] fetchAuthSession tokens:', tokens);
+        const cognitoJwt = tokens?.idToken?.toString();
+        if (!cognitoJwt) throw new Error('No IdToken found');
+        const firebaseToken = extractFirebaseTokenFromJWT(cognitoJwt);
+        // Derive and store user secret key
+        const userAttributes = await fetchUserAttributes();
+        console.log('[LOGIN] userAttributes:', userAttributes);
+        const userSalt = userAttributes['custom:salt'];
+        console.log('[LOGIN] userSalt:', userSalt);
+        if (userSalt) {
+          const userSecretKey = await deriveKey(password, userSalt);
+          console.log('[LOGIN] userSecretKey:', userSecretKey);
+          await storeUserSecretKey(userSecretKey);
+        }
+        const auth = getAuth();
+        await signInWithCustomToken(auth, firebaseToken);
+        await refreshCredentialCache(auth.currentUser);
+        navigate('/home');
       }
-    });
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Authentication failed.');
+      setIsLoading(false);
+    }
   };
 
+  const handleMfaConfirm = async (code: string) => {
+    if (!mfaUser) return;
+    setIsLoading(true);
+    setMfaError('');
+    try {
+      const user = await confirmSignIn({ challengeResponse: code });
+      console.log('[MFA] confirmSignIn user:', user);
+      const { tokens } = await fetchAuthSession();
+      console.log('[MFA] fetchAuthSession tokens:', tokens);
+      const cognitoJwt = tokens?.idToken?.toString();
+      if (!cognitoJwt) throw new Error('No IdToken found');
+      const firebaseToken = extractFirebaseTokenFromJWT(cognitoJwt);
+      // Derive and store user secret key
+      const userAttributes = await fetchUserAttributes();
+      console.log('[MFA] userAttributes:', userAttributes);
+      const userSalt = userAttributes['custom:salt'];
+      console.log('[MFA] userSalt:', userSalt);
+      if (userSalt) {
+        const userSecretKey = await deriveKey(password, userSalt);
+        console.log('[MFA] userSecretKey:', userSecretKey);
+        await storeUserSecretKey(userSecretKey);
+      }
+      const auth = getAuth();
+      await signInWithCustomToken(auth, firebaseToken);
+      navigate('/home');
+    } catch (error: any) {
+      console.error('[MFA] Error:', error);
+      setMfaError(error.message || 'Code invalide ou expiré.');
+      setIsLoading(false);
+    }
+  };
+
+  const handleMfaResend = async () => {
+    // Amplify does not provide a direct resend for MFA, but you can re-trigger signIn if needed
+    setIsLoading(true);
+    try {
+      await signIn({ username: email, password });
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await deleteUserSecretKey();
+    await clearCredentialCache();
+    // ... existing logout logic ...
+  };
+
+  if (mfaStep && mfaUser) {
+    return (
+      <EmailConfirmationPage
+        email={email}
+        onConfirm={handleMfaConfirm}
+        onResend={handleMfaResend}
+      />
+    );
+  }
+
+  if (error) {
+    return <ErrorBanner message={error} />;
+  }
+
   return (
-    <div className={styles.loginBackground}>
-      <div className={styles.loginCard}>
+    <div className="loginBackground">
+      <div className="loginCard card">
         {/* Logo */}
-        <div className={styles.loginLogo}>
-          <span className={styles.loginDot}>.</span>
-          <span className={styles.loginSimpli}>Simpli</span>
-          <span className={styles.loginPass}>Pass</span>
+        <div className="loginLogo">
+          <span className="loginDot">.</span>
+          <span className="loginSimpli">Simpli</span>
+          <span className="loginPass">Pass</span>
         </div>
-        <form onSubmit={handleLogin}>
-          {/* Email label */}
-          <label className={styles.loginLabel} htmlFor="login-email">
-            Adresse email
-          </label>
-          {/* Email input wrapper */}
-          <div className={styles.loginInputWrapper}>
-            <span className={styles.loginInputIcon}>
-              {/* User icon SVG */}
-              <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="7" r="4" stroke="#2eae97" strokeWidth="2"/><path d="M3 17c0-2.761 3.134-5 7-5s7 2.239 7 5" stroke="#2eae97" strokeWidth="2"/></svg>
-            </span>
-            <input
-              type="email"
-              id="login-email"
-              placeholder="Votre adresse email…"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={`${styles.loginInput} ${emailError ? styles.inputError : ''}`}
-              disabled={isLoading}
-            />
-            {email && !isLoading && (
-              <button
-                type="button"
-                className={styles.loginClearBtn}
-                aria-label="Effacer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setEmail('');
-                }}
-              >
-                ×
-              </button>
-            )}
-          </div>
-          {emailError && <div className={styles.errorMessage}>{emailError}</div>}
-          {/* Checkbox row */}
-          <div className={styles.loginCheckboxRow}>
-            <label className={styles.loginCheckboxLabel}>
+        <form className="loginForm" onSubmit={handleLogin} autoComplete="on">
+          <div className="loginFormSection">
+            <label className="loginLabel" htmlFor="login-email">
+              Adresse email
+            </label>
+            <div className="loginInputWrapper">
               <input
-                type="checkbox"
-                className={styles.loginCheckbox}
-                checked={rememberEmail}
-                onChange={(e) => setRememberEmail(e.target.checked)}
+                type="email"
+                id="login-email"
+                placeholder="Votre adresse email…"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`loginInput input${emailError ? ' inputError' : ''}`}
                 disabled={isLoading}
               />
-              <span className={styles.loginCustomCheckbox} aria-hidden="true" />
-              <span className={styles.loginCheckboxText}>Se souvenir de mon email</span>
-            </label>
-          </div>
-          {/* Password label */}
-          <label className={styles.loginLabel} htmlFor="login-password">
-            Mot de passe maître
-          </label>
-          {/* Password input wrapper */}
-          <div className={styles.loginInputWrapper}>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              id="login-password"
-              placeholder="Votre mot de passe maître.."
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`${styles.loginInput} ${passwordError ? styles.inputError : ''}`}
-              disabled={isLoading}
-            />
-            <button
-              type="button"
-              className={styles.loginEyeBtn}
-              aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-              onClick={(e) => {
-                e.preventDefault();
-                setShowPassword(v => !v);
-              }}
-              disabled={isLoading}
-            >
-              {showPassword ? (
-                // Eye open SVG
-                <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M1.5 10S4.5 4.5 10 4.5 18.5 10 18.5 10 15.5 15.5 10 15.5 1.5 10 1.5 10Z" stroke="#74787a" strokeWidth="2"/><circle cx="10" cy="10" r="3" stroke="#74787a" strokeWidth="2"/></svg>
-              ) : (
-                // Eye closed SVG
-                <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M1.5 10S4.5 4.5 10 4.5 18.5 10 18.5 10 15.5 15.5 10 15.5 1.5 10 1.5 10Z" stroke="#74787a" strokeWidth="2"/><path d="M4 4l12 12" stroke="#74787a" strokeWidth="2"/></svg>
+              {email && !isLoading && (
+                <button
+                  type="button"
+                  className="loginClearBtn"
+                  aria-label="Effacer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setEmail('');
+                  }}
+                >
+                  ×
+                </button>
               )}
-            </button>
+            </div>
+            {emailError && <div className="errorMessage">{emailError}</div>}
+            <div className="loginCheckboxRow">
+              <label className="loginCheckboxLabel">
+                <input
+                  type="checkbox"
+                  className="loginCheckbox"
+                  checked={rememberEmail}
+                  onChange={(e) => setRememberEmail(e.target.checked)}
+                  disabled={isLoading}
+                />
+                <span className="loginCustomCheckbox" aria-hidden="true" />
+                <span className="loginCheckboxText">Se souvenir de mon email</span>
+              </label>
+            </div>
           </div>
-          {passwordError && <div className={styles.errorMessage}>{passwordError}</div>}
-          {/* Submit button */}
-          <button 
-            className={`${styles.loginSubmitBtn} ${isLoading ? styles.loading : ''}`} 
+          <div className="loginFormSection">
+            <label className="loginLabel" htmlFor="login-password">
+              Mot de passe maître
+            </label>
+            <div className="loginInputWrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="login-password"
+                placeholder="Votre mot de passe maître.."
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`loginInput input${passwordError ? ' inputError' : ''}`}
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                className="loginEyeBtn"
+                aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowPassword(v => !v);
+                }}
+                disabled={isLoading}
+              >
+                {showPassword ? (
+                  <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M1.5 10S4.5 4.5 10 4.5 18.5 10 18.5 10 15.5 15.5 10 15.5 1.5 10 1.5 10Z" stroke="#74787a" strokeWidth="2" /><circle cx="10" cy="10" r="3" stroke="#74787a" strokeWidth="2" /></svg>
+                ) : (
+                  <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M1.5 10S4.5 4.5 10 4.5 18.5 10 18.5 10 15.5 15.5 10 15.5 1.5 10 1.5 10Z" stroke="#74787a" strokeWidth="2" /><path d="M4 4l12 12" stroke="#74787a" strokeWidth="2" /></svg>
+                )}
+              </button>
+            </div>
+            {passwordError && <div className="errorMessage">{passwordError}</div>}
+          </div>
+          <button
+            className="btn btn-primary"
             type="submit"
             disabled={isLoading}
           >
             {isLoading ? (
-              <div className={styles.spinner}></div>
+              <div className="spinner"></div>
             ) : (
               'Se connecter'
             )}

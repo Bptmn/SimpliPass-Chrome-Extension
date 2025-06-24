@@ -1,7 +1,8 @@
 # SimpliPass Chrome Extension – Project Overview
 
 I want you to always perform all necessary actions, do not explain and ask if I want the modification.
-Never modify anything inside the Dist folder
+Never modify anything inside the Dist folder.
+This is a cybersecurity project, you need to always ensure the best practices in term of security
 
 Project explanation:
 

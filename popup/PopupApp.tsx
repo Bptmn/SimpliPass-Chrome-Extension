@@ -8,6 +8,10 @@ import { GeneratorPage } from './components/pages/generatorPage';
 import SettingsPage from './components/pages/settingsPage';
 import LoginPage from './components/pages/loginPage';
 import { PageState, CredentialMeta } from '../src/types';
+import { Amplify } from 'aws-amplify';
+import { config } from '../config/config';
+
+Amplify.configure({ Auth: { Cognito: config.Cognito } });
 
 export const PopupApp: React.FC = () => {
   console.log('PopupApp component rendering...');
@@ -21,22 +25,26 @@ export const PopupApp: React.FC = () => {
   useEffect(() => {
     console.log('PopupApp useEffect running...');
     
-    // Get current tab and page state
+    // Always get the current tab's domain/url live
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
       if (!tab?.id) return;
-
-      chrome.runtime.sendMessage({ type: 'GET_PAGE_STATE', tabId: tab.id }, (state: PageState | null) => {
-        if (state?.domain) {
-          setPageState(state);
-          // Get credential suggestions from storage
-          chrome.storage.local.get(['credentialMetas'], (result) => {
-            const metas = (result.credentialMetas || [])
-              .filter((meta: CredentialMeta) => meta.domain === state.domain);
-            setSuggestions(metas);
-          });
+      chrome.scripting.executeScript(
+        {
+          target: { tabId: tab.id },
+          func: () => ({
+            url: window.location.href,
+            domain: window.location.hostname,
+            hasLoginForm: !!document.querySelector('form input[type="password"]'),
+          }),
+        },
+        (results) => {
+          if (chrome.runtime.lastError || !results || !results[0]?.result) return;
+          const { url, domain, hasLoginForm } = results[0].result;
+          setPageState({ url, domain, hasLoginForm });
+          // Optionally: fetch credentials here if needed
         }
-      });
+      );
     });
 
     // Set up auth listener
