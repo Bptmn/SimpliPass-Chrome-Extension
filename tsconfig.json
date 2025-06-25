@@ -13,8 +13,20 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": "src",
+    "paths": {
+      "components/*": ["components/*"],
+      "hooks/*": ["hooks/*"],
+      "business/*": ["business/*"],
+      "services/*": ["services/*"],
+      "utils/*": ["utils/*"],
+      "types/*": ["types/*"],
+      "styles/*": ["styles/*"],
+      "pages/*": ["pages/*"],
+      "popup/*": ["popup/*"]
+    }
   },
-  "include": ["popup/**/*", "src/**/*", "background/**/*", "utils/**/*", "global.d.ts"],
-  "exclude": ["content/content.js", "popup/init.js"]
+  "include": ["src/**/*", "global.d.ts"],
+  "exclude": ["dist", "node_modules", "**/*.test.*", "**/__tests__/*"]
 }

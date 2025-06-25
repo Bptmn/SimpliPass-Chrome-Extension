@@ -1,0 +1,147 @@
+@import '../../styles/tokens.css';
+
+/* Settings Page Specific Styles */
+.settings-page h1 {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-secondary);
+  padding: 16px;
+  margin: 0;
+}
+
+.card-settings {
+  padding: 8px 7px 8px 6px;
+  background: var(--secondary-background);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  width: 100%;
+  box-sizing: border-box;
+  border: var(--container-border);
+}
+
+.menu-arrow {
+  display: flex;
+}
+
+.btn-list {
+  gap: 5px;
+}
+
+.profile-card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  flex-direction: column;
+  border-radius: var(--radius-md);
+}
+
+.profile-card .user-icon {
+  font-size: 24px;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--secondary-background);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.profile-card .user-info {
+  flex: 1;
+}
+
+.profile-card .user-email {
+  font-size: 15px;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.profile-card .user-subscription-title {
+  font-size: 14px;
+  color: var(--color-secondary);
+  font-weight: 500;
+}
+
+.profile-card .user-subscription-value {
+  font-size: 14px;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.profile-card .user-status {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: 8px 7px 8px 6px;
+  border-radius: var(--radius-md);
+}
+
+.menu-item {
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  border: none;
+  text-align: left;
+  width: 100%;
+  outline: none;
+  position: relative;
+}
+
+.menu-item:hover, .menu-item:focus {
+  background: var(--secondary-background);
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.menu-item:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.menu-item .menu-icon {
+  color: var(--color-secondary);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.menu-item .menu-label {
+  font-size: 14px;
+  color: var(--color-primary);
+  flex: 1;
+  font-weight: 400;
+}
+
+.menu-item .menu-arrow {
+  color: var(--color-accent);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+

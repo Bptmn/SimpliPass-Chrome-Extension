@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+.git/
+.husky/
+assets/
+.vscode/
+coverage/
+*.min.js
+*.bundle.js
+*.config.js
+*.json
+*.lock

@@ -1,20 +1,2105 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-/******/ 	var __webpack_modules__ = ({
+/******/ 	// The require scope
+/******/ 	var __webpack_require__ = {};
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
+/************************************************************************/
 
-/***/ 223:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+;// ./src/config/firebase.ts
+const firebaseConfig = {
+    apiKey: "AIzaSyBLXniW7Nz3-odWJ6jwFFWDckyMPY7DlwI" || 0,
+    authDomain: "simpli-pass-amplify-gen-hetve5.firebaseapp.com" || 0,
+    projectId: "simpli-pass-amplify-gen-hetve5" || 0,
+    storageBucket: "simpli-pass-amplify-gen-hetve5.firebasestorage.app" || 0,
+    messagingSenderId: "307909442902" || 0,
+    appId: "1:307909442902:web:bdb7e4ef9def0a028beaf7" || 0,
+    measurementId: "MISSING_ENV_VAR".REACT_APP_FIREBASE_MEASUREMENT_ID || '',
+};
+// Log the actual values to check if they're loaded
+console.log('Firebase Config Values:', {
+    apiKey: firebaseConfig.apiKey ? 'set' : 'not set',
+    authDomain: firebaseConfig.authDomain ? 'set' : 'not set',
+    projectId: firebaseConfig.projectId ? 'set' : 'not set',
+    storageBucket: firebaseConfig.storageBucket ? 'set' : 'not set',
+    messagingSenderId: firebaseConfig.messagingSenderId ? 'set' : 'not set',
+    appId: firebaseConfig.appId ? 'set' : 'not set',
+    measurementId: firebaseConfig.measurementId ? 'set' : 'not set',
+});
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Dk: () => (/* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__.Dk),
-/* harmony export */   Wp: () => (/* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__.Wp)
-/* harmony export */ });
-/* harmony import */ var _firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8461);
 
+;// ./node_modules/@firebase/util/dist/index.esm2017.js
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * @fileoverview Firebase constants.  Some of these (@defines) can be overridden at compile-time.
+ */
+const CONSTANTS = {
+    /**
+     * @define {boolean} Whether this is the client Node.js SDK.
+     */
+    NODE_CLIENT: false,
+    /**
+     * @define {boolean} Whether this is the Admin Node.js SDK.
+     */
+    NODE_ADMIN: false,
+    /**
+     * Firebase SDK Version
+     */
+    SDK_VERSION: '${JSCORE_VERSION}'
+};
 
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Throws an error if the provided assertion is falsy
+ */
+const assert = function (assertion, message) {
+    if (!assertion) {
+        throw assertionError(message);
+    }
+};
+/**
+ * Returns an Error object suitable for throwing.
+ */
+const assertionError = function (message) {
+    return new Error('Firebase Database (' +
+        CONSTANTS.SDK_VERSION +
+        ') INTERNAL ASSERT FAILED: ' +
+        message);
+};
 
-var name = "firebase";
-var version = "10.14.1";
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const stringToByteArray$1 = function (str) {
+    // TODO(user): Use native implementations if/when available
+    const out = [];
+    let p = 0;
+    for (let i = 0; i < str.length; i++) {
+        let c = str.charCodeAt(i);
+        if (c < 128) {
+            out[p++] = c;
+        }
+        else if (c < 2048) {
+            out[p++] = (c >> 6) | 192;
+            out[p++] = (c & 63) | 128;
+        }
+        else if ((c & 0xfc00) === 0xd800 &&
+            i + 1 < str.length &&
+            (str.charCodeAt(i + 1) & 0xfc00) === 0xdc00) {
+            // Surrogate Pair
+            c = 0x10000 + ((c & 0x03ff) << 10) + (str.charCodeAt(++i) & 0x03ff);
+            out[p++] = (c >> 18) | 240;
+            out[p++] = ((c >> 12) & 63) | 128;
+            out[p++] = ((c >> 6) & 63) | 128;
+            out[p++] = (c & 63) | 128;
+        }
+        else {
+            out[p++] = (c >> 12) | 224;
+            out[p++] = ((c >> 6) & 63) | 128;
+            out[p++] = (c & 63) | 128;
+        }
+    }
+    return out;
+};
+/**
+ * Turns an array of numbers into the string given by the concatenation of the
+ * characters to which the numbers correspond.
+ * @param bytes Array of numbers representing characters.
+ * @return Stringification of the array.
+ */
+const byteArrayToString = function (bytes) {
+    // TODO(user): Use native implementations if/when available
+    const out = [];
+    let pos = 0, c = 0;
+    while (pos < bytes.length) {
+        const c1 = bytes[pos++];
+        if (c1 < 128) {
+            out[c++] = String.fromCharCode(c1);
+        }
+        else if (c1 > 191 && c1 < 224) {
+            const c2 = bytes[pos++];
+            out[c++] = String.fromCharCode(((c1 & 31) << 6) | (c2 & 63));
+        }
+        else if (c1 > 239 && c1 < 365) {
+            // Surrogate Pair
+            const c2 = bytes[pos++];
+            const c3 = bytes[pos++];
+            const c4 = bytes[pos++];
+            const u = (((c1 & 7) << 18) | ((c2 & 63) << 12) | ((c3 & 63) << 6) | (c4 & 63)) -
+                0x10000;
+            out[c++] = String.fromCharCode(0xd800 + (u >> 10));
+            out[c++] = String.fromCharCode(0xdc00 + (u & 1023));
+        }
+        else {
+            const c2 = bytes[pos++];
+            const c3 = bytes[pos++];
+            out[c++] = String.fromCharCode(((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+        }
+    }
+    return out.join('');
+};
+// We define it as an object literal instead of a class because a class compiled down to es5 can't
+// be treeshaked. https://github.com/rollup/rollup/issues/1691
+// Static lookup maps, lazily populated by init_()
+const base64 = {
+    /**
+     * Maps bytes to characters.
+     */
+    byteToCharMap_: null,
+    /**
+     * Maps characters to bytes.
+     */
+    charToByteMap_: null,
+    /**
+     * Maps bytes to websafe characters.
+     * @private
+     */
+    byteToCharMapWebSafe_: null,
+    /**
+     * Maps websafe characters to bytes.
+     * @private
+     */
+    charToByteMapWebSafe_: null,
+    /**
+     * Our default alphabet, shared between
+     * ENCODED_VALS and ENCODED_VALS_WEBSAFE
+     */
+    ENCODED_VALS_BASE: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + 'abcdefghijklmnopqrstuvwxyz' + '0123456789',
+    /**
+     * Our default alphabet. Value 64 (=) is special; it means "nothing."
+     */
+    get ENCODED_VALS() {
+        return this.ENCODED_VALS_BASE + '+/=';
+    },
+    /**
+     * Our websafe alphabet.
+     */
+    get ENCODED_VALS_WEBSAFE() {
+        return this.ENCODED_VALS_BASE + '-_.';
+    },
+    /**
+     * Whether this browser supports the atob and btoa functions. This extension
+     * started at Mozilla but is now implemented by many browsers. We use the
+     * ASSUME_* variables to avoid pulling in the full useragent detection library
+     * but still allowing the standard per-browser compilations.
+     *
+     */
+    HAS_NATIVE_SUPPORT: typeof atob === 'function',
+    /**
+     * Base64-encode an array of bytes.
+     *
+     * @param input An array of bytes (numbers with
+     *     value in [0, 255]) to encode.
+     * @param webSafe Boolean indicating we should use the
+     *     alternative alphabet.
+     * @return The base64 encoded string.
+     */
+    encodeByteArray(input, webSafe) {
+        if (!Array.isArray(input)) {
+            throw Error('encodeByteArray takes an array as a parameter');
+        }
+        this.init_();
+        const byteToCharMap = webSafe
+            ? this.byteToCharMapWebSafe_
+            : this.byteToCharMap_;
+        const output = [];
+        for (let i = 0; i < input.length; i += 3) {
+            const byte1 = input[i];
+            const haveByte2 = i + 1 < input.length;
+            const byte2 = haveByte2 ? input[i + 1] : 0;
+            const haveByte3 = i + 2 < input.length;
+            const byte3 = haveByte3 ? input[i + 2] : 0;
+            const outByte1 = byte1 >> 2;
+            const outByte2 = ((byte1 & 0x03) << 4) | (byte2 >> 4);
+            let outByte3 = ((byte2 & 0x0f) << 2) | (byte3 >> 6);
+            let outByte4 = byte3 & 0x3f;
+            if (!haveByte3) {
+                outByte4 = 64;
+                if (!haveByte2) {
+                    outByte3 = 64;
+                }
+            }
+            output.push(byteToCharMap[outByte1], byteToCharMap[outByte2], byteToCharMap[outByte3], byteToCharMap[outByte4]);
+        }
+        return output.join('');
+    },
+    /**
+     * Base64-encode a string.
+     *
+     * @param input A string to encode.
+     * @param webSafe If true, we should use the
+     *     alternative alphabet.
+     * @return The base64 encoded string.
+     */
+    encodeString(input, webSafe) {
+        // Shortcut for Mozilla browsers that implement
+        // a native base64 encoder in the form of "btoa/atob"
+        if (this.HAS_NATIVE_SUPPORT && !webSafe) {
+            return btoa(input);
+        }
+        return this.encodeByteArray(stringToByteArray$1(input), webSafe);
+    },
+    /**
+     * Base64-decode a string.
+     *
+     * @param input to decode.
+     * @param webSafe True if we should use the
+     *     alternative alphabet.
+     * @return string representing the decoded value.
+     */
+    decodeString(input, webSafe) {
+        // Shortcut for Mozilla browsers that implement
+        // a native base64 encoder in the form of "btoa/atob"
+        if (this.HAS_NATIVE_SUPPORT && !webSafe) {
+            return atob(input);
+        }
+        return byteArrayToString(this.decodeStringToByteArray(input, webSafe));
+    },
+    /**
+     * Base64-decode a string.
+     *
+     * In base-64 decoding, groups of four characters are converted into three
+     * bytes.  If the encoder did not apply padding, the input length may not
+     * be a multiple of 4.
+     *
+     * In this case, the last group will have fewer than 4 characters, and
+     * padding will be inferred.  If the group has one or two characters, it decodes
+     * to one byte.  If the group has three characters, it decodes to two bytes.
+     *
+     * @param input Input to decode.
+     * @param webSafe True if we should use the web-safe alphabet.
+     * @return bytes representing the decoded value.
+     */
+    decodeStringToByteArray(input, webSafe) {
+        this.init_();
+        const charToByteMap = webSafe
+            ? this.charToByteMapWebSafe_
+            : this.charToByteMap_;
+        const output = [];
+        for (let i = 0; i < input.length;) {
+            const byte1 = charToByteMap[input.charAt(i++)];
+            const haveByte2 = i < input.length;
+            const byte2 = haveByte2 ? charToByteMap[input.charAt(i)] : 0;
+            ++i;
+            const haveByte3 = i < input.length;
+            const byte3 = haveByte3 ? charToByteMap[input.charAt(i)] : 64;
+            ++i;
+            const haveByte4 = i < input.length;
+            const byte4 = haveByte4 ? charToByteMap[input.charAt(i)] : 64;
+            ++i;
+            if (byte1 == null || byte2 == null || byte3 == null || byte4 == null) {
+                throw new DecodeBase64StringError();
+            }
+            const outByte1 = (byte1 << 2) | (byte2 >> 4);
+            output.push(outByte1);
+            if (byte3 !== 64) {
+                const outByte2 = ((byte2 << 4) & 0xf0) | (byte3 >> 2);
+                output.push(outByte2);
+                if (byte4 !== 64) {
+                    const outByte3 = ((byte3 << 6) & 0xc0) | byte4;
+                    output.push(outByte3);
+                }
+            }
+        }
+        return output;
+    },
+    /**
+     * Lazy static initialization function. Called before
+     * accessing any of the static map variables.
+     * @private
+     */
+    init_() {
+        if (!this.byteToCharMap_) {
+            this.byteToCharMap_ = {};
+            this.charToByteMap_ = {};
+            this.byteToCharMapWebSafe_ = {};
+            this.charToByteMapWebSafe_ = {};
+            // We want quick mappings back and forth, so we precompute two maps.
+            for (let i = 0; i < this.ENCODED_VALS.length; i++) {
+                this.byteToCharMap_[i] = this.ENCODED_VALS.charAt(i);
+                this.charToByteMap_[this.byteToCharMap_[i]] = i;
+                this.byteToCharMapWebSafe_[i] = this.ENCODED_VALS_WEBSAFE.charAt(i);
+                this.charToByteMapWebSafe_[this.byteToCharMapWebSafe_[i]] = i;
+                // Be forgiving when decoding and correctly decode both encodings.
+                if (i >= this.ENCODED_VALS_BASE.length) {
+                    this.charToByteMap_[this.ENCODED_VALS_WEBSAFE.charAt(i)] = i;
+                    this.charToByteMapWebSafe_[this.ENCODED_VALS.charAt(i)] = i;
+                }
+            }
+        }
+    }
+};
+/**
+ * An error encountered while decoding base64 string.
+ */
+class DecodeBase64StringError extends Error {
+    constructor() {
+        super(...arguments);
+        this.name = 'DecodeBase64StringError';
+    }
+}
+/**
+ * URL-safe base64 encoding
+ */
+const base64Encode = function (str) {
+    const utf8Bytes = stringToByteArray$1(str);
+    return base64.encodeByteArray(utf8Bytes, true);
+};
+/**
+ * URL-safe base64 encoding (without "." padding in the end).
+ * e.g. Used in JSON Web Token (JWT) parts.
+ */
+const base64urlEncodeWithoutPadding = function (str) {
+    // Use base64url encoding and remove padding in the end (dot characters).
+    return base64Encode(str).replace(/\./g, '');
+};
+/**
+ * URL-safe base64 decoding
+ *
+ * NOTE: DO NOT use the global atob() function - it does NOT support the
+ * base64Url variant encoding.
+ *
+ * @param str To be decoded
+ * @return Decoded result, if possible
+ */
+const base64Decode = function (str) {
+    try {
+        return base64.decodeString(str, true);
+    }
+    catch (e) {
+        console.error('base64Decode failed: ', e);
+    }
+    return null;
+};
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Do a deep-copy of basic JavaScript Objects or Arrays.
+ */
+function deepCopy(value) {
+    return deepExtend(undefined, value);
+}
+/**
+ * Copy properties from source to target (recursively allows extension
+ * of Objects and Arrays).  Scalar values in the target are over-written.
+ * If target is undefined, an object of the appropriate type will be created
+ * (and returned).
+ *
+ * We recursively copy all child properties of plain Objects in the source- so
+ * that namespace- like dictionaries are merged.
+ *
+ * Note that the target can be a function, in which case the properties in
+ * the source Object are copied onto it as static properties of the Function.
+ *
+ * Note: we don't merge __proto__ to prevent prototype pollution
+ */
+function deepExtend(target, source) {
+    if (!(source instanceof Object)) {
+        return source;
+    }
+    switch (source.constructor) {
+        case Date:
+            // Treat Dates like scalars; if the target date object had any child
+            // properties - they will be lost!
+            const dateValue = source;
+            return new Date(dateValue.getTime());
+        case Object:
+            if (target === undefined) {
+                target = {};
+            }
+            break;
+        case Array:
+            // Always copy the array source and overwrite the target.
+            target = [];
+            break;
+        default:
+            // Not a plain Object - treat it as a scalar.
+            return source;
+    }
+    for (const prop in source) {
+        // use isValidKey to guard against prototype pollution. See https://snyk.io/vuln/SNYK-JS-LODASH-450202
+        if (!source.hasOwnProperty(prop) || !isValidKey(prop)) {
+            continue;
+        }
+        target[prop] = deepExtend(target[prop], source[prop]);
+    }
+    return target;
+}
+function isValidKey(key) {
+    return key !== '__proto__';
+}
+
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Polyfill for `globalThis` object.
+ * @returns the `globalThis` object for the given environment.
+ * @public
+ */
+function getGlobal() {
+    if (typeof self !== 'undefined') {
+        return self;
+    }
+    if (typeof window !== 'undefined') {
+        return window;
+    }
+    if (typeof __webpack_require__.g !== 'undefined') {
+        return __webpack_require__.g;
+    }
+    throw new Error('Unable to locate global object.');
+}
+
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const getDefaultsFromGlobal = () => getGlobal().__FIREBASE_DEFAULTS__;
+/**
+ * Attempt to read defaults from a JSON string provided to
+ * process(.)env(.)__FIREBASE_DEFAULTS__ or a JSON file whose path is in
+ * process(.)env(.)__FIREBASE_DEFAULTS_PATH__
+ * The dots are in parens because certain compilers (Vite?) cannot
+ * handle seeing that variable in comments.
+ * See https://github.com/firebase/firebase-js-sdk/issues/6838
+ */
+const getDefaultsFromEnvVariable = () => {
+    if (typeof process === 'undefined' || "string" === 'undefined') {
+        return;
+    }
+    const defaultsJsonString = "MISSING_ENV_VAR".__FIREBASE_DEFAULTS__;
+    if (defaultsJsonString) {
+        return JSON.parse(defaultsJsonString);
+    }
+};
+const getDefaultsFromCookie = () => {
+    if (typeof document === 'undefined') {
+        return;
+    }
+    let match;
+    try {
+        match = document.cookie.match(/__FIREBASE_DEFAULTS__=([^;]+)/);
+    }
+    catch (e) {
+        // Some environments such as Angular Universal SSR have a
+        // `document` object but error on accessing `document.cookie`.
+        return;
+    }
+    const decoded = match && base64Decode(match[1]);
+    return decoded && JSON.parse(decoded);
+};
+/**
+ * Get the __FIREBASE_DEFAULTS__ object. It checks in order:
+ * (1) if such an object exists as a property of `globalThis`
+ * (2) if such an object was provided on a shell environment variable
+ * (3) if such an object exists in a cookie
+ * @public
+ */
+const getDefaults = () => {
+    try {
+        return (getDefaultsFromGlobal() ||
+            getDefaultsFromEnvVariable() ||
+            getDefaultsFromCookie());
+    }
+    catch (e) {
+        /**
+         * Catch-all for being unable to get __FIREBASE_DEFAULTS__ due
+         * to any environment case we have not accounted for. Log to
+         * info instead of swallowing so we can find these unknown cases
+         * and add paths for them if needed.
+         */
+        console.info(`Unable to get __FIREBASE_DEFAULTS__ due to: ${e}`);
+        return;
+    }
+};
+/**
+ * Returns emulator host stored in the __FIREBASE_DEFAULTS__ object
+ * for the given product.
+ * @returns a URL host formatted like `127.0.0.1:9999` or `[::1]:4000` if available
+ * @public
+ */
+const getDefaultEmulatorHost = (productName) => { var _a, _b; return (_b = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.emulatorHosts) === null || _b === void 0 ? void 0 : _b[productName]; };
+/**
+ * Returns emulator hostname and port stored in the __FIREBASE_DEFAULTS__ object
+ * for the given product.
+ * @returns a pair of hostname and port like `["::1", 4000]` if available
+ * @public
+ */
+const getDefaultEmulatorHostnameAndPort = (productName) => {
+    const host = getDefaultEmulatorHost(productName);
+    if (!host) {
+        return undefined;
+    }
+    const separatorIndex = host.lastIndexOf(':'); // Finding the last since IPv6 addr also has colons.
+    if (separatorIndex <= 0 || separatorIndex + 1 === host.length) {
+        throw new Error(`Invalid host ${host} with no separate hostname and port!`);
+    }
+    // eslint-disable-next-line no-restricted-globals
+    const port = parseInt(host.substring(separatorIndex + 1), 10);
+    if (host[0] === '[') {
+        // Bracket-quoted `[ipv6addr]:port` => return "ipv6addr" (without brackets).
+        return [host.substring(1, separatorIndex - 1), port];
+    }
+    else {
+        return [host.substring(0, separatorIndex), port];
+    }
+};
+/**
+ * Returns Firebase app config stored in the __FIREBASE_DEFAULTS__ object.
+ * @public
+ */
+const getDefaultAppConfig = () => { var _a; return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.config; };
+/**
+ * Returns an experimental setting on the __FIREBASE_DEFAULTS__ object (properties
+ * prefixed by "_")
+ * @public
+ */
+const getExperimentalSetting = (name) => { var _a; return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a[`_${name}`]; };
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class Deferred {
+    constructor() {
+        this.reject = () => { };
+        this.resolve = () => { };
+        this.promise = new Promise((resolve, reject) => {
+            this.resolve = resolve;
+            this.reject = reject;
+        });
+    }
+    /**
+     * Our API internals are not promisified and cannot because our callback APIs have subtle expectations around
+     * invoking promises inline, which Promises are forbidden to do. This method accepts an optional node-style callback
+     * and returns a node-style callback which will resolve or reject the Deferred's promise.
+     */
+    wrapCallback(callback) {
+        return (error, value) => {
+            if (error) {
+                this.reject(error);
+            }
+            else {
+                this.resolve(value);
+            }
+            if (typeof callback === 'function') {
+                // Attaching noop handler just in case developer wasn't expecting
+                // promises
+                this.promise.catch(() => { });
+                // Some of our callbacks don't expect a value and our own tests
+                // assert that the parameter length is 1
+                if (callback.length === 1) {
+                    callback(error);
+                }
+                else {
+                    callback(error, value);
+                }
+            }
+        };
+    }
+}
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function createMockUserToken(token, projectId) {
+    if (token.uid) {
+        throw new Error('The "uid" field is no longer supported by mockUserToken. Please use "sub" instead for Firebase Auth User ID.');
+    }
+    // Unsecured JWTs use "none" as the algorithm.
+    const header = {
+        alg: 'none',
+        type: 'JWT'
+    };
+    const project = projectId || 'demo-project';
+    const iat = token.iat || 0;
+    const sub = token.sub || token.user_id;
+    if (!sub) {
+        throw new Error("mockUserToken must contain 'sub' or 'user_id' field!");
+    }
+    const payload = Object.assign({ 
+        // Set all required fields to decent defaults
+        iss: `https://securetoken.google.com/${project}`, aud: project, iat, exp: iat + 3600, auth_time: iat, sub, user_id: sub, firebase: {
+            sign_in_provider: 'custom',
+            identities: {}
+        } }, token);
+    // Unsecured JWTs use the empty string as a signature.
+    const signature = '';
+    return [
+        base64urlEncodeWithoutPadding(JSON.stringify(header)),
+        base64urlEncodeWithoutPadding(JSON.stringify(payload)),
+        signature
+    ].join('.');
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Returns navigator.userAgent string or '' if it's not defined.
+ * @return user agent string
+ */
+function index_esm2017_getUA() {
+    if (typeof navigator !== 'undefined' &&
+        typeof navigator['userAgent'] === 'string') {
+        return navigator['userAgent'];
+    }
+    else {
+        return '';
+    }
+}
+/**
+ * Detect Cordova / PhoneGap / Ionic frameworks on a mobile device.
+ *
+ * Deliberately does not rely on checking `file://` URLs (as this fails PhoneGap
+ * in the Ripple emulator) nor Cordova `onDeviceReady`, which would normally
+ * wait for a callback.
+ */
+function isMobileCordova() {
+    return (typeof window !== 'undefined' &&
+        // @ts-ignore Setting up an broadly applicable index signature for Window
+        // just to deal with this case would probably be a bad idea.
+        !!(window['cordova'] || window['phonegap'] || window['PhoneGap']) &&
+        /ios|iphone|ipod|ipad|android|blackberry|iemobile/i.test(index_esm2017_getUA()));
+}
+/**
+ * Detect Node.js.
+ *
+ * @return true if Node.js environment is detected or specified.
+ */
+// Node detection logic from: https://github.com/iliakan/detect-node/
+function isNode() {
+    var _a;
+    const forceEnvironment = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.forceEnvironment;
+    if (forceEnvironment === 'node') {
+        return true;
+    }
+    else if (forceEnvironment === 'browser') {
+        return false;
+    }
+    try {
+        return (Object.prototype.toString.call(__webpack_require__.g.process) === '[object process]');
+    }
+    catch (e) {
+        return false;
+    }
+}
+/**
+ * Detect Browser Environment.
+ * Note: This will return true for certain test frameworks that are incompletely
+ * mimicking a browser, and should not lead to assuming all browser APIs are
+ * available.
+ */
+function index_esm2017_isBrowser() {
+    return typeof window !== 'undefined' || index_esm2017_isWebWorker();
+}
+/**
+ * Detect Web Worker context.
+ */
+function index_esm2017_isWebWorker() {
+    return (typeof WorkerGlobalScope !== 'undefined' &&
+        typeof self !== 'undefined' &&
+        self instanceof WorkerGlobalScope);
+}
+/**
+ * Detect Cloudflare Worker context.
+ */
+function isCloudflareWorker() {
+    return (typeof navigator !== 'undefined' &&
+        navigator.userAgent === 'Cloudflare-Workers');
+}
+function isBrowserExtension() {
+    const runtime = typeof chrome === 'object'
+        ? chrome.runtime
+        : typeof browser === 'object'
+            ? browser.runtime
+            : undefined;
+    return typeof runtime === 'object' && runtime.id !== undefined;
+}
+/**
+ * Detect React Native.
+ *
+ * @return true if ReactNative environment is detected.
+ */
+function isReactNative() {
+    return (typeof navigator === 'object' && navigator['product'] === 'ReactNative');
+}
+/** Detects Electron apps. */
+function isElectron() {
+    return index_esm2017_getUA().indexOf('Electron/') >= 0;
+}
+/** Detects Internet Explorer. */
+function isIE() {
+    const ua = index_esm2017_getUA();
+    return ua.indexOf('MSIE ') >= 0 || ua.indexOf('Trident/') >= 0;
+}
+/** Detects Universal Windows Platform apps. */
+function isUWP() {
+    return index_esm2017_getUA().indexOf('MSAppHost/') >= 0;
+}
+/**
+ * Detect whether the current SDK build is the Node version.
+ *
+ * @return true if it's the Node SDK build.
+ */
+function isNodeSdk() {
+    return CONSTANTS.NODE_CLIENT === true || CONSTANTS.NODE_ADMIN === true;
+}
+/** Returns true if we are running in Safari. */
+function isSafari() {
+    return (!isNode() &&
+        !!navigator.userAgent &&
+        navigator.userAgent.includes('Safari') &&
+        !navigator.userAgent.includes('Chrome'));
+}
+/**
+ * This method checks if indexedDB is supported by current browser/service worker context
+ * @return true if indexedDB is supported by current browser/service worker context
+ */
+function isIndexedDBAvailable() {
+    try {
+        return typeof indexedDB === 'object';
+    }
+    catch (e) {
+        return false;
+    }
+}
+/**
+ * This method validates browser/sw context for indexedDB by opening a dummy indexedDB database and reject
+ * if errors occur during the database open operation.
+ *
+ * @throws exception if current browser/sw context can't run idb.open (ex: Safari iframe, Firefox
+ * private browsing)
+ */
+function validateIndexedDBOpenable() {
+    return new Promise((resolve, reject) => {
+        try {
+            let preExist = true;
+            const DB_CHECK_NAME = 'validate-browser-context-for-indexeddb-analytics-module';
+            const request = self.indexedDB.open(DB_CHECK_NAME);
+            request.onsuccess = () => {
+                request.result.close();
+                // delete database only when it doesn't pre-exist
+                if (!preExist) {
+                    self.indexedDB.deleteDatabase(DB_CHECK_NAME);
+                }
+                resolve(true);
+            };
+            request.onupgradeneeded = () => {
+                preExist = false;
+            };
+            request.onerror = () => {
+                var _a;
+                reject(((_a = request.error) === null || _a === void 0 ? void 0 : _a.message) || '');
+            };
+        }
+        catch (error) {
+            reject(error);
+        }
+    });
+}
+/**
+ *
+ * This method checks whether cookie is enabled within current browser
+ * @return true if cookie is enabled within current browser
+ */
+function areCookiesEnabled() {
+    if (typeof navigator === 'undefined' || !navigator.cookieEnabled) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * @fileoverview Standardized Firebase Error.
+ *
+ * Usage:
+ *
+ *   // TypeScript string literals for type-safe codes
+ *   type Err =
+ *     'unknown' |
+ *     'object-not-found'
+ *     ;
+ *
+ *   // Closure enum for type-safe error codes
+ *   // at-enum {string}
+ *   var Err = {
+ *     UNKNOWN: 'unknown',
+ *     OBJECT_NOT_FOUND: 'object-not-found',
+ *   }
+ *
+ *   let errors: Map<Err, string> = {
+ *     'generic-error': "Unknown error",
+ *     'file-not-found': "Could not find file: {$file}",
+ *   };
+ *
+ *   // Type-safe function - must pass a valid error code as param.
+ *   let error = new ErrorFactory<Err>('service', 'Service', errors);
+ *
+ *   ...
+ *   throw error.create(Err.GENERIC);
+ *   ...
+ *   throw error.create(Err.FILE_NOT_FOUND, {'file': fileName});
+ *   ...
+ *   // Service: Could not file file: foo.txt (service/file-not-found).
+ *
+ *   catch (e) {
+ *     assert(e.message === "Could not find file: foo.txt.");
+ *     if ((e as FirebaseError)?.code === 'service/file-not-found') {
+ *       console.log("Could not read file: " + e['file']);
+ *     }
+ *   }
+ */
+const ERROR_NAME = 'FirebaseError';
+// Based on code from:
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Custom_Error_Types
+class FirebaseError extends Error {
+    constructor(
+    /** The error code for this error. */
+    code, message, 
+    /** Custom data for this error. */
+    customData) {
+        super(message);
+        this.code = code;
+        this.customData = customData;
+        /** The custom name for all FirebaseErrors. */
+        this.name = ERROR_NAME;
+        // Fix For ES5
+        // https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
+        Object.setPrototypeOf(this, FirebaseError.prototype);
+        // Maintains proper stack trace for where our error was thrown.
+        // Only available on V8.
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, ErrorFactory.prototype.create);
+        }
+    }
+}
+class ErrorFactory {
+    constructor(service, serviceName, errors) {
+        this.service = service;
+        this.serviceName = serviceName;
+        this.errors = errors;
+    }
+    create(code, ...data) {
+        const customData = data[0] || {};
+        const fullCode = `${this.service}/${code}`;
+        const template = this.errors[code];
+        const message = template ? replaceTemplate(template, customData) : 'Error';
+        // Service Name: Error message (service/code).
+        const fullMessage = `${this.serviceName}: ${message} (${fullCode}).`;
+        const error = new FirebaseError(fullCode, fullMessage, customData);
+        return error;
+    }
+}
+function replaceTemplate(template, data) {
+    return template.replace(PATTERN, (_, key) => {
+        const value = data[key];
+        return value != null ? String(value) : `<${key}?>`;
+    });
+}
+const PATTERN = /\{\$([^}]+)}/g;
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Evaluates a JSON string into a javascript object.
+ *
+ * @param {string} str A string containing JSON.
+ * @return {*} The javascript object representing the specified JSON.
+ */
+function jsonEval(str) {
+    return JSON.parse(str);
+}
+/**
+ * Returns JSON representing a javascript object.
+ * @param {*} data JavaScript object to be stringified.
+ * @return {string} The JSON contents of the object.
+ */
+function stringify(data) {
+    return JSON.stringify(data);
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Decodes a Firebase auth. token into constituent parts.
+ *
+ * Notes:
+ * - May return with invalid / incomplete claims if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */
+const decode = function (token) {
+    let header = {}, claims = {}, data = {}, signature = '';
+    try {
+        const parts = token.split('.');
+        header = jsonEval(base64Decode(parts[0]) || '');
+        claims = jsonEval(base64Decode(parts[1]) || '');
+        signature = parts[2];
+        data = claims['d'] || {};
+        delete claims['d'];
+    }
+    catch (e) { }
+    return {
+        header,
+        claims,
+        data,
+        signature
+    };
+};
+/**
+ * Decodes a Firebase auth. token and checks the validity of its time-based claims. Will return true if the
+ * token is within the time window authorized by the 'nbf' (not-before) and 'iat' (issued-at) claims.
+ *
+ * Notes:
+ * - May return a false negative if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */
+const isValidTimestamp = function (token) {
+    const claims = decode(token).claims;
+    const now = Math.floor(new Date().getTime() / 1000);
+    let validSince = 0, validUntil = 0;
+    if (typeof claims === 'object') {
+        if (claims.hasOwnProperty('nbf')) {
+            validSince = claims['nbf'];
+        }
+        else if (claims.hasOwnProperty('iat')) {
+            validSince = claims['iat'];
+        }
+        if (claims.hasOwnProperty('exp')) {
+            validUntil = claims['exp'];
+        }
+        else {
+            // token will expire after 24h by default
+            validUntil = validSince + 86400;
+        }
+    }
+    return (!!now &&
+        !!validSince &&
+        !!validUntil &&
+        now >= validSince &&
+        now <= validUntil);
+};
+/**
+ * Decodes a Firebase auth. token and returns its issued at time if valid, null otherwise.
+ *
+ * Notes:
+ * - May return null if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */
+const issuedAtTime = function (token) {
+    const claims = decode(token).claims;
+    if (typeof claims === 'object' && claims.hasOwnProperty('iat')) {
+        return claims['iat'];
+    }
+    return null;
+};
+/**
+ * Decodes a Firebase auth. token and checks the validity of its format. Expects a valid issued-at time.
+ *
+ * Notes:
+ * - May return a false negative if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */
+const isValidFormat = function (token) {
+    const decoded = decode(token), claims = decoded.claims;
+    return !!claims && typeof claims === 'object' && claims.hasOwnProperty('iat');
+};
+/**
+ * Attempts to peer into an auth token and determine if it's an admin auth token by looking at the claims portion.
+ *
+ * Notes:
+ * - May return a false negative if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */
+const isAdmin = function (token) {
+    const claims = decode(token).claims;
+    return typeof claims === 'object' && claims['admin'] === true;
+};
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function contains(obj, key) {
+    return Object.prototype.hasOwnProperty.call(obj, key);
+}
+function safeGet(obj, key) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        return obj[key];
+    }
+    else {
+        return undefined;
+    }
+}
+function isEmpty(obj) {
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            return false;
+        }
+    }
+    return true;
+}
+function map(obj, fn, contextObj) {
+    const res = {};
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            res[key] = fn.call(contextObj, obj[key], key, obj);
+        }
+    }
+    return res;
+}
+/**
+ * Deep equal two objects. Support Arrays and Objects.
+ */
+function index_esm2017_deepEqual(a, b) {
+    if (a === b) {
+        return true;
+    }
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
+    for (const k of aKeys) {
+        if (!bKeys.includes(k)) {
+            return false;
+        }
+        const aProp = a[k];
+        const bProp = b[k];
+        if (isObject(aProp) && isObject(bProp)) {
+            if (!index_esm2017_deepEqual(aProp, bProp)) {
+                return false;
+            }
+        }
+        else if (aProp !== bProp) {
+            return false;
+        }
+    }
+    for (const k of bKeys) {
+        if (!aKeys.includes(k)) {
+            return false;
+        }
+    }
+    return true;
+}
+function isObject(thing) {
+    return thing !== null && typeof thing === 'object';
+}
+
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Rejects if the given promise doesn't resolve in timeInMS milliseconds.
+ * @internal
+ */
+function promiseWithTimeout(promise, timeInMS = 2000) {
+    const deferredPromise = new Deferred();
+    setTimeout(() => deferredPromise.reject('timeout!'), timeInMS);
+    promise.then(deferredPromise.resolve, deferredPromise.reject);
+    return deferredPromise.promise;
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Returns a querystring-formatted string (e.g. &arg=val&arg2=val2) from a
+ * params object (e.g. {arg: 'val', arg2: 'val2'})
+ * Note: You must prepend it with ? when adding it to a URL.
+ */
+function index_esm2017_querystring(querystringParams) {
+    const params = [];
+    for (const [key, value] of Object.entries(querystringParams)) {
+        if (Array.isArray(value)) {
+            value.forEach(arrayVal => {
+                params.push(encodeURIComponent(key) + '=' + encodeURIComponent(arrayVal));
+            });
+        }
+        else {
+            params.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+        }
+    }
+    return params.length ? '&' + params.join('&') : '';
+}
+/**
+ * Decodes a querystring (e.g. ?arg=val&arg2=val2) into a params object
+ * (e.g. {arg: 'val', arg2: 'val2'})
+ */
+function querystringDecode(querystring) {
+    const obj = {};
+    const tokens = querystring.replace(/^\?/, '').split('&');
+    tokens.forEach(token => {
+        if (token) {
+            const [key, value] = token.split('=');
+            obj[decodeURIComponent(key)] = decodeURIComponent(value);
+        }
+    });
+    return obj;
+}
+/**
+ * Extract the query string part of a URL, including the leading question mark (if present).
+ */
+function extractQuerystring(url) {
+    const queryStart = url.indexOf('?');
+    if (!queryStart) {
+        return '';
+    }
+    const fragmentStart = url.indexOf('#', queryStart);
+    return url.substring(queryStart, fragmentStart > 0 ? fragmentStart : undefined);
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * @fileoverview SHA-1 cryptographic hash.
+ * Variable names follow the notation in FIPS PUB 180-3:
+ * http://csrc.nist.gov/publications/fips/fips180-3/fips180-3_final.pdf.
+ *
+ * Usage:
+ *   var sha1 = new sha1();
+ *   sha1.update(bytes);
+ *   var hash = sha1.digest();
+ *
+ * Performance:
+ *   Chrome 23:   ~400 Mbit/s
+ *   Firefox 16:  ~250 Mbit/s
+ *
+ */
+/**
+ * SHA-1 cryptographic hash constructor.
+ *
+ * The properties declared here are discussed in the above algorithm document.
+ * @constructor
+ * @final
+ * @struct
+ */
+class Sha1 {
+    constructor() {
+        /**
+         * Holds the previous values of accumulated variables a-e in the compress_
+         * function.
+         * @private
+         */
+        this.chain_ = [];
+        /**
+         * A buffer holding the partially computed hash result.
+         * @private
+         */
+        this.buf_ = [];
+        /**
+         * An array of 80 bytes, each a part of the message to be hashed.  Referred to
+         * as the message schedule in the docs.
+         * @private
+         */
+        this.W_ = [];
+        /**
+         * Contains data needed to pad messages less than 64 bytes.
+         * @private
+         */
+        this.pad_ = [];
+        /**
+         * @private {number}
+         */
+        this.inbuf_ = 0;
+        /**
+         * @private {number}
+         */
+        this.total_ = 0;
+        this.blockSize = 512 / 8;
+        this.pad_[0] = 128;
+        for (let i = 1; i < this.blockSize; ++i) {
+            this.pad_[i] = 0;
+        }
+        this.reset();
+    }
+    reset() {
+        this.chain_[0] = 0x67452301;
+        this.chain_[1] = 0xefcdab89;
+        this.chain_[2] = 0x98badcfe;
+        this.chain_[3] = 0x10325476;
+        this.chain_[4] = 0xc3d2e1f0;
+        this.inbuf_ = 0;
+        this.total_ = 0;
+    }
+    /**
+     * Internal compress helper function.
+     * @param buf Block to compress.
+     * @param offset Offset of the block in the buffer.
+     * @private
+     */
+    compress_(buf, offset) {
+        if (!offset) {
+            offset = 0;
+        }
+        const W = this.W_;
+        // get 16 big endian words
+        if (typeof buf === 'string') {
+            for (let i = 0; i < 16; i++) {
+                // TODO(user): [bug 8140122] Recent versions of Safari for Mac OS and iOS
+                // have a bug that turns the post-increment ++ operator into pre-increment
+                // during JIT compilation.  We have code that depends heavily on SHA-1 for
+                // correctness and which is affected by this bug, so I've removed all uses
+                // of post-increment ++ in which the result value is used.  We can revert
+                // this change once the Safari bug
+                // (https://bugs.webkit.org/show_bug.cgi?id=109036) has been fixed and
+                // most clients have been updated.
+                W[i] =
+                    (buf.charCodeAt(offset) << 24) |
+                        (buf.charCodeAt(offset + 1) << 16) |
+                        (buf.charCodeAt(offset + 2) << 8) |
+                        buf.charCodeAt(offset + 3);
+                offset += 4;
+            }
+        }
+        else {
+            for (let i = 0; i < 16; i++) {
+                W[i] =
+                    (buf[offset] << 24) |
+                        (buf[offset + 1] << 16) |
+                        (buf[offset + 2] << 8) |
+                        buf[offset + 3];
+                offset += 4;
+            }
+        }
+        // expand to 80 words
+        for (let i = 16; i < 80; i++) {
+            const t = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
+            W[i] = ((t << 1) | (t >>> 31)) & 0xffffffff;
+        }
+        let a = this.chain_[0];
+        let b = this.chain_[1];
+        let c = this.chain_[2];
+        let d = this.chain_[3];
+        let e = this.chain_[4];
+        let f, k;
+        // TODO(user): Try to unroll this loop to speed up the computation.
+        for (let i = 0; i < 80; i++) {
+            if (i < 40) {
+                if (i < 20) {
+                    f = d ^ (b & (c ^ d));
+                    k = 0x5a827999;
+                }
+                else {
+                    f = b ^ c ^ d;
+                    k = 0x6ed9eba1;
+                }
+            }
+            else {
+                if (i < 60) {
+                    f = (b & c) | (d & (b | c));
+                    k = 0x8f1bbcdc;
+                }
+                else {
+                    f = b ^ c ^ d;
+                    k = 0xca62c1d6;
+                }
+            }
+            const t = (((a << 5) | (a >>> 27)) + f + e + k + W[i]) & 0xffffffff;
+            e = d;
+            d = c;
+            c = ((b << 30) | (b >>> 2)) & 0xffffffff;
+            b = a;
+            a = t;
+        }
+        this.chain_[0] = (this.chain_[0] + a) & 0xffffffff;
+        this.chain_[1] = (this.chain_[1] + b) & 0xffffffff;
+        this.chain_[2] = (this.chain_[2] + c) & 0xffffffff;
+        this.chain_[3] = (this.chain_[3] + d) & 0xffffffff;
+        this.chain_[4] = (this.chain_[4] + e) & 0xffffffff;
+    }
+    update(bytes, length) {
+        // TODO(johnlenz): tighten the function signature and remove this check
+        if (bytes == null) {
+            return;
+        }
+        if (length === undefined) {
+            length = bytes.length;
+        }
+        const lengthMinusBlock = length - this.blockSize;
+        let n = 0;
+        // Using local instead of member variables gives ~5% speedup on Firefox 16.
+        const buf = this.buf_;
+        let inbuf = this.inbuf_;
+        // The outer while loop should execute at most twice.
+        while (n < length) {
+            // When we have no data in the block to top up, we can directly process the
+            // input buffer (assuming it contains sufficient data). This gives ~25%
+            // speedup on Chrome 23 and ~15% speedup on Firefox 16, but requires that
+            // the data is provided in large chunks (or in multiples of 64 bytes).
+            if (inbuf === 0) {
+                while (n <= lengthMinusBlock) {
+                    this.compress_(bytes, n);
+                    n += this.blockSize;
+                }
+            }
+            if (typeof bytes === 'string') {
+                while (n < length) {
+                    buf[inbuf] = bytes.charCodeAt(n);
+                    ++inbuf;
+                    ++n;
+                    if (inbuf === this.blockSize) {
+                        this.compress_(buf);
+                        inbuf = 0;
+                        // Jump to the outer loop so we use the full-block optimization.
+                        break;
+                    }
+                }
+            }
+            else {
+                while (n < length) {
+                    buf[inbuf] = bytes[n];
+                    ++inbuf;
+                    ++n;
+                    if (inbuf === this.blockSize) {
+                        this.compress_(buf);
+                        inbuf = 0;
+                        // Jump to the outer loop so we use the full-block optimization.
+                        break;
+                    }
+                }
+            }
+        }
+        this.inbuf_ = inbuf;
+        this.total_ += length;
+    }
+    /** @override */
+    digest() {
+        const digest = [];
+        let totalBits = this.total_ * 8;
+        // Add pad 0x80 0x00*.
+        if (this.inbuf_ < 56) {
+            this.update(this.pad_, 56 - this.inbuf_);
+        }
+        else {
+            this.update(this.pad_, this.blockSize - (this.inbuf_ - 56));
+        }
+        // Add # bits.
+        for (let i = this.blockSize - 1; i >= 56; i--) {
+            this.buf_[i] = totalBits & 255;
+            totalBits /= 256; // Don't use bit-shifting here!
+        }
+        this.compress_(this.buf_);
+        let n = 0;
+        for (let i = 0; i < 5; i++) {
+            for (let j = 24; j >= 0; j -= 8) {
+                digest[n] = (this.chain_[i] >> j) & 255;
+                ++n;
+            }
+        }
+        return digest;
+    }
+}
+
+/**
+ * Helper to make a Subscribe function (just like Promise helps make a
+ * Thenable).
+ *
+ * @param executor Function which can make calls to a single Observer
+ *     as a proxy.
+ * @param onNoObservers Callback when count of Observers goes to zero.
+ */
+function createSubscribe(executor, onNoObservers) {
+    const proxy = new ObserverProxy(executor, onNoObservers);
+    return proxy.subscribe.bind(proxy);
+}
+/**
+ * Implement fan-out for any number of Observers attached via a subscribe
+ * function.
+ */
+class ObserverProxy {
+    /**
+     * @param executor Function which can make calls to a single Observer
+     *     as a proxy.
+     * @param onNoObservers Callback when count of Observers goes to zero.
+     */
+    constructor(executor, onNoObservers) {
+        this.observers = [];
+        this.unsubscribes = [];
+        this.observerCount = 0;
+        // Micro-task scheduling by calling task.then().
+        this.task = Promise.resolve();
+        this.finalized = false;
+        this.onNoObservers = onNoObservers;
+        // Call the executor asynchronously so subscribers that are called
+        // synchronously after the creation of the subscribe function
+        // can still receive the very first value generated in the executor.
+        this.task
+            .then(() => {
+            executor(this);
+        })
+            .catch(e => {
+            this.error(e);
+        });
+    }
+    next(value) {
+        this.forEachObserver((observer) => {
+            observer.next(value);
+        });
+    }
+    error(error) {
+        this.forEachObserver((observer) => {
+            observer.error(error);
+        });
+        this.close(error);
+    }
+    complete() {
+        this.forEachObserver((observer) => {
+            observer.complete();
+        });
+        this.close();
+    }
+    /**
+     * Subscribe function that can be used to add an Observer to the fan-out list.
+     *
+     * - We require that no event is sent to a subscriber synchronously to their
+     *   call to subscribe().
+     */
+    subscribe(nextOrObserver, error, complete) {
+        let observer;
+        if (nextOrObserver === undefined &&
+            error === undefined &&
+            complete === undefined) {
+            throw new Error('Missing Observer.');
+        }
+        // Assemble an Observer object when passed as callback functions.
+        if (implementsAnyMethods(nextOrObserver, [
+            'next',
+            'error',
+            'complete'
+        ])) {
+            observer = nextOrObserver;
+        }
+        else {
+            observer = {
+                next: nextOrObserver,
+                error,
+                complete
+            };
+        }
+        if (observer.next === undefined) {
+            observer.next = noop;
+        }
+        if (observer.error === undefined) {
+            observer.error = noop;
+        }
+        if (observer.complete === undefined) {
+            observer.complete = noop;
+        }
+        const unsub = this.unsubscribeOne.bind(this, this.observers.length);
+        // Attempt to subscribe to a terminated Observable - we
+        // just respond to the Observer with the final error or complete
+        // event.
+        if (this.finalized) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            this.task.then(() => {
+                try {
+                    if (this.finalError) {
+                        observer.error(this.finalError);
+                    }
+                    else {
+                        observer.complete();
+                    }
+                }
+                catch (e) {
+                    // nothing
+                }
+                return;
+            });
+        }
+        this.observers.push(observer);
+        return unsub;
+    }
+    // Unsubscribe is synchronous - we guarantee that no events are sent to
+    // any unsubscribed Observer.
+    unsubscribeOne(i) {
+        if (this.observers === undefined || this.observers[i] === undefined) {
+            return;
+        }
+        delete this.observers[i];
+        this.observerCount -= 1;
+        if (this.observerCount === 0 && this.onNoObservers !== undefined) {
+            this.onNoObservers(this);
+        }
+    }
+    forEachObserver(fn) {
+        if (this.finalized) {
+            // Already closed by previous event....just eat the additional values.
+            return;
+        }
+        // Since sendOne calls asynchronously - there is no chance that
+        // this.observers will become undefined.
+        for (let i = 0; i < this.observers.length; i++) {
+            this.sendOne(i, fn);
+        }
+    }
+    // Call the Observer via one of it's callback function. We are careful to
+    // confirm that the observe has not been unsubscribed since this asynchronous
+    // function had been queued.
+    sendOne(i, fn) {
+        // Execute the callback asynchronously
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.task.then(() => {
+            if (this.observers !== undefined && this.observers[i] !== undefined) {
+                try {
+                    fn(this.observers[i]);
+                }
+                catch (e) {
+                    // Ignore exceptions raised in Observers or missing methods of an
+                    // Observer.
+                    // Log error to console. b/31404806
+                    if (typeof console !== 'undefined' && console.error) {
+                        console.error(e);
+                    }
+                }
+            }
+        });
+    }
+    close(err) {
+        if (this.finalized) {
+            return;
+        }
+        this.finalized = true;
+        if (err !== undefined) {
+            this.finalError = err;
+        }
+        // Proxy is no longer needed - garbage collect references
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.task.then(() => {
+            this.observers = undefined;
+            this.onNoObservers = undefined;
+        });
+    }
+}
+/** Turn synchronous function into one called asynchronously. */
+// eslint-disable-next-line @typescript-eslint/ban-types
+function index_esm2017_async(fn, onError) {
+    return (...args) => {
+        Promise.resolve(true)
+            .then(() => {
+            fn(...args);
+        })
+            .catch((error) => {
+            if (onError) {
+                onError(error);
+            }
+        });
+    };
+}
+/**
+ * Return true if the object passed in implements any of the named methods.
+ */
+function implementsAnyMethods(obj, methods) {
+    if (typeof obj !== 'object' || obj === null) {
+        return false;
+    }
+    for (const method of methods) {
+        if (method in obj && typeof obj[method] === 'function') {
+            return true;
+        }
+    }
+    return false;
+}
+function noop() {
+    // do nothing
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Check to make sure the appropriate number of arguments are provided for a public function.
+ * Throws an error if it fails.
+ *
+ * @param fnName The function name
+ * @param minCount The minimum number of arguments to allow for the function call
+ * @param maxCount The maximum number of argument to allow for the function call
+ * @param argCount The actual number of arguments provided.
+ */
+const validateArgCount = function (fnName, minCount, maxCount, argCount) {
+    let argError;
+    if (argCount < minCount) {
+        argError = 'at least ' + minCount;
+    }
+    else if (argCount > maxCount) {
+        argError = maxCount === 0 ? 'none' : 'no more than ' + maxCount;
+    }
+    if (argError) {
+        const error = fnName +
+            ' failed: Was called with ' +
+            argCount +
+            (argCount === 1 ? ' argument.' : ' arguments.') +
+            ' Expects ' +
+            argError +
+            '.';
+        throw new Error(error);
+    }
+};
+/**
+ * Generates a string to prefix an error message about failed argument validation
+ *
+ * @param fnName The function name
+ * @param argName The name of the argument
+ * @return The prefix to add to the error thrown for validation.
+ */
+function errorPrefix(fnName, argName) {
+    return `${fnName} failed: ${argName} argument `;
+}
+/**
+ * @param fnName
+ * @param argumentNumber
+ * @param namespace
+ * @param optional
+ */
+function validateNamespace(fnName, namespace, optional) {
+    if (optional && !namespace) {
+        return;
+    }
+    if (typeof namespace !== 'string') {
+        //TODO: I should do more validation here. We only allow certain chars in namespaces.
+        throw new Error(errorPrefix(fnName, 'namespace') + 'must be a valid firebase namespace.');
+    }
+}
+function validateCallback(fnName, argumentName, 
+// eslint-disable-next-line @typescript-eslint/ban-types
+callback, optional) {
+    if (optional && !callback) {
+        return;
+    }
+    if (typeof callback !== 'function') {
+        throw new Error(errorPrefix(fnName, argumentName) + 'must be a valid function.');
+    }
+}
+function validateContextObject(fnName, argumentName, context, optional) {
+    if (optional && !context) {
+        return;
+    }
+    if (typeof context !== 'object' || context === null) {
+        throw new Error(errorPrefix(fnName, argumentName) + 'must be a valid context object.');
+    }
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+// Code originally came from goog.crypt.stringToUtf8ByteArray, but for some reason they
+// automatically replaced '\r\n' with '\n', and they didn't handle surrogate pairs,
+// so it's been modified.
+// Note that not all Unicode characters appear as single characters in JavaScript strings.
+// fromCharCode returns the UTF-16 encoding of a character - so some Unicode characters
+// use 2 characters in JavaScript.  All 4-byte UTF-8 characters begin with a first
+// character in the range 0xD800 - 0xDBFF (the first character of a so-called surrogate
+// pair).
+// See http://www.ecma-international.org/ecma-262/5.1/#sec-15.1.3
+/**
+ * @param {string} str
+ * @return {Array}
+ */
+const stringToByteArray = function (str) {
+    const out = [];
+    let p = 0;
+    for (let i = 0; i < str.length; i++) {
+        let c = str.charCodeAt(i);
+        // Is this the lead surrogate in a surrogate pair?
+        if (c >= 0xd800 && c <= 0xdbff) {
+            const high = c - 0xd800; // the high 10 bits.
+            i++;
+            assert(i < str.length, 'Surrogate pair missing trail surrogate.');
+            const low = str.charCodeAt(i) - 0xdc00; // the low 10 bits.
+            c = 0x10000 + (high << 10) + low;
+        }
+        if (c < 128) {
+            out[p++] = c;
+        }
+        else if (c < 2048) {
+            out[p++] = (c >> 6) | 192;
+            out[p++] = (c & 63) | 128;
+        }
+        else if (c < 65536) {
+            out[p++] = (c >> 12) | 224;
+            out[p++] = ((c >> 6) & 63) | 128;
+            out[p++] = (c & 63) | 128;
+        }
+        else {
+            out[p++] = (c >> 18) | 240;
+            out[p++] = ((c >> 12) & 63) | 128;
+            out[p++] = ((c >> 6) & 63) | 128;
+            out[p++] = (c & 63) | 128;
+        }
+    }
+    return out;
+};
+/**
+ * Calculate length without actually converting; useful for doing cheaper validation.
+ * @param {string} str
+ * @return {number}
+ */
+const stringLength = function (str) {
+    let p = 0;
+    for (let i = 0; i < str.length; i++) {
+        const c = str.charCodeAt(i);
+        if (c < 128) {
+            p++;
+        }
+        else if (c < 2048) {
+            p += 2;
+        }
+        else if (c >= 0xd800 && c <= 0xdbff) {
+            // Lead surrogate of a surrogate pair.  The pair together will take 4 bytes to represent.
+            p += 4;
+            i++; // skip trail surrogate.
+        }
+        else {
+            p += 3;
+        }
+    }
+    return p;
+};
+
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Copied from https://stackoverflow.com/a/2117523
+ * Generates a new uuid.
+ * @public
+ */
+const uuidv4 = function () {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = (Math.random() * 16) | 0, v = c === 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+};
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * The amount of milliseconds to exponentially increase.
+ */
+const DEFAULT_INTERVAL_MILLIS = 1000;
+/**
+ * The factor to backoff by.
+ * Should be a number greater than 1.
+ */
+const DEFAULT_BACKOFF_FACTOR = 2;
+/**
+ * The maximum milliseconds to increase to.
+ *
+ * <p>Visible for testing
+ */
+const MAX_VALUE_MILLIS = (/* unused pure expression or super */ null && (4 * 60 * 60 * 1000)); // Four hours, like iOS and Android.
+/**
+ * The percentage of backoff time to randomize by.
+ * See
+ * http://go/safe-client-behavior#step-1-determine-the-appropriate-retry-interval-to-handle-spike-traffic
+ * for context.
+ *
+ * <p>Visible for testing
+ */
+const RANDOM_FACTOR = 0.5;
+/**
+ * Based on the backoff method from
+ * https://github.com/google/closure-library/blob/master/closure/goog/math/exponentialbackoff.js.
+ * Extracted here so we don't need to pass metadata and a stateful ExponentialBackoff object around.
+ */
+function calculateBackoffMillis(backoffCount, intervalMillis = DEFAULT_INTERVAL_MILLIS, backoffFactor = DEFAULT_BACKOFF_FACTOR) {
+    // Calculates an exponentially increasing value.
+    // Deviation: calculates value from count and a constant interval, so we only need to save value
+    // and count to restore state.
+    const currBaseValue = intervalMillis * Math.pow(backoffFactor, backoffCount);
+    // A random "fuzz" to avoid waves of retries.
+    // Deviation: randomFactor is required.
+    const randomWait = Math.round(
+    // A fraction of the backoff value to add/subtract.
+    // Deviation: changes multiplication order to improve readability.
+    RANDOM_FACTOR *
+        currBaseValue *
+        // A random float (rounded to int by Math.round above) in the range [-1, 1]. Determines
+        // if we add or subtract.
+        (Math.random() - 0.5) *
+        2);
+    // Limits backoff to max to avoid effectively permanent backoff.
+    return Math.min(MAX_VALUE_MILLIS, currBaseValue + randomWait);
+}
 
 /**
  * @license
@@ -32,20 +2117,882 @@ var version = "10.14.1";
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-(0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .registerVersion */ .KO)(name, version, 'app');
-//# sourceMappingURL=index.esm.js.map
+/**
+ * Provide English ordinal letters after a number
+ */
+function ordinal(i) {
+    if (!Number.isFinite(i)) {
+        return `${i}`;
+    }
+    return i + indicator(i);
+}
+function indicator(i) {
+    i = Math.abs(i);
+    const cent = i % 100;
+    if (cent >= 10 && cent <= 20) {
+        return 'th';
+    }
+    const dec = i % 10;
+    if (dec === 1) {
+        return 'st';
+    }
+    if (dec === 2) {
+        return 'nd';
+    }
+    if (dec === 3) {
+        return 'rd';
+    }
+    return 'th';
+}
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function index_esm2017_getModularInstance(service) {
+    if (service && service._delegate) {
+        return service._delegate;
+    }
+    else {
+        return service;
+    }
+}
 
 
-/***/ }),
+//# sourceMappingURL=index.esm2017.js.map
 
-/***/ 602:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+;// ./node_modules/@firebase/component/dist/esm/index.esm2017.js
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   P2: () => (/* binding */ openDB)
-/* harmony export */ });
-/* unused harmony export deleteDB */
-/* harmony import */ var _wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7500);
+
+/**
+ * Component for service name T, e.g. `auth`, `auth-internal`
+ */
+class Component {
+    /**
+     *
+     * @param name The public service name, e.g. app, auth, firestore, database
+     * @param instanceFactory Service factory responsible for creating the public interface
+     * @param type whether the service provided by the component is public or private
+     */
+    constructor(name, instanceFactory, type) {
+        this.name = name;
+        this.instanceFactory = instanceFactory;
+        this.type = type;
+        this.multipleInstances = false;
+        /**
+         * Properties to be added to the service namespace
+         */
+        this.serviceProps = {};
+        this.instantiationMode = "LAZY" /* InstantiationMode.LAZY */;
+        this.onInstanceCreated = null;
+    }
+    setInstantiationMode(mode) {
+        this.instantiationMode = mode;
+        return this;
+    }
+    setMultipleInstances(multipleInstances) {
+        this.multipleInstances = multipleInstances;
+        return this;
+    }
+    setServiceProps(props) {
+        this.serviceProps = props;
+        return this;
+    }
+    setInstanceCreatedCallback(callback) {
+        this.onInstanceCreated = callback;
+        return this;
+    }
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DEFAULT_ENTRY_NAME = '[DEFAULT]';
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Provider for instance for service name T, e.g. 'auth', 'auth-internal'
+ * NameServiceMapping[T] is an alias for the type of the instance
+ */
+class Provider {
+    constructor(name, container) {
+        this.name = name;
+        this.container = container;
+        this.component = null;
+        this.instances = new Map();
+        this.instancesDeferred = new Map();
+        this.instancesOptions = new Map();
+        this.onInitCallbacks = new Map();
+    }
+    /**
+     * @param identifier A provider can provide multiple instances of a service
+     * if this.component.multipleInstances is true.
+     */
+    get(identifier) {
+        // if multipleInstances is not supported, use the default name
+        const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
+        if (!this.instancesDeferred.has(normalizedIdentifier)) {
+            const deferred = new Deferred();
+            this.instancesDeferred.set(normalizedIdentifier, deferred);
+            if (this.isInitialized(normalizedIdentifier) ||
+                this.shouldAutoInitialize()) {
+                // initialize the service if it can be auto-initialized
+                try {
+                    const instance = this.getOrInitializeService({
+                        instanceIdentifier: normalizedIdentifier
+                    });
+                    if (instance) {
+                        deferred.resolve(instance);
+                    }
+                }
+                catch (e) {
+                    // when the instance factory throws an exception during get(), it should not cause
+                    // a fatal error. We just return the unresolved promise in this case.
+                }
+            }
+        }
+        return this.instancesDeferred.get(normalizedIdentifier).promise;
+    }
+    getImmediate(options) {
+        var _a;
+        // if multipleInstances is not supported, use the default name
+        const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === void 0 ? void 0 : options.identifier);
+        const optional = (_a = options === null || options === void 0 ? void 0 : options.optional) !== null && _a !== void 0 ? _a : false;
+        if (this.isInitialized(normalizedIdentifier) ||
+            this.shouldAutoInitialize()) {
+            try {
+                return this.getOrInitializeService({
+                    instanceIdentifier: normalizedIdentifier
+                });
+            }
+            catch (e) {
+                if (optional) {
+                    return null;
+                }
+                else {
+                    throw e;
+                }
+            }
+        }
+        else {
+            // In case a component is not initialized and should/cannot be auto-initialized at the moment, return null if the optional flag is set, or throw
+            if (optional) {
+                return null;
+            }
+            else {
+                throw Error(`Service ${this.name} is not available`);
+            }
+        }
+    }
+    getComponent() {
+        return this.component;
+    }
+    setComponent(component) {
+        if (component.name !== this.name) {
+            throw Error(`Mismatching Component ${component.name} for Provider ${this.name}.`);
+        }
+        if (this.component) {
+            throw Error(`Component for ${this.name} has already been provided`);
+        }
+        this.component = component;
+        // return early without attempting to initialize the component if the component requires explicit initialization (calling `Provider.initialize()`)
+        if (!this.shouldAutoInitialize()) {
+            return;
+        }
+        // if the service is eager, initialize the default instance
+        if (isComponentEager(component)) {
+            try {
+                this.getOrInitializeService({ instanceIdentifier: DEFAULT_ENTRY_NAME });
+            }
+            catch (e) {
+                // when the instance factory for an eager Component throws an exception during the eager
+                // initialization, it should not cause a fatal error.
+                // TODO: Investigate if we need to make it configurable, because some component may want to cause
+                // a fatal error in this case?
+            }
+        }
+        // Create service instances for the pending promises and resolve them
+        // NOTE: if this.multipleInstances is false, only the default instance will be created
+        // and all promises with resolve with it regardless of the identifier.
+        for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()) {
+            const normalizedIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
+            try {
+                // `getOrInitializeService()` should always return a valid instance since a component is guaranteed. use ! to make typescript happy.
+                const instance = this.getOrInitializeService({
+                    instanceIdentifier: normalizedIdentifier
+                });
+                instanceDeferred.resolve(instance);
+            }
+            catch (e) {
+                // when the instance factory throws an exception, it should not cause
+                // a fatal error. We just leave the promise unresolved.
+            }
+        }
+    }
+    clearInstance(identifier = DEFAULT_ENTRY_NAME) {
+        this.instancesDeferred.delete(identifier);
+        this.instancesOptions.delete(identifier);
+        this.instances.delete(identifier);
+    }
+    // app.delete() will call this method on every provider to delete the services
+    // TODO: should we mark the provider as deleted?
+    async delete() {
+        const services = Array.from(this.instances.values());
+        await Promise.all([
+            ...services
+                .filter(service => 'INTERNAL' in service) // legacy services
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .map(service => service.INTERNAL.delete()),
+            ...services
+                .filter(service => '_delete' in service) // modularized services
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .map(service => service._delete())
+        ]);
+    }
+    isComponentSet() {
+        return this.component != null;
+    }
+    isInitialized(identifier = DEFAULT_ENTRY_NAME) {
+        return this.instances.has(identifier);
+    }
+    getOptions(identifier = DEFAULT_ENTRY_NAME) {
+        return this.instancesOptions.get(identifier) || {};
+    }
+    initialize(opts = {}) {
+        const { options = {} } = opts;
+        const normalizedIdentifier = this.normalizeInstanceIdentifier(opts.instanceIdentifier);
+        if (this.isInitialized(normalizedIdentifier)) {
+            throw Error(`${this.name}(${normalizedIdentifier}) has already been initialized`);
+        }
+        if (!this.isComponentSet()) {
+            throw Error(`Component ${this.name} has not been registered yet`);
+        }
+        const instance = this.getOrInitializeService({
+            instanceIdentifier: normalizedIdentifier,
+            options
+        });
+        // resolve any pending promise waiting for the service instance
+        for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()) {
+            const normalizedDeferredIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
+            if (normalizedIdentifier === normalizedDeferredIdentifier) {
+                instanceDeferred.resolve(instance);
+            }
+        }
+        return instance;
+    }
+    /**
+     *
+     * @param callback - a function that will be invoked  after the provider has been initialized by calling provider.initialize().
+     * The function is invoked SYNCHRONOUSLY, so it should not execute any longrunning tasks in order to not block the program.
+     *
+     * @param identifier An optional instance identifier
+     * @returns a function to unregister the callback
+     */
+    onInit(callback, identifier) {
+        var _a;
+        const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
+        const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== void 0 ? _a : new Set();
+        existingCallbacks.add(callback);
+        this.onInitCallbacks.set(normalizedIdentifier, existingCallbacks);
+        const existingInstance = this.instances.get(normalizedIdentifier);
+        if (existingInstance) {
+            callback(existingInstance, normalizedIdentifier);
+        }
+        return () => {
+            existingCallbacks.delete(callback);
+        };
+    }
+    /**
+     * Invoke onInit callbacks synchronously
+     * @param instance the service instance`
+     */
+    invokeOnInitCallbacks(instance, identifier) {
+        const callbacks = this.onInitCallbacks.get(identifier);
+        if (!callbacks) {
+            return;
+        }
+        for (const callback of callbacks) {
+            try {
+                callback(instance, identifier);
+            }
+            catch (_a) {
+                // ignore errors in the onInit callback
+            }
+        }
+    }
+    getOrInitializeService({ instanceIdentifier, options = {} }) {
+        let instance = this.instances.get(instanceIdentifier);
+        if (!instance && this.component) {
+            instance = this.component.instanceFactory(this.container, {
+                instanceIdentifier: normalizeIdentifierForFactory(instanceIdentifier),
+                options
+            });
+            this.instances.set(instanceIdentifier, instance);
+            this.instancesOptions.set(instanceIdentifier, options);
+            /**
+             * Invoke onInit listeners.
+             * Note this.component.onInstanceCreated is different, which is used by the component creator,
+             * while onInit listeners are registered by consumers of the provider.
+             */
+            this.invokeOnInitCallbacks(instance, instanceIdentifier);
+            /**
+             * Order is important
+             * onInstanceCreated() should be called after this.instances.set(instanceIdentifier, instance); which
+             * makes `isInitialized()` return true.
+             */
+            if (this.component.onInstanceCreated) {
+                try {
+                    this.component.onInstanceCreated(this.container, instanceIdentifier, instance);
+                }
+                catch (_a) {
+                    // ignore errors in the onInstanceCreatedCallback
+                }
+            }
+        }
+        return instance || null;
+    }
+    normalizeInstanceIdentifier(identifier = DEFAULT_ENTRY_NAME) {
+        if (this.component) {
+            return this.component.multipleInstances ? identifier : DEFAULT_ENTRY_NAME;
+        }
+        else {
+            return identifier; // assume multiple instances are supported before the component is provided.
+        }
+    }
+    shouldAutoInitialize() {
+        return (!!this.component &&
+            this.component.instantiationMode !== "EXPLICIT" /* InstantiationMode.EXPLICIT */);
+    }
+}
+// undefined should be passed to the service factory for the default instance
+function normalizeIdentifierForFactory(identifier) {
+    return identifier === DEFAULT_ENTRY_NAME ? undefined : identifier;
+}
+function isComponentEager(component) {
+    return component.instantiationMode === "EAGER" /* InstantiationMode.EAGER */;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * ComponentContainer that provides Providers for service name T, e.g. `auth`, `auth-internal`
+ */
+class index_esm2017_ComponentContainer {
+    constructor(name) {
+        this.name = name;
+        this.providers = new Map();
+    }
+    /**
+     *
+     * @param component Component being added
+     * @param overwrite When a component with the same name has already been registered,
+     * if overwrite is true: overwrite the existing component with the new component and create a new
+     * provider with the new component. It can be useful in tests where you want to use different mocks
+     * for different tests.
+     * if overwrite is false: throw an exception
+     */
+    addComponent(component) {
+        const provider = this.getProvider(component.name);
+        if (provider.isComponentSet()) {
+            throw new Error(`Component ${component.name} has already been registered with ${this.name}`);
+        }
+        provider.setComponent(component);
+    }
+    addOrOverwriteComponent(component) {
+        const provider = this.getProvider(component.name);
+        if (provider.isComponentSet()) {
+            // delete the existing provider from the container, so we can register the new component
+            this.providers.delete(component.name);
+        }
+        this.addComponent(component);
+    }
+    /**
+     * getProvider provides a type safe interface where it can only be called with a field name
+     * present in NameServiceMapping interface.
+     *
+     * Firebase SDKs providing services should extend NameServiceMapping interface to register
+     * themselves.
+     */
+    getProvider(name) {
+        if (this.providers.has(name)) {
+            return this.providers.get(name);
+        }
+        // create a Provider for a service that hasn't registered with Firebase
+        const provider = new Provider(name, this);
+        this.providers.set(name, provider);
+        return provider;
+    }
+    getProviders() {
+        return Array.from(this.providers.values());
+    }
+}
+
+
+//# sourceMappingURL=index.esm2017.js.map
+
+;// ./node_modules/@firebase/logger/dist/esm/index.esm2017.js
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * A container for all of the Logger instances
+ */
+const instances = [];
+/**
+ * The JS SDK supports 5 log levels and also allows a user the ability to
+ * silence the logs altogether.
+ *
+ * The order is a follows:
+ * DEBUG < VERBOSE < INFO < WARN < ERROR
+ *
+ * All of the log types above the current log level will be captured (i.e. if
+ * you set the log level to `INFO`, errors will still be logged, but `DEBUG` and
+ * `VERBOSE` logs will not)
+ */
+var LogLevel;
+(function (LogLevel) {
+    LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
+    LogLevel[LogLevel["VERBOSE"] = 1] = "VERBOSE";
+    LogLevel[LogLevel["INFO"] = 2] = "INFO";
+    LogLevel[LogLevel["WARN"] = 3] = "WARN";
+    LogLevel[LogLevel["ERROR"] = 4] = "ERROR";
+    LogLevel[LogLevel["SILENT"] = 5] = "SILENT";
+})(LogLevel || (LogLevel = {}));
+const levelStringToEnum = {
+    'debug': LogLevel.DEBUG,
+    'verbose': LogLevel.VERBOSE,
+    'info': LogLevel.INFO,
+    'warn': LogLevel.WARN,
+    'error': LogLevel.ERROR,
+    'silent': LogLevel.SILENT
+};
+/**
+ * The default log level
+ */
+const defaultLogLevel = LogLevel.INFO;
+/**
+ * By default, `console.debug` is not displayed in the developer console (in
+ * chrome). To avoid forcing users to have to opt-in to these logs twice
+ * (i.e. once for firebase, and once in the console), we are sending `DEBUG`
+ * logs to the `console.log` function.
+ */
+const ConsoleMethod = {
+    [LogLevel.DEBUG]: 'log',
+    [LogLevel.VERBOSE]: 'log',
+    [LogLevel.INFO]: 'info',
+    [LogLevel.WARN]: 'warn',
+    [LogLevel.ERROR]: 'error'
+};
+/**
+ * The default log handler will forward DEBUG, VERBOSE, INFO, WARN, and ERROR
+ * messages on to their corresponding console counterparts (if the log method
+ * is supported by the current log level)
+ */
+const defaultLogHandler = (instance, logType, ...args) => {
+    if (logType < instance.logLevel) {
+        return;
+    }
+    const now = new Date().toISOString();
+    const method = ConsoleMethod[logType];
+    if (method) {
+        console[method](`[${now}]  ${instance.name}:`, ...args);
+    }
+    else {
+        throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
+    }
+};
+class Logger {
+    /**
+     * Gives you an instance of a Logger to capture messages according to
+     * Firebase's logging scheme.
+     *
+     * @param name The name that the logs will be associated with
+     */
+    constructor(name) {
+        this.name = name;
+        /**
+         * The log level of the given Logger instance.
+         */
+        this._logLevel = defaultLogLevel;
+        /**
+         * The main (internal) log handler for the Logger instance.
+         * Can be set to a new function in internal package code but not by user.
+         */
+        this._logHandler = defaultLogHandler;
+        /**
+         * The optional, additional, user-defined log handler for the Logger instance.
+         */
+        this._userLogHandler = null;
+        /**
+         * Capture the current instance for later use
+         */
+        instances.push(this);
+    }
+    get logLevel() {
+        return this._logLevel;
+    }
+    set logLevel(val) {
+        if (!(val in LogLevel)) {
+            throw new TypeError(`Invalid value "${val}" assigned to \`logLevel\``);
+        }
+        this._logLevel = val;
+    }
+    // Workaround for setter/getter having to be the same type.
+    setLogLevel(val) {
+        this._logLevel = typeof val === 'string' ? levelStringToEnum[val] : val;
+    }
+    get logHandler() {
+        return this._logHandler;
+    }
+    set logHandler(val) {
+        if (typeof val !== 'function') {
+            throw new TypeError('Value assigned to `logHandler` must be a function');
+        }
+        this._logHandler = val;
+    }
+    get userLogHandler() {
+        return this._userLogHandler;
+    }
+    set userLogHandler(val) {
+        this._userLogHandler = val;
+    }
+    /**
+     * The functions below are all based on the `console` interface
+     */
+    debug(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.DEBUG, ...args);
+        this._logHandler(this, LogLevel.DEBUG, ...args);
+    }
+    log(...args) {
+        this._userLogHandler &&
+            this._userLogHandler(this, LogLevel.VERBOSE, ...args);
+        this._logHandler(this, LogLevel.VERBOSE, ...args);
+    }
+    info(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.INFO, ...args);
+        this._logHandler(this, LogLevel.INFO, ...args);
+    }
+    warn(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.WARN, ...args);
+        this._logHandler(this, LogLevel.WARN, ...args);
+    }
+    error(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.ERROR, ...args);
+        this._logHandler(this, LogLevel.ERROR, ...args);
+    }
+}
+function setLogLevel(level) {
+    instances.forEach(inst => {
+        inst.setLogLevel(level);
+    });
+}
+function index_esm2017_setUserLogHandler(logCallback, options) {
+    for (const instance of instances) {
+        let customLogLevel = null;
+        if (options && options.level) {
+            customLogLevel = levelStringToEnum[options.level];
+        }
+        if (logCallback === null) {
+            instance.userLogHandler = null;
+        }
+        else {
+            instance.userLogHandler = (instance, level, ...args) => {
+                const message = args
+                    .map(arg => {
+                    if (arg == null) {
+                        return null;
+                    }
+                    else if (typeof arg === 'string') {
+                        return arg;
+                    }
+                    else if (typeof arg === 'number' || typeof arg === 'boolean') {
+                        return arg.toString();
+                    }
+                    else if (arg instanceof Error) {
+                        return arg.message;
+                    }
+                    else {
+                        try {
+                            return JSON.stringify(arg);
+                        }
+                        catch (ignored) {
+                            return null;
+                        }
+                    }
+                })
+                    .filter(arg => arg)
+                    .join(' ');
+                if (level >= (customLogLevel !== null && customLogLevel !== void 0 ? customLogLevel : instance.logLevel)) {
+                    logCallback({
+                        level: LogLevel[level].toLowerCase(),
+                        message,
+                        args,
+                        type: instance.name
+                    });
+                }
+            };
+        }
+    }
+}
+
+
+//# sourceMappingURL=index.esm2017.js.map
+
+;// ./node_modules/@firebase/app/node_modules/idb/build/wrap-idb-value.js
+const instanceOfAny = (object, constructors) => constructors.some((c) => object instanceof c);
+
+let idbProxyableTypes;
+let cursorAdvanceMethods;
+// This is a function to prevent it throwing up in node environments.
+function getIdbProxyableTypes() {
+    return (idbProxyableTypes ||
+        (idbProxyableTypes = [
+            IDBDatabase,
+            IDBObjectStore,
+            IDBIndex,
+            IDBCursor,
+            IDBTransaction,
+        ]));
+}
+// This is a function to prevent it throwing up in node environments.
+function getCursorAdvanceMethods() {
+    return (cursorAdvanceMethods ||
+        (cursorAdvanceMethods = [
+            IDBCursor.prototype.advance,
+            IDBCursor.prototype.continue,
+            IDBCursor.prototype.continuePrimaryKey,
+        ]));
+}
+const cursorRequestMap = new WeakMap();
+const transactionDoneMap = new WeakMap();
+const transactionStoreNamesMap = new WeakMap();
+const transformCache = new WeakMap();
+const reverseTransformCache = new WeakMap();
+function promisifyRequest(request) {
+    const promise = new Promise((resolve, reject) => {
+        const unlisten = () => {
+            request.removeEventListener('success', success);
+            request.removeEventListener('error', error);
+        };
+        const success = () => {
+            resolve(wrap_idb_value_wrap(request.result));
+            unlisten();
+        };
+        const error = () => {
+            reject(request.error);
+            unlisten();
+        };
+        request.addEventListener('success', success);
+        request.addEventListener('error', error);
+    });
+    promise
+        .then((value) => {
+        // Since cursoring reuses the IDBRequest (*sigh*), we cache it for later retrieval
+        // (see wrapFunction).
+        if (value instanceof IDBCursor) {
+            cursorRequestMap.set(value, request);
+        }
+        // Catching to avoid "Uncaught Promise exceptions"
+    })
+        .catch(() => { });
+    // This mapping exists in reverseTransformCache but doesn't doesn't exist in transformCache. This
+    // is because we create many promises from a single IDBRequest.
+    reverseTransformCache.set(promise, request);
+    return promise;
+}
+function cacheDonePromiseForTransaction(tx) {
+    // Early bail if we've already created a done promise for this transaction.
+    if (transactionDoneMap.has(tx))
+        return;
+    const done = new Promise((resolve, reject) => {
+        const unlisten = () => {
+            tx.removeEventListener('complete', complete);
+            tx.removeEventListener('error', error);
+            tx.removeEventListener('abort', error);
+        };
+        const complete = () => {
+            resolve();
+            unlisten();
+        };
+        const error = () => {
+            reject(tx.error || new DOMException('AbortError', 'AbortError'));
+            unlisten();
+        };
+        tx.addEventListener('complete', complete);
+        tx.addEventListener('error', error);
+        tx.addEventListener('abort', error);
+    });
+    // Cache it for later retrieval.
+    transactionDoneMap.set(tx, done);
+}
+let idbProxyTraps = {
+    get(target, prop, receiver) {
+        if (target instanceof IDBTransaction) {
+            // Special handling for transaction.done.
+            if (prop === 'done')
+                return transactionDoneMap.get(target);
+            // Polyfill for objectStoreNames because of Edge.
+            if (prop === 'objectStoreNames') {
+                return target.objectStoreNames || transactionStoreNamesMap.get(target);
+            }
+            // Make tx.store return the only store in the transaction, or undefined if there are many.
+            if (prop === 'store') {
+                return receiver.objectStoreNames[1]
+                    ? undefined
+                    : receiver.objectStore(receiver.objectStoreNames[0]);
+            }
+        }
+        // Else transform whatever we get back.
+        return wrap_idb_value_wrap(target[prop]);
+    },
+    set(target, prop, value) {
+        target[prop] = value;
+        return true;
+    },
+    has(target, prop) {
+        if (target instanceof IDBTransaction &&
+            (prop === 'done' || prop === 'store')) {
+            return true;
+        }
+        return prop in target;
+    },
+};
+function replaceTraps(callback) {
+    idbProxyTraps = callback(idbProxyTraps);
+}
+function wrapFunction(func) {
+    // Due to expected object equality (which is enforced by the caching in `wrap`), we
+    // only create one new func per func.
+    // Edge doesn't support objectStoreNames (booo), so we polyfill it here.
+    if (func === IDBDatabase.prototype.transaction &&
+        !('objectStoreNames' in IDBTransaction.prototype)) {
+        return function (storeNames, ...args) {
+            const tx = func.call(unwrap(this), storeNames, ...args);
+            transactionStoreNamesMap.set(tx, storeNames.sort ? storeNames.sort() : [storeNames]);
+            return wrap_idb_value_wrap(tx);
+        };
+    }
+    // Cursor methods are special, as the behaviour is a little more different to standard IDB. In
+    // IDB, you advance the cursor and wait for a new 'success' on the IDBRequest that gave you the
+    // cursor. It's kinda like a promise that can resolve with many values. That doesn't make sense
+    // with real promises, so each advance methods returns a new promise for the cursor object, or
+    // undefined if the end of the cursor has been reached.
+    if (getCursorAdvanceMethods().includes(func)) {
+        return function (...args) {
+            // Calling the original function with the proxy as 'this' causes ILLEGAL INVOCATION, so we use
+            // the original object.
+            func.apply(unwrap(this), args);
+            return wrap_idb_value_wrap(cursorRequestMap.get(this));
+        };
+    }
+    return function (...args) {
+        // Calling the original function with the proxy as 'this' causes ILLEGAL INVOCATION, so we use
+        // the original object.
+        return wrap_idb_value_wrap(func.apply(unwrap(this), args));
+    };
+}
+function transformCachableValue(value) {
+    if (typeof value === 'function')
+        return wrapFunction(value);
+    // This doesn't return, it just creates a 'done' promise for the transaction,
+    // which is later returned for transaction.done (see idbObjectHandler).
+    if (value instanceof IDBTransaction)
+        cacheDonePromiseForTransaction(value);
+    if (instanceOfAny(value, getIdbProxyableTypes()))
+        return new Proxy(value, idbProxyTraps);
+    // Return the same value back if we're not going to transform it.
+    return value;
+}
+function wrap_idb_value_wrap(value) {
+    // We sometimes generate multiple promises from a single IDBRequest (eg when cursoring), because
+    // IDB is weird and a single IDBRequest can yield many responses, so these can't be cached.
+    if (value instanceof IDBRequest)
+        return promisifyRequest(value);
+    // If we've already transformed this value before, reuse the transformed value.
+    // This is faster, but it also provides object equality.
+    if (transformCache.has(value))
+        return transformCache.get(value);
+    const newValue = transformCachableValue(value);
+    // Not all types are transformed.
+    // These may be primitive types, so they can't be WeakMap keys.
+    if (newValue !== value) {
+        transformCache.set(value, newValue);
+        reverseTransformCache.set(newValue, value);
+    }
+    return newValue;
+}
+const unwrap = (value) => reverseTransformCache.get(value);
+
+
+
+;// ./node_modules/@firebase/app/node_modules/idb/build/index.js
 
 
 
@@ -56,12 +3003,12 @@ var version = "10.14.1";
  * @param version Schema version.
  * @param callbacks Additional callbacks.
  */
-function openDB(name, version, { blocked, upgrade, blocking, terminated } = {}) {
+function build_openDB(name, version, { blocked, upgrade, blocking, terminated } = {}) {
     const request = indexedDB.open(name, version);
-    const openPromise = (0,_wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__.w)(request);
+    const openPromise = wrap_idb_value_wrap(request);
     if (upgrade) {
         request.addEventListener('upgradeneeded', (event) => {
-            upgrade((0,_wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__.w)(request.result), event.oldVersion, event.newVersion, (0,_wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__.w)(request.transaction), event);
+            upgrade(wrap_idb_value_wrap(request.result), event.oldVersion, event.newVersion, wrap_idb_value_wrap(request.transaction), event);
         });
     }
     if (blocked) {
@@ -134,7 +3081,7 @@ function getMethod(target, prop) {
     cachedMethods.set(prop, method);
     return method;
 }
-(0,_wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__.r)((oldTraps) => ({
+replaceTraps((oldTraps) => ({
     ...oldTraps,
     get: (target, prop, receiver) => getMethod(target, prop) || oldTraps.get(target, prop, receiver),
     has: (target, prop) => !!getMethod(target, prop) || oldTraps.has(target, prop),
@@ -142,21 +3089,1593 @@ function getMethod(target, prop) {
 
 
 
+;// ./node_modules/@firebase/app/dist/esm/index.esm2017.js
 
-/***/ }),
 
-/***/ 989:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   o: () => (/* binding */ getAuth)
-/* harmony export */ });
-/* unused harmony exports $, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, _, a, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, aA, aB, aC, aD, aE, aF, aG, aH, aI, aJ, aK, aL, aM, aN, aO, aP, aQ, aa, ab, ac, ad, ae, af, ag, ah, ai, aj, ak, al, am, an, ao, ap, aq, ar, as, at, au, av, aw, ax, ay, az, b, c, d, e, f, g, h, i, j, k, l, m, n, p, q, r, s, t, u, v, w, x, y, z */
-/* harmony import */ var _firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8461);
-/* harmony import */ var _firebase_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6743);
-/* harmony import */ var _firebase_logger__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3424);
-/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(2135);
-/* harmony import */ var _firebase_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5125);
+
+
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class PlatformLoggerServiceImpl {
+    constructor(container) {
+        this.container = container;
+    }
+    // In initial implementation, this will be called by installations on
+    // auth token refresh, and installations will send this string.
+    getPlatformInfoString() {
+        const providers = this.container.getProviders();
+        // Loop through providers and get library/version pairs from any that are
+        // version components.
+        return providers
+            .map(provider => {
+            if (isVersionServiceProvider(provider)) {
+                const service = provider.getImmediate();
+                return `${service.library}/${service.version}`;
+            }
+            else {
+                return null;
+            }
+        })
+            .filter(logString => logString)
+            .join(' ');
+    }
+}
+/**
+ *
+ * @param provider check if this provider provides a VersionService
+ *
+ * NOTE: Using Provider<'app-version'> is a hack to indicate that the provider
+ * provides VersionService. The provider is not necessarily a 'app-version'
+ * provider.
+ */
+function isVersionServiceProvider(provider) {
+    const component = provider.getComponent();
+    return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */;
+}
+
+const name$q = "@firebase/app";
+const version$1 = "0.10.13";
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const logger = new Logger('@firebase/app');
+
+const name$p = "@firebase/app-compat";
+
+const name$o = "@firebase/analytics-compat";
+
+const name$n = "@firebase/analytics";
+
+const name$m = "@firebase/app-check-compat";
+
+const name$l = "@firebase/app-check";
+
+const name$k = "@firebase/auth";
+
+const name$j = "@firebase/auth-compat";
+
+const name$i = "@firebase/database";
+
+const name$h = "@firebase/data-connect";
+
+const name$g = "@firebase/database-compat";
+
+const name$f = "@firebase/functions";
+
+const name$e = "@firebase/functions-compat";
+
+const name$d = "@firebase/installations";
+
+const name$c = "@firebase/installations-compat";
+
+const name$b = "@firebase/messaging";
+
+const name$a = "@firebase/messaging-compat";
+
+const name$9 = "@firebase/performance";
+
+const name$8 = "@firebase/performance-compat";
+
+const name$7 = "@firebase/remote-config";
+
+const name$6 = "@firebase/remote-config-compat";
+
+const name$5 = "@firebase/storage";
+
+const name$4 = "@firebase/storage-compat";
+
+const name$3 = "@firebase/firestore";
+
+const name$2 = "@firebase/vertexai-preview";
+
+const name$1 = "@firebase/firestore-compat";
+
+const index_esm2017_name = "firebase";
+const version = "10.14.1";
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * The default app name
+ *
+ * @internal
+ */
+const index_esm2017_DEFAULT_ENTRY_NAME = '[DEFAULT]';
+const PLATFORM_LOG_STRING = {
+    [name$q]: 'fire-core',
+    [name$p]: 'fire-core-compat',
+    [name$n]: 'fire-analytics',
+    [name$o]: 'fire-analytics-compat',
+    [name$l]: 'fire-app-check',
+    [name$m]: 'fire-app-check-compat',
+    [name$k]: 'fire-auth',
+    [name$j]: 'fire-auth-compat',
+    [name$i]: 'fire-rtdb',
+    [name$h]: 'fire-data-connect',
+    [name$g]: 'fire-rtdb-compat',
+    [name$f]: 'fire-fn',
+    [name$e]: 'fire-fn-compat',
+    [name$d]: 'fire-iid',
+    [name$c]: 'fire-iid-compat',
+    [name$b]: 'fire-fcm',
+    [name$a]: 'fire-fcm-compat',
+    [name$9]: 'fire-perf',
+    [name$8]: 'fire-perf-compat',
+    [name$7]: 'fire-rc',
+    [name$6]: 'fire-rc-compat',
+    [name$5]: 'fire-gcs',
+    [name$4]: 'fire-gcs-compat',
+    [name$3]: 'fire-fst',
+    [name$1]: 'fire-fst-compat',
+    [name$2]: 'fire-vertex',
+    'fire-js': 'fire-js',
+    [index_esm2017_name]: 'fire-js-all'
+};
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * @internal
+ */
+const _apps = new Map();
+/**
+ * @internal
+ */
+const _serverApps = new Map();
+/**
+ * Registered components.
+ *
+ * @internal
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const _components = new Map();
+/**
+ * @param component - the component being added to this app's container
+ *
+ * @internal
+ */
+function _addComponent(app, component) {
+    try {
+        app.container.addComponent(component);
+    }
+    catch (e) {
+        logger.debug(`Component ${component.name} failed to register with FirebaseApp ${app.name}`, e);
+    }
+}
+/**
+ *
+ * @internal
+ */
+function _addOrOverwriteComponent(app, component) {
+    app.container.addOrOverwriteComponent(component);
+}
+/**
+ *
+ * @param component - the component to register
+ * @returns whether or not the component is registered successfully
+ *
+ * @internal
+ */
+function _registerComponent(component) {
+    const componentName = component.name;
+    if (_components.has(componentName)) {
+        logger.debug(`There were multiple attempts to register component ${componentName}.`);
+        return false;
+    }
+    _components.set(componentName, component);
+    // add the component to existing app instances
+    for (const app of _apps.values()) {
+        _addComponent(app, component);
+    }
+    for (const serverApp of _serverApps.values()) {
+        _addComponent(serverApp, component);
+    }
+    return true;
+}
+/**
+ *
+ * @param app - FirebaseApp instance
+ * @param name - service name
+ *
+ * @returns the provider for the service with the matching name
+ *
+ * @internal
+ */
+function index_esm2017_getProvider(app, name) {
+    const heartbeatController = app.container
+        .getProvider('heartbeat')
+        .getImmediate({ optional: true });
+    if (heartbeatController) {
+        void heartbeatController.triggerHeartbeat();
+    }
+    return app.container.getProvider(name);
+}
+/**
+ *
+ * @param app - FirebaseApp instance
+ * @param name - service name
+ * @param instanceIdentifier - service instance identifier in case the service supports multiple instances
+ *
+ * @internal
+ */
+function index_esm2017_removeServiceInstance(app, name, instanceIdentifier = index_esm2017_DEFAULT_ENTRY_NAME) {
+    index_esm2017_getProvider(app, name).clearInstance(instanceIdentifier);
+}
+/**
+ *
+ * @param obj - an object of type FirebaseApp or FirebaseOptions.
+ *
+ * @returns true if the provide object is of type FirebaseApp.
+ *
+ * @internal
+ */
+function _isFirebaseApp(obj) {
+    return obj.options !== undefined;
+}
+/**
+ *
+ * @param obj - an object of type FirebaseApp.
+ *
+ * @returns true if the provided object is of type FirebaseServerAppImpl.
+ *
+ * @internal
+ */
+function index_esm2017_isFirebaseServerApp(obj) {
+    return obj.settings !== undefined;
+}
+/**
+ * Test only
+ *
+ * @internal
+ */
+function _clearComponents() {
+    _components.clear();
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const ERRORS = {
+    ["no-app" /* AppError.NO_APP */]: "No Firebase App '{$appName}' has been created - " +
+        'call initializeApp() first',
+    ["bad-app-name" /* AppError.BAD_APP_NAME */]: "Illegal App name: '{$appName}'",
+    ["duplicate-app" /* AppError.DUPLICATE_APP */]: "Firebase App named '{$appName}' already exists with different options or config",
+    ["app-deleted" /* AppError.APP_DELETED */]: "Firebase App named '{$appName}' already deleted",
+    ["server-app-deleted" /* AppError.SERVER_APP_DELETED */]: 'Firebase Server App has been deleted',
+    ["no-options" /* AppError.NO_OPTIONS */]: 'Need to provide options, when not being deployed to hosting via source.',
+    ["invalid-app-argument" /* AppError.INVALID_APP_ARGUMENT */]: 'firebase.{$appName}() takes either no argument or a ' +
+        'Firebase App instance.',
+    ["invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */]: 'First argument to `onLog` must be null or a function.',
+    ["idb-open" /* AppError.IDB_OPEN */]: 'Error thrown when opening IndexedDB. Original error: {$originalErrorMessage}.',
+    ["idb-get" /* AppError.IDB_GET */]: 'Error thrown when reading from IndexedDB. Original error: {$originalErrorMessage}.',
+    ["idb-set" /* AppError.IDB_WRITE */]: 'Error thrown when writing to IndexedDB. Original error: {$originalErrorMessage}.',
+    ["idb-delete" /* AppError.IDB_DELETE */]: 'Error thrown when deleting from IndexedDB. Original error: {$originalErrorMessage}.',
+    ["finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */]: 'FirebaseServerApp deleteOnDeref field defined but the JS runtime does not support FinalizationRegistry.',
+    ["invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */]: 'FirebaseServerApp is not for use in browser environments.'
+};
+const ERROR_FACTORY = new ErrorFactory('app', 'Firebase', ERRORS);
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class FirebaseAppImpl {
+    constructor(options, config, container) {
+        this._isDeleted = false;
+        this._options = Object.assign({}, options);
+        this._config = Object.assign({}, config);
+        this._name = config.name;
+        this._automaticDataCollectionEnabled =
+            config.automaticDataCollectionEnabled;
+        this._container = container;
+        this.container.addComponent(new Component('app', () => this, "PUBLIC" /* ComponentType.PUBLIC */));
+    }
+    get automaticDataCollectionEnabled() {
+        this.checkDestroyed();
+        return this._automaticDataCollectionEnabled;
+    }
+    set automaticDataCollectionEnabled(val) {
+        this.checkDestroyed();
+        this._automaticDataCollectionEnabled = val;
+    }
+    get name() {
+        this.checkDestroyed();
+        return this._name;
+    }
+    get options() {
+        this.checkDestroyed();
+        return this._options;
+    }
+    get config() {
+        this.checkDestroyed();
+        return this._config;
+    }
+    get container() {
+        return this._container;
+    }
+    get isDeleted() {
+        return this._isDeleted;
+    }
+    set isDeleted(val) {
+        this._isDeleted = val;
+    }
+    /**
+     * This function will throw an Error if the App has already been deleted -
+     * use before performing API actions on the App.
+     */
+    checkDestroyed() {
+        if (this.isDeleted) {
+            throw ERROR_FACTORY.create("app-deleted" /* AppError.APP_DELETED */, { appName: this._name });
+        }
+    }
+}
+
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class FirebaseServerAppImpl extends FirebaseAppImpl {
+    constructor(options, serverConfig, name, container) {
+        // Build configuration parameters for the FirebaseAppImpl base class.
+        const automaticDataCollectionEnabled = serverConfig.automaticDataCollectionEnabled !== undefined
+            ? serverConfig.automaticDataCollectionEnabled
+            : false;
+        // Create the FirebaseAppSettings object for the FirebaseAppImp constructor.
+        const config = {
+            name,
+            automaticDataCollectionEnabled
+        };
+        if (options.apiKey !== undefined) {
+            // Construct the parent FirebaseAppImp object.
+            super(options, config, container);
+        }
+        else {
+            const appImpl = options;
+            super(appImpl.options, config, container);
+        }
+        // Now construct the data for the FirebaseServerAppImpl.
+        this._serverConfig = Object.assign({ automaticDataCollectionEnabled }, serverConfig);
+        this._finalizationRegistry = null;
+        if (typeof FinalizationRegistry !== 'undefined') {
+            this._finalizationRegistry = new FinalizationRegistry(() => {
+                this.automaticCleanup();
+            });
+        }
+        this._refCount = 0;
+        this.incRefCount(this._serverConfig.releaseOnDeref);
+        // Do not retain a hard reference to the dref object, otherwise the FinalizationRegistry
+        // will never trigger.
+        this._serverConfig.releaseOnDeref = undefined;
+        serverConfig.releaseOnDeref = undefined;
+        registerVersion(name$q, version$1, 'serverapp');
+    }
+    toJSON() {
+        return undefined;
+    }
+    get refCount() {
+        return this._refCount;
+    }
+    // Increment the reference count of this server app. If an object is provided, register it
+    // with the finalization registry.
+    incRefCount(obj) {
+        if (this.isDeleted) {
+            return;
+        }
+        this._refCount++;
+        if (obj !== undefined && this._finalizationRegistry !== null) {
+            this._finalizationRegistry.register(obj, this);
+        }
+    }
+    // Decrement the reference count.
+    decRefCount() {
+        if (this.isDeleted) {
+            return 0;
+        }
+        return --this._refCount;
+    }
+    // Invoked by the FinalizationRegistry callback to note that this app should go through its
+    // reference counts and delete itself if no reference count remain. The coordinating logic that
+    // handles this is in deleteApp(...).
+    automaticCleanup() {
+        void deleteApp(this);
+    }
+    get settings() {
+        this.checkDestroyed();
+        return this._serverConfig;
+    }
+    /**
+     * This function will throw an Error if the App has already been deleted -
+     * use before performing API actions on the App.
+     */
+    checkDestroyed() {
+        if (this.isDeleted) {
+            throw ERROR_FACTORY.create("server-app-deleted" /* AppError.SERVER_APP_DELETED */);
+        }
+    }
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * The current SDK version.
+ *
+ * @public
+ */
+const SDK_VERSION = version;
+function initializeApp(_options, rawConfig = {}) {
+    let options = _options;
+    if (typeof rawConfig !== 'object') {
+        const name = rawConfig;
+        rawConfig = { name };
+    }
+    const config = Object.assign({ name: index_esm2017_DEFAULT_ENTRY_NAME, automaticDataCollectionEnabled: false }, rawConfig);
+    const name = config.name;
+    if (typeof name !== 'string' || !name) {
+        throw ERROR_FACTORY.create("bad-app-name" /* AppError.BAD_APP_NAME */, {
+            appName: String(name)
+        });
+    }
+    options || (options = getDefaultAppConfig());
+    if (!options) {
+        throw ERROR_FACTORY.create("no-options" /* AppError.NO_OPTIONS */);
+    }
+    const existingApp = _apps.get(name);
+    if (existingApp) {
+        // return the existing app if options and config deep equal the ones in the existing app.
+        if (index_esm2017_deepEqual(options, existingApp.options) &&
+            index_esm2017_deepEqual(config, existingApp.config)) {
+            return existingApp;
+        }
+        else {
+            throw ERROR_FACTORY.create("duplicate-app" /* AppError.DUPLICATE_APP */, { appName: name });
+        }
+    }
+    const container = new index_esm2017_ComponentContainer(name);
+    for (const component of _components.values()) {
+        container.addComponent(component);
+    }
+    const newApp = new FirebaseAppImpl(options, config, container);
+    _apps.set(name, newApp);
+    return newApp;
+}
+function initializeServerApp(_options, _serverAppConfig) {
+    if (isBrowser() && !isWebWorker()) {
+        // FirebaseServerApp isn't designed to be run in browsers.
+        throw ERROR_FACTORY.create("invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */);
+    }
+    if (_serverAppConfig.automaticDataCollectionEnabled === undefined) {
+        _serverAppConfig.automaticDataCollectionEnabled = false;
+    }
+    let appOptions;
+    if (_isFirebaseApp(_options)) {
+        appOptions = _options.options;
+    }
+    else {
+        appOptions = _options;
+    }
+    // Build an app name based on a hash of the configuration options.
+    const nameObj = Object.assign(Object.assign({}, _serverAppConfig), appOptions);
+    // However, Do not mangle the name based on releaseOnDeref, since it will vary between the
+    // construction of FirebaseServerApp instances. For example, if the object is the request headers.
+    if (nameObj.releaseOnDeref !== undefined) {
+        delete nameObj.releaseOnDeref;
+    }
+    const hashCode = (s) => {
+        return [...s].reduce((hash, c) => (Math.imul(31, hash) + c.charCodeAt(0)) | 0, 0);
+    };
+    if (_serverAppConfig.releaseOnDeref !== undefined) {
+        if (typeof FinalizationRegistry === 'undefined') {
+            throw ERROR_FACTORY.create("finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */, {});
+        }
+    }
+    const nameString = '' + hashCode(JSON.stringify(nameObj));
+    const existingApp = _serverApps.get(nameString);
+    if (existingApp) {
+        existingApp.incRefCount(_serverAppConfig.releaseOnDeref);
+        return existingApp;
+    }
+    const container = new ComponentContainer(nameString);
+    for (const component of _components.values()) {
+        container.addComponent(component);
+    }
+    const newApp = new FirebaseServerAppImpl(appOptions, _serverAppConfig, nameString, container);
+    _serverApps.set(nameString, newApp);
+    return newApp;
+}
+/**
+ * Retrieves a {@link @firebase/app#FirebaseApp} instance.
+ *
+ * When called with no arguments, the default app is returned. When an app name
+ * is provided, the app corresponding to that name is returned.
+ *
+ * An exception is thrown if the app being retrieved has not yet been
+ * initialized.
+ *
+ * @example
+ * ```javascript
+ * // Return the default app
+ * const app = getApp();
+ * ```
+ *
+ * @example
+ * ```javascript
+ * // Return a named app
+ * const otherApp = getApp("otherApp");
+ * ```
+ *
+ * @param name - Optional name of the app to return. If no name is
+ *   provided, the default is `"[DEFAULT]"`.
+ *
+ * @returns The app corresponding to the provided app name.
+ *   If no app name is provided, the default app is returned.
+ *
+ * @public
+ */
+function getApp(name = index_esm2017_DEFAULT_ENTRY_NAME) {
+    const app = _apps.get(name);
+    if (!app && name === index_esm2017_DEFAULT_ENTRY_NAME && getDefaultAppConfig()) {
+        return initializeApp();
+    }
+    if (!app) {
+        throw ERROR_FACTORY.create("no-app" /* AppError.NO_APP */, { appName: name });
+    }
+    return app;
+}
+/**
+ * A (read-only) array of all initialized apps.
+ * @public
+ */
+function getApps() {
+    return Array.from(_apps.values());
+}
+/**
+ * Renders this app unusable and frees the resources of all associated
+ * services.
+ *
+ * @example
+ * ```javascript
+ * deleteApp(app)
+ *   .then(function() {
+ *     console.log("App deleted successfully");
+ *   })
+ *   .catch(function(error) {
+ *     console.log("Error deleting app:", error);
+ *   });
+ * ```
+ *
+ * @public
+ */
+async function deleteApp(app) {
+    let cleanupProviders = false;
+    const name = app.name;
+    if (_apps.has(name)) {
+        cleanupProviders = true;
+        _apps.delete(name);
+    }
+    else if (_serverApps.has(name)) {
+        const firebaseServerApp = app;
+        if (firebaseServerApp.decRefCount() <= 0) {
+            _serverApps.delete(name);
+            cleanupProviders = true;
+        }
+    }
+    if (cleanupProviders) {
+        await Promise.all(app.container
+            .getProviders()
+            .map(provider => provider.delete()));
+        app.isDeleted = true;
+    }
+}
+/**
+ * Registers a library's name and version for platform logging purposes.
+ * @param library - Name of 1p or 3p library (e.g. firestore, angularfire)
+ * @param version - Current version of that library.
+ * @param variant - Bundle variant, e.g., node, rn, etc.
+ *
+ * @public
+ */
+function registerVersion(libraryKeyOrName, version, variant) {
+    var _a;
+    // TODO: We can use this check to whitelist strings when/if we set up
+    // a good whitelist system.
+    let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== void 0 ? _a : libraryKeyOrName;
+    if (variant) {
+        library += `-${variant}`;
+    }
+    const libraryMismatch = library.match(/\s|\//);
+    const versionMismatch = version.match(/\s|\//);
+    if (libraryMismatch || versionMismatch) {
+        const warning = [
+            `Unable to register library "${library}" with version "${version}":`
+        ];
+        if (libraryMismatch) {
+            warning.push(`library name "${library}" contains illegal characters (whitespace or "/")`);
+        }
+        if (libraryMismatch && versionMismatch) {
+            warning.push('and');
+        }
+        if (versionMismatch) {
+            warning.push(`version name "${version}" contains illegal characters (whitespace or "/")`);
+        }
+        logger.warn(warning.join(' '));
+        return;
+    }
+    _registerComponent(new Component(`${library}-version`, () => ({ library, version }), "VERSION" /* ComponentType.VERSION */));
+}
+/**
+ * Sets log handler for all Firebase SDKs.
+ * @param logCallback - An optional custom log handler that executes user code whenever
+ * the Firebase SDK makes a logging call.
+ *
+ * @public
+ */
+function onLog(logCallback, options) {
+    if (logCallback !== null && typeof logCallback !== 'function') {
+        throw ERROR_FACTORY.create("invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */);
+    }
+    setUserLogHandler(logCallback, options);
+}
+/**
+ * Sets log level for all Firebase SDKs.
+ *
+ * All of the log types above the current log level are captured (i.e. if
+ * you set the log level to `info`, errors are logged, but `debug` and
+ * `verbose` logs are not).
+ *
+ * @public
+ */
+function index_esm2017_setLogLevel(logLevel) {
+    setLogLevel$1(logLevel);
+}
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DB_NAME = 'firebase-heartbeat-database';
+const DB_VERSION = 1;
+const STORE_NAME = 'firebase-heartbeat-store';
+let dbPromise = null;
+function getDbPromise() {
+    if (!dbPromise) {
+        dbPromise = build_openDB(DB_NAME, DB_VERSION, {
+            upgrade: (db, oldVersion) => {
+                // We don't use 'break' in this switch statement, the fall-through
+                // behavior is what we want, because if there are multiple versions between
+                // the old version and the current version, we want ALL the migrations
+                // that correspond to those versions to run, not only the last one.
+                // eslint-disable-next-line default-case
+                switch (oldVersion) {
+                    case 0:
+                        try {
+                            db.createObjectStore(STORE_NAME);
+                        }
+                        catch (e) {
+                            // Safari/iOS browsers throw occasional exceptions on
+                            // db.createObjectStore() that may be a bug. Avoid blocking
+                            // the rest of the app functionality.
+                            console.warn(e);
+                        }
+                }
+            }
+        }).catch(e => {
+            throw ERROR_FACTORY.create("idb-open" /* AppError.IDB_OPEN */, {
+                originalErrorMessage: e.message
+            });
+        });
+    }
+    return dbPromise;
+}
+async function readHeartbeatsFromIndexedDB(app) {
+    try {
+        const db = await getDbPromise();
+        const tx = db.transaction(STORE_NAME);
+        const result = await tx.objectStore(STORE_NAME).get(computeKey(app));
+        // We already have the value but tx.done can throw,
+        // so we need to await it here to catch errors
+        await tx.done;
+        return result;
+    }
+    catch (e) {
+        if (e instanceof FirebaseError) {
+            logger.warn(e.message);
+        }
+        else {
+            const idbGetError = ERROR_FACTORY.create("idb-get" /* AppError.IDB_GET */, {
+                originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+            });
+            logger.warn(idbGetError.message);
+        }
+    }
+}
+async function writeHeartbeatsToIndexedDB(app, heartbeatObject) {
+    try {
+        const db = await getDbPromise();
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const objectStore = tx.objectStore(STORE_NAME);
+        await objectStore.put(heartbeatObject, computeKey(app));
+        await tx.done;
+    }
+    catch (e) {
+        if (e instanceof FirebaseError) {
+            logger.warn(e.message);
+        }
+        else {
+            const idbGetError = ERROR_FACTORY.create("idb-set" /* AppError.IDB_WRITE */, {
+                originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+            });
+            logger.warn(idbGetError.message);
+        }
+    }
+}
+function computeKey(app) {
+    return `${app.name}!${app.options.appId}`;
+}
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const MAX_HEADER_BYTES = 1024;
+// 30 days
+const STORED_HEARTBEAT_RETENTION_MAX_MILLIS = 30 * 24 * 60 * 60 * 1000;
+class HeartbeatServiceImpl {
+    constructor(container) {
+        this.container = container;
+        /**
+         * In-memory cache for heartbeats, used by getHeartbeatsHeader() to generate
+         * the header string.
+         * Stores one record per date. This will be consolidated into the standard
+         * format of one record per user agent string before being sent as a header.
+         * Populated from indexedDB when the controller is instantiated and should
+         * be kept in sync with indexedDB.
+         * Leave public for easier testing.
+         */
+        this._heartbeatsCache = null;
+        const app = this.container.getProvider('app').getImmediate();
+        this._storage = new HeartbeatStorageImpl(app);
+        this._heartbeatsCachePromise = this._storage.read().then(result => {
+            this._heartbeatsCache = result;
+            return result;
+        });
+    }
+    /**
+     * Called to report a heartbeat. The function will generate
+     * a HeartbeatsByUserAgent object, update heartbeatsCache, and persist it
+     * to IndexedDB.
+     * Note that we only store one heartbeat per day. So if a heartbeat for today is
+     * already logged, subsequent calls to this function in the same day will be ignored.
+     */
+    async triggerHeartbeat() {
+        var _a, _b;
+        try {
+            const platformLogger = this.container
+                .getProvider('platform-logger')
+                .getImmediate();
+            // This is the "Firebase user agent" string from the platform logger
+            // service, not the browser user agent.
+            const agent = platformLogger.getPlatformInfoString();
+            const date = getUTCDateString();
+            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null) {
+                this._heartbeatsCache = await this._heartbeatsCachePromise;
+                // If we failed to construct a heartbeats cache, then return immediately.
+                if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) {
+                    return;
+                }
+            }
+            // Do not store a heartbeat if one is already stored for this day
+            // or if a header has already been sent today.
+            if (this._heartbeatsCache.lastSentHeartbeatDate === date ||
+                this._heartbeatsCache.heartbeats.some(singleDateHeartbeat => singleDateHeartbeat.date === date)) {
+                return;
+            }
+            else {
+                // There is no entry for this date. Create one.
+                this._heartbeatsCache.heartbeats.push({ date, agent });
+            }
+            // Remove entries older than 30 days.
+            this._heartbeatsCache.heartbeats =
+                this._heartbeatsCache.heartbeats.filter(singleDateHeartbeat => {
+                    const hbTimestamp = new Date(singleDateHeartbeat.date).valueOf();
+                    const now = Date.now();
+                    return now - hbTimestamp <= STORED_HEARTBEAT_RETENTION_MAX_MILLIS;
+                });
+            return this._storage.overwrite(this._heartbeatsCache);
+        }
+        catch (e) {
+            logger.warn(e);
+        }
+    }
+    /**
+     * Returns a base64 encoded string which can be attached to the heartbeat-specific header directly.
+     * It also clears all heartbeats from memory as well as in IndexedDB.
+     *
+     * NOTE: Consuming product SDKs should not send the header if this method
+     * returns an empty string.
+     */
+    async getHeartbeatsHeader() {
+        var _a;
+        try {
+            if (this._heartbeatsCache === null) {
+                await this._heartbeatsCachePromise;
+            }
+            // If it's still null or the array is empty, there is no data to send.
+            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null ||
+                this._heartbeatsCache.heartbeats.length === 0) {
+                return '';
+            }
+            const date = getUTCDateString();
+            // Extract as many heartbeats from the cache as will fit under the size limit.
+            const { heartbeatsToSend, unsentEntries } = extractHeartbeatsForHeader(this._heartbeatsCache.heartbeats);
+            const headerString = base64urlEncodeWithoutPadding(JSON.stringify({ version: 2, heartbeats: heartbeatsToSend }));
+            // Store last sent date to prevent another being logged/sent for the same day.
+            this._heartbeatsCache.lastSentHeartbeatDate = date;
+            if (unsentEntries.length > 0) {
+                // Store any unsent entries if they exist.
+                this._heartbeatsCache.heartbeats = unsentEntries;
+                // This seems more likely than emptying the array (below) to lead to some odd state
+                // since the cache isn't empty and this will be called again on the next request,
+                // and is probably safest if we await it.
+                await this._storage.overwrite(this._heartbeatsCache);
+            }
+            else {
+                this._heartbeatsCache.heartbeats = [];
+                // Do not wait for this, to reduce latency.
+                void this._storage.overwrite(this._heartbeatsCache);
+            }
+            return headerString;
+        }
+        catch (e) {
+            logger.warn(e);
+            return '';
+        }
+    }
+}
+function getUTCDateString() {
+    const today = new Date();
+    // Returns date format 'YYYY-MM-DD'
+    return today.toISOString().substring(0, 10);
+}
+function extractHeartbeatsForHeader(heartbeatsCache, maxSize = MAX_HEADER_BYTES) {
+    // Heartbeats grouped by user agent in the standard format to be sent in
+    // the header.
+    const heartbeatsToSend = [];
+    // Single date format heartbeats that are not sent.
+    let unsentEntries = heartbeatsCache.slice();
+    for (const singleDateHeartbeat of heartbeatsCache) {
+        // Look for an existing entry with the same user agent.
+        const heartbeatEntry = heartbeatsToSend.find(hb => hb.agent === singleDateHeartbeat.agent);
+        if (!heartbeatEntry) {
+            // If no entry for this user agent exists, create one.
+            heartbeatsToSend.push({
+                agent: singleDateHeartbeat.agent,
+                dates: [singleDateHeartbeat.date]
+            });
+            if (countBytes(heartbeatsToSend) > maxSize) {
+                // If the header would exceed max size, remove the added heartbeat
+                // entry and stop adding to the header.
+                heartbeatsToSend.pop();
+                break;
+            }
+        }
+        else {
+            heartbeatEntry.dates.push(singleDateHeartbeat.date);
+            // If the header would exceed max size, remove the added date
+            // and stop adding to the header.
+            if (countBytes(heartbeatsToSend) > maxSize) {
+                heartbeatEntry.dates.pop();
+                break;
+            }
+        }
+        // Pop unsent entry from queue. (Skipped if adding the entry exceeded
+        // quota and the loop breaks early.)
+        unsentEntries = unsentEntries.slice(1);
+    }
+    return {
+        heartbeatsToSend,
+        unsentEntries
+    };
+}
+class HeartbeatStorageImpl {
+    constructor(app) {
+        this.app = app;
+        this._canUseIndexedDBPromise = this.runIndexedDBEnvironmentCheck();
+    }
+    async runIndexedDBEnvironmentCheck() {
+        if (!isIndexedDBAvailable()) {
+            return false;
+        }
+        else {
+            return validateIndexedDBOpenable()
+                .then(() => true)
+                .catch(() => false);
+        }
+    }
+    /**
+     * Read all heartbeats.
+     */
+    async read() {
+        const canUseIndexedDB = await this._canUseIndexedDBPromise;
+        if (!canUseIndexedDB) {
+            return { heartbeats: [] };
+        }
+        else {
+            const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
+            if (idbHeartbeatObject === null || idbHeartbeatObject === void 0 ? void 0 : idbHeartbeatObject.heartbeats) {
+                return idbHeartbeatObject;
+            }
+            else {
+                return { heartbeats: [] };
+            }
+        }
+    }
+    // overwrite the storage with the provided heartbeats
+    async overwrite(heartbeatsObject) {
+        var _a;
+        const canUseIndexedDB = await this._canUseIndexedDBPromise;
+        if (!canUseIndexedDB) {
+            return;
+        }
+        else {
+            const existingHeartbeatsObject = await this.read();
+            return writeHeartbeatsToIndexedDB(this.app, {
+                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                heartbeats: heartbeatsObject.heartbeats
+            });
+        }
+    }
+    // add heartbeats
+    async add(heartbeatsObject) {
+        var _a;
+        const canUseIndexedDB = await this._canUseIndexedDBPromise;
+        if (!canUseIndexedDB) {
+            return;
+        }
+        else {
+            const existingHeartbeatsObject = await this.read();
+            return writeHeartbeatsToIndexedDB(this.app, {
+                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                heartbeats: [
+                    ...existingHeartbeatsObject.heartbeats,
+                    ...heartbeatsObject.heartbeats
+                ]
+            });
+        }
+    }
+}
+/**
+ * Calculate bytes of a HeartbeatsByUserAgent array after being wrapped
+ * in a platform logging header JSON object, stringified, and converted
+ * to base 64.
+ */
+function countBytes(heartbeatsCache) {
+    // base64 has a restricted set of characters, all of which should be 1 byte.
+    return base64urlEncodeWithoutPadding(
+    // heartbeatsCache wrapper properties
+    JSON.stringify({ version: 2, heartbeats: heartbeatsCache })).length;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function registerCoreComponents(variant) {
+    _registerComponent(new Component('platform-logger', container => new PlatformLoggerServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */));
+    _registerComponent(new Component('heartbeat', container => new HeartbeatServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */));
+    // Register `app` package.
+    registerVersion(name$q, version$1, variant);
+    // BUILD_TARGET will be replaced by values like esm5, esm2017, cjs5, etc during the compilation
+    registerVersion(name$q, version$1, 'esm2017');
+    // Register platform SDK identifier (no version).
+    registerVersion('fire-js', '');
+}
+
+/**
+ * Firebase App
+ *
+ * @remarks This package coordinates the communication between the different Firebase components
+ * @packageDocumentation
+ */
+registerCoreComponents('');
+
+
+//# sourceMappingURL=index.esm2017.js.map
+
+;// ./node_modules/firebase/app/dist/esm/index.esm.js
+
+
+
+var index_esm_name = "firebase";
+var index_esm_version = "10.14.1";
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+registerVersion(index_esm_name, index_esm_version, 'app');
+//# sourceMappingURL=index.esm.js.map
+
+;// ./node_modules/tslib/tslib.es6.mjs
+/******************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+/* global Reflect, Promise, SuppressedError, Symbol, Iterator */
+
+var extendStatics = function(d, b) {
+  extendStatics = Object.setPrototypeOf ||
+      ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+      function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+  return extendStatics(d, b);
+};
+
+function __extends(d, b) {
+  if (typeof b !== "function" && b !== null)
+      throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+  extendStatics(d, b);
+  function __() { this.constructor = d; }
+  d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+var __assign = function() {
+  __assign = Object.assign || function __assign(t) {
+      for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+      }
+      return t;
+  }
+  return __assign.apply(this, arguments);
+}
+
+function __rest(s, e) {
+  var t = {};
+  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+      t[p] = s[p];
+  if (s != null && typeof Object.getOwnPropertySymbols === "function")
+      for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+          if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+              t[p[i]] = s[p[i]];
+      }
+  return t;
+}
+
+function __decorate(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+function __param(paramIndex, decorator) {
+  return function (target, key) { decorator(target, key, paramIndex); }
+}
+
+function __esDecorate(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+  function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
+  var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+  var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+  var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+  var _, done = false;
+  for (var i = decorators.length - 1; i >= 0; i--) {
+      var context = {};
+      for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+      for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+      context.addInitializer = function (f) { if (done) throw new TypeError("Cannot add initializers after decoration has completed"); extraInitializers.push(accept(f || null)); };
+      var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+      if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+      }
+      else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+      }
+  }
+  if (target) Object.defineProperty(target, contextIn.name, descriptor);
+  done = true;
+};
+
+function __runInitializers(thisArg, initializers, value) {
+  var useValue = arguments.length > 2;
+  for (var i = 0; i < initializers.length; i++) {
+      value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+  }
+  return useValue ? value : void 0;
+};
+
+function __propKey(x) {
+  return typeof x === "symbol" ? x : "".concat(x);
+};
+
+function __setFunctionName(f, name, prefix) {
+  if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+  return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
+};
+
+function __metadata(metadataKey, metadataValue) {
+  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+}
+
+function __awaiter(thisArg, _arguments, P, generator) {
+  function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+  return new (P || (P = Promise))(function (resolve, reject) {
+      function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+      function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+      function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+}
+
+function __generator(thisArg, body) {
+  var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+  return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+  function verb(n) { return function (v) { return step([n, v]); }; }
+  function step(op) {
+      if (f) throw new TypeError("Generator is already executing.");
+      while (g && (g = 0, op[0] && (_ = 0)), _) try {
+          if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+          if (y = 0, t) op = [op[0] & 2, t.value];
+          switch (op[0]) {
+              case 0: case 1: t = op; break;
+              case 4: _.label++; return { value: op[1], done: false };
+              case 5: _.label++; y = op[1]; op = [0]; continue;
+              case 7: op = _.ops.pop(); _.trys.pop(); continue;
+              default:
+                  if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                  if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                  if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                  if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                  if (t[2]) _.ops.pop();
+                  _.trys.pop(); continue;
+          }
+          op = body.call(thisArg, _);
+      } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+      if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+  }
+}
+
+var __createBinding = Object.create ? (function(o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  var desc = Object.getOwnPropertyDescriptor(m, k);
+  if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+  }
+  Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  o[k2] = m[k];
+});
+
+function __exportStar(m, o) {
+  for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p)) __createBinding(o, m, p);
+}
+
+function __values(o) {
+  var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+  if (m) return m.call(o);
+  if (o && typeof o.length === "number") return {
+      next: function () {
+          if (o && i >= o.length) o = void 0;
+          return { value: o && o[i++], done: !o };
+      }
+  };
+  throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+}
+
+function __read(o, n) {
+  var m = typeof Symbol === "function" && o[Symbol.iterator];
+  if (!m) return o;
+  var i = m.call(o), r, ar = [], e;
+  try {
+      while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+  }
+  catch (error) { e = { error: error }; }
+  finally {
+      try {
+          if (r && !r.done && (m = i["return"])) m.call(i);
+      }
+      finally { if (e) throw e.error; }
+  }
+  return ar;
+}
+
+/** @deprecated */
+function __spread() {
+  for (var ar = [], i = 0; i < arguments.length; i++)
+      ar = ar.concat(__read(arguments[i]));
+  return ar;
+}
+
+/** @deprecated */
+function __spreadArrays() {
+  for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+  for (var r = Array(s), k = 0, i = 0; i < il; i++)
+      for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+          r[k] = a[j];
+  return r;
+}
+
+function __spreadArray(to, from, pack) {
+  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+      if (ar || !(i in from)) {
+          if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+          ar[i] = from[i];
+      }
+  }
+  return to.concat(ar || Array.prototype.slice.call(from));
+}
+
+function __await(v) {
+  return this instanceof __await ? (this.v = v, this) : new __await(v);
+}
+
+function __asyncGenerator(thisArg, _arguments, generator) {
+  if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+  var g = generator.apply(thisArg, _arguments || []), i, q = [];
+  return i = Object.create((typeof AsyncIterator === "function" ? AsyncIterator : Object).prototype), verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function () { return this; }, i;
+  function awaitReturn(f) { return function (v) { return Promise.resolve(v).then(f, reject); }; }
+  function verb(n, f) { if (g[n]) { i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; if (f) i[n] = f(i[n]); } }
+  function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+  function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+  function fulfill(value) { resume("next", value); }
+  function reject(value) { resume("throw", value); }
+  function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+}
+
+function __asyncDelegator(o) {
+  var i, p;
+  return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+  function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: false } : f ? f(v) : v; } : f; }
+}
+
+function __asyncValues(o) {
+  if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+  var m = o[Symbol.asyncIterator], i;
+  return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+  function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+  function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+}
+
+function __makeTemplateObject(cooked, raw) {
+  if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+  return cooked;
+};
+
+var __setModuleDefault = Object.create ? (function(o, v) {
+  Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+  o["default"] = v;
+};
+
+var ownKeys = function(o) {
+  ownKeys = Object.getOwnPropertyNames || function (o) {
+    var ar = [];
+    for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+    return ar;
+  };
+  return ownKeys(o);
+};
+
+function __importStar(mod) {
+  if (mod && mod.__esModule) return mod;
+  var result = {};
+  if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+  __setModuleDefault(result, mod);
+  return result;
+}
+
+function __importDefault(mod) {
+  return (mod && mod.__esModule) ? mod : { default: mod };
+}
+
+function __classPrivateFieldGet(receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+}
+
+function __classPrivateFieldSet(receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+}
+
+function __classPrivateFieldIn(state, receiver) {
+  if (receiver === null || (typeof receiver !== "object" && typeof receiver !== "function")) throw new TypeError("Cannot use 'in' operator on non-object");
+  return typeof state === "function" ? receiver === state : state.has(receiver);
+}
+
+function __addDisposableResource(env, value, async) {
+  if (value !== null && value !== void 0) {
+    if (typeof value !== "object" && typeof value !== "function") throw new TypeError("Object expected.");
+    var dispose, inner;
+    if (async) {
+      if (!Symbol.asyncDispose) throw new TypeError("Symbol.asyncDispose is not defined.");
+      dispose = value[Symbol.asyncDispose];
+    }
+    if (dispose === void 0) {
+      if (!Symbol.dispose) throw new TypeError("Symbol.dispose is not defined.");
+      dispose = value[Symbol.dispose];
+      if (async) inner = dispose;
+    }
+    if (typeof dispose !== "function") throw new TypeError("Object not disposable.");
+    if (inner) dispose = function() { try { inner.call(this); } catch (e) { return Promise.reject(e); } };
+    env.stack.push({ value: value, dispose: dispose, async: async });
+  }
+  else if (async) {
+    env.stack.push({ async: true });
+  }
+  return value;
+}
+
+var _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+  var e = new Error(message);
+  return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
+
+function __disposeResources(env) {
+  function fail(e) {
+    env.error = env.hasError ? new _SuppressedError(e, env.error, "An error was suppressed during disposal.") : e;
+    env.hasError = true;
+  }
+  var r, s = 0;
+  function next() {
+    while (r = env.stack.pop()) {
+      try {
+        if (!r.async && s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);
+        if (r.dispose) {
+          var result = r.dispose.call(r.value);
+          if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) { fail(e); return next(); });
+        }
+        else s |= 1;
+      }
+      catch (e) {
+        fail(e);
+      }
+    }
+    if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();
+    if (env.hasError) throw env.error;
+  }
+  return next();
+}
+
+function __rewriteRelativeImportExtension(path, preserveJsx) {
+  if (typeof path === "string" && /^\.\.?\//.test(path)) {
+      return path.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function (m, tsx, d, ext, cm) {
+          return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : (d + ext + "." + cm.toLowerCase() + "js");
+      });
+  }
+  return path;
+}
+
+/* harmony default export */ const tslib_es6 = ({
+  __extends,
+  __assign,
+  __rest,
+  __decorate,
+  __param,
+  __esDecorate,
+  __runInitializers,
+  __propKey,
+  __setFunctionName,
+  __metadata,
+  __awaiter,
+  __generator,
+  __createBinding,
+  __exportStar,
+  __values,
+  __read,
+  __spread,
+  __spreadArrays,
+  __spreadArray,
+  __await,
+  __asyncGenerator,
+  __asyncDelegator,
+  __asyncValues,
+  __makeTemplateObject,
+  __importStar,
+  __importDefault,
+  __classPrivateFieldGet,
+  __classPrivateFieldSet,
+  __classPrivateFieldIn,
+  __addDisposableResource,
+  __disposeResources,
+  __rewriteRelativeImportExtension,
+});
+
+;// ./node_modules/firebase/node_modules/@firebase/auth/dist/esm2017/index-68602d24.js
 
 
 
@@ -463,7 +4982,7 @@ const debugErrorMap = (/* unused pure expression or super */ null && (_debugErro
  * @public
  */
 const prodErrorMap = _prodErrorMap;
-const _DEFAULT_AUTH_ERROR_FACTORY = new _firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .ErrorFactory */ .FA('auth', 'Firebase', _prodErrorMap());
+const _DEFAULT_AUTH_ERROR_FACTORY = new ErrorFactory('auth', 'Firebase', _prodErrorMap());
 /**
  * A map of potential `Auth` error codes, for easier comparison with errors
  * thrown by the SDK.
@@ -598,15 +5117,15 @@ const AUTH_ERROR_CODES_MAP_DO_NOT_USE_INTERNALLY = {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const logClient = new _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .Logger */ .Vy('@firebase/auth');
+const logClient = new Logger('@firebase/auth');
 function _logWarn(msg, ...args) {
-    if (logClient.logLevel <= _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .LogLevel */ .$b.WARN) {
-        logClient.warn(`Auth (${_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .SDK_VERSION */ .MF}): ${msg}`, ...args);
+    if (logClient.logLevel <= LogLevel.WARN) {
+        logClient.warn(`Auth (${SDK_VERSION}): ${msg}`, ...args);
     }
 }
 function _logError(msg, ...args) {
-    if (logClient.logLevel <= _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .LogLevel */ .$b.ERROR) {
-        logClient.error(`Auth (${_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .SDK_VERSION */ .MF}): ${msg}`, ...args);
+    if (logClient.logLevel <= LogLevel.ERROR) {
+        logClient.error(`Auth (${SDK_VERSION}): ${msg}`, ...args);
     }
 }
 
@@ -634,7 +5153,7 @@ function _createError(authOrCode, ...rest) {
 }
 function _errorWithCustomMessage(auth, code, message) {
     const errorMap = Object.assign(Object.assign({}, prodErrorMap()), { [code]: message });
-    const factory = new _firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .ErrorFactory */ .FA('auth', 'Firebase', errorMap);
+    const factory = new ErrorFactory('auth', 'Firebase', errorMap);
     return factory.create(code, {
         appName: auth.name
     });
@@ -754,7 +5273,7 @@ function _isOnline() {
         // navigator.onLine behavior unless cordova-plugin-network-information is
         // installed which overwrites the native navigator.onLine value and
         // defines navigator.connection.
-        (_isHttpOrHttps() || (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .isBrowserExtension */ .sr)() || 'connection' in navigator)) {
+        (_isHttpOrHttps() || isBrowserExtension() || 'connection' in navigator)) {
         return navigator.onLine;
     }
     // If we can't determine the state, assume it is online.
@@ -802,7 +5321,7 @@ class Delay {
         this.longDelay = longDelay;
         // Internal error when improperly initialized.
         debugAssert(longDelay > shortDelay, 'Short delay should be less than long delay!');
-        this.isMobile = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .isMobileCordova */ .jZ)() || (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .isReactNative */ .lV)();
+        this.isMobile = isMobileCordova() || isReactNative();
     }
     get() {
         if (!_isOnline()) {
@@ -1046,7 +5565,7 @@ async function _performApiRequest(auth, method, path, request, customErrorMap = 
                 };
             }
         }
-        const query = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .querystring */ .Am)(Object.assign({ key: auth.config.apiKey }, params)).slice(1);
+        const query = index_esm2017_querystring(Object.assign({ key: auth.config.apiKey }, params)).slice(1);
         const headers = await auth._getAdditionalHeaders();
         headers["Content-Type" /* HttpHeader.CONTENT_TYPE */] = 'application/json';
         if (auth.languageCode) {
@@ -1058,7 +5577,7 @@ async function _performApiRequest(auth, method, path, request, customErrorMap = 
            problems". See the Cloudflare GitHub issue #487: Error: The 'referrerPolicy' field on
            'RequestInitializerDict' is not implemented."
            https://github.com/cloudflare/next-on-pages/issues/487 */
-        if (!(0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .isCloudflareWorker */ .c1)()) {
+        if (!isCloudflareWorker()) {
             fetchArgs.referrerPolicy = 'no-referrer';
         }
         return FetchProvider.fetch()(_getFinalTarget(auth, auth.config.apiHost, path, query), fetchArgs);
@@ -1108,7 +5627,7 @@ async function _performFetchWithErrorHandling(auth, customErrorMap, fetchFn) {
         }
     }
     catch (e) {
-        if (e instanceof _firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .FirebaseError */ .g) {
+        if (e instanceof FirebaseError) {
             throw e;
         }
         // Changing this to a different error code will log user out when there is a network error
@@ -1379,7 +5898,7 @@ function getIdToken(user, forceRefresh = false) {
  * @public
  */
 async function getIdTokenResult(user, forceRefresh = false) {
-    const userInternal = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getModularInstance */ .Ku)(user);
+    const userInternal = index_esm2017_getModularInstance(user);
     const token = await userInternal.getIdToken(forceRefresh);
     const claims = _parseToken(token);
     _assert(claims && claims.exp && claims.auth_time && claims.iat, userInternal.auth, "internal-error" /* AuthErrorCode.INTERNAL_ERROR */);
@@ -1407,7 +5926,7 @@ function _parseToken(token) {
         return null;
     }
     try {
-        const decoded = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .base64Decode */ .u)(payload);
+        const decoded = base64Decode(payload);
         if (!decoded) {
             _logError('Failed to decode base64 JWT payload');
             return null;
@@ -1454,7 +5973,7 @@ async function _logoutIfInvalidated(user, promise, bypassAuthState = false) {
         return await promise;
     }
     catch (e) {
-        if (e instanceof _firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .FirebaseError */ .g && isUserInvalidated(e)) {
+        if (e instanceof FirebaseError && isUserInvalidated(e)) {
             if (user.auth.currentUser === user) {
                 await user.auth.signOut();
             }
@@ -1648,7 +6167,7 @@ async function _reloadWithoutSaving(user) {
  * @public
  */
 async function reload(user) {
-    const userInternal = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getModularInstance */ .Ku)(user);
+    const userInternal = index_esm2017_getModularInstance(user);
     await _reloadWithoutSaving(userInternal);
     // Even though the current user hasn't changed, update
     // current user will trigger a persistence update w/ the
@@ -1662,7 +6181,7 @@ function mergeProviderData(original, newData) {
 }
 function extractProviderData(providers) {
     return providers.map((_a) => {
-        var { providerId } = _a, provider = (0,tslib__WEBPACK_IMPORTED_MODULE_4__/* .__rest */ .Tt)(_a, ["providerId"]);
+        var { providerId } = _a, provider = __rest(_a, ["providerId"]);
         return {
             providerId,
             uid: provider.rawId || '',
@@ -1692,7 +6211,7 @@ function extractProviderData(providers) {
  */
 async function requestStsToken(auth, refreshToken) {
     const response = await _performFetchWithErrorHandling(auth, {}, async () => {
-        const body = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .querystring */ .Am)({
+        const body = index_esm2017_querystring({
             'grant_type': 'refresh_token',
             'refresh_token': refreshToken
         }).slice(1);
@@ -1850,7 +6369,7 @@ function assertStringOrUndefined(assertion, appName) {
 }
 class UserImpl {
     constructor(_a) {
-        var { uid, auth, stsTokenManager } = _a, opt = (0,tslib__WEBPACK_IMPORTED_MODULE_4__/* .__rest */ .Tt)(_a, ["uid", "auth", "stsTokenManager"]);
+        var { uid, auth, stsTokenManager } = _a, opt = __rest(_a, ["uid", "auth", "stsTokenManager"]);
         // For the user object, provider is always Firebase.
         this.providerId = "firebase" /* ProviderId.FIREBASE */;
         this.proactiveRefresh = new ProactiveRefresh(this);
@@ -1947,7 +6466,7 @@ class UserImpl {
         }
     }
     async delete() {
-        if ((0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._isFirebaseServerApp */ .xZ)(this.auth.app)) {
+        if (index_esm2017_isFirebaseServerApp(this.auth.app)) {
             return Promise.reject(_serverAppCurrentUserOperationNotSupportedError(this.auth));
         }
         const idToken = await this.getIdToken();
@@ -2342,32 +6861,32 @@ function _getBrowserName(userAgent) {
     }
     return "Other" /* BrowserName.OTHER */;
 }
-function _isFirefox(ua = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)()) {
+function _isFirefox(ua = index_esm2017_getUA()) {
     return /firefox\//i.test(ua);
 }
-function _isSafari(userAgent = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)()) {
+function _isSafari(userAgent = index_esm2017_getUA()) {
     const ua = userAgent.toLowerCase();
     return (ua.includes('safari/') &&
         !ua.includes('chrome/') &&
         !ua.includes('crios/') &&
         !ua.includes('android'));
 }
-function _isChromeIOS(ua = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)()) {
+function _isChromeIOS(ua = index_esm2017_getUA()) {
     return /crios\//i.test(ua);
 }
-function _isIEMobile(ua = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)()) {
+function _isIEMobile(ua = index_esm2017_getUA()) {
     return /iemobile/i.test(ua);
 }
-function _isAndroid(ua = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)()) {
+function _isAndroid(ua = index_esm2017_getUA()) {
     return /android/i.test(ua);
 }
-function _isBlackBerry(ua = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)()) {
+function _isBlackBerry(ua = index_esm2017_getUA()) {
     return /blackberry/i.test(ua);
 }
-function _isWebOS(ua = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)()) {
+function _isWebOS(ua = index_esm2017_getUA()) {
     return /webos/i.test(ua);
 }
-function _isIOS(ua = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)()) {
+function _isIOS(ua = index_esm2017_getUA()) {
     return (/iphone|ipad|ipod/i.test(ua) ||
         (/macintosh/i.test(ua) && /mobile/i.test(ua)));
 }
@@ -2375,14 +6894,14 @@ function _isIOS7Or8(ua = getUA()) {
     return (/(iPad|iPhone|iPod).*OS 7_\d/i.test(ua) ||
         /(iPad|iPhone|iPod).*OS 8_\d/i.test(ua));
 }
-function _isIOSStandalone(ua = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)()) {
+function _isIOSStandalone(ua = index_esm2017_getUA()) {
     var _a;
     return _isIOS(ua) && !!((_a = window.navigator) === null || _a === void 0 ? void 0 : _a.standalone);
 }
 function _isIE10() {
-    return (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .isIE */ .lT)() && document.documentMode === 10;
+    return isIE() && document.documentMode === 10;
 }
-function _isMobileBrowser(ua = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)()) {
+function _isMobileBrowser(ua = index_esm2017_getUA()) {
     // TODO: implement getBrowserName equivalent for OS.
     return (_isIOS(ua) ||
         _isAndroid(ua) ||
@@ -2416,13 +6935,13 @@ function _getClientVersion(clientPlatform, frameworks = []) {
     switch (clientPlatform) {
         case "Browser" /* ClientPlatform.BROWSER */:
             // In a browser environment, report the browser name.
-            reportedPlatform = _getBrowserName((0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)());
+            reportedPlatform = _getBrowserName(index_esm2017_getUA());
             break;
         case "Worker" /* ClientPlatform.WORKER */:
             // Technically a worker runs from a browser but we need to differentiate a
             // worker from a browser.
             // For example: Chrome-Worker/JsCore/4.9.1/FirebaseCore-web.
-            reportedPlatform = `${_getBrowserName((0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)())}-${clientPlatform}`;
+            reportedPlatform = `${_getBrowserName(index_esm2017_getUA())}-${clientPlatform}`;
             break;
         default:
             reportedPlatform = clientPlatform;
@@ -2430,7 +6949,7 @@ function _getClientVersion(clientPlatform, frameworks = []) {
     const reportedFrameworks = frameworks.length
         ? frameworks.join(',')
         : 'FirebaseCore-web'; /* default value if no other framework is used */
-    return `${reportedPlatform}/${"JsCore" /* ClientImplementation.CORE */}/${_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .SDK_VERSION */ .MF}/${reportedFrameworks}`;
+    return `${reportedPlatform}/${"JsCore" /* ClientImplementation.CORE */}/${SDK_VERSION}/${reportedFrameworks}`;
 }
 
 /**
@@ -2817,7 +7336,7 @@ class AuthImpl {
     }
     async initializeCurrentUser(popupRedirectResolver) {
         var _a;
-        if ((0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._isFirebaseServerApp */ .xZ)(this.app)) {
+        if (index_esm2017_isFirebaseServerApp(this.app)) {
             const idToken = this.app.settings.authIdToken;
             if (idToken) {
                 // Start the auth operation in the next tick to allow a moment for the customer's app to
@@ -2935,13 +7454,13 @@ class AuthImpl {
         this._deleted = true;
     }
     async updateCurrentUser(userExtern) {
-        if ((0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._isFirebaseServerApp */ .xZ)(this.app)) {
+        if (index_esm2017_isFirebaseServerApp(this.app)) {
             return Promise.reject(_serverAppCurrentUserOperationNotSupportedError(this));
         }
         // The public updateCurrentUser method needs to make a copy of the user,
         // and also check that the project matches
         const user = userExtern
-            ? (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getModularInstance */ .Ku)(userExtern)
+            ? index_esm2017_getModularInstance(userExtern)
             : null;
         if (user) {
             _assert(user.auth.config.apiKey === this.config.apiKey, this, "invalid-user-token" /* AuthErrorCode.INVALID_AUTH */);
@@ -2964,7 +7483,7 @@ class AuthImpl {
         });
     }
     async signOut() {
-        if ((0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._isFirebaseServerApp */ .xZ)(this.app)) {
+        if (index_esm2017_isFirebaseServerApp(this.app)) {
             return Promise.reject(_serverAppCurrentUserOperationNotSupportedError(this));
         }
         // Run first, to block _setRedirectUser() if any callbacks fail.
@@ -2978,7 +7497,7 @@ class AuthImpl {
         return this._updateCurrentUser(null, /* skipBeforeStateCallbacks */ true);
     }
     setPersistence(persistence) {
-        if ((0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._isFirebaseServerApp */ .xZ)(this.app)) {
+        if (index_esm2017_isFirebaseServerApp(this.app)) {
             return Promise.reject(_serverAppCurrentUserOperationNotSupportedError(this));
         }
         return this.queue(async () => {
@@ -3029,7 +7548,7 @@ class AuthImpl {
         return this.assertedPersistence.persistence.type;
     }
     _updateErrorMap(errorMap) {
-        this._errorFactory = new _firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .ErrorFactory */ .FA('auth', 'Firebase', errorMap());
+        this._errorFactory = new ErrorFactory('auth', 'Firebase', errorMap());
     }
     onAuthStateChanged(nextOrObserver, error, completed) {
         return this.registerStateListener(this.authStateSubscription, nextOrObserver, error, completed);
@@ -3278,14 +7797,14 @@ class AuthImpl {
  * @param auth Auth object passed in from developer
  */
 function _castAuth(auth) {
-    return (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getModularInstance */ .Ku)(auth);
+    return index_esm2017_getModularInstance(auth);
 }
 /** Helper class to wrap subscriber logic */
 class Subscription {
     constructor(auth) {
         this.auth = auth;
         this.observer = null;
-        this.addObserver = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .createSubscribe */ .tD)(observer => (this.observer = observer));
+        this.addObserver = createSubscribe(observer => (this.observer = observer));
     }
     get next() {
         _assert(this.observer, this.auth, "internal-error" /* AuthErrorCode.INTERNAL_ERROR */);
@@ -3544,11 +8063,11 @@ async function _initializeRecaptchaConfig(auth) {
  * @public
  */
 function initializeAuth(app, deps) {
-    const provider = (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._getProvider */ .j6)(app, 'auth');
+    const provider = index_esm2017_getProvider(app, 'auth');
     if (provider.isInitialized()) {
         const auth = provider.getImmediate();
         const initialOptions = provider.getOptions();
-        if ((0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .deepEqual */ .bD)(initialOptions, deps !== null && deps !== void 0 ? deps : {})) {
+        if (index_esm2017_deepEqual(initialOptions, deps !== null && deps !== void 0 ? deps : {})) {
             return auth;
         }
         else {
@@ -4062,7 +8581,7 @@ class OAuthCredential extends AuthCredential {
      */
     static fromJSON(json) {
         const obj = typeof json === 'string' ? JSON.parse(json) : json;
-        const { providerId, signInMethod } = obj, rest = (0,tslib__WEBPACK_IMPORTED_MODULE_4__/* .__rest */ .Tt)(obj, ["providerId", "signInMethod"]);
+        const { providerId, signInMethod } = obj, rest = __rest(obj, ["providerId", "signInMethod"]);
         if (!providerId || !signInMethod) {
             return null;
         }
@@ -4114,7 +8633,7 @@ class OAuthCredential extends AuthCredential {
             if (this.nonce && !this.pendingToken) {
                 postBody['nonce'] = this.nonce;
             }
-            request.postBody = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .querystring */ .Am)(postBody);
+            request.postBody = index_esm2017_querystring(postBody);
         }
         return request;
     }
@@ -4299,15 +8818,15 @@ function parseMode(mode) {
  * @param url
  */
 function parseDeepLink(url) {
-    const link = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .querystringDecode */ .I9)((0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .extractQuerystring */ .hp)(url))['link'];
+    const link = querystringDecode(extractQuerystring(url))['link'];
     // Double link case (automatic redirect).
     const doubleDeepLink = link
-        ? (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .querystringDecode */ .I9)((0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .extractQuerystring */ .hp)(link))['deep_link_id']
+        ? querystringDecode(extractQuerystring(link))['deep_link_id']
         : null;
     // iOS custom scheme links.
-    const iOSDeepLink = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .querystringDecode */ .I9)((0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .extractQuerystring */ .hp)(url))['deep_link_id'];
+    const iOSDeepLink = querystringDecode(extractQuerystring(url))['deep_link_id'];
     const iOSDoubleDeepLink = iOSDeepLink
-        ? (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .querystringDecode */ .I9)((0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .extractQuerystring */ .hp)(iOSDeepLink))['link']
+        ? querystringDecode(extractQuerystring(iOSDeepLink))['link']
         : null;
     return iOSDoubleDeepLink || iOSDeepLink || doubleDeepLink || link || url;
 }
@@ -4326,7 +8845,7 @@ class ActionCodeURL {
      */
     constructor(actionLink) {
         var _a, _b, _c, _d, _e, _f;
-        const searchParams = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .querystringDecode */ .I9)((0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .extractQuerystring */ .hp)(actionLink));
+        const searchParams = querystringDecode(extractQuerystring(actionLink));
         const apiKey = (_a = searchParams["apiKey" /* QueryField.API_KEY */]) !== null && _a !== void 0 ? _a : null;
         const code = (_b = searchParams["oobCode" /* QueryField.CODE */]) !== null && _b !== void 0 ? _b : null;
         const operation = parseMode((_c = searchParams["mode" /* QueryField.MODE */]) !== null && _c !== void 0 ? _c : null);
@@ -5472,7 +9991,7 @@ async function signInAnonymously(auth) {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class MultiFactorError extends _firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .FirebaseError */ .g {
+class MultiFactorError extends FirebaseError {
     constructor(auth, error, operationType, user) {
         var _a;
         super(error.code, error.message);
@@ -5598,7 +10117,7 @@ async function _assertLinkedStatus(expected, user, provider) {
  */
 async function _reauthenticate(user, credential, bypassAuthState = false) {
     const { auth } = user;
-    if ((0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._isFirebaseServerApp */ .xZ)(auth.app)) {
+    if (index_esm2017_isFirebaseServerApp(auth.app)) {
         return Promise.reject(_serverAppCurrentUserOperationNotSupportedError(auth));
     }
     const operationType = "reauthenticate" /* OperationType.REAUTHENTICATE */;
@@ -5637,7 +10156,7 @@ async function _reauthenticate(user, credential, bypassAuthState = false) {
  * limitations under the License.
  */
 async function _signInWithCredential(auth, credential, bypassAuthState = false) {
-    if ((0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._isFirebaseServerApp */ .xZ)(auth.app)) {
+    if (index_esm2017_isFirebaseServerApp(auth.app)) {
         return Promise.reject(_serverAppCurrentUserOperationNotSupportedError(auth));
     }
     const operationType = "signIn" /* OperationType.SIGN_IN */;
@@ -5756,7 +10275,7 @@ async function signInWithCustomToken$1(auth, request) {
  *
  * @public
  */
-async function signInWithCustomToken(auth, customToken) {
+async function index_68602d24_signInWithCustomToken(auth, customToken) {
     if (_isFirebaseServerApp(auth.app)) {
         return Promise.reject(_serverAppCurrentUserOperationNotSupportedError(auth));
     }
@@ -6782,7 +11301,7 @@ async function validatePassword(auth, password) {
  * @public
  */
 function onIdTokenChanged(auth, nextOrObserver, error, completed) {
-    return (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getModularInstance */ .Ku)(auth).onIdTokenChanged(nextOrObserver, error, completed);
+    return index_esm2017_getModularInstance(auth).onIdTokenChanged(nextOrObserver, error, completed);
 }
 /**
  * Adds a blocking callback that runs before an auth state change
@@ -6795,7 +11314,7 @@ function onIdTokenChanged(auth, nextOrObserver, error, completed) {
  *   callback throws, allowing you to undo any side effects.
  */
 function beforeAuthStateChanged(auth, callback, onAbort) {
-    return (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getModularInstance */ .Ku)(auth).beforeAuthStateChanged(callback, onAbort);
+    return index_esm2017_getModularInstance(auth).beforeAuthStateChanged(callback, onAbort);
 }
 /**
  * Adds an observer for changes to the user's sign-in state.
@@ -6860,7 +11379,7 @@ function updateCurrentUser(auth, user) {
  *
  * @public
  */
-function signOut(auth) {
+function index_68602d24_signOut(auth) {
     return getModularInstance(auth).signOut();
 }
 /**
@@ -7765,8 +12284,8 @@ function _getWorkerGlobalScope() {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const DB_NAME = 'firebaseLocalStorageDb';
-const DB_VERSION = 1;
+const index_68602d24_DB_NAME = 'firebaseLocalStorageDb';
+const index_68602d24_DB_VERSION = 1;
 const DB_OBJECTSTORE_NAME = 'firebaseLocalStorage';
 const DB_DATA_KEYPATH = 'fbase_key';
 /**
@@ -7796,11 +12315,11 @@ function getObjectStore(db, isReadWrite) {
         .objectStore(DB_OBJECTSTORE_NAME);
 }
 function _deleteDatabase() {
-    const request = indexedDB.deleteDatabase(DB_NAME);
+    const request = indexedDB.deleteDatabase(index_68602d24_DB_NAME);
     return new DBPromise(request).toPromise();
 }
 function _openDatabase() {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    const request = indexedDB.open(index_68602d24_DB_NAME, index_68602d24_DB_VERSION);
     return new Promise((resolve, reject) => {
         request.addEventListener('error', () => {
             reject(request.error);
@@ -8842,7 +13361,7 @@ class PhoneAuthProvider {
      * {@link PhoneAuthProvider.credential} to identify this flow..
      */
     verifyPhoneNumber(phoneOptions, applicationVerifier) {
-        return _verifyPhoneNumber(this.auth, phoneOptions, (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getModularInstance */ .Ku)(applicationVerifier));
+        return _verifyPhoneNumber(this.auth, phoneOptions, index_esm2017_getModularInstance(applicationVerifier));
     }
     /**
      * Creates a phone auth credential, given the verification ID from
@@ -9667,7 +14186,7 @@ async function getRedirectResult(auth, resolver) {
     return _getRedirectResult(auth, resolver, false);
 }
 async function _getRedirectResult(auth, resolverExtern, bypassAuthState = false) {
-    if ((0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._isFirebaseServerApp */ .xZ)(auth.app)) {
+    if (index_esm2017_isFirebaseServerApp(auth.app)) {
         return Promise.reject(_serverAppCurrentUserOperationNotSupportedError(auth));
     }
     const authInternal = _castAuth(auth);
@@ -10047,7 +14566,7 @@ function getIframeUrl(auth) {
     const params = {
         apiKey: config.apiKey,
         appName: auth.name,
-        v: _firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .SDK_VERSION */ .MF
+        v: SDK_VERSION
     };
     const eid = EID_FROM_APIHOST.get(auth.config.apiHost);
     if (eid) {
@@ -10057,7 +14576,7 @@ function getIframeUrl(auth) {
     if (frameworks.length) {
         params.fw = frameworks.join(',');
     }
-    return `${url}?${(0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .querystring */ .Am)(params).slice(1)}`;
+    return `${url}?${index_esm2017_querystring(params).slice(1)}`;
 }
 async function _openIframe(auth) {
     const context = await _loadGapi(auth);
@@ -10141,7 +14660,7 @@ function _open(auth, url, name, width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT) 
         left });
     // Chrome iOS 7 and 8 is returning an undefined popup win when target is
     // specified, even though the popup is not necessarily blocked.
-    const ua = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getUA */ .ZQ)().toLowerCase();
+    const ua = index_esm2017_getUA().toLowerCase();
     if (name) {
         target = _isChromeIOS(ua) ? TARGET_BLANK : name;
     }
@@ -10219,13 +14738,13 @@ async function _getRedirectUrl(auth, provider, authType, redirectUrl, eventId, a
         appName: auth.name,
         authType,
         redirectUrl,
-        v: _firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .SDK_VERSION */ .MF,
+        v: SDK_VERSION,
         eventId
     };
     if (provider instanceof FederatedAuthProvider) {
         provider.setDefaultLanguage(auth.languageCode);
         params.providerId = provider.providerId || '';
-        if (!(0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .isEmpty */ .Im)(provider.getCustomParameters())) {
+        if (!isEmpty(provider.getCustomParameters())) {
             params.customParameters = JSON.stringify(provider.getCustomParameters());
         }
         // TODO set additionalParams from the provider as well?
@@ -10256,7 +14775,7 @@ async function _getRedirectUrl(auth, provider, authType, redirectUrl, eventId, a
         ? `#${FIREBASE_APP_CHECK_FRAGMENT_ID}=${encodeURIComponent(appCheckToken)}`
         : '';
     // Start at index 1 to skip the leading '&' in the query string
-    return `${getHandlerBase(auth)}?${(0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .querystring */ .Am)(paramsDict).slice(1)}${appCheckTokenFragment}`;
+    return `${getHandlerBase(auth)}?${index_esm2017_querystring(paramsDict).slice(1)}${appCheckTokenFragment}`;
 }
 function getHandlerBase({ config }) {
     if (!config.emulator) {
@@ -10597,8 +15116,8 @@ function _isEmptyString(input) {
     return typeof input === 'undefined' || (input === null || input === void 0 ? void 0 : input.length) === 0;
 }
 
-var name = "@firebase/auth";
-var version = "1.7.9";
+var index_68602d24_name = "@firebase/auth";
+var index_68602d24_version = "1.7.9";
 
 /**
  * @license
@@ -10703,7 +15222,7 @@ function getVersionForPlatform(clientPlatform) {
 }
 /** @internal */
 function registerAuth(clientPlatform) {
-    (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._registerComponent */ .om)(new _firebase_component__WEBPACK_IMPORTED_MODULE_3__/* .Component */ .uA("auth" /* _ComponentName.AUTH */, (container, { options: deps }) => {
+    _registerComponent(new Component("auth" /* _ComponentName.AUTH */, (container, { options: deps }) => {
         const app = container.getProvider('app').getImmediate();
         const heartbeatServiceProvider = container.getProvider('heartbeat');
         const appCheckServiceProvider = container.getProvider('app-check-internal');
@@ -10735,13 +15254,13 @@ function registerAuth(clientPlatform) {
         const authInternalProvider = container.getProvider("auth-internal" /* _ComponentName.AUTH_INTERNAL */);
         authInternalProvider.initialize();
     }));
-    (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._registerComponent */ .om)(new _firebase_component__WEBPACK_IMPORTED_MODULE_3__/* .Component */ .uA("auth-internal" /* _ComponentName.AUTH_INTERNAL */, container => {
+    _registerComponent(new Component("auth-internal" /* _ComponentName.AUTH_INTERNAL */, container => {
         const auth = _castAuth(container.getProvider("auth" /* _ComponentName.AUTH */).getImmediate());
         return (auth => new AuthInterop(auth))(auth);
     }, "PRIVATE" /* ComponentType.PRIVATE */).setInstantiationMode("EXPLICIT" /* InstantiationMode.EXPLICIT */));
-    (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .registerVersion */ .KO)(name, version, getVersionForPlatform(clientPlatform));
+    registerVersion(index_68602d24_name, index_68602d24_version, getVersionForPlatform(clientPlatform));
     // BUILD_TARGET will be replaced by values like esm5, esm2017, cjs5, etc during the compilation
-    (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .registerVersion */ .KO)(name, version, 'esm2017');
+    registerVersion(index_68602d24_name, index_68602d24_version, 'esm2017');
 }
 
 /**
@@ -10761,7 +15280,7 @@ function registerAuth(clientPlatform) {
  * limitations under the License.
  */
 const DEFAULT_ID_TOKEN_MAX_AGE = 5 * 60;
-const authIdTokenMaxAge = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getExperimentalSetting */ .XA)('authIdTokenMaxAge') || DEFAULT_ID_TOKEN_MAX_AGE;
+const authIdTokenMaxAge = getExperimentalSetting('authIdTokenMaxAge') || DEFAULT_ID_TOKEN_MAX_AGE;
 let lastPostedIdToken = null;
 const mintCookieFactory = (url) => async (user) => {
     const idTokenResult = user && (await user.getIdTokenResult());
@@ -10793,8 +15312,8 @@ const mintCookieFactory = (url) => async (user) => {
  *
  * @public
  */
-function getAuth(app = (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .getApp */ .Sx)()) {
-    const provider = (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._getProvider */ .j6)(app, 'auth');
+function getAuth(app = getApp()) {
+    const provider = index_esm2017_getProvider(app, 'auth');
     if (provider.isInitialized()) {
         return provider.getImmediate();
     }
@@ -10806,7 +15325,7 @@ function getAuth(app = (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .getApp *
             browserSessionPersistence
         ]
     });
-    const authTokenSyncPath = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getExperimentalSetting */ .XA)('authTokenSyncURL');
+    const authTokenSyncPath = getExperimentalSetting('authTokenSyncURL');
     // Only do the Cookie exchange in a secure context
     if (authTokenSyncPath &&
         typeof isSecureContext === 'boolean' &&
@@ -10819,7 +15338,7 @@ function getAuth(app = (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .getApp *
             onIdTokenChanged(auth, user => mintCookie(user));
         }
     }
-    const authEmulatorHost = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_1__/* .getDefaultEmulatorHost */ .Tj)('auth');
+    const authEmulatorHost = getDefaultEmulatorHost('auth');
     if (authEmulatorHost) {
         connectAuthEmulator(auth, `http://${authEmulatorHost}`);
     }
@@ -10855,51 +15374,64 @@ registerAuth("Browser" /* ClientPlatform.BROWSER */);
 
 //# sourceMappingURL=index-68602d24.js.map
 
-
-/***/ }),
-
-/***/ 1268:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   $: () => (/* binding */ config)
-/* harmony export */ });
-// This file will be used to store the environment variables at build time
-const config = {
-    firebase: {
-        apiKey: "AIzaSyBLXniW7Nz3-odWJ6jwFFWDckyMPY7DlwI" || 0,
-        authDomain: "simpli-pass-amplify-gen-hetve5.firebaseapp.com" || 0,
-        projectId: "simpli-pass-amplify-gen-hetve5" || 0,
-        storageBucket: "simpli-pass-amplify-gen-hetve5.firebasestorage.app" || 0,
-        messagingSenderId: "307909442902" || 0,
-        appId: "1:307909442902:web:bdb7e4ef9def0a028beaf7" || 0,
-        measurementId: "MISSING_ENV_VAR".REACT_APP_FIREBASE_MEASUREMENT_ID || ''
-    },
-    Cognito: {
-        userPoolId: "eu-west-3_Sh6OZ4wUd" || 0,
-        userPoolClientId: "1tcatk284cv30md9s0p8nr9ldf" || 0,
-        region: "eu-west-3" || 0
-    }
-};
+;// ./node_modules/firebase/node_modules/@firebase/auth/dist/esm2017/index.js
 
 
-/***/ }),
 
-/***/ 1853:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Ao: () => (/* binding */ getStatEventTarget),
-/* harmony export */   Bx: () => (/* binding */ EventType),
-/* harmony export */   Jh: () => (/* binding */ Event),
-/* harmony export */   O4: () => (/* binding */ ErrorCode),
-/* harmony export */   ZS: () => (/* binding */ XhrIo),
-/* harmony export */   fF: () => (/* binding */ createWebChannelTransport),
-/* harmony export */   iO: () => (/* binding */ WebChannel),
-/* harmony export */   ro: () => (/* binding */ Stat)
-/* harmony export */ });
-/* unused harmony exports FetchXmlHttpFactory, default */
+
+
+//# sourceMappingURL=index.js.map
+
+;// ./node_modules/firebase/auth/dist/esm/index.esm.js
+
+//# sourceMappingURL=index.esm.js.map
+
+;// ./node_modules/@firebase/webchannel-wrapper/dist/bloom-blob/esm/bloom_blob_es2018.js
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+var bloom_blob_es2018 = {};
+
+/** @license
+Copyright The Closure Library Authors.
+SPDX-License-Identifier: Apache-2.0
+*/
+
+var Integer;
+var Md5;
+(function() {var h;/** @license
+
+ Copyright The Closure Library Authors.
+ SPDX-License-Identifier: Apache-2.0
+*/
+function k(f,a){function c(){}c.prototype=a.prototype;f.D=a.prototype;f.prototype=new c;f.prototype.constructor=f;f.C=function(d,e,g){for(var b=Array(arguments.length-2),r=2;r<arguments.length;r++)b[r-2]=arguments[r];return a.prototype[e].apply(d,b)};}function l(){this.blockSize=-1;}function m(){this.blockSize=-1;this.blockSize=64;this.g=Array(4);this.B=Array(this.blockSize);this.o=this.h=0;this.s();}k(m,l);m.prototype.s=function(){this.g[0]=1732584193;this.g[1]=4023233417;this.g[2]=2562383102;this.g[3]=271733878;this.o=this.h=0;};
+function n(f,a,c){c||(c=0);var d=Array(16);if("string"===typeof a)for(var e=0;16>e;++e)d[e]=a.charCodeAt(c++)|a.charCodeAt(c++)<<8|a.charCodeAt(c++)<<16|a.charCodeAt(c++)<<24;else for(e=0;16>e;++e)d[e]=a[c++]|a[c++]<<8|a[c++]<<16|a[c++]<<24;a=f.g[0];c=f.g[1];e=f.g[2];var g=f.g[3];var b=a+(g^c&(e^g))+d[0]+3614090360&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[1]+3905402710&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[2]+606105819&4294967295;e=g+(b<<17&4294967295|b>>>15);
+b=c+(a^e&(g^a))+d[3]+3250441966&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[4]+4118548399&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[5]+1200080426&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[6]+2821735955&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[7]+4249261313&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[8]+1770035416&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[9]+2336552879&4294967295;g=a+(b<<12&4294967295|
+b>>>20);b=e+(c^g&(a^c))+d[10]+4294925233&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[11]+2304563134&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[12]+1804603682&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[13]+4254626195&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[14]+2792965006&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[15]+1236535329&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(e^g&(c^e))+d[1]+4129170786&4294967295;a=c+(b<<
+5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[6]+3225465664&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[11]+643717713&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[0]+3921069994&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[5]+3593408605&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[10]+38016083&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[15]+3634488961&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[4]+3889429448&4294967295;c=
+e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[9]+568446438&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[14]+3275163606&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[3]+4107603335&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[8]+1163531501&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[13]+2850285829&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[2]+4243563512&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[7]+1735328473&4294967295;
+e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[12]+2368359562&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(c^e^g)+d[5]+4294588738&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[8]+2272392833&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[11]+1839030562&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[14]+4259657740&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[1]+2763975236&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[4]+1272893353&4294967295;g=a+(b<<11&4294967295|
+b>>>21);b=e+(g^a^c)+d[7]+4139469664&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[10]+3200236656&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[13]+681279174&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[0]+3936430074&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[3]+3572445317&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[6]+76029189&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[9]+3654602809&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[12]+
+3873151461&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[15]+530742520&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[2]+3299628645&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(e^(c|~g))+d[0]+4096336452&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[7]+1126891415&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[14]+2878612391&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[5]+4237533241&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[12]+1700485571&
+4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[3]+2399980690&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[10]+4293915773&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[1]+2240044497&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[8]+1873313359&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[15]+4264355552&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[6]+2734768916&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[13]+1309151649&
+4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[4]+4149444226&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[11]+3174756917&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[2]+718787259&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[9]+3951481745&4294967295;f.g[0]=f.g[0]+a&4294967295;f.g[1]=f.g[1]+(e+(b<<21&4294967295|b>>>11))&4294967295;f.g[2]=f.g[2]+e&4294967295;f.g[3]=f.g[3]+g&4294967295;}
+m.prototype.u=function(f,a){void 0===a&&(a=f.length);for(var c=a-this.blockSize,d=this.B,e=this.h,g=0;g<a;){if(0==e)for(;g<=c;)n(this,f,g),g+=this.blockSize;if("string"===typeof f)for(;g<a;){if(d[e++]=f.charCodeAt(g++),e==this.blockSize){n(this,d);e=0;break}}else for(;g<a;)if(d[e++]=f[g++],e==this.blockSize){n(this,d);e=0;break}}this.h=e;this.o+=a;};
+m.prototype.v=function(){var f=Array((56>this.h?this.blockSize:2*this.blockSize)-this.h);f[0]=128;for(var a=1;a<f.length-8;++a)f[a]=0;var c=8*this.o;for(a=f.length-8;a<f.length;++a)f[a]=c&255,c/=256;this.u(f);f=Array(16);for(a=c=0;4>a;++a)for(var d=0;32>d;d+=8)f[c++]=this.g[a]>>>d&255;return f};function p(f,a){var c=q;return Object.prototype.hasOwnProperty.call(c,f)?c[f]:c[f]=a(f)}function t(f,a){this.h=a;for(var c=[],d=!0,e=f.length-1;0<=e;e--){var g=f[e]|0;d&&g==a||(c[e]=g,d=!1);}this.g=c;}var q={};function u(f){return -128<=f&&128>f?p(f,function(a){return new t([a|0],0>a?-1:0)}):new t([f|0],0>f?-1:0)}function v(f){if(isNaN(f)||!isFinite(f))return w;if(0>f)return x(v(-f));for(var a=[],c=1,d=0;f>=c;d++)a[d]=f/c|0,c*=4294967296;return new t(a,0)}
+function y(f,a){if(0==f.length)throw Error("number format error: empty string");a=a||10;if(2>a||36<a)throw Error("radix out of range: "+a);if("-"==f.charAt(0))return x(y(f.substring(1),a));if(0<=f.indexOf("-"))throw Error('number format error: interior "-" character');for(var c=v(Math.pow(a,8)),d=w,e=0;e<f.length;e+=8){var g=Math.min(8,f.length-e),b=parseInt(f.substring(e,e+g),a);8>g?(g=v(Math.pow(a,g)),d=d.j(g).add(v(b))):(d=d.j(c),d=d.add(v(b)));}return d}var w=u(0),z=u(1),A=u(16777216);h=t.prototype;
+h.m=function(){if(B(this))return -x(this).m();for(var f=0,a=1,c=0;c<this.g.length;c++){var d=this.i(c);f+=(0<=d?d:4294967296+d)*a;a*=4294967296;}return f};h.toString=function(f){f=f||10;if(2>f||36<f)throw Error("radix out of range: "+f);if(C(this))return "0";if(B(this))return "-"+x(this).toString(f);for(var a=v(Math.pow(f,6)),c=this,d="";;){var e=D(c,a).g;c=F(c,e.j(a));var g=((0<c.g.length?c.g[0]:c.h)>>>0).toString(f);c=e;if(C(c))return g+d;for(;6>g.length;)g="0"+g;d=g+d;}};
+h.i=function(f){return 0>f?0:f<this.g.length?this.g[f]:this.h};function C(f){if(0!=f.h)return !1;for(var a=0;a<f.g.length;a++)if(0!=f.g[a])return !1;return !0}function B(f){return -1==f.h}h.l=function(f){f=F(this,f);return B(f)?-1:C(f)?0:1};function x(f){for(var a=f.g.length,c=[],d=0;d<a;d++)c[d]=~f.g[d];return (new t(c,~f.h)).add(z)}h.abs=function(){return B(this)?x(this):this};
+h.add=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0,e=0;e<=a;e++){var g=d+(this.i(e)&65535)+(f.i(e)&65535),b=(g>>>16)+(this.i(e)>>>16)+(f.i(e)>>>16);d=b>>>16;g&=65535;b&=65535;c[e]=b<<16|g;}return new t(c,c[c.length-1]&-2147483648?-1:0)};function F(f,a){return f.add(x(a))}
+h.j=function(f){if(C(this)||C(f))return w;if(B(this))return B(f)?x(this).j(x(f)):x(x(this).j(f));if(B(f))return x(this.j(x(f)));if(0>this.l(A)&&0>f.l(A))return v(this.m()*f.m());for(var a=this.g.length+f.g.length,c=[],d=0;d<2*a;d++)c[d]=0;for(d=0;d<this.g.length;d++)for(var e=0;e<f.g.length;e++){var g=this.i(d)>>>16,b=this.i(d)&65535,r=f.i(e)>>>16,E=f.i(e)&65535;c[2*d+2*e]+=b*E;G(c,2*d+2*e);c[2*d+2*e+1]+=g*E;G(c,2*d+2*e+1);c[2*d+2*e+1]+=b*r;G(c,2*d+2*e+1);c[2*d+2*e+2]+=g*r;G(c,2*d+2*e+2);}for(d=0;d<
+a;d++)c[d]=c[2*d+1]<<16|c[2*d];for(d=a;d<2*a;d++)c[d]=0;return new t(c,0)};function G(f,a){for(;(f[a]&65535)!=f[a];)f[a+1]+=f[a]>>>16,f[a]&=65535,a++;}function H(f,a){this.g=f;this.h=a;}
+function D(f,a){if(C(a))throw Error("division by zero");if(C(f))return new H(w,w);if(B(f))return a=D(x(f),a),new H(x(a.g),x(a.h));if(B(a))return a=D(f,x(a)),new H(x(a.g),a.h);if(30<f.g.length){if(B(f)||B(a))throw Error("slowDivide_ only works with positive integers.");for(var c=z,d=a;0>=d.l(f);)c=I(c),d=I(d);var e=J(c,1),g=J(d,1);d=J(d,2);for(c=J(c,2);!C(d);){var b=g.add(d);0>=b.l(f)&&(e=e.add(c),g=b);d=J(d,1);c=J(c,1);}a=F(f,e.j(a));return new H(e,a)}for(e=w;0<=f.l(a);){c=Math.max(1,Math.floor(f.m()/
+a.m()));d=Math.ceil(Math.log(c)/Math.LN2);d=48>=d?1:Math.pow(2,d-48);g=v(c);for(b=g.j(a);B(b)||0<b.l(f);)c-=d,g=v(c),b=g.j(a);C(g)&&(g=z);e=e.add(g);f=F(f,b);}return new H(e,f)}h.A=function(f){return D(this,f).h};h.and=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)&f.i(d);return new t(c,this.h&f.h)};h.or=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)|f.i(d);return new t(c,this.h|f.h)};
+h.xor=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)^f.i(d);return new t(c,this.h^f.h)};function I(f){for(var a=f.g.length+1,c=[],d=0;d<a;d++)c[d]=f.i(d)<<1|f.i(d-1)>>>31;return new t(c,f.h)}function J(f,a){var c=a>>5;a%=32;for(var d=f.g.length-c,e=[],g=0;g<d;g++)e[g]=0<a?f.i(g+c)>>>a|f.i(g+c+1)<<32-a:f.i(g+c);return new t(e,f.h)}m.prototype.digest=m.prototype.v;m.prototype.reset=m.prototype.s;m.prototype.update=m.prototype.u;Md5 = bloom_blob_es2018.Md5=m;t.prototype.add=t.prototype.add;t.prototype.multiply=t.prototype.j;t.prototype.modulo=t.prototype.A;t.prototype.compare=t.prototype.l;t.prototype.toNumber=t.prototype.m;t.prototype.toString=t.prototype.toString;t.prototype.getBits=t.prototype.i;t.fromNumber=v;t.fromString=y;Integer = bloom_blob_es2018.Integer=t;}).apply( typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof self !== 'undefined' ? self  : typeof window !== 'undefined' ? window  : {});
+
+
+//# sourceMappingURL=bloom_blob_es2018.js.map
+
+;// ./node_modules/@firebase/webchannel-wrapper/dist/webchannel-blob/esm/webchannel_blob_es2018.js
+var webchannel_blob_es2018_commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 var webchannel_blob_es2018 = {};
 
@@ -10917,7 +15449,7 @@ var Stat;
 var Event;
 var getStatEventTarget;
 var createWebChannelTransport;
-(function() {var h,aa="function"==typeof Object.defineProperties?Object.defineProperty:function(a,b,c){if(a==Array.prototype||a==Object.prototype)return a;a[b]=c.value;return a};function ba(a){a=["object"==typeof globalThis&&globalThis,a,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof commonjsGlobal&&commonjsGlobal];for(var b=0;b<a.length;++b){var c=a[b];if(c&&c.Math==Math)return c}throw Error("Cannot find global object");}var ca=ba(this);
+(function() {var h,aa="function"==typeof Object.defineProperties?Object.defineProperty:function(a,b,c){if(a==Array.prototype||a==Object.prototype)return a;a[b]=c.value;return a};function ba(a){a=["object"==typeof globalThis&&globalThis,a,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof webchannel_blob_es2018_commonjsGlobal&&webchannel_blob_es2018_commonjsGlobal];for(var b=0;b<a.length;++b){var c=a[b];if(c&&c.Math==Math)return c}throw Error("Cannot find global object");}var ca=ba(this);
 function da(a,b){if(b)a:{var c=ca;a=a.split(".");for(var d=0;d<a.length-1;d++){var e=a[d];if(!(e in c))break a;c=c[e];}a=a[a.length-1];d=c[a];b=b(d);b!=d&&null!=b&&aa(c,a,{configurable:!0,writable:!0,value:b});}}function ea(a,b){a instanceof String&&(a+="");var c=0,d=!1,e={next:function(){if(!d&&c<a.length){var f=c++;return {value:b(f,a[f]),done:!1}}d=!0;return {done:!0,value:void 0}}};e[Symbol.iterator]=function(){return e};return e}
 da("Array.prototype.values",function(a){return a?a:function(){return ea(this,function(b,c){return c})}});/** @license
 
@@ -10999,2446 +15531,12 @@ Y.prototype.o=function(a){var b=this.g;if("string"===typeof a){var c={};c.__data
 function id(a){nb.call(this);a.__headers__&&(this.headers=a.__headers__,this.statusCode=a.__status__,delete a.__headers__,delete a.__status__);var b=a.__sm__;if(b){a:{for(const c in b){a=c;break a}a=void 0;}if(this.i=a)a=this.i,b=null!==b&&a in b?b[a]:void 0;this.data=b;}else this.data=a;}r(id,nb);function jd(){ob.call(this);this.status=1;}r(jd,ob);function Z(a){this.g=a;}r(Z,gd);Z.prototype.ua=function(){F(this.g,"a");};Z.prototype.ta=function(a){F(this.g,new id(a));};
 Z.prototype.sa=function(a){F(this.g,new jd());};Z.prototype.ra=function(){F(this.g,"b");};hd.prototype.createWebChannel=hd.prototype.g;Y.prototype.send=Y.prototype.o;Y.prototype.open=Y.prototype.m;Y.prototype.close=Y.prototype.close;createWebChannelTransport = webchannel_blob_es2018.createWebChannelTransport=function(){return new hd};getStatEventTarget = webchannel_blob_es2018.getStatEventTarget=function(){return qb()};Event = webchannel_blob_es2018.Event=I;Stat = webchannel_blob_es2018.Stat={mb:0,pb:1,qb:2,Jb:3,Ob:4,Lb:5,Mb:6,Kb:7,Ib:8,Nb:9,PROXY:10,NOPROXY:11,Gb:12,Cb:13,Db:14,Bb:15,Eb:16,Fb:17,ib:18,hb:19,jb:20};Ab.NO_ERROR=0;Ab.TIMEOUT=8;Ab.HTTP_ERROR=6;
 ErrorCode = webchannel_blob_es2018.ErrorCode=Ab;Bb.COMPLETE="complete";EventType = webchannel_blob_es2018.EventType=Bb;mb.EventType=H;H.OPEN="a";H.CLOSE="b";H.ERROR="c";H.MESSAGE="d";E.prototype.listen=E.prototype.K;WebChannel = webchannel_blob_es2018.WebChannel=mb;FetchXmlHttpFactory = webchannel_blob_es2018.FetchXmlHttpFactory=Jc;X.prototype.listenOnce=X.prototype.L;X.prototype.getLastError=X.prototype.Ka;X.prototype.getLastErrorCode=X.prototype.Ba;X.prototype.getStatus=X.prototype.Z;X.prototype.getResponseJson=X.prototype.Oa;X.prototype.getResponseText=X.prototype.oa;
-X.prototype.send=X.prototype.ea;X.prototype.setWithCredentials=X.prototype.Ha;XhrIo = webchannel_blob_es2018.XhrIo=X;}).apply( typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof self !== 'undefined' ? self  : typeof window !== 'undefined' ? window  : {});
+X.prototype.send=X.prototype.ea;X.prototype.setWithCredentials=X.prototype.Ha;XhrIo = webchannel_blob_es2018.XhrIo=X;}).apply( typeof webchannel_blob_es2018_commonjsGlobal !== 'undefined' ? webchannel_blob_es2018_commonjsGlobal : typeof self !== 'undefined' ? self  : typeof window !== 'undefined' ? window  : {});
 
 
 //# sourceMappingURL=webchannel_blob_es2018.js.map
 
-
-/***/ }),
-
-/***/ 1921:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   yU: () => (/* binding */ Poly1305)
-/* harmony export */ });
-/* unused harmony exports DIGEST_LENGTH, oneTimeAuth, equal */
-/* harmony import */ var _stablelib_wipe__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8073);
-// Copyright (C) 2016 Dmitry Chestnykh
-// MIT License. See LICENSE file for details.
-/**
- * Package poly1305 implements Poly1305 one-time message authentication algorithm.
- */
-
-
-const DIGEST_LENGTH = 16;
-// Port of Andrew Moon's Poly1305-donna-16. Public domain.
-// https://github.com/floodyberry/poly1305-donna
-/**
- * Poly1305 computes 16-byte authenticator of message using
- * a one-time 32-byte key.
- *
- * Important: key should be used for only one message,
- * it should never repeat.
- */
-class Poly1305 {
-    digestLength = DIGEST_LENGTH;
-    _buffer = new Uint8Array(16);
-    _r = new Uint16Array(10);
-    _h = new Uint16Array(10);
-    _pad = new Uint16Array(8);
-    _leftover = 0;
-    _fin = 0;
-    _finished = false;
-    constructor(key) {
-        let t0 = key[0] | key[1] << 8;
-        this._r[0] = (t0) & 0x1fff;
-        let t1 = key[2] | key[3] << 8;
-        this._r[1] = ((t0 >>> 13) | (t1 << 3)) & 0x1fff;
-        let t2 = key[4] | key[5] << 8;
-        this._r[2] = ((t1 >>> 10) | (t2 << 6)) & 0x1f03;
-        let t3 = key[6] | key[7] << 8;
-        this._r[3] = ((t2 >>> 7) | (t3 << 9)) & 0x1fff;
-        let t4 = key[8] | key[9] << 8;
-        this._r[4] = ((t3 >>> 4) | (t4 << 12)) & 0x00ff;
-        this._r[5] = ((t4 >>> 1)) & 0x1ffe;
-        let t5 = key[10] | key[11] << 8;
-        this._r[6] = ((t4 >>> 14) | (t5 << 2)) & 0x1fff;
-        let t6 = key[12] | key[13] << 8;
-        this._r[7] = ((t5 >>> 11) | (t6 << 5)) & 0x1f81;
-        let t7 = key[14] | key[15] << 8;
-        this._r[8] = ((t6 >>> 8) | (t7 << 8)) & 0x1fff;
-        this._r[9] = ((t7 >>> 5)) & 0x007f;
-        this._pad[0] = key[16] | key[17] << 8;
-        this._pad[1] = key[18] | key[19] << 8;
-        this._pad[2] = key[20] | key[21] << 8;
-        this._pad[3] = key[22] | key[23] << 8;
-        this._pad[4] = key[24] | key[25] << 8;
-        this._pad[5] = key[26] | key[27] << 8;
-        this._pad[6] = key[28] | key[29] << 8;
-        this._pad[7] = key[30] | key[31] << 8;
-    }
-    _blocks(m, mpos, bytes) {
-        let hibit = this._fin ? 0 : 1 << 11;
-        let h0 = this._h[0], h1 = this._h[1], h2 = this._h[2], h3 = this._h[3], h4 = this._h[4], h5 = this._h[5], h6 = this._h[6], h7 = this._h[7], h8 = this._h[8], h9 = this._h[9];
-        let r0 = this._r[0], r1 = this._r[1], r2 = this._r[2], r3 = this._r[3], r4 = this._r[4], r5 = this._r[5], r6 = this._r[6], r7 = this._r[7], r8 = this._r[8], r9 = this._r[9];
-        while (bytes >= 16) {
-            let t0 = m[mpos + 0] | m[mpos + 1] << 8;
-            h0 += (t0) & 0x1fff;
-            let t1 = m[mpos + 2] | m[mpos + 3] << 8;
-            h1 += ((t0 >>> 13) | (t1 << 3)) & 0x1fff;
-            let t2 = m[mpos + 4] | m[mpos + 5] << 8;
-            h2 += ((t1 >>> 10) | (t2 << 6)) & 0x1fff;
-            let t3 = m[mpos + 6] | m[mpos + 7] << 8;
-            h3 += ((t2 >>> 7) | (t3 << 9)) & 0x1fff;
-            let t4 = m[mpos + 8] | m[mpos + 9] << 8;
-            h4 += ((t3 >>> 4) | (t4 << 12)) & 0x1fff;
-            h5 += ((t4 >>> 1)) & 0x1fff;
-            let t5 = m[mpos + 10] | m[mpos + 11] << 8;
-            h6 += ((t4 >>> 14) | (t5 << 2)) & 0x1fff;
-            let t6 = m[mpos + 12] | m[mpos + 13] << 8;
-            h7 += ((t5 >>> 11) | (t6 << 5)) & 0x1fff;
-            let t7 = m[mpos + 14] | m[mpos + 15] << 8;
-            h8 += ((t6 >>> 8) | (t7 << 8)) & 0x1fff;
-            h9 += ((t7 >>> 5)) | hibit;
-            let c = 0;
-            let d0 = c;
-            d0 += h0 * r0;
-            d0 += h1 * (5 * r9);
-            d0 += h2 * (5 * r8);
-            d0 += h3 * (5 * r7);
-            d0 += h4 * (5 * r6);
-            c = (d0 >>> 13);
-            d0 &= 0x1fff;
-            d0 += h5 * (5 * r5);
-            d0 += h6 * (5 * r4);
-            d0 += h7 * (5 * r3);
-            d0 += h8 * (5 * r2);
-            d0 += h9 * (5 * r1);
-            c += (d0 >>> 13);
-            d0 &= 0x1fff;
-            let d1 = c;
-            d1 += h0 * r1;
-            d1 += h1 * r0;
-            d1 += h2 * (5 * r9);
-            d1 += h3 * (5 * r8);
-            d1 += h4 * (5 * r7);
-            c = (d1 >>> 13);
-            d1 &= 0x1fff;
-            d1 += h5 * (5 * r6);
-            d1 += h6 * (5 * r5);
-            d1 += h7 * (5 * r4);
-            d1 += h8 * (5 * r3);
-            d1 += h9 * (5 * r2);
-            c += (d1 >>> 13);
-            d1 &= 0x1fff;
-            let d2 = c;
-            d2 += h0 * r2;
-            d2 += h1 * r1;
-            d2 += h2 * r0;
-            d2 += h3 * (5 * r9);
-            d2 += h4 * (5 * r8);
-            c = (d2 >>> 13);
-            d2 &= 0x1fff;
-            d2 += h5 * (5 * r7);
-            d2 += h6 * (5 * r6);
-            d2 += h7 * (5 * r5);
-            d2 += h8 * (5 * r4);
-            d2 += h9 * (5 * r3);
-            c += (d2 >>> 13);
-            d2 &= 0x1fff;
-            let d3 = c;
-            d3 += h0 * r3;
-            d3 += h1 * r2;
-            d3 += h2 * r1;
-            d3 += h3 * r0;
-            d3 += h4 * (5 * r9);
-            c = (d3 >>> 13);
-            d3 &= 0x1fff;
-            d3 += h5 * (5 * r8);
-            d3 += h6 * (5 * r7);
-            d3 += h7 * (5 * r6);
-            d3 += h8 * (5 * r5);
-            d3 += h9 * (5 * r4);
-            c += (d3 >>> 13);
-            d3 &= 0x1fff;
-            let d4 = c;
-            d4 += h0 * r4;
-            d4 += h1 * r3;
-            d4 += h2 * r2;
-            d4 += h3 * r1;
-            d4 += h4 * r0;
-            c = (d4 >>> 13);
-            d4 &= 0x1fff;
-            d4 += h5 * (5 * r9);
-            d4 += h6 * (5 * r8);
-            d4 += h7 * (5 * r7);
-            d4 += h8 * (5 * r6);
-            d4 += h9 * (5 * r5);
-            c += (d4 >>> 13);
-            d4 &= 0x1fff;
-            let d5 = c;
-            d5 += h0 * r5;
-            d5 += h1 * r4;
-            d5 += h2 * r3;
-            d5 += h3 * r2;
-            d5 += h4 * r1;
-            c = (d5 >>> 13);
-            d5 &= 0x1fff;
-            d5 += h5 * r0;
-            d5 += h6 * (5 * r9);
-            d5 += h7 * (5 * r8);
-            d5 += h8 * (5 * r7);
-            d5 += h9 * (5 * r6);
-            c += (d5 >>> 13);
-            d5 &= 0x1fff;
-            let d6 = c;
-            d6 += h0 * r6;
-            d6 += h1 * r5;
-            d6 += h2 * r4;
-            d6 += h3 * r3;
-            d6 += h4 * r2;
-            c = (d6 >>> 13);
-            d6 &= 0x1fff;
-            d6 += h5 * r1;
-            d6 += h6 * r0;
-            d6 += h7 * (5 * r9);
-            d6 += h8 * (5 * r8);
-            d6 += h9 * (5 * r7);
-            c += (d6 >>> 13);
-            d6 &= 0x1fff;
-            let d7 = c;
-            d7 += h0 * r7;
-            d7 += h1 * r6;
-            d7 += h2 * r5;
-            d7 += h3 * r4;
-            d7 += h4 * r3;
-            c = (d7 >>> 13);
-            d7 &= 0x1fff;
-            d7 += h5 * r2;
-            d7 += h6 * r1;
-            d7 += h7 * r0;
-            d7 += h8 * (5 * r9);
-            d7 += h9 * (5 * r8);
-            c += (d7 >>> 13);
-            d7 &= 0x1fff;
-            let d8 = c;
-            d8 += h0 * r8;
-            d8 += h1 * r7;
-            d8 += h2 * r6;
-            d8 += h3 * r5;
-            d8 += h4 * r4;
-            c = (d8 >>> 13);
-            d8 &= 0x1fff;
-            d8 += h5 * r3;
-            d8 += h6 * r2;
-            d8 += h7 * r1;
-            d8 += h8 * r0;
-            d8 += h9 * (5 * r9);
-            c += (d8 >>> 13);
-            d8 &= 0x1fff;
-            let d9 = c;
-            d9 += h0 * r9;
-            d9 += h1 * r8;
-            d9 += h2 * r7;
-            d9 += h3 * r6;
-            d9 += h4 * r5;
-            c = (d9 >>> 13);
-            d9 &= 0x1fff;
-            d9 += h5 * r4;
-            d9 += h6 * r3;
-            d9 += h7 * r2;
-            d9 += h8 * r1;
-            d9 += h9 * r0;
-            c += (d9 >>> 13);
-            d9 &= 0x1fff;
-            c = (((c << 2) + c)) | 0;
-            c = (c + d0) | 0;
-            d0 = c & 0x1fff;
-            c = (c >>> 13);
-            d1 += c;
-            h0 = d0;
-            h1 = d1;
-            h2 = d2;
-            h3 = d3;
-            h4 = d4;
-            h5 = d5;
-            h6 = d6;
-            h7 = d7;
-            h8 = d8;
-            h9 = d9;
-            mpos += 16;
-            bytes -= 16;
-        }
-        this._h[0] = h0;
-        this._h[1] = h1;
-        this._h[2] = h2;
-        this._h[3] = h3;
-        this._h[4] = h4;
-        this._h[5] = h5;
-        this._h[6] = h6;
-        this._h[7] = h7;
-        this._h[8] = h8;
-        this._h[9] = h9;
-    }
-    finish(mac, macpos = 0) {
-        const g = new Uint16Array(10);
-        let c;
-        let mask;
-        let f;
-        let i;
-        if (this._leftover) {
-            i = this._leftover;
-            this._buffer[i++] = 1;
-            for (; i < 16; i++) {
-                this._buffer[i] = 0;
-            }
-            this._fin = 1;
-            this._blocks(this._buffer, 0, 16);
-        }
-        c = this._h[1] >>> 13;
-        this._h[1] &= 0x1fff;
-        for (i = 2; i < 10; i++) {
-            this._h[i] += c;
-            c = this._h[i] >>> 13;
-            this._h[i] &= 0x1fff;
-        }
-        this._h[0] += (c * 5);
-        c = this._h[0] >>> 13;
-        this._h[0] &= 0x1fff;
-        this._h[1] += c;
-        c = this._h[1] >>> 13;
-        this._h[1] &= 0x1fff;
-        this._h[2] += c;
-        g[0] = this._h[0] + 5;
-        c = g[0] >>> 13;
-        g[0] &= 0x1fff;
-        for (i = 1; i < 10; i++) {
-            g[i] = this._h[i] + c;
-            c = g[i] >>> 13;
-            g[i] &= 0x1fff;
-        }
-        g[9] -= (1 << 13);
-        mask = (c ^ 1) - 1;
-        for (i = 0; i < 10; i++) {
-            g[i] &= mask;
-        }
-        mask = ~mask;
-        for (i = 0; i < 10; i++) {
-            this._h[i] = (this._h[i] & mask) | g[i];
-        }
-        this._h[0] = ((this._h[0]) | (this._h[1] << 13)) & 0xffff;
-        this._h[1] = ((this._h[1] >>> 3) | (this._h[2] << 10)) & 0xffff;
-        this._h[2] = ((this._h[2] >>> 6) | (this._h[3] << 7)) & 0xffff;
-        this._h[3] = ((this._h[3] >>> 9) | (this._h[4] << 4)) & 0xffff;
-        this._h[4] = ((this._h[4] >>> 12) | (this._h[5] << 1) | (this._h[6] << 14)) & 0xffff;
-        this._h[5] = ((this._h[6] >>> 2) | (this._h[7] << 11)) & 0xffff;
-        this._h[6] = ((this._h[7] >>> 5) | (this._h[8] << 8)) & 0xffff;
-        this._h[7] = ((this._h[8] >>> 8) | (this._h[9] << 5)) & 0xffff;
-        f = this._h[0] + this._pad[0];
-        this._h[0] = f & 0xffff;
-        for (i = 1; i < 8; i++) {
-            f = (((this._h[i] + this._pad[i]) | 0) + (f >>> 16)) | 0;
-            this._h[i] = f & 0xffff;
-        }
-        mac[macpos + 0] = this._h[0] >>> 0;
-        mac[macpos + 1] = this._h[0] >>> 8;
-        mac[macpos + 2] = this._h[1] >>> 0;
-        mac[macpos + 3] = this._h[1] >>> 8;
-        mac[macpos + 4] = this._h[2] >>> 0;
-        mac[macpos + 5] = this._h[2] >>> 8;
-        mac[macpos + 6] = this._h[3] >>> 0;
-        mac[macpos + 7] = this._h[3] >>> 8;
-        mac[macpos + 8] = this._h[4] >>> 0;
-        mac[macpos + 9] = this._h[4] >>> 8;
-        mac[macpos + 10] = this._h[5] >>> 0;
-        mac[macpos + 11] = this._h[5] >>> 8;
-        mac[macpos + 12] = this._h[6] >>> 0;
-        mac[macpos + 13] = this._h[6] >>> 8;
-        mac[macpos + 14] = this._h[7] >>> 0;
-        mac[macpos + 15] = this._h[7] >>> 8;
-        this._finished = true;
-        return this;
-    }
-    update(m) {
-        let mpos = 0;
-        let bytes = m.length;
-        let want;
-        if (this._leftover) {
-            want = (16 - this._leftover);
-            if (want > bytes) {
-                want = bytes;
-            }
-            for (let i = 0; i < want; i++) {
-                this._buffer[this._leftover + i] = m[mpos + i];
-            }
-            bytes -= want;
-            mpos += want;
-            this._leftover += want;
-            if (this._leftover < 16) {
-                return this;
-            }
-            this._blocks(this._buffer, 0, 16);
-            this._leftover = 0;
-        }
-        if (bytes >= 16) {
-            want = bytes - (bytes % 16);
-            this._blocks(m, mpos, want);
-            mpos += want;
-            bytes -= want;
-        }
-        if (bytes) {
-            for (let i = 0; i < bytes; i++) {
-                this._buffer[this._leftover + i] = m[mpos + i];
-            }
-            this._leftover += bytes;
-        }
-        return this;
-    }
-    digest() {
-        // TODO(dchest): it behaves differently than other hashes/HMAC,
-        // because it throws when finished — others just return saved result.
-        if (this._finished) {
-            throw new Error("Poly1305 was finished");
-        }
-        let mac = new Uint8Array(16);
-        this.finish(mac);
-        return mac;
-    }
-    clean() {
-        (0,_stablelib_wipe__WEBPACK_IMPORTED_MODULE_0__/* .wipe */ .u)(this._buffer);
-        (0,_stablelib_wipe__WEBPACK_IMPORTED_MODULE_0__/* .wipe */ .u)(this._r);
-        (0,_stablelib_wipe__WEBPACK_IMPORTED_MODULE_0__/* .wipe */ .u)(this._h);
-        (0,_stablelib_wipe__WEBPACK_IMPORTED_MODULE_0__/* .wipe */ .u)(this._pad);
-        this._leftover = 0;
-        this._fin = 0;
-        this._finished = true; // mark as finished even if not
-        return this;
-    }
-}
-/**
- * Returns 16-byte authenticator of data using a one-time 32-byte key.
- *
- * Important: key should be used for only one message, it should never repeat.
- */
-function oneTimeAuth(key, data) {
-    const h = new Poly1305(key);
-    h.update(data);
-    const digest = h.digest();
-    h.clean();
-    return digest;
-}
-/**
- * Returns true if two authenticators are 16-byte long and equal.
- * Uses contant-time comparison to avoid leaking timing information.
- */
-function equal(a, b) {
-    if (a.length !== DIGEST_LENGTH || b.length !== DIGEST_LENGTH) {
-        return false;
-    }
-    return constantTimeEqual(a, b);
-}
-//# sourceMappingURL=poly1305.js.map
-
-/***/ }),
-
-/***/ 1949:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   jQ: () => (/* binding */ getUserSecretKey)
-/* harmony export */ });
-/* unused harmony exports openDB, storeUserSecretKey, deleteUserSecretKey */
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-const DB_NAME = 'SimpliPassDB';
-const STORE_NAME = 'user_secrets';
-const DB_VERSION = 1;
-function openDB() {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
-        request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-            }
-        };
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
-}
-function storeUserSecretKey(key) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const db = yield openDB();
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_NAME, 'readwrite');
-            const store = tx.objectStore(STORE_NAME);
-            store.put({ id: 'UserSecretKey', value: key });
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
-        });
-    });
-}
-function getUserSecretKey() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const db = yield openDB();
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_NAME, 'readonly');
-            const store = tx.objectStore(STORE_NAME);
-            const request = store.get('UserSecretKey');
-            request.onsuccess = () => resolve(request.result ? request.result.value : null);
-            request.onerror = () => reject(request.error);
-        });
-    });
-}
-function deleteUserSecretKey() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const db = yield openDB();
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_NAME, 'readwrite');
-            const store = tx.objectStore(STORE_NAME);
-            store.delete('UserSecretKey');
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
-        });
-    });
-}
-
-
-/***/ }),
-
-/***/ 1963:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   T: () => (/* binding */ stream),
-/* harmony export */   g: () => (/* binding */ streamXOR)
-/* harmony export */ });
-/* harmony import */ var _stablelib_binary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9617);
-/* harmony import */ var _stablelib_wipe__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8073);
-// Copyright (C) 2016 Dmitry Chestnykh
-// MIT License. See LICENSE file for details.
-/**
- * Package chacha implements ChaCha stream cipher.
- */
-
-
-// Number of ChaCha rounds (ChaCha20).
-const ROUNDS = 20;
-// Applies the ChaCha core function to 16-byte input,
-// 32-byte key key, and puts the result into 64-byte array out.
-function core(out, input, key) {
-    let j0 = 0x61707865; // "expa"  -- ChaCha's "sigma" constant
-    let j1 = 0x3320646E; // "nd 3"     for 32-byte keys
-    let j2 = 0x79622D32; // "2-by"
-    let j3 = 0x6B206574; // "te k"
-    let j4 = (key[3] << 24) | (key[2] << 16) | (key[1] << 8) | key[0];
-    let j5 = (key[7] << 24) | (key[6] << 16) | (key[5] << 8) | key[4];
-    let j6 = (key[11] << 24) | (key[10] << 16) | (key[9] << 8) | key[8];
-    let j7 = (key[15] << 24) | (key[14] << 16) | (key[13] << 8) | key[12];
-    let j8 = (key[19] << 24) | (key[18] << 16) | (key[17] << 8) | key[16];
-    let j9 = (key[23] << 24) | (key[22] << 16) | (key[21] << 8) | key[20];
-    let j10 = (key[27] << 24) | (key[26] << 16) | (key[25] << 8) | key[24];
-    let j11 = (key[31] << 24) | (key[30] << 16) | (key[29] << 8) | key[28];
-    let j12 = (input[3] << 24) | (input[2] << 16) | (input[1] << 8) | input[0];
-    let j13 = (input[7] << 24) | (input[6] << 16) | (input[5] << 8) | input[4];
-    let j14 = (input[11] << 24) | (input[10] << 16) | (input[9] << 8) | input[8];
-    let j15 = (input[15] << 24) | (input[14] << 16) | (input[13] << 8) | input[12];
-    let x0 = j0;
-    let x1 = j1;
-    let x2 = j2;
-    let x3 = j3;
-    let x4 = j4;
-    let x5 = j5;
-    let x6 = j6;
-    let x7 = j7;
-    let x8 = j8;
-    let x9 = j9;
-    let x10 = j10;
-    let x11 = j11;
-    let x12 = j12;
-    let x13 = j13;
-    let x14 = j14;
-    let x15 = j15;
-    for (let i = 0; i < ROUNDS; i += 2) {
-        x0 = x0 + x4 | 0;
-        x12 ^= x0;
-        x12 = x12 >>> (32 - 16) | x12 << 16;
-        x8 = x8 + x12 | 0;
-        x4 ^= x8;
-        x4 = x4 >>> (32 - 12) | x4 << 12;
-        x1 = x1 + x5 | 0;
-        x13 ^= x1;
-        x13 = x13 >>> (32 - 16) | x13 << 16;
-        x9 = x9 + x13 | 0;
-        x5 ^= x9;
-        x5 = x5 >>> (32 - 12) | x5 << 12;
-        x2 = x2 + x6 | 0;
-        x14 ^= x2;
-        x14 = x14 >>> (32 - 16) | x14 << 16;
-        x10 = x10 + x14 | 0;
-        x6 ^= x10;
-        x6 = x6 >>> (32 - 12) | x6 << 12;
-        x3 = x3 + x7 | 0;
-        x15 ^= x3;
-        x15 = x15 >>> (32 - 16) | x15 << 16;
-        x11 = x11 + x15 | 0;
-        x7 ^= x11;
-        x7 = x7 >>> (32 - 12) | x7 << 12;
-        x2 = x2 + x6 | 0;
-        x14 ^= x2;
-        x14 = x14 >>> (32 - 8) | x14 << 8;
-        x10 = x10 + x14 | 0;
-        x6 ^= x10;
-        x6 = x6 >>> (32 - 7) | x6 << 7;
-        x3 = x3 + x7 | 0;
-        x15 ^= x3;
-        x15 = x15 >>> (32 - 8) | x15 << 8;
-        x11 = x11 + x15 | 0;
-        x7 ^= x11;
-        x7 = x7 >>> (32 - 7) | x7 << 7;
-        x1 = x1 + x5 | 0;
-        x13 ^= x1;
-        x13 = x13 >>> (32 - 8) | x13 << 8;
-        x9 = x9 + x13 | 0;
-        x5 ^= x9;
-        x5 = x5 >>> (32 - 7) | x5 << 7;
-        x0 = x0 + x4 | 0;
-        x12 ^= x0;
-        x12 = x12 >>> (32 - 8) | x12 << 8;
-        x8 = x8 + x12 | 0;
-        x4 ^= x8;
-        x4 = x4 >>> (32 - 7) | x4 << 7;
-        x0 = x0 + x5 | 0;
-        x15 ^= x0;
-        x15 = x15 >>> (32 - 16) | x15 << 16;
-        x10 = x10 + x15 | 0;
-        x5 ^= x10;
-        x5 = x5 >>> (32 - 12) | x5 << 12;
-        x1 = x1 + x6 | 0;
-        x12 ^= x1;
-        x12 = x12 >>> (32 - 16) | x12 << 16;
-        x11 = x11 + x12 | 0;
-        x6 ^= x11;
-        x6 = x6 >>> (32 - 12) | x6 << 12;
-        x2 = x2 + x7 | 0;
-        x13 ^= x2;
-        x13 = x13 >>> (32 - 16) | x13 << 16;
-        x8 = x8 + x13 | 0;
-        x7 ^= x8;
-        x7 = x7 >>> (32 - 12) | x7 << 12;
-        x3 = x3 + x4 | 0;
-        x14 ^= x3;
-        x14 = x14 >>> (32 - 16) | x14 << 16;
-        x9 = x9 + x14 | 0;
-        x4 ^= x9;
-        x4 = x4 >>> (32 - 12) | x4 << 12;
-        x2 = x2 + x7 | 0;
-        x13 ^= x2;
-        x13 = x13 >>> (32 - 8) | x13 << 8;
-        x8 = x8 + x13 | 0;
-        x7 ^= x8;
-        x7 = x7 >>> (32 - 7) | x7 << 7;
-        x3 = x3 + x4 | 0;
-        x14 ^= x3;
-        x14 = x14 >>> (32 - 8) | x14 << 8;
-        x9 = x9 + x14 | 0;
-        x4 ^= x9;
-        x4 = x4 >>> (32 - 7) | x4 << 7;
-        x1 = x1 + x6 | 0;
-        x12 ^= x1;
-        x12 = x12 >>> (32 - 8) | x12 << 8;
-        x11 = x11 + x12 | 0;
-        x6 ^= x11;
-        x6 = x6 >>> (32 - 7) | x6 << 7;
-        x0 = x0 + x5 | 0;
-        x15 ^= x0;
-        x15 = x15 >>> (32 - 8) | x15 << 8;
-        x10 = x10 + x15 | 0;
-        x5 ^= x10;
-        x5 = x5 >>> (32 - 7) | x5 << 7;
-    }
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x0 + j0 | 0, out, 0);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x1 + j1 | 0, out, 4);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x2 + j2 | 0, out, 8);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x3 + j3 | 0, out, 12);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x4 + j4 | 0, out, 16);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x5 + j5 | 0, out, 20);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x6 + j6 | 0, out, 24);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x7 + j7 | 0, out, 28);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x8 + j8 | 0, out, 32);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x9 + j9 | 0, out, 36);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x10 + j10 | 0, out, 40);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x11 + j11 | 0, out, 44);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x12 + j12 | 0, out, 48);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x13 + j13 | 0, out, 52);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x14 + j14 | 0, out, 56);
-    (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_0__/* .writeUint32LE */ .yH)(x15 + j15 | 0, out, 60);
-}
-/**
- * Encrypt src with ChaCha20 stream generated for the given 32-byte key and
- * 8-byte (as in original implementation) or 12-byte (as in RFC7539) nonce and
- * write the result into dst and return it.
- *
- * dst and src may be the same, but otherwise must not overlap.
- *
- * If nonce is 12 bytes, users should not encrypt more than 256 GiB with the
- * same key and nonce, otherwise the stream will repeat. The function will
- * throw error if counter overflows to prevent this.
- *
- * If nonce is 8 bytes, the output is practically unlimited (2^70 bytes, which
- * is more than a million petabytes). However, it is not recommended to
- * generate 8-byte nonces randomly, as the chance of collision is high.
- *
- * Never use the same key and nonce to encrypt more than one message.
- *
- * If nonceInplaceCounterLength is not 0, the nonce is assumed to be a 16-byte
- * array with stream counter in first nonceInplaceCounterLength bytes and nonce
- * in the last remaining bytes. The counter will be incremented inplace for
- * each ChaCha block. This is useful if you need to encrypt one stream of data
- * in chunks.
- */
-function streamXOR(key, nonce, src, dst, nonceInplaceCounterLength = 0) {
-    // We only support 256-bit keys.
-    if (key.length !== 32) {
-        throw new Error("ChaCha: key size must be 32 bytes");
-    }
-    if (dst.length < src.length) {
-        throw new Error("ChaCha: destination is shorter than source");
-    }
-    let nc;
-    let counterLength;
-    if (nonceInplaceCounterLength === 0) {
-        if (nonce.length !== 8 && nonce.length !== 12) {
-            throw new Error("ChaCha nonce must be 8 or 12 bytes");
-        }
-        nc = new Uint8Array(16);
-        // First counterLength bytes of nc are counter, starting with zero.
-        counterLength = nc.length - nonce.length;
-        // Last bytes of nc after counterLength are nonce, set them.
-        nc.set(nonce, counterLength);
-    }
-    else {
-        if (nonce.length !== 16) {
-            throw new Error("ChaCha nonce with counter must be 16 bytes");
-        }
-        // This will update passed nonce with counter inplace.
-        nc = nonce;
-        counterLength = nonceInplaceCounterLength;
-    }
-    // Allocate temporary space for ChaCha block.
-    const block = new Uint8Array(64);
-    for (let i = 0; i < src.length; i += 64) {
-        // Generate a block.
-        core(block, nc, key);
-        // XOR block bytes with src into dst.
-        for (let j = i; j < i + 64 && j < src.length; j++) {
-            dst[j] = src[j] ^ block[j - i];
-        }
-        // Increment counter.
-        incrementCounter(nc, 0, counterLength);
-    }
-    // Cleanup temporary space.
-    (0,_stablelib_wipe__WEBPACK_IMPORTED_MODULE_1__/* .wipe */ .u)(block);
-    if (nonceInplaceCounterLength === 0) {
-        // Cleanup counter.
-        (0,_stablelib_wipe__WEBPACK_IMPORTED_MODULE_1__/* .wipe */ .u)(nc);
-    }
-    return dst;
-}
-/**
- * Generate ChaCha20 stream for the given 32-byte key and 8-byte or 12-byte
- * nonce and write it into dst and return it.
- *
- * Never use the same key and nonce to generate more than one stream.
- *
- * If nonceInplaceCounterLength is not 0, it behaves the same with respect to
- * the nonce as described in the streamXOR documentation.
- *
- * stream is like streamXOR with all-zero src.
- */
-function stream(key, nonce, dst, nonceInplaceCounterLength = 0) {
-    (0,_stablelib_wipe__WEBPACK_IMPORTED_MODULE_1__/* .wipe */ .u)(dst);
-    return streamXOR(key, nonce, dst, dst, nonceInplaceCounterLength);
-}
-function incrementCounter(counter, pos, len) {
-    let carry = 1;
-    while (len--) {
-        carry = carry + (counter[pos] & 0xff) | 0;
-        counter[pos] = carry & 0xff;
-        carry >>>= 8;
-        pos++;
-    }
-    if (carry > 0) {
-        throw new Error("ChaCha: counter overflow");
-    }
-}
-//# sourceMappingURL=chacha.js.map
-
-/***/ }),
-
-/***/ 2135:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Tt: () => (/* binding */ __rest)
-/* harmony export */ });
-/* unused harmony exports __extends, __assign, __decorate, __param, __esDecorate, __runInitializers, __propKey, __setFunctionName, __metadata, __awaiter, __generator, __createBinding, __exportStar, __values, __read, __spread, __spreadArrays, __spreadArray, __await, __asyncGenerator, __asyncDelegator, __asyncValues, __makeTemplateObject, __importStar, __importDefault, __classPrivateFieldGet, __classPrivateFieldSet, __classPrivateFieldIn, __addDisposableResource, __disposeResources, __rewriteRelativeImportExtension */
-/******************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-/* global Reflect, Promise, SuppressedError, Symbol, Iterator */
-
-var extendStatics = function(d, b) {
-  extendStatics = Object.setPrototypeOf ||
-      ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-      function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-  return extendStatics(d, b);
-};
-
-function __extends(d, b) {
-  if (typeof b !== "function" && b !== null)
-      throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-  extendStatics(d, b);
-  function __() { this.constructor = d; }
-  d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-var __assign = function() {
-  __assign = Object.assign || function __assign(t) {
-      for (var s, i = 1, n = arguments.length; i < n; i++) {
-          s = arguments[i];
-          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-      }
-      return t;
-  }
-  return __assign.apply(this, arguments);
-}
-
-function __rest(s, e) {
-  var t = {};
-  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-      t[p] = s[p];
-  if (s != null && typeof Object.getOwnPropertySymbols === "function")
-      for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-          if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-              t[p[i]] = s[p[i]];
-      }
-  return t;
-}
-
-function __decorate(decorators, target, key, desc) {
-  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  return c > 3 && r && Object.defineProperty(target, key, r), r;
-}
-
-function __param(paramIndex, decorator) {
-  return function (target, key) { decorator(target, key, paramIndex); }
-}
-
-function __esDecorate(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-  function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
-  var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-  var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-  var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-  var _, done = false;
-  for (var i = decorators.length - 1; i >= 0; i--) {
-      var context = {};
-      for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-      for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-      context.addInitializer = function (f) { if (done) throw new TypeError("Cannot add initializers after decoration has completed"); extraInitializers.push(accept(f || null)); };
-      var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-      if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-      }
-      else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-      }
-  }
-  if (target) Object.defineProperty(target, contextIn.name, descriptor);
-  done = true;
-};
-
-function __runInitializers(thisArg, initializers, value) {
-  var useValue = arguments.length > 2;
-  for (var i = 0; i < initializers.length; i++) {
-      value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-  }
-  return useValue ? value : void 0;
-};
-
-function __propKey(x) {
-  return typeof x === "symbol" ? x : "".concat(x);
-};
-
-function __setFunctionName(f, name, prefix) {
-  if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
-  return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
-};
-
-function __metadata(metadataKey, metadataValue) {
-  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
-}
-
-function __awaiter(thisArg, _arguments, P, generator) {
-  function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-  return new (P || (P = Promise))(function (resolve, reject) {
-      function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-      function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-      function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-      step((generator = generator.apply(thisArg, _arguments || [])).next());
-  });
-}
-
-function __generator(thisArg, body) {
-  var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-  return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-  function verb(n) { return function (v) { return step([n, v]); }; }
-  function step(op) {
-      if (f) throw new TypeError("Generator is already executing.");
-      while (g && (g = 0, op[0] && (_ = 0)), _) try {
-          if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-          if (y = 0, t) op = [op[0] & 2, t.value];
-          switch (op[0]) {
-              case 0: case 1: t = op; break;
-              case 4: _.label++; return { value: op[1], done: false };
-              case 5: _.label++; y = op[1]; op = [0]; continue;
-              case 7: op = _.ops.pop(); _.trys.pop(); continue;
-              default:
-                  if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                  if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                  if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                  if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                  if (t[2]) _.ops.pop();
-                  _.trys.pop(); continue;
-          }
-          op = body.call(thisArg, _);
-      } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-      if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-  }
-}
-
-var __createBinding = Object.create ? (function(o, m, k, k2) {
-  if (k2 === undefined) k2 = k;
-  var desc = Object.getOwnPropertyDescriptor(m, k);
-  if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-  }
-  Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-  if (k2 === undefined) k2 = k;
-  o[k2] = m[k];
-});
-
-function __exportStar(m, o) {
-  for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p)) __createBinding(o, m, p);
-}
-
-function __values(o) {
-  var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-  if (m) return m.call(o);
-  if (o && typeof o.length === "number") return {
-      next: function () {
-          if (o && i >= o.length) o = void 0;
-          return { value: o && o[i++], done: !o };
-      }
-  };
-  throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-}
-
-function __read(o, n) {
-  var m = typeof Symbol === "function" && o[Symbol.iterator];
-  if (!m) return o;
-  var i = m.call(o), r, ar = [], e;
-  try {
-      while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-  }
-  catch (error) { e = { error: error }; }
-  finally {
-      try {
-          if (r && !r.done && (m = i["return"])) m.call(i);
-      }
-      finally { if (e) throw e.error; }
-  }
-  return ar;
-}
-
-/** @deprecated */
-function __spread() {
-  for (var ar = [], i = 0; i < arguments.length; i++)
-      ar = ar.concat(__read(arguments[i]));
-  return ar;
-}
-
-/** @deprecated */
-function __spreadArrays() {
-  for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-  for (var r = Array(s), k = 0, i = 0; i < il; i++)
-      for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-          r[k] = a[j];
-  return r;
-}
-
-function __spreadArray(to, from, pack) {
-  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-      if (ar || !(i in from)) {
-          if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-          ar[i] = from[i];
-      }
-  }
-  return to.concat(ar || Array.prototype.slice.call(from));
-}
-
-function __await(v) {
-  return this instanceof __await ? (this.v = v, this) : new __await(v);
-}
-
-function __asyncGenerator(thisArg, _arguments, generator) {
-  if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-  var g = generator.apply(thisArg, _arguments || []), i, q = [];
-  return i = Object.create((typeof AsyncIterator === "function" ? AsyncIterator : Object).prototype), verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function () { return this; }, i;
-  function awaitReturn(f) { return function (v) { return Promise.resolve(v).then(f, reject); }; }
-  function verb(n, f) { if (g[n]) { i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; if (f) i[n] = f(i[n]); } }
-  function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
-  function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
-  function fulfill(value) { resume("next", value); }
-  function reject(value) { resume("throw", value); }
-  function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
-}
-
-function __asyncDelegator(o) {
-  var i, p;
-  return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
-  function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: false } : f ? f(v) : v; } : f; }
-}
-
-function __asyncValues(o) {
-  if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-  var m = o[Symbol.asyncIterator], i;
-  return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-  function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-  function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-}
-
-function __makeTemplateObject(cooked, raw) {
-  if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-  return cooked;
-};
-
-var __setModuleDefault = Object.create ? (function(o, v) {
-  Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-  o["default"] = v;
-};
-
-var ownKeys = function(o) {
-  ownKeys = Object.getOwnPropertyNames || function (o) {
-    var ar = [];
-    for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-    return ar;
-  };
-  return ownKeys(o);
-};
-
-function __importStar(mod) {
-  if (mod && mod.__esModule) return mod;
-  var result = {};
-  if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-  __setModuleDefault(result, mod);
-  return result;
-}
-
-function __importDefault(mod) {
-  return (mod && mod.__esModule) ? mod : { default: mod };
-}
-
-function __classPrivateFieldGet(receiver, state, kind, f) {
-  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-}
-
-function __classPrivateFieldSet(receiver, state, value, kind, f) {
-  if (kind === "m") throw new TypeError("Private method is not writable");
-  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-  return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-}
-
-function __classPrivateFieldIn(state, receiver) {
-  if (receiver === null || (typeof receiver !== "object" && typeof receiver !== "function")) throw new TypeError("Cannot use 'in' operator on non-object");
-  return typeof state === "function" ? receiver === state : state.has(receiver);
-}
-
-function __addDisposableResource(env, value, async) {
-  if (value !== null && value !== void 0) {
-    if (typeof value !== "object" && typeof value !== "function") throw new TypeError("Object expected.");
-    var dispose, inner;
-    if (async) {
-      if (!Symbol.asyncDispose) throw new TypeError("Symbol.asyncDispose is not defined.");
-      dispose = value[Symbol.asyncDispose];
-    }
-    if (dispose === void 0) {
-      if (!Symbol.dispose) throw new TypeError("Symbol.dispose is not defined.");
-      dispose = value[Symbol.dispose];
-      if (async) inner = dispose;
-    }
-    if (typeof dispose !== "function") throw new TypeError("Object not disposable.");
-    if (inner) dispose = function() { try { inner.call(this); } catch (e) { return Promise.reject(e); } };
-    env.stack.push({ value: value, dispose: dispose, async: async });
-  }
-  else if (async) {
-    env.stack.push({ async: true });
-  }
-  return value;
-}
-
-var _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
-  var e = new Error(message);
-  return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
-};
-
-function __disposeResources(env) {
-  function fail(e) {
-    env.error = env.hasError ? new _SuppressedError(e, env.error, "An error was suppressed during disposal.") : e;
-    env.hasError = true;
-  }
-  var r, s = 0;
-  function next() {
-    while (r = env.stack.pop()) {
-      try {
-        if (!r.async && s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);
-        if (r.dispose) {
-          var result = r.dispose.call(r.value);
-          if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) { fail(e); return next(); });
-        }
-        else s |= 1;
-      }
-      catch (e) {
-        fail(e);
-      }
-    }
-    if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();
-    if (env.hasError) throw env.error;
-  }
-  return next();
-}
-
-function __rewriteRelativeImportExtension(path, preserveJsx) {
-  if (typeof path === "string" && /^\.\.?\//.test(path)) {
-      return path.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function (m, tsx, d, ext, cm) {
-          return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : (d + ext + "." + cm.toLowerCase() + "js");
-      });
-  }
-  return path;
-}
-
-/* unused harmony default export */ var __WEBPACK_DEFAULT_EXPORT__ = ({
-  __extends,
-  __assign,
-  __rest,
-  __decorate,
-  __param,
-  __esDecorate,
-  __runInitializers,
-  __propKey,
-  __setFunctionName,
-  __metadata,
-  __awaiter,
-  __generator,
-  __createBinding,
-  __exportStar,
-  __values,
-  __read,
-  __spread,
-  __spreadArrays,
-  __spreadArray,
-  __await,
-  __asyncGenerator,
-  __asyncDelegator,
-  __asyncValues,
-  __makeTemplateObject,
-  __importStar,
-  __importDefault,
-  __classPrivateFieldGet,
-  __classPrivateFieldSet,
-  __classPrivateFieldIn,
-  __addDisposableResource,
-  __disposeResources,
-  __rewriteRelativeImportExtension,
-});
-
-
-/***/ }),
-
-/***/ 2405:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   GG: () => (/* reexport safe */ _firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.GG),
-/* harmony export */   aU: () => (/* reexport safe */ _firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.aU),
-/* harmony export */   rJ: () => (/* reexport safe */ _firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.rJ)
-/* harmony export */ });
-/* harmony import */ var _firebase_firestore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5790);
-
-//# sourceMappingURL=index.esm.js.map
-
-
-/***/ }),
-
-/***/ 2429:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   VV: () => (/* binding */ Md5),
-/* harmony export */   jz: () => (/* binding */ Integer)
-/* harmony export */ });
-/* unused harmony export default */
-var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-var bloom_blob_es2018 = {};
-
-/** @license
-Copyright The Closure Library Authors.
-SPDX-License-Identifier: Apache-2.0
-*/
-
-var Integer;
-var Md5;
-(function() {var h;/** @license
-
- Copyright The Closure Library Authors.
- SPDX-License-Identifier: Apache-2.0
-*/
-function k(f,a){function c(){}c.prototype=a.prototype;f.D=a.prototype;f.prototype=new c;f.prototype.constructor=f;f.C=function(d,e,g){for(var b=Array(arguments.length-2),r=2;r<arguments.length;r++)b[r-2]=arguments[r];return a.prototype[e].apply(d,b)};}function l(){this.blockSize=-1;}function m(){this.blockSize=-1;this.blockSize=64;this.g=Array(4);this.B=Array(this.blockSize);this.o=this.h=0;this.s();}k(m,l);m.prototype.s=function(){this.g[0]=1732584193;this.g[1]=4023233417;this.g[2]=2562383102;this.g[3]=271733878;this.o=this.h=0;};
-function n(f,a,c){c||(c=0);var d=Array(16);if("string"===typeof a)for(var e=0;16>e;++e)d[e]=a.charCodeAt(c++)|a.charCodeAt(c++)<<8|a.charCodeAt(c++)<<16|a.charCodeAt(c++)<<24;else for(e=0;16>e;++e)d[e]=a[c++]|a[c++]<<8|a[c++]<<16|a[c++]<<24;a=f.g[0];c=f.g[1];e=f.g[2];var g=f.g[3];var b=a+(g^c&(e^g))+d[0]+3614090360&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[1]+3905402710&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[2]+606105819&4294967295;e=g+(b<<17&4294967295|b>>>15);
-b=c+(a^e&(g^a))+d[3]+3250441966&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[4]+4118548399&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[5]+1200080426&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[6]+2821735955&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[7]+4249261313&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[8]+1770035416&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[9]+2336552879&4294967295;g=a+(b<<12&4294967295|
-b>>>20);b=e+(c^g&(a^c))+d[10]+4294925233&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[11]+2304563134&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[12]+1804603682&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[13]+4254626195&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[14]+2792965006&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[15]+1236535329&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(e^g&(c^e))+d[1]+4129170786&4294967295;a=c+(b<<
-5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[6]+3225465664&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[11]+643717713&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[0]+3921069994&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[5]+3593408605&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[10]+38016083&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[15]+3634488961&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[4]+3889429448&4294967295;c=
-e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[9]+568446438&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[14]+3275163606&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[3]+4107603335&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[8]+1163531501&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[13]+2850285829&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[2]+4243563512&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[7]+1735328473&4294967295;
-e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[12]+2368359562&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(c^e^g)+d[5]+4294588738&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[8]+2272392833&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[11]+1839030562&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[14]+4259657740&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[1]+2763975236&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[4]+1272893353&4294967295;g=a+(b<<11&4294967295|
-b>>>21);b=e+(g^a^c)+d[7]+4139469664&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[10]+3200236656&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[13]+681279174&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[0]+3936430074&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[3]+3572445317&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[6]+76029189&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[9]+3654602809&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[12]+
-3873151461&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[15]+530742520&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[2]+3299628645&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(e^(c|~g))+d[0]+4096336452&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[7]+1126891415&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[14]+2878612391&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[5]+4237533241&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[12]+1700485571&
-4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[3]+2399980690&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[10]+4293915773&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[1]+2240044497&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[8]+1873313359&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[15]+4264355552&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[6]+2734768916&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[13]+1309151649&
-4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[4]+4149444226&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[11]+3174756917&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[2]+718787259&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[9]+3951481745&4294967295;f.g[0]=f.g[0]+a&4294967295;f.g[1]=f.g[1]+(e+(b<<21&4294967295|b>>>11))&4294967295;f.g[2]=f.g[2]+e&4294967295;f.g[3]=f.g[3]+g&4294967295;}
-m.prototype.u=function(f,a){void 0===a&&(a=f.length);for(var c=a-this.blockSize,d=this.B,e=this.h,g=0;g<a;){if(0==e)for(;g<=c;)n(this,f,g),g+=this.blockSize;if("string"===typeof f)for(;g<a;){if(d[e++]=f.charCodeAt(g++),e==this.blockSize){n(this,d);e=0;break}}else for(;g<a;)if(d[e++]=f[g++],e==this.blockSize){n(this,d);e=0;break}}this.h=e;this.o+=a;};
-m.prototype.v=function(){var f=Array((56>this.h?this.blockSize:2*this.blockSize)-this.h);f[0]=128;for(var a=1;a<f.length-8;++a)f[a]=0;var c=8*this.o;for(a=f.length-8;a<f.length;++a)f[a]=c&255,c/=256;this.u(f);f=Array(16);for(a=c=0;4>a;++a)for(var d=0;32>d;d+=8)f[c++]=this.g[a]>>>d&255;return f};function p(f,a){var c=q;return Object.prototype.hasOwnProperty.call(c,f)?c[f]:c[f]=a(f)}function t(f,a){this.h=a;for(var c=[],d=!0,e=f.length-1;0<=e;e--){var g=f[e]|0;d&&g==a||(c[e]=g,d=!1);}this.g=c;}var q={};function u(f){return -128<=f&&128>f?p(f,function(a){return new t([a|0],0>a?-1:0)}):new t([f|0],0>f?-1:0)}function v(f){if(isNaN(f)||!isFinite(f))return w;if(0>f)return x(v(-f));for(var a=[],c=1,d=0;f>=c;d++)a[d]=f/c|0,c*=4294967296;return new t(a,0)}
-function y(f,a){if(0==f.length)throw Error("number format error: empty string");a=a||10;if(2>a||36<a)throw Error("radix out of range: "+a);if("-"==f.charAt(0))return x(y(f.substring(1),a));if(0<=f.indexOf("-"))throw Error('number format error: interior "-" character');for(var c=v(Math.pow(a,8)),d=w,e=0;e<f.length;e+=8){var g=Math.min(8,f.length-e),b=parseInt(f.substring(e,e+g),a);8>g?(g=v(Math.pow(a,g)),d=d.j(g).add(v(b))):(d=d.j(c),d=d.add(v(b)));}return d}var w=u(0),z=u(1),A=u(16777216);h=t.prototype;
-h.m=function(){if(B(this))return -x(this).m();for(var f=0,a=1,c=0;c<this.g.length;c++){var d=this.i(c);f+=(0<=d?d:4294967296+d)*a;a*=4294967296;}return f};h.toString=function(f){f=f||10;if(2>f||36<f)throw Error("radix out of range: "+f);if(C(this))return "0";if(B(this))return "-"+x(this).toString(f);for(var a=v(Math.pow(f,6)),c=this,d="";;){var e=D(c,a).g;c=F(c,e.j(a));var g=((0<c.g.length?c.g[0]:c.h)>>>0).toString(f);c=e;if(C(c))return g+d;for(;6>g.length;)g="0"+g;d=g+d;}};
-h.i=function(f){return 0>f?0:f<this.g.length?this.g[f]:this.h};function C(f){if(0!=f.h)return !1;for(var a=0;a<f.g.length;a++)if(0!=f.g[a])return !1;return !0}function B(f){return -1==f.h}h.l=function(f){f=F(this,f);return B(f)?-1:C(f)?0:1};function x(f){for(var a=f.g.length,c=[],d=0;d<a;d++)c[d]=~f.g[d];return (new t(c,~f.h)).add(z)}h.abs=function(){return B(this)?x(this):this};
-h.add=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0,e=0;e<=a;e++){var g=d+(this.i(e)&65535)+(f.i(e)&65535),b=(g>>>16)+(this.i(e)>>>16)+(f.i(e)>>>16);d=b>>>16;g&=65535;b&=65535;c[e]=b<<16|g;}return new t(c,c[c.length-1]&-2147483648?-1:0)};function F(f,a){return f.add(x(a))}
-h.j=function(f){if(C(this)||C(f))return w;if(B(this))return B(f)?x(this).j(x(f)):x(x(this).j(f));if(B(f))return x(this.j(x(f)));if(0>this.l(A)&&0>f.l(A))return v(this.m()*f.m());for(var a=this.g.length+f.g.length,c=[],d=0;d<2*a;d++)c[d]=0;for(d=0;d<this.g.length;d++)for(var e=0;e<f.g.length;e++){var g=this.i(d)>>>16,b=this.i(d)&65535,r=f.i(e)>>>16,E=f.i(e)&65535;c[2*d+2*e]+=b*E;G(c,2*d+2*e);c[2*d+2*e+1]+=g*E;G(c,2*d+2*e+1);c[2*d+2*e+1]+=b*r;G(c,2*d+2*e+1);c[2*d+2*e+2]+=g*r;G(c,2*d+2*e+2);}for(d=0;d<
-a;d++)c[d]=c[2*d+1]<<16|c[2*d];for(d=a;d<2*a;d++)c[d]=0;return new t(c,0)};function G(f,a){for(;(f[a]&65535)!=f[a];)f[a+1]+=f[a]>>>16,f[a]&=65535,a++;}function H(f,a){this.g=f;this.h=a;}
-function D(f,a){if(C(a))throw Error("division by zero");if(C(f))return new H(w,w);if(B(f))return a=D(x(f),a),new H(x(a.g),x(a.h));if(B(a))return a=D(f,x(a)),new H(x(a.g),a.h);if(30<f.g.length){if(B(f)||B(a))throw Error("slowDivide_ only works with positive integers.");for(var c=z,d=a;0>=d.l(f);)c=I(c),d=I(d);var e=J(c,1),g=J(d,1);d=J(d,2);for(c=J(c,2);!C(d);){var b=g.add(d);0>=b.l(f)&&(e=e.add(c),g=b);d=J(d,1);c=J(c,1);}a=F(f,e.j(a));return new H(e,a)}for(e=w;0<=f.l(a);){c=Math.max(1,Math.floor(f.m()/
-a.m()));d=Math.ceil(Math.log(c)/Math.LN2);d=48>=d?1:Math.pow(2,d-48);g=v(c);for(b=g.j(a);B(b)||0<b.l(f);)c-=d,g=v(c),b=g.j(a);C(g)&&(g=z);e=e.add(g);f=F(f,b);}return new H(e,f)}h.A=function(f){return D(this,f).h};h.and=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)&f.i(d);return new t(c,this.h&f.h)};h.or=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)|f.i(d);return new t(c,this.h|f.h)};
-h.xor=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)^f.i(d);return new t(c,this.h^f.h)};function I(f){for(var a=f.g.length+1,c=[],d=0;d<a;d++)c[d]=f.i(d)<<1|f.i(d-1)>>>31;return new t(c,f.h)}function J(f,a){var c=a>>5;a%=32;for(var d=f.g.length-c,e=[],g=0;g<d;g++)e[g]=0<a?f.i(g+c)>>>a|f.i(g+c+1)<<32-a:f.i(g+c);return new t(e,f.h)}m.prototype.digest=m.prototype.v;m.prototype.reset=m.prototype.s;m.prototype.update=m.prototype.u;Md5 = bloom_blob_es2018.Md5=m;t.prototype.add=t.prototype.add;t.prototype.multiply=t.prototype.j;t.prototype.modulo=t.prototype.A;t.prototype.compare=t.prototype.l;t.prototype.toNumber=t.prototype.m;t.prototype.toString=t.prototype.toString;t.prototype.getBits=t.prototype.i;t.fromNumber=v;t.fromString=y;Integer = bloom_blob_es2018.Integer=t;}).apply( typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof self !== 'undefined' ? self  : typeof window !== 'undefined' ? window  : {});
-
-
-//# sourceMappingURL=bloom_blob_es2018.js.map
-
-
-/***/ }),
-
-/***/ 2440:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   xI: () => (/* reexport safe */ _index_68602d24_js__WEBPACK_IMPORTED_MODULE_0__.o)
-/* harmony export */ });
-/* harmony import */ var _index_68602d24_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(989);
-/* harmony import */ var _firebase_app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8461);
-/* harmony import */ var _firebase_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6743);
-/* harmony import */ var _firebase_logger__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3424);
-/* harmony import */ var _firebase_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5125);
-
-
-
-
-
-
-//# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
-/***/ 2761:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   g6: () => (/* binding */ ChaCha20Poly1305)
-/* harmony export */ });
-/* unused harmony exports KEY_LENGTH, NONCE_LENGTH, TAG_LENGTH */
-/* harmony import */ var _stablelib_chacha__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1963);
-/* harmony import */ var _stablelib_poly1305__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1921);
-/* harmony import */ var _stablelib_wipe__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8073);
-/* harmony import */ var _stablelib_binary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9617);
-/* harmony import */ var _stablelib_constant_time__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7289);
-// Copyright (C) 2016 Dmitry Chestnykh
-// MIT License. See LICENSE file for details.
-
-
-
-
-
-const KEY_LENGTH = 32;
-const NONCE_LENGTH = 12;
-const TAG_LENGTH = 16;
-const ZEROS = new Uint8Array(16);
-/**
- * ChaCha20-Poly1305 Authenticated Encryption with Associated Data.
- *
- * Defined in RFC7539.
- */
-class ChaCha20Poly1305 {
-    nonceLength = NONCE_LENGTH;
-    tagLength = TAG_LENGTH;
-    _key;
-    /**
-     * Creates a new instance with the given 32-byte key.
-     */
-    constructor(key) {
-        if (key.length !== KEY_LENGTH) {
-            throw new Error("ChaCha20Poly1305 needs 32-byte key");
-        }
-        // Copy key.
-        this._key = new Uint8Array(key);
-    }
-    /**
-     * Encrypts and authenticates plaintext, authenticates associated data,
-     * and returns sealed ciphertext, which includes authentication tag.
-     *
-     * RFC7539 specifies 12 bytes for nonce. It may be this 12-byte nonce
-     * ("IV"), or full 16-byte counter (called "32-bit fixed-common part")
-     * and nonce.
-     *
-     * If dst is given (it must be the size of plaintext + the size of tag
-     * length) the result will be put into it. Dst and plaintext must not
-     * overlap.
-     */
-    seal(nonce, plaintext, associatedData, dst) {
-        if (nonce.length > 16) {
-            throw new Error("ChaCha20Poly1305: incorrect nonce length");
-        }
-        // Allocate space for counter, and set nonce as last bytes of it.
-        const counter = new Uint8Array(16);
-        counter.set(nonce, counter.length - nonce.length);
-        // Generate authentication key by taking first 32-bytes of stream.
-        // We pass full counter, which has 12-byte nonce and 4-byte block counter,
-        // and it will get incremented after generating the block, which is
-        // exactly what we need: we only use the first 32 bytes of 64-byte
-        // ChaCha block and discard the next 32 bytes.
-        const authKey = new Uint8Array(32);
-        (0,_stablelib_chacha__WEBPACK_IMPORTED_MODULE_0__/* .stream */ .T)(this._key, counter, authKey, 4);
-        // Allocate space for sealed ciphertext.
-        const resultLength = plaintext.length + this.tagLength;
-        let result;
-        if (dst) {
-            if (dst.length !== resultLength) {
-                throw new Error("ChaCha20Poly1305: incorrect destination length");
-            }
-            result = dst;
-        }
-        else {
-            result = new Uint8Array(resultLength);
-        }
-        // Encrypt plaintext.
-        (0,_stablelib_chacha__WEBPACK_IMPORTED_MODULE_0__/* .streamXOR */ .g)(this._key, counter, plaintext, result, 4);
-        // Authenticate.
-        // XXX: can "simplify" here: pass full result (which is already padded
-        // due to zeroes prepared for tag), and ciphertext length instead of
-        // subarray of result.
-        this._authenticate(result.subarray(result.length - this.tagLength, result.length), authKey, result.subarray(0, result.length - this.tagLength), associatedData);
-        // Cleanup.
-        (0,_stablelib_wipe__WEBPACK_IMPORTED_MODULE_2__/* .wipe */ .u)(counter);
-        return result;
-    }
-    /**
-     * Authenticates sealed ciphertext (which includes authentication tag) and
-     * associated data, decrypts ciphertext and returns decrypted plaintext.
-     *
-     * RFC7539 specifies 12 bytes for nonce. It may be this 12-byte nonce
-     * ("IV"), or full 16-byte counter (called "32-bit fixed-common part")
-     * and nonce.
-     *
-     * If authentication fails, it returns null.
-     *
-     * If dst is given (it must be of ciphertext length minus tag length),
-     * the result will be put into it. Dst and plaintext must not overlap.
-     */
-    open(nonce, sealed, associatedData, dst) {
-        if (nonce.length > 16) {
-            throw new Error("ChaCha20Poly1305: incorrect nonce length");
-        }
-        // Sealed ciphertext should at least contain tag.
-        if (sealed.length < this.tagLength) {
-            // TODO(dchest): should we throw here instead?
-            return null;
-        }
-        // Allocate space for counter, and set nonce as last bytes of it.
-        const counter = new Uint8Array(16);
-        counter.set(nonce, counter.length - nonce.length);
-        // Generate authentication key by taking first 32-bytes of stream.
-        const authKey = new Uint8Array(32);
-        (0,_stablelib_chacha__WEBPACK_IMPORTED_MODULE_0__/* .stream */ .T)(this._key, counter, authKey, 4);
-        // Authenticate.
-        // XXX: can simplify and avoid allocation: since authenticate()
-        // already allocates tag (from Poly1305.digest(), it can return)
-        // it instead of copying to calculatedTag. But then in seal()
-        // we'll need to copy it.
-        const calculatedTag = new Uint8Array(this.tagLength);
-        this._authenticate(calculatedTag, authKey, sealed.subarray(0, sealed.length - this.tagLength), associatedData);
-        // Constant-time compare tags and return null if they differ.
-        if (!(0,_stablelib_constant_time__WEBPACK_IMPORTED_MODULE_3__/* .equal */ .LC)(calculatedTag, sealed.subarray(sealed.length - this.tagLength, sealed.length))) {
-            return null;
-        }
-        // Allocate space for decrypted plaintext.
-        const resultLength = sealed.length - this.tagLength;
-        let result;
-        if (dst) {
-            if (dst.length !== resultLength) {
-                throw new Error("ChaCha20Poly1305: incorrect destination length");
-            }
-            result = dst;
-        }
-        else {
-            result = new Uint8Array(resultLength);
-        }
-        // Decrypt.
-        (0,_stablelib_chacha__WEBPACK_IMPORTED_MODULE_0__/* .streamXOR */ .g)(this._key, counter, sealed.subarray(0, sealed.length - this.tagLength), result, 4);
-        // Cleanup.
-        (0,_stablelib_wipe__WEBPACK_IMPORTED_MODULE_2__/* .wipe */ .u)(counter);
-        return result;
-    }
-    clean() {
-        (0,_stablelib_wipe__WEBPACK_IMPORTED_MODULE_2__/* .wipe */ .u)(this._key);
-        return this;
-    }
-    _authenticate(tagOut, authKey, ciphertext, associatedData) {
-        // Initialize Poly1305 with authKey.
-        const h = new _stablelib_poly1305__WEBPACK_IMPORTED_MODULE_4__/* .Poly1305 */ .yU(authKey);
-        // Authenticate padded associated data.
-        if (associatedData) {
-            h.update(associatedData);
-            if (associatedData.length % 16 > 0) {
-                h.update(ZEROS.subarray(associatedData.length % 16));
-            }
-        }
-        // Authenticate padded ciphertext.
-        h.update(ciphertext);
-        if (ciphertext.length % 16 > 0) {
-            h.update(ZEROS.subarray(ciphertext.length % 16));
-        }
-        // Authenticate length of associated data.
-        // XXX: can avoid allocation here?
-        const length = new Uint8Array(8);
-        if (associatedData) {
-            (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_1__/* .writeUint64LE */ .NA)(associatedData.length, length);
-        }
-        h.update(length);
-        // Authenticate length of ciphertext.
-        (0,_stablelib_binary__WEBPACK_IMPORTED_MODULE_1__/* .writeUint64LE */ .NA)(ciphertext.length, length);
-        h.update(length);
-        // Get tag and copy it into tagOut.
-        const tag = h.digest();
-        for (let i = 0; i < tag.length; i++) {
-            tagOut[i] = tag[i];
-        }
-        // Cleanup.
-        h.clean();
-        (0,_stablelib_wipe__WEBPACK_IMPORTED_MODULE_2__/* .wipe */ .u)(tag);
-        (0,_stablelib_wipe__WEBPACK_IMPORTED_MODULE_2__/* .wipe */ .u)(length);
-    }
-}
-//# sourceMappingURL=chacha20poly1305.js.map
-
-/***/ }),
-
-/***/ 3424:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   $b: () => (/* binding */ LogLevel),
-/* harmony export */   Vy: () => (/* binding */ Logger)
-/* harmony export */ });
-/* unused harmony exports setLogLevel, setUserLogHandler */
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * A container for all of the Logger instances
- */
-const instances = [];
-/**
- * The JS SDK supports 5 log levels and also allows a user the ability to
- * silence the logs altogether.
- *
- * The order is a follows:
- * DEBUG < VERBOSE < INFO < WARN < ERROR
- *
- * All of the log types above the current log level will be captured (i.e. if
- * you set the log level to `INFO`, errors will still be logged, but `DEBUG` and
- * `VERBOSE` logs will not)
- */
-var LogLevel;
-(function (LogLevel) {
-    LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
-    LogLevel[LogLevel["VERBOSE"] = 1] = "VERBOSE";
-    LogLevel[LogLevel["INFO"] = 2] = "INFO";
-    LogLevel[LogLevel["WARN"] = 3] = "WARN";
-    LogLevel[LogLevel["ERROR"] = 4] = "ERROR";
-    LogLevel[LogLevel["SILENT"] = 5] = "SILENT";
-})(LogLevel || (LogLevel = {}));
-const levelStringToEnum = {
-    'debug': LogLevel.DEBUG,
-    'verbose': LogLevel.VERBOSE,
-    'info': LogLevel.INFO,
-    'warn': LogLevel.WARN,
-    'error': LogLevel.ERROR,
-    'silent': LogLevel.SILENT
-};
-/**
- * The default log level
- */
-const defaultLogLevel = LogLevel.INFO;
-/**
- * By default, `console.debug` is not displayed in the developer console (in
- * chrome). To avoid forcing users to have to opt-in to these logs twice
- * (i.e. once for firebase, and once in the console), we are sending `DEBUG`
- * logs to the `console.log` function.
- */
-const ConsoleMethod = {
-    [LogLevel.DEBUG]: 'log',
-    [LogLevel.VERBOSE]: 'log',
-    [LogLevel.INFO]: 'info',
-    [LogLevel.WARN]: 'warn',
-    [LogLevel.ERROR]: 'error'
-};
-/**
- * The default log handler will forward DEBUG, VERBOSE, INFO, WARN, and ERROR
- * messages on to their corresponding console counterparts (if the log method
- * is supported by the current log level)
- */
-const defaultLogHandler = (instance, logType, ...args) => {
-    if (logType < instance.logLevel) {
-        return;
-    }
-    const now = new Date().toISOString();
-    const method = ConsoleMethod[logType];
-    if (method) {
-        console[method](`[${now}]  ${instance.name}:`, ...args);
-    }
-    else {
-        throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
-    }
-};
-class Logger {
-    /**
-     * Gives you an instance of a Logger to capture messages according to
-     * Firebase's logging scheme.
-     *
-     * @param name The name that the logs will be associated with
-     */
-    constructor(name) {
-        this.name = name;
-        /**
-         * The log level of the given Logger instance.
-         */
-        this._logLevel = defaultLogLevel;
-        /**
-         * The main (internal) log handler for the Logger instance.
-         * Can be set to a new function in internal package code but not by user.
-         */
-        this._logHandler = defaultLogHandler;
-        /**
-         * The optional, additional, user-defined log handler for the Logger instance.
-         */
-        this._userLogHandler = null;
-        /**
-         * Capture the current instance for later use
-         */
-        instances.push(this);
-    }
-    get logLevel() {
-        return this._logLevel;
-    }
-    set logLevel(val) {
-        if (!(val in LogLevel)) {
-            throw new TypeError(`Invalid value "${val}" assigned to \`logLevel\``);
-        }
-        this._logLevel = val;
-    }
-    // Workaround for setter/getter having to be the same type.
-    setLogLevel(val) {
-        this._logLevel = typeof val === 'string' ? levelStringToEnum[val] : val;
-    }
-    get logHandler() {
-        return this._logHandler;
-    }
-    set logHandler(val) {
-        if (typeof val !== 'function') {
-            throw new TypeError('Value assigned to `logHandler` must be a function');
-        }
-        this._logHandler = val;
-    }
-    get userLogHandler() {
-        return this._userLogHandler;
-    }
-    set userLogHandler(val) {
-        this._userLogHandler = val;
-    }
-    /**
-     * The functions below are all based on the `console` interface
-     */
-    debug(...args) {
-        this._userLogHandler && this._userLogHandler(this, LogLevel.DEBUG, ...args);
-        this._logHandler(this, LogLevel.DEBUG, ...args);
-    }
-    log(...args) {
-        this._userLogHandler &&
-            this._userLogHandler(this, LogLevel.VERBOSE, ...args);
-        this._logHandler(this, LogLevel.VERBOSE, ...args);
-    }
-    info(...args) {
-        this._userLogHandler && this._userLogHandler(this, LogLevel.INFO, ...args);
-        this._logHandler(this, LogLevel.INFO, ...args);
-    }
-    warn(...args) {
-        this._userLogHandler && this._userLogHandler(this, LogLevel.WARN, ...args);
-        this._logHandler(this, LogLevel.WARN, ...args);
-    }
-    error(...args) {
-        this._userLogHandler && this._userLogHandler(this, LogLevel.ERROR, ...args);
-        this._logHandler(this, LogLevel.ERROR, ...args);
-    }
-}
-function setLogLevel(level) {
-    instances.forEach(inst => {
-        inst.setLogLevel(level);
-    });
-}
-function setUserLogHandler(logCallback, options) {
-    for (const instance of instances) {
-        let customLogLevel = null;
-        if (options && options.level) {
-            customLogLevel = levelStringToEnum[options.level];
-        }
-        if (logCallback === null) {
-            instance.userLogHandler = null;
-        }
-        else {
-            instance.userLogHandler = (instance, level, ...args) => {
-                const message = args
-                    .map(arg => {
-                    if (arg == null) {
-                        return null;
-                    }
-                    else if (typeof arg === 'string') {
-                        return arg;
-                    }
-                    else if (typeof arg === 'number' || typeof arg === 'boolean') {
-                        return arg.toString();
-                    }
-                    else if (arg instanceof Error) {
-                        return arg.message;
-                    }
-                    else {
-                        try {
-                            return JSON.stringify(arg);
-                        }
-                        catch (ignored) {
-                            return null;
-                        }
-                    }
-                })
-                    .filter(arg => arg)
-                    .join(' ');
-                if (level >= (customLogLevel !== null && customLogLevel !== void 0 ? customLogLevel : instance.logLevel)) {
-                    logCallback({
-                        level: LogLevel[level].toLowerCase(),
-                        message,
-                        args,
-                        type: instance.name
-                    });
-                }
-            };
-        }
-    }
-}
-
-
-//# sourceMappingURL=index.esm2017.js.map
-
-
-/***/ }),
-
-/***/ 3553:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   po: () => (/* binding */ randomBytes)
-/* harmony export */ });
-/* unused harmony exports defaultRandomSource, randomUint32, randomString, randomStringForEntropy */
-/* harmony import */ var _source_system_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4127);
-/* harmony import */ var _stablelib_binary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9617);
-// Copyright (C) 2016 Dmitry Chestnykh
-// MIT License. See LICENSE file for details.
-
-
-
-const defaultRandomSource = new _source_system_js__WEBPACK_IMPORTED_MODULE_1__/* .SystemRandomSource */ .C();
-function randomBytes(length, prng = defaultRandomSource) {
-    return prng.randomBytes(length);
-}
-/**
- * Returns a uniformly random unsigned 32-bit integer.
- */
-function randomUint32(prng = defaultRandomSource) {
-    // Generate 4-byte random buffer.
-    const buf = randomBytes(4, prng);
-    // Convert bytes from buffer into a 32-bit integer.
-    // It's not important which byte order to use, since
-    // the result is random.
-    const result = readUint32LE(buf);
-    // Clean the buffer.
-    wipe(buf);
-    return result;
-}
-/** 62 alphanumeric characters for default charset of randomString() */
-const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-/**
- * Returns a uniform random string of the given length
- * with characters from the given charset.
- *
- * Charset must not have more than 256 characters.
- *
- * Default charset generates case-sensitive alphanumeric
- * strings (0-9, A-Z, a-z).
- */
-function randomString(length, charset = ALPHANUMERIC, prng = defaultRandomSource) {
-    if (charset.length < 2) {
-        throw new Error("randomString charset is too short");
-    }
-    if (charset.length > 256) {
-        throw new Error("randomString charset is too long");
-    }
-    let out = '';
-    const charsLen = charset.length;
-    const maxByte = 256 - (256 % charsLen);
-    while (length > 0) {
-        const buf = randomBytes(Math.ceil(length * 256 / maxByte), prng);
-        for (let i = 0; i < buf.length && length > 0; i++) {
-            const randomByte = buf[i];
-            if (randomByte < maxByte) {
-                out += charset.charAt(randomByte % charsLen);
-                length--;
-            }
-        }
-        wipe(buf);
-    }
-    return out;
-}
-/**
- * Returns uniform random string containing at least the given
- * number of bits of entropy.
- *
- * For example, randomStringForEntropy(128) will return a 22-character
- * alphanumeric string, while randomStringForEntropy(128, "0123456789")
- * will return a 39-character numeric string, both will contain at
- * least 128 bits of entropy.
- *
- * Default charset generates case-sensitive alphanumeric
- * strings (0-9, A-Z, a-z).
- */
-function randomStringForEntropy(bits, charset = ALPHANUMERIC, prng = defaultRandomSource) {
-    const length = Math.ceil(bits / (Math.log(charset.length) / Math.LN2));
-    return randomString(length, charset, prng);
-}
-//# sourceMappingURL=random.js.map
-
-/***/ }),
-
-/***/ 4127:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   C: () => (/* binding */ SystemRandomSource)
-/* harmony export */ });
-// Copyright (C) 2024 Dmitry Chestnykh
-// MIT License. See LICENSE file for details.
-const QUOTA = 65536;
-class SystemRandomSource {
-    isAvailable = false;
-    isInstantiated = false;
-    constructor() {
-        if (typeof crypto !== "undefined" && 'getRandomValues' in crypto) {
-            this.isAvailable = true;
-            this.isInstantiated = true;
-        }
-    }
-    randomBytes(length) {
-        if (!this.isAvailable) {
-            throw new Error("System random byte generator is not available.");
-        }
-        const out = new Uint8Array(length);
-        for (let i = 0; i < out.length; i += QUOTA) {
-            crypto.getRandomValues(out.subarray(i, i + Math.min(out.length - i, QUOTA)));
-        }
-        return out;
-    }
-}
-//# sourceMappingURL=system.js.map
-
-/***/ }),
-
-/***/ 4902:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   af: () => (/* binding */ decryptData),
-/* harmony export */   yv: () => (/* binding */ encryptData)
-/* harmony export */ });
-/* unused harmony exports base64UrlToBytes, bytesToBase64, base64ToBytes, deriveKey */
-/* harmony import */ var _stablelib_chacha20poly1305__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2761);
-/* harmony import */ var _stablelib_random__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3553);
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-// utils/crypto.ts
-
-
-function base64UrlToBytes(base64url) {
-    let base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4)
-        base64 += '=';
-    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-}
-function bytesToBase64(bytes) {
-    return btoa(String.fromCharCode(...bytes));
-}
-function base64ToBytes(base64) {
-    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-}
-function deriveKey(masterPassword, saltBase64Url) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const salt = base64UrlToBytes(saltBase64Url);
-        const enc = new TextEncoder();
-        const passwordKey = yield window.crypto.subtle.importKey('raw', enc.encode(masterPassword), { name: 'PBKDF2' }, false, ['deriveBits']);
-        const derivedBits = yield window.crypto.subtle.deriveBits({
-            name: 'PBKDF2',
-            salt: salt,
-            iterations: 300000,
-            hash: 'SHA-256'
-        }, passwordKey, 256);
-        const derivedKey = bytesToBase64(new Uint8Array(derivedBits))
-            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        return derivedKey;
-    });
-}
-function encryptData(symmetricKey, plainText) {
-    const key = base64UrlToBytes(symmetricKey);
-    const algo = new _stablelib_chacha20poly1305__WEBPACK_IMPORTED_MODULE_0__/* .ChaCha20Poly1305 */ .g6(key);
-    const nonce = (0,_stablelib_random__WEBPACK_IMPORTED_MODULE_1__/* .randomBytes */ .po)(12);
-    const plaintextBytes = new TextEncoder().encode(plainText);
-    const encrypted = algo.seal(nonce, plaintextBytes);
-    const result = new Uint8Array(nonce.length + encrypted.length);
-    result.set(nonce, 0);
-    result.set(encrypted, nonce.length);
-    return bytesToBase64(result);
-}
-function decryptData(symmetricKey, encryptedData) {
-    const key = base64UrlToBytes(symmetricKey);
-    const algo = new _stablelib_chacha20poly1305__WEBPACK_IMPORTED_MODULE_0__/* .ChaCha20Poly1305 */ .g6(key);
-    const encryptedBytes = base64ToBytes(encryptedData);
-    const nonce = encryptedBytes.slice(0, 12);
-    const ciphertextAndMac = encryptedBytes.slice(12);
-    const decrypted = algo.open(nonce, ciphertextAndMac);
-    if (!decrypted)
-        throw new Error("Decryption failed");
-    return new TextDecoder().decode(decrypted);
-}
-
-
-/***/ }),
-
-/***/ 5125:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   h1: () => (/* binding */ ComponentContainer),
-/* harmony export */   uA: () => (/* binding */ Component)
-/* harmony export */ });
-/* unused harmony export Provider */
-/* harmony import */ var _firebase_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6743);
-
-
-/**
- * Component for service name T, e.g. `auth`, `auth-internal`
- */
-class Component {
-    /**
-     *
-     * @param name The public service name, e.g. app, auth, firestore, database
-     * @param instanceFactory Service factory responsible for creating the public interface
-     * @param type whether the service provided by the component is public or private
-     */
-    constructor(name, instanceFactory, type) {
-        this.name = name;
-        this.instanceFactory = instanceFactory;
-        this.type = type;
-        this.multipleInstances = false;
-        /**
-         * Properties to be added to the service namespace
-         */
-        this.serviceProps = {};
-        this.instantiationMode = "LAZY" /* InstantiationMode.LAZY */;
-        this.onInstanceCreated = null;
-    }
-    setInstantiationMode(mode) {
-        this.instantiationMode = mode;
-        return this;
-    }
-    setMultipleInstances(multipleInstances) {
-        this.multipleInstances = multipleInstances;
-        return this;
-    }
-    setServiceProps(props) {
-        this.serviceProps = props;
-        return this;
-    }
-    setInstanceCreatedCallback(callback) {
-        this.onInstanceCreated = callback;
-        return this;
-    }
-}
-
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-const DEFAULT_ENTRY_NAME = '[DEFAULT]';
-
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Provider for instance for service name T, e.g. 'auth', 'auth-internal'
- * NameServiceMapping[T] is an alias for the type of the instance
- */
-class Provider {
-    constructor(name, container) {
-        this.name = name;
-        this.container = container;
-        this.component = null;
-        this.instances = new Map();
-        this.instancesDeferred = new Map();
-        this.instancesOptions = new Map();
-        this.onInitCallbacks = new Map();
-    }
-    /**
-     * @param identifier A provider can provide multiple instances of a service
-     * if this.component.multipleInstances is true.
-     */
-    get(identifier) {
-        // if multipleInstances is not supported, use the default name
-        const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
-        if (!this.instancesDeferred.has(normalizedIdentifier)) {
-            const deferred = new _firebase_util__WEBPACK_IMPORTED_MODULE_0__/* .Deferred */ .cY();
-            this.instancesDeferred.set(normalizedIdentifier, deferred);
-            if (this.isInitialized(normalizedIdentifier) ||
-                this.shouldAutoInitialize()) {
-                // initialize the service if it can be auto-initialized
-                try {
-                    const instance = this.getOrInitializeService({
-                        instanceIdentifier: normalizedIdentifier
-                    });
-                    if (instance) {
-                        deferred.resolve(instance);
-                    }
-                }
-                catch (e) {
-                    // when the instance factory throws an exception during get(), it should not cause
-                    // a fatal error. We just return the unresolved promise in this case.
-                }
-            }
-        }
-        return this.instancesDeferred.get(normalizedIdentifier).promise;
-    }
-    getImmediate(options) {
-        var _a;
-        // if multipleInstances is not supported, use the default name
-        const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === void 0 ? void 0 : options.identifier);
-        const optional = (_a = options === null || options === void 0 ? void 0 : options.optional) !== null && _a !== void 0 ? _a : false;
-        if (this.isInitialized(normalizedIdentifier) ||
-            this.shouldAutoInitialize()) {
-            try {
-                return this.getOrInitializeService({
-                    instanceIdentifier: normalizedIdentifier
-                });
-            }
-            catch (e) {
-                if (optional) {
-                    return null;
-                }
-                else {
-                    throw e;
-                }
-            }
-        }
-        else {
-            // In case a component is not initialized and should/cannot be auto-initialized at the moment, return null if the optional flag is set, or throw
-            if (optional) {
-                return null;
-            }
-            else {
-                throw Error(`Service ${this.name} is not available`);
-            }
-        }
-    }
-    getComponent() {
-        return this.component;
-    }
-    setComponent(component) {
-        if (component.name !== this.name) {
-            throw Error(`Mismatching Component ${component.name} for Provider ${this.name}.`);
-        }
-        if (this.component) {
-            throw Error(`Component for ${this.name} has already been provided`);
-        }
-        this.component = component;
-        // return early without attempting to initialize the component if the component requires explicit initialization (calling `Provider.initialize()`)
-        if (!this.shouldAutoInitialize()) {
-            return;
-        }
-        // if the service is eager, initialize the default instance
-        if (isComponentEager(component)) {
-            try {
-                this.getOrInitializeService({ instanceIdentifier: DEFAULT_ENTRY_NAME });
-            }
-            catch (e) {
-                // when the instance factory for an eager Component throws an exception during the eager
-                // initialization, it should not cause a fatal error.
-                // TODO: Investigate if we need to make it configurable, because some component may want to cause
-                // a fatal error in this case?
-            }
-        }
-        // Create service instances for the pending promises and resolve them
-        // NOTE: if this.multipleInstances is false, only the default instance will be created
-        // and all promises with resolve with it regardless of the identifier.
-        for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()) {
-            const normalizedIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
-            try {
-                // `getOrInitializeService()` should always return a valid instance since a component is guaranteed. use ! to make typescript happy.
-                const instance = this.getOrInitializeService({
-                    instanceIdentifier: normalizedIdentifier
-                });
-                instanceDeferred.resolve(instance);
-            }
-            catch (e) {
-                // when the instance factory throws an exception, it should not cause
-                // a fatal error. We just leave the promise unresolved.
-            }
-        }
-    }
-    clearInstance(identifier = DEFAULT_ENTRY_NAME) {
-        this.instancesDeferred.delete(identifier);
-        this.instancesOptions.delete(identifier);
-        this.instances.delete(identifier);
-    }
-    // app.delete() will call this method on every provider to delete the services
-    // TODO: should we mark the provider as deleted?
-    async delete() {
-        const services = Array.from(this.instances.values());
-        await Promise.all([
-            ...services
-                .filter(service => 'INTERNAL' in service) // legacy services
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .map(service => service.INTERNAL.delete()),
-            ...services
-                .filter(service => '_delete' in service) // modularized services
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .map(service => service._delete())
-        ]);
-    }
-    isComponentSet() {
-        return this.component != null;
-    }
-    isInitialized(identifier = DEFAULT_ENTRY_NAME) {
-        return this.instances.has(identifier);
-    }
-    getOptions(identifier = DEFAULT_ENTRY_NAME) {
-        return this.instancesOptions.get(identifier) || {};
-    }
-    initialize(opts = {}) {
-        const { options = {} } = opts;
-        const normalizedIdentifier = this.normalizeInstanceIdentifier(opts.instanceIdentifier);
-        if (this.isInitialized(normalizedIdentifier)) {
-            throw Error(`${this.name}(${normalizedIdentifier}) has already been initialized`);
-        }
-        if (!this.isComponentSet()) {
-            throw Error(`Component ${this.name} has not been registered yet`);
-        }
-        const instance = this.getOrInitializeService({
-            instanceIdentifier: normalizedIdentifier,
-            options
-        });
-        // resolve any pending promise waiting for the service instance
-        for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()) {
-            const normalizedDeferredIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
-            if (normalizedIdentifier === normalizedDeferredIdentifier) {
-                instanceDeferred.resolve(instance);
-            }
-        }
-        return instance;
-    }
-    /**
-     *
-     * @param callback - a function that will be invoked  after the provider has been initialized by calling provider.initialize().
-     * The function is invoked SYNCHRONOUSLY, so it should not execute any longrunning tasks in order to not block the program.
-     *
-     * @param identifier An optional instance identifier
-     * @returns a function to unregister the callback
-     */
-    onInit(callback, identifier) {
-        var _a;
-        const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
-        const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== void 0 ? _a : new Set();
-        existingCallbacks.add(callback);
-        this.onInitCallbacks.set(normalizedIdentifier, existingCallbacks);
-        const existingInstance = this.instances.get(normalizedIdentifier);
-        if (existingInstance) {
-            callback(existingInstance, normalizedIdentifier);
-        }
-        return () => {
-            existingCallbacks.delete(callback);
-        };
-    }
-    /**
-     * Invoke onInit callbacks synchronously
-     * @param instance the service instance`
-     */
-    invokeOnInitCallbacks(instance, identifier) {
-        const callbacks = this.onInitCallbacks.get(identifier);
-        if (!callbacks) {
-            return;
-        }
-        for (const callback of callbacks) {
-            try {
-                callback(instance, identifier);
-            }
-            catch (_a) {
-                // ignore errors in the onInit callback
-            }
-        }
-    }
-    getOrInitializeService({ instanceIdentifier, options = {} }) {
-        let instance = this.instances.get(instanceIdentifier);
-        if (!instance && this.component) {
-            instance = this.component.instanceFactory(this.container, {
-                instanceIdentifier: normalizeIdentifierForFactory(instanceIdentifier),
-                options
-            });
-            this.instances.set(instanceIdentifier, instance);
-            this.instancesOptions.set(instanceIdentifier, options);
-            /**
-             * Invoke onInit listeners.
-             * Note this.component.onInstanceCreated is different, which is used by the component creator,
-             * while onInit listeners are registered by consumers of the provider.
-             */
-            this.invokeOnInitCallbacks(instance, instanceIdentifier);
-            /**
-             * Order is important
-             * onInstanceCreated() should be called after this.instances.set(instanceIdentifier, instance); which
-             * makes `isInitialized()` return true.
-             */
-            if (this.component.onInstanceCreated) {
-                try {
-                    this.component.onInstanceCreated(this.container, instanceIdentifier, instance);
-                }
-                catch (_a) {
-                    // ignore errors in the onInstanceCreatedCallback
-                }
-            }
-        }
-        return instance || null;
-    }
-    normalizeInstanceIdentifier(identifier = DEFAULT_ENTRY_NAME) {
-        if (this.component) {
-            return this.component.multipleInstances ? identifier : DEFAULT_ENTRY_NAME;
-        }
-        else {
-            return identifier; // assume multiple instances are supported before the component is provided.
-        }
-    }
-    shouldAutoInitialize() {
-        return (!!this.component &&
-            this.component.instantiationMode !== "EXPLICIT" /* InstantiationMode.EXPLICIT */);
-    }
-}
-// undefined should be passed to the service factory for the default instance
-function normalizeIdentifierForFactory(identifier) {
-    return identifier === DEFAULT_ENTRY_NAME ? undefined : identifier;
-}
-function isComponentEager(component) {
-    return component.instantiationMode === "EAGER" /* InstantiationMode.EAGER */;
-}
-
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * ComponentContainer that provides Providers for service name T, e.g. `auth`, `auth-internal`
- */
-class ComponentContainer {
-    constructor(name) {
-        this.name = name;
-        this.providers = new Map();
-    }
-    /**
-     *
-     * @param component Component being added
-     * @param overwrite When a component with the same name has already been registered,
-     * if overwrite is true: overwrite the existing component with the new component and create a new
-     * provider with the new component. It can be useful in tests where you want to use different mocks
-     * for different tests.
-     * if overwrite is false: throw an exception
-     */
-    addComponent(component) {
-        const provider = this.getProvider(component.name);
-        if (provider.isComponentSet()) {
-            throw new Error(`Component ${component.name} has already been registered with ${this.name}`);
-        }
-        provider.setComponent(component);
-    }
-    addOrOverwriteComponent(component) {
-        const provider = this.getProvider(component.name);
-        if (provider.isComponentSet()) {
-            // delete the existing provider from the container, so we can register the new component
-            this.providers.delete(component.name);
-        }
-        this.addComponent(component);
-    }
-    /**
-     * getProvider provides a type safe interface where it can only be called with a field name
-     * present in NameServiceMapping interface.
-     *
-     * Firebase SDKs providing services should extend NameServiceMapping interface to register
-     * themselves.
-     */
-    getProvider(name) {
-        if (this.providers.has(name)) {
-            return this.providers.get(name);
-        }
-        // create a Provider for a service that hasn't registered with Firebase
-        const provider = new Provider(name, this);
-        this.providers.set(name, provider);
-        return provider;
-    }
-    getProviders() {
-        return Array.from(this.providers.values());
-    }
-}
-
-
-//# sourceMappingURL=index.esm2017.js.map
-
-
-/***/ }),
-
-/***/ 5781:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   s3: () => (/* binding */ getAllCredentials)
-/* harmony export */ });
-/* unused harmony exports getCredential, createCredential, updateCredential, deleteCredential */
-/* harmony import */ var firebase_firestore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2405);
-/* harmony import */ var _firebase__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9487);
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __rest = (undefined && undefined.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
-
-
-/**
- * Get a single credential by userId and credentialId
- */
-function getCredential(userId, credentialId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const credRef = doc(db, "users", userId, "my_credentials", credentialId);
-        const credSnap = yield getDoc(credRef);
-        if (!credSnap.exists())
-            return null;
-        const data = credSnap.data();
-        // Explicitly map fields and add document_reference
-        return {
-            content_encrypted: data.content_encrypted,
-            item_key_encrypted: data.item_key_encrypted,
-            created_at: data.created_at,
-            last_used_at: data.last_used_at,
-            document_reference: credRef,
-        };
-    });
-}
-/**
- * Get all credentials for a user
- */
-function getAllCredentials(userId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const credsCol = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__/* .collection */ .rJ)(_firebase__WEBPACK_IMPORTED_MODULE_1__.db, "users", userId, "my_credentials");
-        const credsSnap = yield (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__/* .getDocs */ .GG)(credsCol);
-        return credsSnap.docs.map(docSnap => {
-            const data = docSnap.data();
-            return {
-                id: docSnap.id,
-                content_encrypted: data.content_encrypted,
-                item_key_encrypted: data.item_key_encrypted,
-                created_at: data.created_at,
-                last_used_at: data.last_used_at,
-                document_reference: docSnap.ref,
-            };
-        });
-    });
-}
-/**
- * Create a new credential for a user
- */
-function createCredential(userId, data) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const credsCol = collection(db, "users", userId, "my_credentials");
-        // Remove document_reference before storing
-        const { document_reference } = data, dataToStore = __rest(data, ["document_reference"]);
-        const docRef = yield addDoc(credsCol, dataToStore);
-        return docRef;
-    });
-}
-/**
- * Update an existing credential
- */
-function updateCredential(userId, credentialId, data) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const credRef = doc(db, "users", userId, "my_credentials", credentialId);
-        // Remove document_reference before updating
-        const { document_reference } = data, dataToUpdate = __rest(data, ["document_reference"]);
-        yield updateDoc(credRef, dataToUpdate);
-    });
-}
-/**
- * Delete a credential
- */
-function deleteCredential(userId, credentialId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const credRef = doc(db, "users", userId, "my_credentials", credentialId);
-        yield deleteDoc(credRef);
-    });
-}
-
-
-/***/ }),
-
-/***/ 5790:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   GG: () => (/* binding */ getDocs),
-/* harmony export */   aU: () => (/* binding */ getFirestore),
-/* harmony export */   rJ: () => (/* binding */ collection)
-/* harmony export */ });
-/* unused harmony exports AbstractUserDataWriter, AggregateField, AggregateQuerySnapshot, Bytes, CACHE_SIZE_UNLIMITED, CollectionReference, DocumentReference, DocumentSnapshot, FieldPath, FieldValue, Firestore, FirestoreError, GeoPoint, LoadBundleTask, PersistentCacheIndexManager, Query, QueryCompositeFilterConstraint, QueryConstraint, QueryDocumentSnapshot, QueryEndAtConstraint, QueryFieldFilterConstraint, QueryLimitConstraint, QueryOrderByConstraint, QuerySnapshot, QueryStartAtConstraint, SnapshotMetadata, Timestamp, Transaction, VectorValue, WriteBatch, _AutoId, _ByteString, _DatabaseId, _DocumentKey, _EmptyAppCheckTokenProvider, _EmptyAuthCredentialsProvider, _FieldPath, _TestingHooks, _cast, _debugAssert, _internalAggregationQueryToProtoRunAggregationQueryRequest, _internalQueryToProtoQueryTarget, _isBase64Available, _logWarn, _validateIsNotUsedTogether, addDoc, aggregateFieldEqual, aggregateQuerySnapshotEqual, and, arrayRemove, arrayUnion, average, clearIndexedDbPersistence, collectionGroup, connectFirestoreEmulator, count, deleteAllPersistentCacheIndexes, deleteDoc, deleteField, disableNetwork, disablePersistentCacheIndexAutoCreation, doc, documentId, enableIndexedDbPersistence, enableMultiTabIndexedDbPersistence, enableNetwork, enablePersistentCacheIndexAutoCreation, endAt, endBefore, ensureFirestoreConfigured, executeWrite, getAggregateFromServer, getCountFromServer, getDoc, getDocFromCache, getDocFromServer, getDocsFromCache, getDocsFromServer, getPersistentCacheIndexManager, increment, initializeFirestore, limit, limitToLast, loadBundle, memoryEagerGarbageCollector, memoryLocalCache, memoryLruGarbageCollector, namedQuery, onSnapshot, onSnapshotsInSync, or, orderBy, persistentLocalCache, persistentMultipleTabManager, persistentSingleTabManager, query, queryEqual, refEqual, runTransaction, serverTimestamp, setDoc, setIndexConfiguration, setLogLevel, snapshotEqual, startAfter, startAt, sum, terminate, updateDoc, vector, waitForPendingWrites, where, writeBatch */
-/* harmony import */ var _firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8461);
-/* harmony import */ var _firebase_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5125);
-/* harmony import */ var _firebase_logger__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3424);
-/* harmony import */ var _firebase_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6743);
-/* harmony import */ var _firebase_webchannel_wrapper_bloom_blob__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(2429);
-/* harmony import */ var _firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(1853);
+;// ./node_modules/@firebase/firestore/dist/index.esm2017.js
 
 
 
@@ -13526,7 +15624,7 @@ let S = "10.14.0";
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const b = new _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .Logger */ .Vy("@firebase/firestore");
+const b = new Logger("@firebase/firestore");
 
 // Helper methods are needed because variables can't be exported as read/write
 function __PRIVATE_getLogLevel() {
@@ -13545,19 +15643,19 @@ function __PRIVATE_getLogLevel() {
  *     <li>`error` to log errors only.</li>
  *     <li><code>`silent` to turn off logging.</li>
  *   </ul>
- */ function setLogLevel(e) {
+ */ function dist_index_esm2017_setLogLevel(e) {
     b.setLogLevel(e);
 }
 
 function __PRIVATE_logDebug(e, ...t) {
-    if (b.logLevel <= _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .LogLevel */ .$b.DEBUG) {
+    if (b.logLevel <= LogLevel.DEBUG) {
         const n = t.map(__PRIVATE_argToString);
         b.debug(`Firestore (${S}): ${e}`, ...n);
     }
 }
 
 function __PRIVATE_logError(e, ...t) {
-    if (b.logLevel <= _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .LogLevel */ .$b.ERROR) {
+    if (b.logLevel <= LogLevel.ERROR) {
         const n = t.map(__PRIVATE_argToString);
         b.error(`Firestore (${S}): ${e}`, ...n);
     }
@@ -13566,7 +15664,7 @@ function __PRIVATE_logError(e, ...t) {
 /**
  * @internal
  */ function __PRIVATE_logWarn(e, ...t) {
-    if (b.logLevel <= _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .LogLevel */ .$b.WARN) {
+    if (b.logLevel <= LogLevel.WARN) {
         const n = t.map(__PRIVATE_argToString);
         b.warn(`Firestore (${S}): ${e}`, ...n);
     }
@@ -13795,7 +15893,7 @@ t) {
     DATA_LOSS: "data-loss"
 };
 
-/** An error returned by a Firestore operation. */ class FirestoreError extends _firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .FirebaseError */ .g {
+/** An error returned by a Firestore operation. */ class FirestoreError extends FirebaseError {
     /** @hideconstructor */
     constructor(
     /**
@@ -14208,7 +16306,7 @@ function __PRIVATE_primitiveComparator(e, t) {
  * For examples and further specifications, refer to the
  * {@link https://github.com/google/protobuf/blob/master/src/google/protobuf/timestamp.proto | Timestamp definition}.
  */
-class Timestamp {
+class index_esm2017_Timestamp {
     /**
      * Creates a new timestamp.
      *
@@ -14240,7 +16338,7 @@ class Timestamp {
      *
      * @returns a new timestamp representing the current date.
      */    static now() {
-        return Timestamp.fromMillis(Date.now());
+        return index_esm2017_Timestamp.fromMillis(Date.now());
     }
     /**
      * Creates a new timestamp from the given date.
@@ -14249,7 +16347,7 @@ class Timestamp {
      * @returns A new `Timestamp` representing the same point in time as the given
      *     date.
      */    static fromDate(e) {
-        return Timestamp.fromMillis(e.getTime());
+        return index_esm2017_Timestamp.fromMillis(e.getTime());
     }
     /**
      * Creates a new timestamp from the given number of milliseconds.
@@ -14260,7 +16358,7 @@ class Timestamp {
      *     number of milliseconds.
      */    static fromMillis(e) {
         const t = Math.floor(e / 1e3), n = Math.floor(1e6 * (e - 1e3 * t));
-        return new Timestamp(t, n);
+        return new index_esm2017_Timestamp(t, n);
     }
     /**
      * Converts a `Timestamp` to a JavaScript `Date` object. This conversion
@@ -14346,10 +16444,10 @@ class Timestamp {
         return new SnapshotVersion(e);
     }
     static min() {
-        return new SnapshotVersion(new Timestamp(0, 0));
+        return new SnapshotVersion(new index_esm2017_Timestamp(0, 0));
     }
     static max() {
-        return new SnapshotVersion(new Timestamp(253402300799, 999999999));
+        return new SnapshotVersion(new index_esm2017_Timestamp(253402300799, 999999999));
     }
     compareTo(e) {
         return this.timestamp._compareTo(e.timestamp);
@@ -14752,7 +16850,7 @@ function __PRIVATE_indexSegmentComparator(e, t) {
     // Unicode codepoints to generate MAX_DOCUMENT_KEY, it is much easier to use
     // `(readTime + 1, DocumentKey.empty())` since `> DocumentKey.empty()` matches
     // all valid document IDs.
-    const n = e.toTimestamp().seconds, r = e.toTimestamp().nanoseconds + 1, i = SnapshotVersion.fromTimestamp(1e9 === r ? new Timestamp(n + 1, 0) : new Timestamp(n, r));
+    const n = e.toTimestamp().seconds, r = e.toTimestamp().nanoseconds + 1, i = SnapshotVersion.fromTimestamp(1e9 === r ? new index_esm2017_Timestamp(n + 1, 0) : new index_esm2017_Timestamp(n, r));
     return new IndexOffset(i, DocumentKey.empty(), t);
 }
 
@@ -15102,13 +17200,13 @@ class __PRIVATE_SimpleDbTransaction {
         // bug we're checking for should exist in iOS >= 12.2 and < 13, but for
         // whatever reason it's much harder to hit after 12.2 so we only proactively
         // log on 12.2.
-        12.2 === __PRIVATE_SimpleDb.S((0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getUA */ .ZQ)()) && __PRIVATE_logError("Firestore persistence suffers from a bug in iOS 12.2 Safari that may cause your app to stop working. See https://stackoverflow.com/q/56496296/110915 for details and a potential workaround.");
+        12.2 === __PRIVATE_SimpleDb.S(index_esm2017_getUA()) && __PRIVATE_logError("Firestore persistence suffers from a bug in iOS 12.2 Safari that may cause your app to stop working. See https://stackoverflow.com/q/56496296/110915 for details and a potential workaround.");
     }
     /** Deletes the specified database. */    static delete(e) {
         return __PRIVATE_logDebug("SimpleDb", "Removing database:", e), __PRIVATE_wrapRequest(window.indexedDB.deleteDatabase(e)).toPromise();
     }
     /** Returns true if IndexedDB is available in the current environment. */    static D() {
-        if (!(0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .isIndexedDBAvailable */ .zW)()) return !1;
+        if (!isIndexedDBAvailable()) return !1;
         if (__PRIVATE_SimpleDb.v()) return !0;
         // We extensively use indexed array values and compound keys,
         // which IE and Edge do not support. However, they still have indexedDB
@@ -15117,7 +17215,7 @@ class __PRIVATE_SimpleDbTransaction {
         // For tracking support of this feature, see here:
         // https://developer.microsoft.com/en-us/microsoft-edge/platform/status/indexeddbarraysandmultientrysupport/
         // Check the UA string to find out the browser.
-                const e = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getUA */ .ZQ)(), t = __PRIVATE_SimpleDb.S(e), n = 0 < t && t < 10, r = __PRIVATE_getAndroidVersion(e), i = 0 < r && r < 4.5;
+                const e = index_esm2017_getUA(), t = __PRIVATE_SimpleDb.S(e), n = 0 < t && t < 10, r = __PRIVATE_getAndroidVersion(e), i = 0 < r && r < 4.5;
         // IE 10
         // ua = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)';
         // IE 11
@@ -15441,7 +17539,7 @@ class __PRIVATE_SimpleDbTransaction {
 let F = !1;
 
 function __PRIVATE_checkForAndReportiOSError(e) {
-    const t = __PRIVATE_SimpleDb.S((0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getUA */ .ZQ)());
+    const t = __PRIVATE_SimpleDb.S(index_esm2017_getUA());
     if (t >= 12.2 && t < 13) {
         const t = "An internal error was encountered in the Indexed Database server";
         if (e.message.indexOf(t) >= 0) {
@@ -15582,7 +17680,7 @@ function __PRIVATE_isNullOrUndefined(e) {
 /**
  * Returns whether a value is an integer and in the safe integer range
  * @param value - The value to test for being an integer and in the safe range
- */ function isSafeInteger(e) {
+ */ function index_esm2017_isSafeInteger(e) {
     return "number" == typeof e && Number.isInteger(e) && !__PRIVATE_isNegativeZero(e) && e <= Number.MAX_SAFE_INTEGER && e >= Number.MIN_SAFE_INTEGER;
 }
 
@@ -15804,7 +17902,7 @@ function __PRIVATE_mapToArray(e, t) {
     return n;
 }
 
-function isEmpty(e) {
+function index_esm2017_isEmpty(e) {
     for (const t in e) if (Object.prototype.hasOwnProperty.call(e, t)) return !1;
     return !0;
 }
@@ -16608,7 +18706,7 @@ function __PRIVATE_getPreviousValue(e) {
  * Returns the local time at which this timestamp was first set.
  */ function __PRIVATE_getLocalWriteTime(e) {
     const t = __PRIVATE_normalizeTimestamp(e.mapValue.fields.__local_write_time__.timestampValue);
-    return new Timestamp(t.seconds, t.nanos);
+    return new index_esm2017_Timestamp(t.seconds, t.nanos);
 }
 
 /**
@@ -18224,7 +20322,7 @@ function __PRIVATE_compareDocs(e, t, n) {
         }));
     }
     isEmpty() {
-        return isEmpty(this.inner);
+        return index_esm2017_isEmpty(this.inner);
     }
     size() {
         return this.innerSize;
@@ -18342,7 +20440,7 @@ function __PRIVATE_targetIdSet() {
  * The return value is an IntegerValue if it can safely represent the value,
  * otherwise a DoubleValue is returned.
  */ function toNumber(e, t) {
-    return isSafeInteger(t) ? __PRIVATE_toInteger(t) : __PRIVATE_toDouble(e, t);
+    return index_esm2017_isSafeInteger(t) ? __PRIVATE_toInteger(t) : __PRIVATE_toDouble(e, t);
 }
 
 /**
@@ -19303,11 +21401,11 @@ function __PRIVATE_newTextEncoder() {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const Ie = new _firebase_webchannel_wrapper_bloom_blob__WEBPACK_IMPORTED_MODULE_4__/* .Integer */ .jz([ 4294967295, 4294967295 ], 0);
+const Ie = new Integer([ 4294967295, 4294967295 ], 0);
 
 // Hash a string using md5 hashing algorithm.
 function __PRIVATE_getMd5HashValue(e) {
-    const t = __PRIVATE_newTextEncoder().encode(e), n = new _firebase_webchannel_wrapper_bloom_blob__WEBPACK_IMPORTED_MODULE_4__/* .Md5 */ .VV;
+    const t = __PRIVATE_newTextEncoder().encode(e), n = new Md5;
     return n.update(t), new Uint8Array(n.digest());
 }
 
@@ -19315,7 +21413,7 @@ function __PRIVATE_getMd5HashValue(e) {
 // 2’s complement using little endian.
 function __PRIVATE_get64BitUints(e) {
     const t = new DataView(e.buffer), n = t.getUint32(0, /* littleEndian= */ !0), r = t.getUint32(4, /* littleEndian= */ !0), i = t.getUint32(8, /* littleEndian= */ !0), s = t.getUint32(12, /* littleEndian= */ !0);
-    return [ new _firebase_webchannel_wrapper_bloom_blob__WEBPACK_IMPORTED_MODULE_4__/* .Integer */ .jz([ n, r ], 0), new _firebase_webchannel_wrapper_bloom_blob__WEBPACK_IMPORTED_MODULE_4__/* .Integer */ .jz([ i, s ], 0) ];
+    return [ new Integer([ n, r ], 0), new Integer([ i, s ], 0) ];
 }
 
 class BloomFilter {
@@ -19330,15 +21428,15 @@ class BloomFilter {
         throw new __PRIVATE_BloomFilterError(`Invalid padding when bitmap length is 0: ${t}`);
         this.Ie = 8 * e.length - t, 
         // Set the bit count in Integer to avoid repetition in mightContain().
-        this.Te = _firebase_webchannel_wrapper_bloom_blob__WEBPACK_IMPORTED_MODULE_4__/* .Integer */ .jz.fromNumber(this.Ie);
+        this.Te = Integer.fromNumber(this.Ie);
     }
     // Calculate the ith hash value based on the hashed 64bit integers,
     // and calculate its corresponding bit index in the bitmap to be checked.
     Ee(e, t, n) {
         // Calculate hashed value h(i) = h1 + (i * h2).
-        let r = e.add(t.multiply(_firebase_webchannel_wrapper_bloom_blob__WEBPACK_IMPORTED_MODULE_4__/* .Integer */ .jz.fromNumber(n)));
+        let r = e.add(t.multiply(Integer.fromNumber(n)));
         // Wrap if hash value overflow 64bit.
-                return 1 === r.compare(Ie) && (r = new _firebase_webchannel_wrapper_bloom_blob__WEBPACK_IMPORTED_MODULE_4__/* .Integer */ .jz([ r.getBits(0), r.getBits(1) ], 0)), 
+                return 1 === r.compare(Ie) && (r = new Integer([ r.getBits(0), r.getBits(1) ], 0)), 
         r.modulo(this.Te).toNumber();
     }
     // Return whether the bit on the given index in the bitmap is set to 1.
@@ -20068,7 +22166,7 @@ function __PRIVATE_toBytes(e, t) {
 function __PRIVATE_fromVersion(e) {
     return __PRIVATE_hardAssert(!!e), SnapshotVersion.fromTimestamp(function fromTimestamp(e) {
         const t = __PRIVATE_normalizeTimestamp(e);
-        return new Timestamp(t.seconds, t.nanos);
+        return new index_esm2017_Timestamp(t.seconds, t.nanos);
     }(e));
 }
 
@@ -20757,7 +22855,7 @@ function __PRIVATE_isValidResourceName(e) {
         }
     }
     return t.readTime && n.setReadTime(function __PRIVATE_fromDbTimestampKey(e) {
-        const t = new Timestamp(e[0], e[1]);
+        const t = new index_esm2017_Timestamp(e[0], e[1]);
         return SnapshotVersion.fromTimestamp(t);
     }(t.readTime)), n;
 }
@@ -20804,7 +22902,7 @@ function __PRIVATE_toDbTimestamp(e) {
 }
 
 function __PRIVATE_fromDbTimestamp(e) {
-    const t = new Timestamp(e.seconds, e.nanoseconds);
+    const t = new index_esm2017_Timestamp(e.seconds, e.nanoseconds);
     return SnapshotVersion.fromTimestamp(t);
 }
 
@@ -20825,7 +22923,7 @@ function __PRIVATE_fromDbMutationBatch(e, t) {
             ++e;
         }
     }
-    const r = t.mutations.map((t => __PRIVATE_fromMutation(e.ct, t))), i = Timestamp.fromMillis(t.localWriteTimeMs);
+    const r = t.mutations.map((t => __PRIVATE_fromMutation(e.ct, t))), i = index_esm2017_Timestamp.fromMillis(t.localWriteTimeMs);
     return new MutationBatch(t.batchId, i, n, r);
 }
 
@@ -22957,7 +25055,7 @@ class __PRIVATE_TargetIdGenerator {
         }));
     }
     getLastRemoteSnapshotVersion(e) {
-        return this.qn(e).next((e => SnapshotVersion.fromTimestamp(new Timestamp(e.lastRemoteSnapshotVersion.seconds, e.lastRemoteSnapshotVersion.nanoseconds))));
+        return this.qn(e).next((e => SnapshotVersion.fromTimestamp(new index_esm2017_Timestamp(e.lastRemoteSnapshotVersion.seconds, e.lastRemoteSnapshotVersion.nanoseconds))));
     }
     getHighestSequenceNumber(e) {
         return this.qn(e).next((e => e.highestListenSequenceNumber));
@@ -23239,7 +25337,7 @@ class __PRIVATE_TargetIdGenerator {
         r = this.params.maximumSequenceNumbersToCollect) : r = t, s = Date.now(), this.nthSequenceNumber(e, r)))).next((r => (n = r, 
         o = Date.now(), this.removeTargets(e, n, t)))).next((t => (i = t, a = Date.now(), 
         this.removeOrphanedDocuments(e, n)))).next((e => {
-            if (u = Date.now(), __PRIVATE_getLogLevel() <= _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .LogLevel */ .$b.DEBUG) {
+            if (u = Date.now(), __PRIVATE_getLogLevel() <= LogLevel.DEBUG) {
                 __PRIVATE_logDebug("LruGarbageCollector", `LRU Garbage Collection\n\tCounted targets in ${s - c}ms\n\tDetermined least recently used ${r} in ` + (o - s) + "ms\n" + `\tRemoved ${i} targets in ` + (a - o) + "ms\n" + `\tRemoved ${e} documents in ` + (u - a) + "ms\n" + `Total Duration: ${u - c}ms`);
             }
             return PersistencePromise.resolve({
@@ -23888,7 +25986,7 @@ class OverlayedDocument {
      * state for it.
      */    getDocument(e, t) {
         let n = null;
-        return this.documentOverlayCache.getOverlay(e, t).next((r => (n = r, this.remoteDocumentCache.getEntry(e, t)))).next((e => (null !== n && __PRIVATE_mutationApplyToLocalView(n.mutation, e, FieldMask.empty(), Timestamp.now()), 
+        return this.documentOverlayCache.getOverlay(e, t).next((r => (n = r, this.remoteDocumentCache.getEntry(e, t)))).next((e => (null !== n && __PRIVATE_mutationApplyToLocalView(n.mutation, e, FieldMask.empty(), index_esm2017_Timestamp.now()), 
         e)));
     }
     /**
@@ -23964,7 +26062,7 @@ class OverlayedDocument {
             // might be a patch mutation whose precondition does not match before the
             // change (hence overlay is undefined), but would now match.
                         r.has(t.key) && (void 0 === o || o.mutation instanceof __PRIVATE_PatchMutation) ? i = i.insert(t.key, t) : void 0 !== o ? (s.set(t.key, o.mutation.getFieldMask()), 
-            __PRIVATE_mutationApplyToLocalView(o.mutation, t, o.mutation.getFieldMask(), Timestamp.now())) : 
+            __PRIVATE_mutationApplyToLocalView(o.mutation, t, o.mutation.getFieldMask(), index_esm2017_Timestamp.now())) : 
             // no overlay exists
             // Using EMPTY to indicate there is no overlay for the document.
             s.set(t.key, FieldMask.empty());
@@ -24094,7 +26192,7 @@ class OverlayedDocument {
             let n = documentMap();
             return e.forEach(((e, r) => {
                 const s = i.get(e);
-                void 0 !== s && __PRIVATE_mutationApplyToLocalView(s.mutation, r, FieldMask.empty(), Timestamp.now()), 
+                void 0 !== s && __PRIVATE_mutationApplyToLocalView(s.mutation, r, FieldMask.empty(), index_esm2017_Timestamp.now()), 
                 // Finally, insert the documents that still match the query
                 __PRIVATE_queryMatches(t, r) && (n = n.insert(e, r));
             })), n;
@@ -25669,7 +27767,7 @@ class __PRIVATE_IndexedDbPersistence {
             // to make sure it gets a chance to run.
             this.Li();
             const e = /(?:Version|Mobile)\/1[456]/;
-            (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .isSafari */ .nr)() && (navigator.appVersion.match(e) || navigator.userAgent.match(e)) && 
+            isSafari() && (navigator.appVersion.match(e) || navigator.userAgent.match(e)) && 
             // On Safari 14, 15, and 16, we do not run any cleanup actions as it might
             // trigger a bug that prevents Safari from re-opening IndexedDB during
             // the next page load.
@@ -25890,7 +27988,7 @@ class __PRIVATE_QueryEngine {
             // These values were derived from an experiment where several members of the
             // Firestore SDK team ran a performance test in various environments.
             // Googlers can see b/299284287 for details.
-            return (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .isSafari */ .nr)() ? 8 : __PRIVATE_getAndroidVersion((0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getUA */ .ZQ)()) > 0 ? 6 : 4;
+            return isSafari() ? 8 : __PRIVATE_getAndroidVersion(index_esm2017_getUA()) > 0 ? 6 : 4;
         }();
     }
     /** Sets the document view to query against. */    initialize(e, t) {
@@ -25918,9 +28016,9 @@ class __PRIVATE_QueryEngine {
         })).next((() => i.result));
     }
     es(e, t, n, r) {
-        return n.documentReadCount < this.ji ? (__PRIVATE_getLogLevel() <= _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .LogLevel */ .$b.DEBUG && __PRIVATE_logDebug("QueryEngine", "SDK will not create cache indexes for query:", __PRIVATE_stringifyQuery(t), "since it only creates cache indexes for collection contains", "more than or equal to", this.ji, "documents"), 
-        PersistencePromise.resolve()) : (__PRIVATE_getLogLevel() <= _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .LogLevel */ .$b.DEBUG && __PRIVATE_logDebug("QueryEngine", "Query:", __PRIVATE_stringifyQuery(t), "scans", n.documentReadCount, "local documents and returns", r, "documents as results."), 
-        n.documentReadCount > this.Hi * r ? (__PRIVATE_getLogLevel() <= _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .LogLevel */ .$b.DEBUG && __PRIVATE_logDebug("QueryEngine", "The SDK decides to create cache indexes for query:", __PRIVATE_stringifyQuery(t), "as using cache indexes may help improve performance."), 
+        return n.documentReadCount < this.ji ? (__PRIVATE_getLogLevel() <= LogLevel.DEBUG && __PRIVATE_logDebug("QueryEngine", "SDK will not create cache indexes for query:", __PRIVATE_stringifyQuery(t), "since it only creates cache indexes for collection contains", "more than or equal to", this.ji, "documents"), 
+        PersistencePromise.resolve()) : (__PRIVATE_getLogLevel() <= LogLevel.DEBUG && __PRIVATE_logDebug("QueryEngine", "Query:", __PRIVATE_stringifyQuery(t), "scans", n.documentReadCount, "local documents and returns", r, "documents as results."), 
+        n.documentReadCount > this.Hi * r ? (__PRIVATE_getLogLevel() <= LogLevel.DEBUG && __PRIVATE_logDebug("QueryEngine", "The SDK decides to create cache indexes for query:", __PRIVATE_stringifyQuery(t), "as using cache indexes may help improve performance."), 
         this.indexManager.createTargetIndexes(e, __PRIVATE_queryToTarget(t))) : PersistencePromise.resolve());
     }
     /**
@@ -25956,7 +28054,7 @@ class __PRIVATE_QueryEngine {
      */    Zi(e, t, n, r) {
         return __PRIVATE_queryMatchesAllDocuments(t) || r.isEqual(SnapshotVersion.min()) ? PersistencePromise.resolve(null) : this.Ji.getDocuments(e, n).next((i => {
             const s = this.ts(t, i);
-            return this.ns(t, s, n, r) ? PersistencePromise.resolve(null) : (__PRIVATE_getLogLevel() <= _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .LogLevel */ .$b.DEBUG && __PRIVATE_logDebug("QueryEngine", "Re-using previous result from %s to execute query: %s", r.toString(), __PRIVATE_stringifyQuery(t)), 
+            return this.ns(t, s, n, r) ? PersistencePromise.resolve(null) : (__PRIVATE_getLogLevel() <= LogLevel.DEBUG && __PRIVATE_logDebug("QueryEngine", "Re-using previous result from %s to execute query: %s", r.toString(), __PRIVATE_stringifyQuery(t)), 
             this.rs(e, s, t, __PRIVATE_newIndexOffsetSuccessorFromReadTime(r, -1)).next((e => e)));
         }));
         // Queries that have never seen a snapshot without limbo free documents
@@ -26001,7 +28099,7 @@ class __PRIVATE_QueryEngine {
         return !!i && (i.hasPendingWrites || i.version.compareTo(r) > 0);
     }
     Xi(e, t, n) {
-        return __PRIVATE_getLogLevel() <= _firebase_logger__WEBPACK_IMPORTED_MODULE_2__/* .LogLevel */ .$b.DEBUG && __PRIVATE_logDebug("QueryEngine", "Using full collection scan to execute query:", __PRIVATE_stringifyQuery(t)), 
+        return __PRIVATE_getLogLevel() <= LogLevel.DEBUG && __PRIVATE_logDebug("QueryEngine", "Using full collection scan to execute query:", __PRIVATE_stringifyQuery(t)), 
         this.Ji.getDocumentsMatchingQuery(e, t, IndexOffset.min(), n);
     }
     /**
@@ -26591,7 +28689,7 @@ class __PRIVATE_QueryTargetMetadata {
      */    static Rs(e, t) {
         const n = JSON.parse(t);
         let r = "object" == typeof n && n.activeTargetIds instanceof Array, i = __PRIVATE_targetIdSet();
-        for (let e = 0; r && e < n.activeTargetIds.length; ++e) r = isSafeInteger(n.activeTargetIds[e]), 
+        for (let e = 0; r && e < n.activeTargetIds.length; ++e) r = index_esm2017_isSafeInteger(n.activeTargetIds[e]), 
         i = i.add(n.activeTargetIds[e]);
         return r ? new __PRIVATE_RemoteClientState(e, i) : (__PRIVATE_logError("SharedClientState", `Failed to parse client data for instance '${e}': ${t}`), 
         null);
@@ -27316,21 +29414,21 @@ class __PRIVATE_RestConnection {
     No(e, t, n, r) {
         const i = __PRIVATE_generateUniqueDebugId();
         return new Promise(((s, o) => {
-            const _ = new _firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .XhrIo */ .ZS;
-            _.setWithCredentials(!0), _.listenOnce(_firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .EventType */ .Bx.COMPLETE, (() => {
+            const _ = new XhrIo;
+            _.setWithCredentials(!0), _.listenOnce(EventType.COMPLETE, (() => {
                 try {
                     switch (_.getLastErrorCode()) {
-                      case _firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .ErrorCode */ .O4.NO_ERROR:
+                      case ErrorCode.NO_ERROR:
                         const t = _.getResponseJson();
                         __PRIVATE_logDebug(ge, `XHR for RPC '${e}' ${i} received:`, JSON.stringify(t)), 
                         s(t);
                         break;
 
-                      case _firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .ErrorCode */ .O4.TIMEOUT:
+                      case ErrorCode.TIMEOUT:
                         __PRIVATE_logDebug(ge, `RPC '${e}' ${i} timed out`), o(new FirestoreError(D.DEADLINE_EXCEEDED, "Request time out"));
                         break;
 
-                      case _firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .ErrorCode */ .O4.HTTP_ERROR:
+                      case ErrorCode.HTTP_ERROR:
                         const n = _.getStatus();
                         if (__PRIVATE_logDebug(ge, `RPC '${e}' ${i} failed with status:`, n, "response text:", _.getResponseText()), 
                         n > 0) {
@@ -27362,7 +29460,7 @@ class __PRIVATE_RestConnection {
         }));
     }
     Bo(e, t, n) {
-        const r = __PRIVATE_generateUniqueDebugId(), i = [ this.Do, "/", "google.firestore.v1.Firestore", "/", e, "/channel" ], s = (0,_firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .createWebChannelTransport */ .fF)(), o = (0,_firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .getStatEventTarget */ .Ao)(), _ = {
+        const r = __PRIVATE_generateUniqueDebugId(), i = [ this.Do, "/", "google.firestore.v1.Firestore", "/", e, "/channel" ], s = createWebChannelTransport(), o = getStatEventTarget(), _ = {
             // Required for backend stickiness, routing behavior is based on this
             // parameter.
             httpSessionIdParam: "gsessionid",
@@ -27434,15 +29532,15 @@ class __PRIVATE_RestConnection {
         // exception and rethrow using a setTimeout so they become visible again.
         // Note that eventually this function could go away if we are confident
         // enough the code is exception free.
-                return __PRIVATE_unguardedEventListen(c, _firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .WebChannel */ .iO.EventType.OPEN, (() => {
+                return __PRIVATE_unguardedEventListen(c, WebChannel.EventType.OPEN, (() => {
             h || (__PRIVATE_logDebug(ge, `RPC '${e}' stream ${r} transport opened.`), P.yo());
-        })), __PRIVATE_unguardedEventListen(c, _firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .WebChannel */ .iO.EventType.CLOSE, (() => {
+        })), __PRIVATE_unguardedEventListen(c, WebChannel.EventType.CLOSE, (() => {
             h || (h = !0, __PRIVATE_logDebug(ge, `RPC '${e}' stream ${r} transport closed`), 
             P.So());
-        })), __PRIVATE_unguardedEventListen(c, _firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .WebChannel */ .iO.EventType.ERROR, (t => {
+        })), __PRIVATE_unguardedEventListen(c, WebChannel.EventType.ERROR, (t => {
             h || (h = !0, __PRIVATE_logWarn(ge, `RPC '${e}' stream ${r} transport errored:`, t), 
             P.So(new FirestoreError(D.UNAVAILABLE, "The operation could not be completed")));
-        })), __PRIVATE_unguardedEventListen(c, _firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .WebChannel */ .iO.EventType.MESSAGE, (t => {
+        })), __PRIVATE_unguardedEventListen(c, WebChannel.EventType.MESSAGE, (t => {
             var n;
             if (!h) {
                 const i = t.data[0];
@@ -27475,8 +29573,8 @@ class __PRIVATE_RestConnection {
                     h = !0, P.So(new FirestoreError(n, i)), c.close();
                 } else __PRIVATE_logDebug(ge, `RPC '${e}' stream ${r} received:`, i), P.bo(i);
             }
-        })), __PRIVATE_unguardedEventListen(o, _firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .Event */ .Jh.STAT_EVENT, (t => {
-            t.stat === _firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .Stat */ .ro.PROXY ? __PRIVATE_logDebug(ge, `RPC '${e}' stream ${r} detected buffering proxy`) : t.stat === _firebase_webchannel_wrapper_webchannel_blob__WEBPACK_IMPORTED_MODULE_5__/* .Stat */ .ro.NOPROXY && __PRIVATE_logDebug(ge, `RPC '${e}' stream ${r} detected no buffering proxy`);
+        })), __PRIVATE_unguardedEventListen(o, Event.STAT_EVENT, (t => {
+            t.stat === Stat.PROXY ? __PRIVATE_logDebug(ge, `RPC '${e}' stream ${r} detected buffering proxy`) : t.stat === Stat.NOPROXY && __PRIVATE_logDebug(ge, `RPC '${e}' stream ${r} detected no buffering proxy`);
         })), setTimeout((() => {
             // Technically we could/should wait for the WebChannel opened event,
             // but because we want to send the first message with the WebChannel
@@ -29749,7 +31847,7 @@ async function __PRIVATE_allocateTargetAndMaybeListen(e, t, n, r) {
     const r = __PRIVATE_syncEngineEnsureWriteCallbacks(e);
     try {
         const e = await function __PRIVATE_localStoreWriteLocally(e, t) {
-            const n = __PRIVATE_debugCast(e), r = Timestamp.now(), i = t.reduce(((e, t) => e.add(t.key)), __PRIVATE_documentKeySet());
+            const n = __PRIVATE_debugCast(e), r = index_esm2017_Timestamp.now(), i = t.reduce(((e, t) => e.add(t.key)), __PRIVATE_documentKeySet());
             let s, o;
             return n.persistence.runTransaction("Locally write mutations", "readwrite", (e => {
                 // Figure out which keys do not have a remote version in the cache, this
@@ -31807,7 +33905,7 @@ class Firestore$1 {
         if ("string" == typeof r.mockUserToken) t = r.mockUserToken, n = User.MOCK_USER; else {
             // Let createMockUserToken validate first (catches common mistakes like
             // invalid field "uid" and missing field "sub" / "user_id".)
-            t = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .createMockUserToken */ .Fy)(r.mockUserToken, null === (i = e._app) || void 0 === i ? void 0 : i.options.projectId);
+            t = createMockUserToken(r.mockUserToken, null === (i = e._app) || void 0 === i ? void 0 : i.options.projectId);
             const s = r.mockUserToken.sub || r.mockUserToken.user_id;
             if (!s) throw new FirestoreError(D.INVALID_ARGUMENT, "mockUserToken must contain 'sub' or 'user_id' field!");
             n = new User(s);
@@ -31923,8 +34021,8 @@ class Firestore$1 {
     }
 }
 
-function collection(e, t, ...n) {
-    if (e = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getModularInstance */ .Ku)(e), __PRIVATE_validateNonEmptyArgument("collection", "path", t), e instanceof Firestore$1) {
+function index_esm2017_collection(e, t, ...n) {
+    if (e = index_esm2017_getModularInstance(e), __PRIVATE_validateNonEmptyArgument("collection", "path", t), e instanceof Firestore$1) {
         const r = ResourcePath.fromString(t, ...n);
         return __PRIVATE_validateCollectionPath(r), new CollectionReference(e, /* converter= */ null, r);
     }
@@ -31957,7 +34055,7 @@ function collection(e, t, ...n) {
     }(t));
 }
 
-function doc(e, t, ...n) {
+function index_esm2017_doc(e, t, ...n) {
     if (e = getModularInstance(e), 
     // We allow omission of 'pathString' but explicitly prohibit passing in both
     // 'undefined' and 'null'.
@@ -32380,11 +34478,11 @@ class LoadBundleTask {
 }
 
 function getFirestore(t, n) {
-    const r = "object" == typeof t ? t : (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .getApp */ .Sx)(), i = "string" == typeof t ? t : n || "(default)", s = (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._getProvider */ .j6)(r, "firestore").getImmediate({
+    const r = "object" == typeof t ? t : getApp(), i = "string" == typeof t ? t : n || "(default)", s = index_esm2017_getProvider(r, "firestore").getImmediate({
         identifier: i
     });
     if (!s._initialized) {
-        const e = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getDefaultEmulatorHostnameAndPort */ .yU)("firestore");
+        const e = getDefaultEmulatorHostnameAndPort("firestore");
         e && connectFirestoreEmulator(s, ...e);
     }
     return s;
@@ -33198,7 +35296,7 @@ class __PRIVATE_ArrayUnionFieldValueImpl extends FieldValue {
         return new FieldTransform(e.path, r);
     }
     isEqual(e) {
-        return e instanceof __PRIVATE_ArrayUnionFieldValueImpl && (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .deepEqual */ .bD)(this.Ku, e.Ku);
+        return e instanceof __PRIVATE_ArrayUnionFieldValueImpl && index_esm2017_deepEqual(this.Ku, e.Ku);
     }
 }
 
@@ -33212,7 +35310,7 @@ class __PRIVATE_ArrayRemoveFieldValueImpl extends FieldValue {
         return new FieldTransform(e.path, r);
     }
     isEqual(e) {
-        return e instanceof __PRIVATE_ArrayRemoveFieldValueImpl && (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .deepEqual */ .bD)(this.Ku, e.Ku);
+        return e instanceof __PRIVATE_ArrayRemoveFieldValueImpl && index_esm2017_deepEqual(this.Ku, e.Ku);
     }
 }
 
@@ -33237,7 +35335,7 @@ class __PRIVATE_NumericIncrementFieldValueImpl extends FieldValue {
         const _ = __PRIVATE_fieldPathFromDotSeparatedString(t, e, n);
         // For Compat types, we have to "extract" the underlying types before
         // performing validation.
-                r = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getModularInstance */ .Ku)(r);
+                r = index_esm2017_getModularInstance(r);
         const a = i.Nu(_);
         if (r instanceof __PRIVATE_DeleteFieldValueImpl) 
         // Add it to the field mask, but don't add anything to updateData.
@@ -33263,7 +35361,7 @@ class __PRIVATE_NumericIncrementFieldValueImpl extends FieldValue {
         let n = a[e];
         // For Compat types, we have to "extract" the underlying types before
         // performing validation.
-                n = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getModularInstance */ .Ku)(n);
+                n = index_esm2017_getModularInstance(n);
         const r = o.Nu(t);
         if (n instanceof __PRIVATE_DeleteFieldValueImpl) 
         // Add it to the field mask, but don't add anything to updateData.
@@ -33298,7 +35396,7 @@ class __PRIVATE_NumericIncrementFieldValueImpl extends FieldValue {
     if (__PRIVATE_looksLikeJsonObject(
     // Unwrap the API type from the Compat SDK. This will return the API type
     // from firestore-exp.
-    e = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getModularInstance */ .Ku)(e))) return __PRIVATE_validatePlainObject("Unsupported field value:", t, e), 
+    e = index_esm2017_getModularInstance(e))) return __PRIVATE_validatePlainObject("Unsupported field value:", t, e), 
     __PRIVATE_parseObject(e, t);
     if (e instanceof FieldValue) 
     // FieldValues usually parse into transforms (except deleteField())
@@ -33358,7 +35456,7 @@ class __PRIVATE_NumericIncrementFieldValueImpl extends FieldValue {
         }(e, t);
     }
     return function __PRIVATE_parseScalarValue(e, t) {
-        if (null === (e = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getModularInstance */ .Ku)(e))) return {
+        if (null === (e = index_esm2017_getModularInstance(e))) return {
             nullValue: "NULL_VALUE"
         };
         if ("number" == typeof e) return toNumber(t.serializer, e);
@@ -33369,16 +35467,16 @@ class __PRIVATE_NumericIncrementFieldValueImpl extends FieldValue {
             stringValue: e
         };
         if (e instanceof Date) {
-            const n = Timestamp.fromDate(e);
+            const n = index_esm2017_Timestamp.fromDate(e);
             return {
                 timestampValue: toTimestamp(t.serializer, n)
             };
         }
-        if (e instanceof Timestamp) {
+        if (e instanceof index_esm2017_Timestamp) {
             // Firestore backend truncates precision down to microseconds. To ensure
             // offline mode works the same with regards to truncation, perform the
             // truncation immediately without waiting for the backend to do that.
-            const n = new Timestamp(e.seconds, 1e3 * Math.floor(e.nanoseconds / 1e3));
+            const n = new index_esm2017_Timestamp(e.seconds, 1e3 * Math.floor(e.nanoseconds / 1e3));
             return {
                 timestampValue: toTimestamp(t.serializer, n)
             };
@@ -33435,7 +35533,7 @@ class __PRIVATE_NumericIncrementFieldValueImpl extends FieldValue {
 
 function __PRIVATE_parseObject(e, t) {
     const n = {};
-    return isEmpty(e) ? 
+    return index_esm2017_isEmpty(e) ? 
     // If we encounter an empty object, we explicitly add it to the update
     // mask to ensure that the server creates a map entry.
     t.path && t.path.length > 0 && t.fieldMask.push(t.path) : forEach(e, ((e, r) => {
@@ -33449,7 +35547,7 @@ function __PRIVATE_parseObject(e, t) {
 }
 
 function __PRIVATE_looksLikeJsonObject(e) {
-    return !("object" != typeof e || null === e || e instanceof Array || e instanceof Date || e instanceof Timestamp || e instanceof GeoPoint || e instanceof Bytes || e instanceof DocumentReference || e instanceof FieldValue || e instanceof VectorValue);
+    return !("object" != typeof e || null === e || e instanceof Array || e instanceof Date || e instanceof index_esm2017_Timestamp || e instanceof GeoPoint || e instanceof Bytes || e instanceof DocumentReference || e instanceof FieldValue || e instanceof VectorValue);
 }
 
 function __PRIVATE_validatePlainObject(e, t, n) {
@@ -33467,7 +35565,7 @@ function __PRIVATE_validatePlainObject(e, t, n) {
     if ((
     // If required, replace the FieldPath Compat class with the firestore-exp
     // FieldPath.
-    t = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getModularInstance */ .Ku)(t)) instanceof FieldPath) return t._internalPath;
+    t = index_esm2017_getModularInstance(t)) instanceof FieldPath) return t._internalPath;
     if ("string" == typeof t) return __PRIVATE_fieldPathFromDotSeparatedString(e, t);
     throw __PRIVATE_createError("Field path arguments must be of type string or ", e, 
     /* hasConverter= */ !1, 
@@ -33659,7 +35757,7 @@ function __PRIVATE_createError(e, t, n, r, i) {
  * also contains this `QueryConstraint`.
  */ class QueryConstraint extends AppliableConstraint {}
 
-function query(e, t, ...n) {
+function index_esm2017_query(e, t, ...n) {
     let r = [];
     t instanceof AppliableConstraint && r.push(t), r = r.concat(n), function __PRIVATE_validateQueryConstraintArray(e) {
         const t = e.filter((e => e instanceof QueryCompositeFilterConstraint)).length, n = e.filter((e => e instanceof QueryFieldFilterConstraint)).length;
@@ -34002,7 +36100,7 @@ function endAt(...e) {
 }
 
 /** Helper function to create a bound from a document or fields */ function __PRIVATE_newQueryBoundFromDocOrFields(e, t, n, r) {
-    if (n[0] = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getModularInstance */ .Ku)(n[0]), n[0] instanceof DocumentSnapshot$1) return function __PRIVATE_newQueryBoundFromDocument(e, t, n, r, i) {
+    if (n[0] = index_esm2017_getModularInstance(n[0]), n[0] instanceof DocumentSnapshot$1) return function __PRIVATE_newQueryBoundFromDocument(e, t, n, r, i) {
         if (!r) throw new FirestoreError(D.NOT_FOUND, `Can't use a DocumentSnapshot that doesn't exist for ${n}().`);
         const s = [];
         // Because people expect to continue/end a query at the exact document
@@ -34058,7 +36156,7 @@ function endAt(...e) {
 }
 
 function __PRIVATE_parseDocumentIdValue(e, t, n) {
-    if ("string" == typeof (n = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getModularInstance */ .Ku)(n))) {
+    if ("string" == typeof (n = index_esm2017_getModularInstance(n))) {
         if ("" === n) throw new FirestoreError(D.INVALID_ARGUMENT, "Invalid query. When querying with documentId(), you must provide a valid document ID, but it was an empty string.");
         if (!__PRIVATE_isCollectionGroupQuery(t) && -1 !== n.indexOf("/")) throw new FirestoreError(D.INVALID_ARGUMENT, `Invalid query. When querying a collection by documentId(), you must provide a plain document ID, but '${n}' contains a '/' character.`);
         const r = t.path.child(ResourcePath.fromString(n));
@@ -34196,7 +36294,7 @@ class AbstractUserDataWriter {
     }
     convertTimestamp(e) {
         const t = __PRIVATE_normalizeTimestamp(e);
-        return new Timestamp(t.seconds, t.nanos);
+        return new index_esm2017_Timestamp(t.seconds, t.nanos);
     }
     convertDocumentKey(e, t) {
         const n = ResourcePath.fromString(e);
@@ -34586,7 +36684,7 @@ function __PRIVATE_resultChangeType(e) {
  * @param reference - The reference of the document to fetch.
  * @returns A Promise resolved with a `DocumentSnapshot` containing the
  * current document contents.
- */ function getDoc(e) {
+ */ function index_esm2017_getDoc(e) {
     e = __PRIVATE_cast(e, DocumentReference);
     const t = __PRIVATE_cast(e.firestore, Firestore);
     return __PRIVATE_firestoreClientGetDocumentViaSnapshotListener(ensureFirestoreConfigured(t), e._key).then((n => __PRIVATE_convertToDocSnapshot(t, e, n)));
@@ -34641,7 +36739,7 @@ class __PRIVATE_ExpUserDataWriter extends AbstractUserDataWriter {
  * invoke {@link getDocsFromCache} or {@link getDocsFromServer}.
  *
  * @returns A `Promise` that will be resolved with the results of the query.
- */ function getDocs(e) {
+ */ function index_esm2017_getDocs(e) {
     e = __PRIVATE_cast(e, Query);
     const t = __PRIVATE_cast(e.firestore, Firestore), n = ensureFirestoreConfigured(t), r = new __PRIVATE_ExpUserDataWriter(t);
     return __PRIVATE_validateHasExplicitOrderByForLimitToLast(e._query), __PRIVATE_firestoreClientGetDocumentsViaSnapshotListener(n, e._query).then((n => new QuerySnapshot(t, r, e, n)));
@@ -34672,13 +36770,13 @@ class __PRIVATE_ExpUserDataWriter extends AbstractUserDataWriter {
     }).then((n => new QuerySnapshot(t, r, e, n)));
 }
 
-function setDoc(e, t, n) {
+function index_esm2017_setDoc(e, t, n) {
     e = __PRIVATE_cast(e, DocumentReference);
     const r = __PRIVATE_cast(e.firestore, Firestore), i = __PRIVATE_applyFirestoreDataConverter(e.converter, t, n);
     return executeWrite(r, [ __PRIVATE_parseSetData(__PRIVATE_newUserDataReader(r), "setDoc", e._key, i, null !== e.converter, n).toMutation(e._key, Precondition.none()) ]);
 }
 
-function updateDoc(e, t, n, ...r) {
+function index_esm2017_updateDoc(e, t, n, ...r) {
     e = __PRIVATE_cast(e, DocumentReference);
     const i = __PRIVATE_cast(e.firestore, Firestore), s = __PRIVATE_newUserDataReader(i);
     let o;
@@ -34695,7 +36793,7 @@ function updateDoc(e, t, n, ...r) {
  * @param reference - A reference to the document to delete.
  * @returns A Promise resolved once the document has been successfully
  * deleted from the backend (note that it won't resolve while you're offline).
- */ function deleteDoc(e) {
+ */ function index_esm2017_deleteDoc(e) {
     return executeWrite(__PRIVATE_cast(e.firestore, Firestore), [ new __PRIVATE_DeleteMutation(e._key, Precondition.none()) ]);
 }
 
@@ -34708,8 +36806,8 @@ function updateDoc(e, t, n, ...r) {
  * @returns A `Promise` resolved with a `DocumentReference` pointing to the
  * newly created document after it has been written to the backend (Note that it
  * won't resolve while you're offline).
- */ function addDoc(e, t) {
-    const n = __PRIVATE_cast(e.firestore, Firestore), r = doc(e), i = __PRIVATE_applyFirestoreDataConverter(e.converter, t);
+ */ function index_esm2017_addDoc(e, t) {
+    const n = __PRIVATE_cast(e.firestore, Firestore), r = index_esm2017_doc(e), i = __PRIVATE_applyFirestoreDataConverter(e.converter, t);
     return executeWrite(n, [ __PRIVATE_parseSetData(__PRIVATE_newUserDataReader(e.firestore), "addDoc", r._key, i, null !== e.converter, {}).toMutation(r._key, Precondition.exists(!1)) ]).then((() => r));
 }
 
@@ -35118,7 +37216,7 @@ class WriteBatch {
 }
 
 function __PRIVATE_validateReference(e, t) {
-    if ((e = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getModularInstance */ .Ku)(e)).firestore !== t) throw new FirestoreError(D.INVALID_ARGUMENT, "Provided document reference is from a different Firestore instance.");
+    if ((e = index_esm2017_getModularInstance(e)).firestore !== t) throw new FirestoreError(D.INVALID_ARGUMENT, "Provided document reference is from a different Firestore instance.");
     return e;
 }
 
@@ -35199,7 +37297,7 @@ class Transaction extends class Transaction$1 {
         // For Compat types, we have to "extract" the underlying types before
         // performing validation.
                 let s;
-        return s = "string" == typeof (t = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__/* .getModularInstance */ .Ku)(t)) || t instanceof FieldPath ? __PRIVATE_parseUpdateVarargs(this._dataReader, "Transaction.update", i._key, t, n, r) : __PRIVATE_parseUpdateData(this._dataReader, "Transaction.update", i._key, t), 
+        return s = "string" == typeof (t = index_esm2017_getModularInstance(t)) || t instanceof FieldPath ? __PRIVATE_parseUpdateVarargs(this._dataReader, "Transaction.update", i._key, t, n, r) : __PRIVATE_parseUpdateData(this._dataReader, "Transaction.update", i._key, t), 
         this._transaction.update(i._key, s), this;
     }
     /**
@@ -35652,7 +37750,7 @@ let Fe = null;
  */ !function __PRIVATE_registerFirestore(e, t = !0) {
     !function __PRIVATE_setSDKVersion(e) {
         S = e;
-    }(_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .SDK_VERSION */ .MF), (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* ._registerComponent */ .om)(new _firebase_component__WEBPACK_IMPORTED_MODULE_1__/* .Component */ .uA("firestore", ((e, {instanceIdentifier: n, options: r}) => {
+    }(SDK_VERSION), _registerComponent(new Component("firestore", ((e, {instanceIdentifier: n, options: r}) => {
         const i = e.getProvider("app").getImmediate(), s = new Firestore(new __PRIVATE_FirebaseAuthCredentialsProvider(e.getProvider("auth-internal")), new __PRIVATE_FirebaseAppCheckTokenProvider(e.getProvider("app-check-internal")), function __PRIVATE_databaseIdFromApp(e, t) {
             if (!Object.prototype.hasOwnProperty.apply(e.options, [ "projectId" ])) throw new FirestoreError(D.INVALID_ARGUMENT, '"projectId" not provided in firebase.initializeApp.');
             return new DatabaseId(e.options.projectId, t);
@@ -35660,2206 +37758,20 @@ let Fe = null;
         return r = Object.assign({
             useFetchStreams: t
         }, r), s._setSettings(r), s;
-    }), "PUBLIC").setMultipleInstances(!0)), (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .registerVersion */ .KO)(w, "4.7.3", e), 
+    }), "PUBLIC").setMultipleInstances(!0)), registerVersion(w, "4.7.3", e), 
     // BUILD_TARGET will be replaced by values like esm5, esm2017, cjs5, etc during the compilation
-    (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .registerVersion */ .KO)(w, "4.7.3", "esm2017");
+    registerVersion(w, "4.7.3", "esm2017");
 }();
 
 
 //# sourceMappingURL=index.esm2017.js.map
 
-
-/***/ }),
-
-/***/ 5908:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   xI: () => (/* reexport safe */ _firebase_auth__WEBPACK_IMPORTED_MODULE_0__.xI)
-/* harmony export */ });
-/* harmony import */ var _firebase_auth__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2440);
+;// ./node_modules/firebase/firestore/dist/esm/index.esm.js
 
 //# sourceMappingURL=index.esm.js.map
 
-
-/***/ }),
-
-/***/ 6743:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Am: () => (/* binding */ querystring),
-/* harmony export */   FA: () => (/* binding */ ErrorFactory),
-/* harmony export */   Fy: () => (/* binding */ createMockUserToken),
-/* harmony export */   I9: () => (/* binding */ querystringDecode),
-/* harmony export */   Im: () => (/* binding */ isEmpty),
-/* harmony export */   Ku: () => (/* binding */ getModularInstance),
-/* harmony export */   T9: () => (/* binding */ getDefaultAppConfig),
-/* harmony export */   Tj: () => (/* binding */ getDefaultEmulatorHost),
-/* harmony export */   Uj: () => (/* binding */ base64urlEncodeWithoutPadding),
-/* harmony export */   XA: () => (/* binding */ getExperimentalSetting),
-/* harmony export */   ZQ: () => (/* binding */ getUA),
-/* harmony export */   bD: () => (/* binding */ deepEqual),
-/* harmony export */   c1: () => (/* binding */ isCloudflareWorker),
-/* harmony export */   cY: () => (/* binding */ Deferred),
-/* harmony export */   eX: () => (/* binding */ validateIndexedDBOpenable),
-/* harmony export */   g: () => (/* binding */ FirebaseError),
-/* harmony export */   hp: () => (/* binding */ extractQuerystring),
-/* harmony export */   jZ: () => (/* binding */ isMobileCordova),
-/* harmony export */   lT: () => (/* binding */ isIE),
-/* harmony export */   lV: () => (/* binding */ isReactNative),
-/* harmony export */   nr: () => (/* binding */ isSafari),
-/* harmony export */   sr: () => (/* binding */ isBrowserExtension),
-/* harmony export */   tD: () => (/* binding */ createSubscribe),
-/* harmony export */   u: () => (/* binding */ base64Decode),
-/* harmony export */   yU: () => (/* binding */ getDefaultEmulatorHostnameAndPort),
-/* harmony export */   zW: () => (/* binding */ isIndexedDBAvailable)
-/* harmony export */ });
-/* unused harmony exports CONSTANTS, DecodeBase64StringError, MAX_VALUE_MILLIS, RANDOM_FACTOR, Sha1, areCookiesEnabled, assert, assertionError, async, base64, base64Encode, calculateBackoffMillis, contains, decode, deepCopy, deepExtend, errorPrefix, getDefaults, getGlobal, isAdmin, isBrowser, isElectron, isNode, isNodeSdk, isUWP, isValidFormat, isValidTimestamp, isWebWorker, issuedAtTime, jsonEval, map, ordinal, promiseWithTimeout, safeGet, stringLength, stringToByteArray, stringify, uuidv4, validateArgCount, validateCallback, validateContextObject, validateNamespace */
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * @fileoverview Firebase constants.  Some of these (@defines) can be overridden at compile-time.
- */
-const CONSTANTS = {
-    /**
-     * @define {boolean} Whether this is the client Node.js SDK.
-     */
-    NODE_CLIENT: false,
-    /**
-     * @define {boolean} Whether this is the Admin Node.js SDK.
-     */
-    NODE_ADMIN: false,
-    /**
-     * Firebase SDK Version
-     */
-    SDK_VERSION: '${JSCORE_VERSION}'
-};
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Throws an error if the provided assertion is falsy
- */
-const assert = function (assertion, message) {
-    if (!assertion) {
-        throw assertionError(message);
-    }
-};
-/**
- * Returns an Error object suitable for throwing.
- */
-const assertionError = function (message) {
-    return new Error('Firebase Database (' +
-        CONSTANTS.SDK_VERSION +
-        ') INTERNAL ASSERT FAILED: ' +
-        message);
-};
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-const stringToByteArray$1 = function (str) {
-    // TODO(user): Use native implementations if/when available
-    const out = [];
-    let p = 0;
-    for (let i = 0; i < str.length; i++) {
-        let c = str.charCodeAt(i);
-        if (c < 128) {
-            out[p++] = c;
-        }
-        else if (c < 2048) {
-            out[p++] = (c >> 6) | 192;
-            out[p++] = (c & 63) | 128;
-        }
-        else if ((c & 0xfc00) === 0xd800 &&
-            i + 1 < str.length &&
-            (str.charCodeAt(i + 1) & 0xfc00) === 0xdc00) {
-            // Surrogate Pair
-            c = 0x10000 + ((c & 0x03ff) << 10) + (str.charCodeAt(++i) & 0x03ff);
-            out[p++] = (c >> 18) | 240;
-            out[p++] = ((c >> 12) & 63) | 128;
-            out[p++] = ((c >> 6) & 63) | 128;
-            out[p++] = (c & 63) | 128;
-        }
-        else {
-            out[p++] = (c >> 12) | 224;
-            out[p++] = ((c >> 6) & 63) | 128;
-            out[p++] = (c & 63) | 128;
-        }
-    }
-    return out;
-};
-/**
- * Turns an array of numbers into the string given by the concatenation of the
- * characters to which the numbers correspond.
- * @param bytes Array of numbers representing characters.
- * @return Stringification of the array.
- */
-const byteArrayToString = function (bytes) {
-    // TODO(user): Use native implementations if/when available
-    const out = [];
-    let pos = 0, c = 0;
-    while (pos < bytes.length) {
-        const c1 = bytes[pos++];
-        if (c1 < 128) {
-            out[c++] = String.fromCharCode(c1);
-        }
-        else if (c1 > 191 && c1 < 224) {
-            const c2 = bytes[pos++];
-            out[c++] = String.fromCharCode(((c1 & 31) << 6) | (c2 & 63));
-        }
-        else if (c1 > 239 && c1 < 365) {
-            // Surrogate Pair
-            const c2 = bytes[pos++];
-            const c3 = bytes[pos++];
-            const c4 = bytes[pos++];
-            const u = (((c1 & 7) << 18) | ((c2 & 63) << 12) | ((c3 & 63) << 6) | (c4 & 63)) -
-                0x10000;
-            out[c++] = String.fromCharCode(0xd800 + (u >> 10));
-            out[c++] = String.fromCharCode(0xdc00 + (u & 1023));
-        }
-        else {
-            const c2 = bytes[pos++];
-            const c3 = bytes[pos++];
-            out[c++] = String.fromCharCode(((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-        }
-    }
-    return out.join('');
-};
-// We define it as an object literal instead of a class because a class compiled down to es5 can't
-// be treeshaked. https://github.com/rollup/rollup/issues/1691
-// Static lookup maps, lazily populated by init_()
-const base64 = {
-    /**
-     * Maps bytes to characters.
-     */
-    byteToCharMap_: null,
-    /**
-     * Maps characters to bytes.
-     */
-    charToByteMap_: null,
-    /**
-     * Maps bytes to websafe characters.
-     * @private
-     */
-    byteToCharMapWebSafe_: null,
-    /**
-     * Maps websafe characters to bytes.
-     * @private
-     */
-    charToByteMapWebSafe_: null,
-    /**
-     * Our default alphabet, shared between
-     * ENCODED_VALS and ENCODED_VALS_WEBSAFE
-     */
-    ENCODED_VALS_BASE: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + 'abcdefghijklmnopqrstuvwxyz' + '0123456789',
-    /**
-     * Our default alphabet. Value 64 (=) is special; it means "nothing."
-     */
-    get ENCODED_VALS() {
-        return this.ENCODED_VALS_BASE + '+/=';
-    },
-    /**
-     * Our websafe alphabet.
-     */
-    get ENCODED_VALS_WEBSAFE() {
-        return this.ENCODED_VALS_BASE + '-_.';
-    },
-    /**
-     * Whether this browser supports the atob and btoa functions. This extension
-     * started at Mozilla but is now implemented by many browsers. We use the
-     * ASSUME_* variables to avoid pulling in the full useragent detection library
-     * but still allowing the standard per-browser compilations.
-     *
-     */
-    HAS_NATIVE_SUPPORT: typeof atob === 'function',
-    /**
-     * Base64-encode an array of bytes.
-     *
-     * @param input An array of bytes (numbers with
-     *     value in [0, 255]) to encode.
-     * @param webSafe Boolean indicating we should use the
-     *     alternative alphabet.
-     * @return The base64 encoded string.
-     */
-    encodeByteArray(input, webSafe) {
-        if (!Array.isArray(input)) {
-            throw Error('encodeByteArray takes an array as a parameter');
-        }
-        this.init_();
-        const byteToCharMap = webSafe
-            ? this.byteToCharMapWebSafe_
-            : this.byteToCharMap_;
-        const output = [];
-        for (let i = 0; i < input.length; i += 3) {
-            const byte1 = input[i];
-            const haveByte2 = i + 1 < input.length;
-            const byte2 = haveByte2 ? input[i + 1] : 0;
-            const haveByte3 = i + 2 < input.length;
-            const byte3 = haveByte3 ? input[i + 2] : 0;
-            const outByte1 = byte1 >> 2;
-            const outByte2 = ((byte1 & 0x03) << 4) | (byte2 >> 4);
-            let outByte3 = ((byte2 & 0x0f) << 2) | (byte3 >> 6);
-            let outByte4 = byte3 & 0x3f;
-            if (!haveByte3) {
-                outByte4 = 64;
-                if (!haveByte2) {
-                    outByte3 = 64;
-                }
-            }
-            output.push(byteToCharMap[outByte1], byteToCharMap[outByte2], byteToCharMap[outByte3], byteToCharMap[outByte4]);
-        }
-        return output.join('');
-    },
-    /**
-     * Base64-encode a string.
-     *
-     * @param input A string to encode.
-     * @param webSafe If true, we should use the
-     *     alternative alphabet.
-     * @return The base64 encoded string.
-     */
-    encodeString(input, webSafe) {
-        // Shortcut for Mozilla browsers that implement
-        // a native base64 encoder in the form of "btoa/atob"
-        if (this.HAS_NATIVE_SUPPORT && !webSafe) {
-            return btoa(input);
-        }
-        return this.encodeByteArray(stringToByteArray$1(input), webSafe);
-    },
-    /**
-     * Base64-decode a string.
-     *
-     * @param input to decode.
-     * @param webSafe True if we should use the
-     *     alternative alphabet.
-     * @return string representing the decoded value.
-     */
-    decodeString(input, webSafe) {
-        // Shortcut for Mozilla browsers that implement
-        // a native base64 encoder in the form of "btoa/atob"
-        if (this.HAS_NATIVE_SUPPORT && !webSafe) {
-            return atob(input);
-        }
-        return byteArrayToString(this.decodeStringToByteArray(input, webSafe));
-    },
-    /**
-     * Base64-decode a string.
-     *
-     * In base-64 decoding, groups of four characters are converted into three
-     * bytes.  If the encoder did not apply padding, the input length may not
-     * be a multiple of 4.
-     *
-     * In this case, the last group will have fewer than 4 characters, and
-     * padding will be inferred.  If the group has one or two characters, it decodes
-     * to one byte.  If the group has three characters, it decodes to two bytes.
-     *
-     * @param input Input to decode.
-     * @param webSafe True if we should use the web-safe alphabet.
-     * @return bytes representing the decoded value.
-     */
-    decodeStringToByteArray(input, webSafe) {
-        this.init_();
-        const charToByteMap = webSafe
-            ? this.charToByteMapWebSafe_
-            : this.charToByteMap_;
-        const output = [];
-        for (let i = 0; i < input.length;) {
-            const byte1 = charToByteMap[input.charAt(i++)];
-            const haveByte2 = i < input.length;
-            const byte2 = haveByte2 ? charToByteMap[input.charAt(i)] : 0;
-            ++i;
-            const haveByte3 = i < input.length;
-            const byte3 = haveByte3 ? charToByteMap[input.charAt(i)] : 64;
-            ++i;
-            const haveByte4 = i < input.length;
-            const byte4 = haveByte4 ? charToByteMap[input.charAt(i)] : 64;
-            ++i;
-            if (byte1 == null || byte2 == null || byte3 == null || byte4 == null) {
-                throw new DecodeBase64StringError();
-            }
-            const outByte1 = (byte1 << 2) | (byte2 >> 4);
-            output.push(outByte1);
-            if (byte3 !== 64) {
-                const outByte2 = ((byte2 << 4) & 0xf0) | (byte3 >> 2);
-                output.push(outByte2);
-                if (byte4 !== 64) {
-                    const outByte3 = ((byte3 << 6) & 0xc0) | byte4;
-                    output.push(outByte3);
-                }
-            }
-        }
-        return output;
-    },
-    /**
-     * Lazy static initialization function. Called before
-     * accessing any of the static map variables.
-     * @private
-     */
-    init_() {
-        if (!this.byteToCharMap_) {
-            this.byteToCharMap_ = {};
-            this.charToByteMap_ = {};
-            this.byteToCharMapWebSafe_ = {};
-            this.charToByteMapWebSafe_ = {};
-            // We want quick mappings back and forth, so we precompute two maps.
-            for (let i = 0; i < this.ENCODED_VALS.length; i++) {
-                this.byteToCharMap_[i] = this.ENCODED_VALS.charAt(i);
-                this.charToByteMap_[this.byteToCharMap_[i]] = i;
-                this.byteToCharMapWebSafe_[i] = this.ENCODED_VALS_WEBSAFE.charAt(i);
-                this.charToByteMapWebSafe_[this.byteToCharMapWebSafe_[i]] = i;
-                // Be forgiving when decoding and correctly decode both encodings.
-                if (i >= this.ENCODED_VALS_BASE.length) {
-                    this.charToByteMap_[this.ENCODED_VALS_WEBSAFE.charAt(i)] = i;
-                    this.charToByteMapWebSafe_[this.ENCODED_VALS.charAt(i)] = i;
-                }
-            }
-        }
-    }
-};
-/**
- * An error encountered while decoding base64 string.
- */
-class DecodeBase64StringError extends Error {
-    constructor() {
-        super(...arguments);
-        this.name = 'DecodeBase64StringError';
-    }
-}
-/**
- * URL-safe base64 encoding
- */
-const base64Encode = function (str) {
-    const utf8Bytes = stringToByteArray$1(str);
-    return base64.encodeByteArray(utf8Bytes, true);
-};
-/**
- * URL-safe base64 encoding (without "." padding in the end).
- * e.g. Used in JSON Web Token (JWT) parts.
- */
-const base64urlEncodeWithoutPadding = function (str) {
-    // Use base64url encoding and remove padding in the end (dot characters).
-    return base64Encode(str).replace(/\./g, '');
-};
-/**
- * URL-safe base64 decoding
- *
- * NOTE: DO NOT use the global atob() function - it does NOT support the
- * base64Url variant encoding.
- *
- * @param str To be decoded
- * @return Decoded result, if possible
- */
-const base64Decode = function (str) {
-    try {
-        return base64.decodeString(str, true);
-    }
-    catch (e) {
-        console.error('base64Decode failed: ', e);
-    }
-    return null;
-};
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Do a deep-copy of basic JavaScript Objects or Arrays.
- */
-function deepCopy(value) {
-    return deepExtend(undefined, value);
-}
-/**
- * Copy properties from source to target (recursively allows extension
- * of Objects and Arrays).  Scalar values in the target are over-written.
- * If target is undefined, an object of the appropriate type will be created
- * (and returned).
- *
- * We recursively copy all child properties of plain Objects in the source- so
- * that namespace- like dictionaries are merged.
- *
- * Note that the target can be a function, in which case the properties in
- * the source Object are copied onto it as static properties of the Function.
- *
- * Note: we don't merge __proto__ to prevent prototype pollution
- */
-function deepExtend(target, source) {
-    if (!(source instanceof Object)) {
-        return source;
-    }
-    switch (source.constructor) {
-        case Date:
-            // Treat Dates like scalars; if the target date object had any child
-            // properties - they will be lost!
-            const dateValue = source;
-            return new Date(dateValue.getTime());
-        case Object:
-            if (target === undefined) {
-                target = {};
-            }
-            break;
-        case Array:
-            // Always copy the array source and overwrite the target.
-            target = [];
-            break;
-        default:
-            // Not a plain Object - treat it as a scalar.
-            return source;
-    }
-    for (const prop in source) {
-        // use isValidKey to guard against prototype pollution. See https://snyk.io/vuln/SNYK-JS-LODASH-450202
-        if (!source.hasOwnProperty(prop) || !isValidKey(prop)) {
-            continue;
-        }
-        target[prop] = deepExtend(target[prop], source[prop]);
-    }
-    return target;
-}
-function isValidKey(key) {
-    return key !== '__proto__';
-}
-
-/**
- * @license
- * Copyright 2022 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Polyfill for `globalThis` object.
- * @returns the `globalThis` object for the given environment.
- * @public
- */
-function getGlobal() {
-    if (typeof self !== 'undefined') {
-        return self;
-    }
-    if (typeof window !== 'undefined') {
-        return window;
-    }
-    if (typeof __webpack_require__.g !== 'undefined') {
-        return __webpack_require__.g;
-    }
-    throw new Error('Unable to locate global object.');
-}
-
-/**
- * @license
- * Copyright 2022 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-const getDefaultsFromGlobal = () => getGlobal().__FIREBASE_DEFAULTS__;
-/**
- * Attempt to read defaults from a JSON string provided to
- * process(.)env(.)__FIREBASE_DEFAULTS__ or a JSON file whose path is in
- * process(.)env(.)__FIREBASE_DEFAULTS_PATH__
- * The dots are in parens because certain compilers (Vite?) cannot
- * handle seeing that variable in comments.
- * See https://github.com/firebase/firebase-js-sdk/issues/6838
- */
-const getDefaultsFromEnvVariable = () => {
-    if (typeof process === 'undefined' || "string" === 'undefined') {
-        return;
-    }
-    const defaultsJsonString = "MISSING_ENV_VAR".__FIREBASE_DEFAULTS__;
-    if (defaultsJsonString) {
-        return JSON.parse(defaultsJsonString);
-    }
-};
-const getDefaultsFromCookie = () => {
-    if (typeof document === 'undefined') {
-        return;
-    }
-    let match;
-    try {
-        match = document.cookie.match(/__FIREBASE_DEFAULTS__=([^;]+)/);
-    }
-    catch (e) {
-        // Some environments such as Angular Universal SSR have a
-        // `document` object but error on accessing `document.cookie`.
-        return;
-    }
-    const decoded = match && base64Decode(match[1]);
-    return decoded && JSON.parse(decoded);
-};
-/**
- * Get the __FIREBASE_DEFAULTS__ object. It checks in order:
- * (1) if such an object exists as a property of `globalThis`
- * (2) if such an object was provided on a shell environment variable
- * (3) if such an object exists in a cookie
- * @public
- */
-const getDefaults = () => {
-    try {
-        return (getDefaultsFromGlobal() ||
-            getDefaultsFromEnvVariable() ||
-            getDefaultsFromCookie());
-    }
-    catch (e) {
-        /**
-         * Catch-all for being unable to get __FIREBASE_DEFAULTS__ due
-         * to any environment case we have not accounted for. Log to
-         * info instead of swallowing so we can find these unknown cases
-         * and add paths for them if needed.
-         */
-        console.info(`Unable to get __FIREBASE_DEFAULTS__ due to: ${e}`);
-        return;
-    }
-};
-/**
- * Returns emulator host stored in the __FIREBASE_DEFAULTS__ object
- * for the given product.
- * @returns a URL host formatted like `127.0.0.1:9999` or `[::1]:4000` if available
- * @public
- */
-const getDefaultEmulatorHost = (productName) => { var _a, _b; return (_b = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.emulatorHosts) === null || _b === void 0 ? void 0 : _b[productName]; };
-/**
- * Returns emulator hostname and port stored in the __FIREBASE_DEFAULTS__ object
- * for the given product.
- * @returns a pair of hostname and port like `["::1", 4000]` if available
- * @public
- */
-const getDefaultEmulatorHostnameAndPort = (productName) => {
-    const host = getDefaultEmulatorHost(productName);
-    if (!host) {
-        return undefined;
-    }
-    const separatorIndex = host.lastIndexOf(':'); // Finding the last since IPv6 addr also has colons.
-    if (separatorIndex <= 0 || separatorIndex + 1 === host.length) {
-        throw new Error(`Invalid host ${host} with no separate hostname and port!`);
-    }
-    // eslint-disable-next-line no-restricted-globals
-    const port = parseInt(host.substring(separatorIndex + 1), 10);
-    if (host[0] === '[') {
-        // Bracket-quoted `[ipv6addr]:port` => return "ipv6addr" (without brackets).
-        return [host.substring(1, separatorIndex - 1), port];
-    }
-    else {
-        return [host.substring(0, separatorIndex), port];
-    }
-};
-/**
- * Returns Firebase app config stored in the __FIREBASE_DEFAULTS__ object.
- * @public
- */
-const getDefaultAppConfig = () => { var _a; return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.config; };
-/**
- * Returns an experimental setting on the __FIREBASE_DEFAULTS__ object (properties
- * prefixed by "_")
- * @public
- */
-const getExperimentalSetting = (name) => { var _a; return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a[`_${name}`]; };
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-class Deferred {
-    constructor() {
-        this.reject = () => { };
-        this.resolve = () => { };
-        this.promise = new Promise((resolve, reject) => {
-            this.resolve = resolve;
-            this.reject = reject;
-        });
-    }
-    /**
-     * Our API internals are not promisified and cannot because our callback APIs have subtle expectations around
-     * invoking promises inline, which Promises are forbidden to do. This method accepts an optional node-style callback
-     * and returns a node-style callback which will resolve or reject the Deferred's promise.
-     */
-    wrapCallback(callback) {
-        return (error, value) => {
-            if (error) {
-                this.reject(error);
-            }
-            else {
-                this.resolve(value);
-            }
-            if (typeof callback === 'function') {
-                // Attaching noop handler just in case developer wasn't expecting
-                // promises
-                this.promise.catch(() => { });
-                // Some of our callbacks don't expect a value and our own tests
-                // assert that the parameter length is 1
-                if (callback.length === 1) {
-                    callback(error);
-                }
-                else {
-                    callback(error, value);
-                }
-            }
-        };
-    }
-}
-
-/**
- * @license
- * Copyright 2021 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-function createMockUserToken(token, projectId) {
-    if (token.uid) {
-        throw new Error('The "uid" field is no longer supported by mockUserToken. Please use "sub" instead for Firebase Auth User ID.');
-    }
-    // Unsecured JWTs use "none" as the algorithm.
-    const header = {
-        alg: 'none',
-        type: 'JWT'
-    };
-    const project = projectId || 'demo-project';
-    const iat = token.iat || 0;
-    const sub = token.sub || token.user_id;
-    if (!sub) {
-        throw new Error("mockUserToken must contain 'sub' or 'user_id' field!");
-    }
-    const payload = Object.assign({ 
-        // Set all required fields to decent defaults
-        iss: `https://securetoken.google.com/${project}`, aud: project, iat, exp: iat + 3600, auth_time: iat, sub, user_id: sub, firebase: {
-            sign_in_provider: 'custom',
-            identities: {}
-        } }, token);
-    // Unsecured JWTs use the empty string as a signature.
-    const signature = '';
-    return [
-        base64urlEncodeWithoutPadding(JSON.stringify(header)),
-        base64urlEncodeWithoutPadding(JSON.stringify(payload)),
-        signature
-    ].join('.');
-}
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Returns navigator.userAgent string or '' if it's not defined.
- * @return user agent string
- */
-function getUA() {
-    if (typeof navigator !== 'undefined' &&
-        typeof navigator['userAgent'] === 'string') {
-        return navigator['userAgent'];
-    }
-    else {
-        return '';
-    }
-}
-/**
- * Detect Cordova / PhoneGap / Ionic frameworks on a mobile device.
- *
- * Deliberately does not rely on checking `file://` URLs (as this fails PhoneGap
- * in the Ripple emulator) nor Cordova `onDeviceReady`, which would normally
- * wait for a callback.
- */
-function isMobileCordova() {
-    return (typeof window !== 'undefined' &&
-        // @ts-ignore Setting up an broadly applicable index signature for Window
-        // just to deal with this case would probably be a bad idea.
-        !!(window['cordova'] || window['phonegap'] || window['PhoneGap']) &&
-        /ios|iphone|ipod|ipad|android|blackberry|iemobile/i.test(getUA()));
-}
-/**
- * Detect Node.js.
- *
- * @return true if Node.js environment is detected or specified.
- */
-// Node detection logic from: https://github.com/iliakan/detect-node/
-function isNode() {
-    var _a;
-    const forceEnvironment = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.forceEnvironment;
-    if (forceEnvironment === 'node') {
-        return true;
-    }
-    else if (forceEnvironment === 'browser') {
-        return false;
-    }
-    try {
-        return (Object.prototype.toString.call(__webpack_require__.g.process) === '[object process]');
-    }
-    catch (e) {
-        return false;
-    }
-}
-/**
- * Detect Browser Environment.
- * Note: This will return true for certain test frameworks that are incompletely
- * mimicking a browser, and should not lead to assuming all browser APIs are
- * available.
- */
-function isBrowser() {
-    return typeof window !== 'undefined' || isWebWorker();
-}
-/**
- * Detect Web Worker context.
- */
-function isWebWorker() {
-    return (typeof WorkerGlobalScope !== 'undefined' &&
-        typeof self !== 'undefined' &&
-        self instanceof WorkerGlobalScope);
-}
-/**
- * Detect Cloudflare Worker context.
- */
-function isCloudflareWorker() {
-    return (typeof navigator !== 'undefined' &&
-        navigator.userAgent === 'Cloudflare-Workers');
-}
-function isBrowserExtension() {
-    const runtime = typeof chrome === 'object'
-        ? chrome.runtime
-        : typeof browser === 'object'
-            ? browser.runtime
-            : undefined;
-    return typeof runtime === 'object' && runtime.id !== undefined;
-}
-/**
- * Detect React Native.
- *
- * @return true if ReactNative environment is detected.
- */
-function isReactNative() {
-    return (typeof navigator === 'object' && navigator['product'] === 'ReactNative');
-}
-/** Detects Electron apps. */
-function isElectron() {
-    return getUA().indexOf('Electron/') >= 0;
-}
-/** Detects Internet Explorer. */
-function isIE() {
-    const ua = getUA();
-    return ua.indexOf('MSIE ') >= 0 || ua.indexOf('Trident/') >= 0;
-}
-/** Detects Universal Windows Platform apps. */
-function isUWP() {
-    return getUA().indexOf('MSAppHost/') >= 0;
-}
-/**
- * Detect whether the current SDK build is the Node version.
- *
- * @return true if it's the Node SDK build.
- */
-function isNodeSdk() {
-    return CONSTANTS.NODE_CLIENT === true || CONSTANTS.NODE_ADMIN === true;
-}
-/** Returns true if we are running in Safari. */
-function isSafari() {
-    return (!isNode() &&
-        !!navigator.userAgent &&
-        navigator.userAgent.includes('Safari') &&
-        !navigator.userAgent.includes('Chrome'));
-}
-/**
- * This method checks if indexedDB is supported by current browser/service worker context
- * @return true if indexedDB is supported by current browser/service worker context
- */
-function isIndexedDBAvailable() {
-    try {
-        return typeof indexedDB === 'object';
-    }
-    catch (e) {
-        return false;
-    }
-}
-/**
- * This method validates browser/sw context for indexedDB by opening a dummy indexedDB database and reject
- * if errors occur during the database open operation.
- *
- * @throws exception if current browser/sw context can't run idb.open (ex: Safari iframe, Firefox
- * private browsing)
- */
-function validateIndexedDBOpenable() {
-    return new Promise((resolve, reject) => {
-        try {
-            let preExist = true;
-            const DB_CHECK_NAME = 'validate-browser-context-for-indexeddb-analytics-module';
-            const request = self.indexedDB.open(DB_CHECK_NAME);
-            request.onsuccess = () => {
-                request.result.close();
-                // delete database only when it doesn't pre-exist
-                if (!preExist) {
-                    self.indexedDB.deleteDatabase(DB_CHECK_NAME);
-                }
-                resolve(true);
-            };
-            request.onupgradeneeded = () => {
-                preExist = false;
-            };
-            request.onerror = () => {
-                var _a;
-                reject(((_a = request.error) === null || _a === void 0 ? void 0 : _a.message) || '');
-            };
-        }
-        catch (error) {
-            reject(error);
-        }
-    });
-}
-/**
- *
- * This method checks whether cookie is enabled within current browser
- * @return true if cookie is enabled within current browser
- */
-function areCookiesEnabled() {
-    if (typeof navigator === 'undefined' || !navigator.cookieEnabled) {
-        return false;
-    }
-    return true;
-}
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * @fileoverview Standardized Firebase Error.
- *
- * Usage:
- *
- *   // TypeScript string literals for type-safe codes
- *   type Err =
- *     'unknown' |
- *     'object-not-found'
- *     ;
- *
- *   // Closure enum for type-safe error codes
- *   // at-enum {string}
- *   var Err = {
- *     UNKNOWN: 'unknown',
- *     OBJECT_NOT_FOUND: 'object-not-found',
- *   }
- *
- *   let errors: Map<Err, string> = {
- *     'generic-error': "Unknown error",
- *     'file-not-found': "Could not find file: {$file}",
- *   };
- *
- *   // Type-safe function - must pass a valid error code as param.
- *   let error = new ErrorFactory<Err>('service', 'Service', errors);
- *
- *   ...
- *   throw error.create(Err.GENERIC);
- *   ...
- *   throw error.create(Err.FILE_NOT_FOUND, {'file': fileName});
- *   ...
- *   // Service: Could not file file: foo.txt (service/file-not-found).
- *
- *   catch (e) {
- *     assert(e.message === "Could not find file: foo.txt.");
- *     if ((e as FirebaseError)?.code === 'service/file-not-found') {
- *       console.log("Could not read file: " + e['file']);
- *     }
- *   }
- */
-const ERROR_NAME = 'FirebaseError';
-// Based on code from:
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Custom_Error_Types
-class FirebaseError extends Error {
-    constructor(
-    /** The error code for this error. */
-    code, message, 
-    /** Custom data for this error. */
-    customData) {
-        super(message);
-        this.code = code;
-        this.customData = customData;
-        /** The custom name for all FirebaseErrors. */
-        this.name = ERROR_NAME;
-        // Fix For ES5
-        // https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
-        Object.setPrototypeOf(this, FirebaseError.prototype);
-        // Maintains proper stack trace for where our error was thrown.
-        // Only available on V8.
-        if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, ErrorFactory.prototype.create);
-        }
-    }
-}
-class ErrorFactory {
-    constructor(service, serviceName, errors) {
-        this.service = service;
-        this.serviceName = serviceName;
-        this.errors = errors;
-    }
-    create(code, ...data) {
-        const customData = data[0] || {};
-        const fullCode = `${this.service}/${code}`;
-        const template = this.errors[code];
-        const message = template ? replaceTemplate(template, customData) : 'Error';
-        // Service Name: Error message (service/code).
-        const fullMessage = `${this.serviceName}: ${message} (${fullCode}).`;
-        const error = new FirebaseError(fullCode, fullMessage, customData);
-        return error;
-    }
-}
-function replaceTemplate(template, data) {
-    return template.replace(PATTERN, (_, key) => {
-        const value = data[key];
-        return value != null ? String(value) : `<${key}?>`;
-    });
-}
-const PATTERN = /\{\$([^}]+)}/g;
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Evaluates a JSON string into a javascript object.
- *
- * @param {string} str A string containing JSON.
- * @return {*} The javascript object representing the specified JSON.
- */
-function jsonEval(str) {
-    return JSON.parse(str);
-}
-/**
- * Returns JSON representing a javascript object.
- * @param {*} data JavaScript object to be stringified.
- * @return {string} The JSON contents of the object.
- */
-function stringify(data) {
-    return JSON.stringify(data);
-}
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Decodes a Firebase auth. token into constituent parts.
- *
- * Notes:
- * - May return with invalid / incomplete claims if there's no native base64 decoding support.
- * - Doesn't check if the token is actually valid.
- */
-const decode = function (token) {
-    let header = {}, claims = {}, data = {}, signature = '';
-    try {
-        const parts = token.split('.');
-        header = jsonEval(base64Decode(parts[0]) || '');
-        claims = jsonEval(base64Decode(parts[1]) || '');
-        signature = parts[2];
-        data = claims['d'] || {};
-        delete claims['d'];
-    }
-    catch (e) { }
-    return {
-        header,
-        claims,
-        data,
-        signature
-    };
-};
-/**
- * Decodes a Firebase auth. token and checks the validity of its time-based claims. Will return true if the
- * token is within the time window authorized by the 'nbf' (not-before) and 'iat' (issued-at) claims.
- *
- * Notes:
- * - May return a false negative if there's no native base64 decoding support.
- * - Doesn't check if the token is actually valid.
- */
-const isValidTimestamp = function (token) {
-    const claims = decode(token).claims;
-    const now = Math.floor(new Date().getTime() / 1000);
-    let validSince = 0, validUntil = 0;
-    if (typeof claims === 'object') {
-        if (claims.hasOwnProperty('nbf')) {
-            validSince = claims['nbf'];
-        }
-        else if (claims.hasOwnProperty('iat')) {
-            validSince = claims['iat'];
-        }
-        if (claims.hasOwnProperty('exp')) {
-            validUntil = claims['exp'];
-        }
-        else {
-            // token will expire after 24h by default
-            validUntil = validSince + 86400;
-        }
-    }
-    return (!!now &&
-        !!validSince &&
-        !!validUntil &&
-        now >= validSince &&
-        now <= validUntil);
-};
-/**
- * Decodes a Firebase auth. token and returns its issued at time if valid, null otherwise.
- *
- * Notes:
- * - May return null if there's no native base64 decoding support.
- * - Doesn't check if the token is actually valid.
- */
-const issuedAtTime = function (token) {
-    const claims = decode(token).claims;
-    if (typeof claims === 'object' && claims.hasOwnProperty('iat')) {
-        return claims['iat'];
-    }
-    return null;
-};
-/**
- * Decodes a Firebase auth. token and checks the validity of its format. Expects a valid issued-at time.
- *
- * Notes:
- * - May return a false negative if there's no native base64 decoding support.
- * - Doesn't check if the token is actually valid.
- */
-const isValidFormat = function (token) {
-    const decoded = decode(token), claims = decoded.claims;
-    return !!claims && typeof claims === 'object' && claims.hasOwnProperty('iat');
-};
-/**
- * Attempts to peer into an auth token and determine if it's an admin auth token by looking at the claims portion.
- *
- * Notes:
- * - May return a false negative if there's no native base64 decoding support.
- * - Doesn't check if the token is actually valid.
- */
-const isAdmin = function (token) {
-    const claims = decode(token).claims;
-    return typeof claims === 'object' && claims['admin'] === true;
-};
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-function contains(obj, key) {
-    return Object.prototype.hasOwnProperty.call(obj, key);
-}
-function safeGet(obj, key) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        return obj[key];
-    }
-    else {
-        return undefined;
-    }
-}
-function isEmpty(obj) {
-    for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            return false;
-        }
-    }
-    return true;
-}
-function map(obj, fn, contextObj) {
-    const res = {};
-    for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            res[key] = fn.call(contextObj, obj[key], key, obj);
-        }
-    }
-    return res;
-}
-/**
- * Deep equal two objects. Support Arrays and Objects.
- */
-function deepEqual(a, b) {
-    if (a === b) {
-        return true;
-    }
-    const aKeys = Object.keys(a);
-    const bKeys = Object.keys(b);
-    for (const k of aKeys) {
-        if (!bKeys.includes(k)) {
-            return false;
-        }
-        const aProp = a[k];
-        const bProp = b[k];
-        if (isObject(aProp) && isObject(bProp)) {
-            if (!deepEqual(aProp, bProp)) {
-                return false;
-            }
-        }
-        else if (aProp !== bProp) {
-            return false;
-        }
-    }
-    for (const k of bKeys) {
-        if (!aKeys.includes(k)) {
-            return false;
-        }
-    }
-    return true;
-}
-function isObject(thing) {
-    return thing !== null && typeof thing === 'object';
-}
-
-/**
- * @license
- * Copyright 2022 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Rejects if the given promise doesn't resolve in timeInMS milliseconds.
- * @internal
- */
-function promiseWithTimeout(promise, timeInMS = 2000) {
-    const deferredPromise = new Deferred();
-    setTimeout(() => deferredPromise.reject('timeout!'), timeInMS);
-    promise.then(deferredPromise.resolve, deferredPromise.reject);
-    return deferredPromise.promise;
-}
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Returns a querystring-formatted string (e.g. &arg=val&arg2=val2) from a
- * params object (e.g. {arg: 'val', arg2: 'val2'})
- * Note: You must prepend it with ? when adding it to a URL.
- */
-function querystring(querystringParams) {
-    const params = [];
-    for (const [key, value] of Object.entries(querystringParams)) {
-        if (Array.isArray(value)) {
-            value.forEach(arrayVal => {
-                params.push(encodeURIComponent(key) + '=' + encodeURIComponent(arrayVal));
-            });
-        }
-        else {
-            params.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-        }
-    }
-    return params.length ? '&' + params.join('&') : '';
-}
-/**
- * Decodes a querystring (e.g. ?arg=val&arg2=val2) into a params object
- * (e.g. {arg: 'val', arg2: 'val2'})
- */
-function querystringDecode(querystring) {
-    const obj = {};
-    const tokens = querystring.replace(/^\?/, '').split('&');
-    tokens.forEach(token => {
-        if (token) {
-            const [key, value] = token.split('=');
-            obj[decodeURIComponent(key)] = decodeURIComponent(value);
-        }
-    });
-    return obj;
-}
-/**
- * Extract the query string part of a URL, including the leading question mark (if present).
- */
-function extractQuerystring(url) {
-    const queryStart = url.indexOf('?');
-    if (!queryStart) {
-        return '';
-    }
-    const fragmentStart = url.indexOf('#', queryStart);
-    return url.substring(queryStart, fragmentStart > 0 ? fragmentStart : undefined);
-}
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * @fileoverview SHA-1 cryptographic hash.
- * Variable names follow the notation in FIPS PUB 180-3:
- * http://csrc.nist.gov/publications/fips/fips180-3/fips180-3_final.pdf.
- *
- * Usage:
- *   var sha1 = new sha1();
- *   sha1.update(bytes);
- *   var hash = sha1.digest();
- *
- * Performance:
- *   Chrome 23:   ~400 Mbit/s
- *   Firefox 16:  ~250 Mbit/s
- *
- */
-/**
- * SHA-1 cryptographic hash constructor.
- *
- * The properties declared here are discussed in the above algorithm document.
- * @constructor
- * @final
- * @struct
- */
-class Sha1 {
-    constructor() {
-        /**
-         * Holds the previous values of accumulated variables a-e in the compress_
-         * function.
-         * @private
-         */
-        this.chain_ = [];
-        /**
-         * A buffer holding the partially computed hash result.
-         * @private
-         */
-        this.buf_ = [];
-        /**
-         * An array of 80 bytes, each a part of the message to be hashed.  Referred to
-         * as the message schedule in the docs.
-         * @private
-         */
-        this.W_ = [];
-        /**
-         * Contains data needed to pad messages less than 64 bytes.
-         * @private
-         */
-        this.pad_ = [];
-        /**
-         * @private {number}
-         */
-        this.inbuf_ = 0;
-        /**
-         * @private {number}
-         */
-        this.total_ = 0;
-        this.blockSize = 512 / 8;
-        this.pad_[0] = 128;
-        for (let i = 1; i < this.blockSize; ++i) {
-            this.pad_[i] = 0;
-        }
-        this.reset();
-    }
-    reset() {
-        this.chain_[0] = 0x67452301;
-        this.chain_[1] = 0xefcdab89;
-        this.chain_[2] = 0x98badcfe;
-        this.chain_[3] = 0x10325476;
-        this.chain_[4] = 0xc3d2e1f0;
-        this.inbuf_ = 0;
-        this.total_ = 0;
-    }
-    /**
-     * Internal compress helper function.
-     * @param buf Block to compress.
-     * @param offset Offset of the block in the buffer.
-     * @private
-     */
-    compress_(buf, offset) {
-        if (!offset) {
-            offset = 0;
-        }
-        const W = this.W_;
-        // get 16 big endian words
-        if (typeof buf === 'string') {
-            for (let i = 0; i < 16; i++) {
-                // TODO(user): [bug 8140122] Recent versions of Safari for Mac OS and iOS
-                // have a bug that turns the post-increment ++ operator into pre-increment
-                // during JIT compilation.  We have code that depends heavily on SHA-1 for
-                // correctness and which is affected by this bug, so I've removed all uses
-                // of post-increment ++ in which the result value is used.  We can revert
-                // this change once the Safari bug
-                // (https://bugs.webkit.org/show_bug.cgi?id=109036) has been fixed and
-                // most clients have been updated.
-                W[i] =
-                    (buf.charCodeAt(offset) << 24) |
-                        (buf.charCodeAt(offset + 1) << 16) |
-                        (buf.charCodeAt(offset + 2) << 8) |
-                        buf.charCodeAt(offset + 3);
-                offset += 4;
-            }
-        }
-        else {
-            for (let i = 0; i < 16; i++) {
-                W[i] =
-                    (buf[offset] << 24) |
-                        (buf[offset + 1] << 16) |
-                        (buf[offset + 2] << 8) |
-                        buf[offset + 3];
-                offset += 4;
-            }
-        }
-        // expand to 80 words
-        for (let i = 16; i < 80; i++) {
-            const t = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
-            W[i] = ((t << 1) | (t >>> 31)) & 0xffffffff;
-        }
-        let a = this.chain_[0];
-        let b = this.chain_[1];
-        let c = this.chain_[2];
-        let d = this.chain_[3];
-        let e = this.chain_[4];
-        let f, k;
-        // TODO(user): Try to unroll this loop to speed up the computation.
-        for (let i = 0; i < 80; i++) {
-            if (i < 40) {
-                if (i < 20) {
-                    f = d ^ (b & (c ^ d));
-                    k = 0x5a827999;
-                }
-                else {
-                    f = b ^ c ^ d;
-                    k = 0x6ed9eba1;
-                }
-            }
-            else {
-                if (i < 60) {
-                    f = (b & c) | (d & (b | c));
-                    k = 0x8f1bbcdc;
-                }
-                else {
-                    f = b ^ c ^ d;
-                    k = 0xca62c1d6;
-                }
-            }
-            const t = (((a << 5) | (a >>> 27)) + f + e + k + W[i]) & 0xffffffff;
-            e = d;
-            d = c;
-            c = ((b << 30) | (b >>> 2)) & 0xffffffff;
-            b = a;
-            a = t;
-        }
-        this.chain_[0] = (this.chain_[0] + a) & 0xffffffff;
-        this.chain_[1] = (this.chain_[1] + b) & 0xffffffff;
-        this.chain_[2] = (this.chain_[2] + c) & 0xffffffff;
-        this.chain_[3] = (this.chain_[3] + d) & 0xffffffff;
-        this.chain_[4] = (this.chain_[4] + e) & 0xffffffff;
-    }
-    update(bytes, length) {
-        // TODO(johnlenz): tighten the function signature and remove this check
-        if (bytes == null) {
-            return;
-        }
-        if (length === undefined) {
-            length = bytes.length;
-        }
-        const lengthMinusBlock = length - this.blockSize;
-        let n = 0;
-        // Using local instead of member variables gives ~5% speedup on Firefox 16.
-        const buf = this.buf_;
-        let inbuf = this.inbuf_;
-        // The outer while loop should execute at most twice.
-        while (n < length) {
-            // When we have no data in the block to top up, we can directly process the
-            // input buffer (assuming it contains sufficient data). This gives ~25%
-            // speedup on Chrome 23 and ~15% speedup on Firefox 16, but requires that
-            // the data is provided in large chunks (or in multiples of 64 bytes).
-            if (inbuf === 0) {
-                while (n <= lengthMinusBlock) {
-                    this.compress_(bytes, n);
-                    n += this.blockSize;
-                }
-            }
-            if (typeof bytes === 'string') {
-                while (n < length) {
-                    buf[inbuf] = bytes.charCodeAt(n);
-                    ++inbuf;
-                    ++n;
-                    if (inbuf === this.blockSize) {
-                        this.compress_(buf);
-                        inbuf = 0;
-                        // Jump to the outer loop so we use the full-block optimization.
-                        break;
-                    }
-                }
-            }
-            else {
-                while (n < length) {
-                    buf[inbuf] = bytes[n];
-                    ++inbuf;
-                    ++n;
-                    if (inbuf === this.blockSize) {
-                        this.compress_(buf);
-                        inbuf = 0;
-                        // Jump to the outer loop so we use the full-block optimization.
-                        break;
-                    }
-                }
-            }
-        }
-        this.inbuf_ = inbuf;
-        this.total_ += length;
-    }
-    /** @override */
-    digest() {
-        const digest = [];
-        let totalBits = this.total_ * 8;
-        // Add pad 0x80 0x00*.
-        if (this.inbuf_ < 56) {
-            this.update(this.pad_, 56 - this.inbuf_);
-        }
-        else {
-            this.update(this.pad_, this.blockSize - (this.inbuf_ - 56));
-        }
-        // Add # bits.
-        for (let i = this.blockSize - 1; i >= 56; i--) {
-            this.buf_[i] = totalBits & 255;
-            totalBits /= 256; // Don't use bit-shifting here!
-        }
-        this.compress_(this.buf_);
-        let n = 0;
-        for (let i = 0; i < 5; i++) {
-            for (let j = 24; j >= 0; j -= 8) {
-                digest[n] = (this.chain_[i] >> j) & 255;
-                ++n;
-            }
-        }
-        return digest;
-    }
-}
-
-/**
- * Helper to make a Subscribe function (just like Promise helps make a
- * Thenable).
- *
- * @param executor Function which can make calls to a single Observer
- *     as a proxy.
- * @param onNoObservers Callback when count of Observers goes to zero.
- */
-function createSubscribe(executor, onNoObservers) {
-    const proxy = new ObserverProxy(executor, onNoObservers);
-    return proxy.subscribe.bind(proxy);
-}
-/**
- * Implement fan-out for any number of Observers attached via a subscribe
- * function.
- */
-class ObserverProxy {
-    /**
-     * @param executor Function which can make calls to a single Observer
-     *     as a proxy.
-     * @param onNoObservers Callback when count of Observers goes to zero.
-     */
-    constructor(executor, onNoObservers) {
-        this.observers = [];
-        this.unsubscribes = [];
-        this.observerCount = 0;
-        // Micro-task scheduling by calling task.then().
-        this.task = Promise.resolve();
-        this.finalized = false;
-        this.onNoObservers = onNoObservers;
-        // Call the executor asynchronously so subscribers that are called
-        // synchronously after the creation of the subscribe function
-        // can still receive the very first value generated in the executor.
-        this.task
-            .then(() => {
-            executor(this);
-        })
-            .catch(e => {
-            this.error(e);
-        });
-    }
-    next(value) {
-        this.forEachObserver((observer) => {
-            observer.next(value);
-        });
-    }
-    error(error) {
-        this.forEachObserver((observer) => {
-            observer.error(error);
-        });
-        this.close(error);
-    }
-    complete() {
-        this.forEachObserver((observer) => {
-            observer.complete();
-        });
-        this.close();
-    }
-    /**
-     * Subscribe function that can be used to add an Observer to the fan-out list.
-     *
-     * - We require that no event is sent to a subscriber synchronously to their
-     *   call to subscribe().
-     */
-    subscribe(nextOrObserver, error, complete) {
-        let observer;
-        if (nextOrObserver === undefined &&
-            error === undefined &&
-            complete === undefined) {
-            throw new Error('Missing Observer.');
-        }
-        // Assemble an Observer object when passed as callback functions.
-        if (implementsAnyMethods(nextOrObserver, [
-            'next',
-            'error',
-            'complete'
-        ])) {
-            observer = nextOrObserver;
-        }
-        else {
-            observer = {
-                next: nextOrObserver,
-                error,
-                complete
-            };
-        }
-        if (observer.next === undefined) {
-            observer.next = noop;
-        }
-        if (observer.error === undefined) {
-            observer.error = noop;
-        }
-        if (observer.complete === undefined) {
-            observer.complete = noop;
-        }
-        const unsub = this.unsubscribeOne.bind(this, this.observers.length);
-        // Attempt to subscribe to a terminated Observable - we
-        // just respond to the Observer with the final error or complete
-        // event.
-        if (this.finalized) {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            this.task.then(() => {
-                try {
-                    if (this.finalError) {
-                        observer.error(this.finalError);
-                    }
-                    else {
-                        observer.complete();
-                    }
-                }
-                catch (e) {
-                    // nothing
-                }
-                return;
-            });
-        }
-        this.observers.push(observer);
-        return unsub;
-    }
-    // Unsubscribe is synchronous - we guarantee that no events are sent to
-    // any unsubscribed Observer.
-    unsubscribeOne(i) {
-        if (this.observers === undefined || this.observers[i] === undefined) {
-            return;
-        }
-        delete this.observers[i];
-        this.observerCount -= 1;
-        if (this.observerCount === 0 && this.onNoObservers !== undefined) {
-            this.onNoObservers(this);
-        }
-    }
-    forEachObserver(fn) {
-        if (this.finalized) {
-            // Already closed by previous event....just eat the additional values.
-            return;
-        }
-        // Since sendOne calls asynchronously - there is no chance that
-        // this.observers will become undefined.
-        for (let i = 0; i < this.observers.length; i++) {
-            this.sendOne(i, fn);
-        }
-    }
-    // Call the Observer via one of it's callback function. We are careful to
-    // confirm that the observe has not been unsubscribed since this asynchronous
-    // function had been queued.
-    sendOne(i, fn) {
-        // Execute the callback asynchronously
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.task.then(() => {
-            if (this.observers !== undefined && this.observers[i] !== undefined) {
-                try {
-                    fn(this.observers[i]);
-                }
-                catch (e) {
-                    // Ignore exceptions raised in Observers or missing methods of an
-                    // Observer.
-                    // Log error to console. b/31404806
-                    if (typeof console !== 'undefined' && console.error) {
-                        console.error(e);
-                    }
-                }
-            }
-        });
-    }
-    close(err) {
-        if (this.finalized) {
-            return;
-        }
-        this.finalized = true;
-        if (err !== undefined) {
-            this.finalError = err;
-        }
-        // Proxy is no longer needed - garbage collect references
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.task.then(() => {
-            this.observers = undefined;
-            this.onNoObservers = undefined;
-        });
-    }
-}
-/** Turn synchronous function into one called asynchronously. */
-// eslint-disable-next-line @typescript-eslint/ban-types
-function async(fn, onError) {
-    return (...args) => {
-        Promise.resolve(true)
-            .then(() => {
-            fn(...args);
-        })
-            .catch((error) => {
-            if (onError) {
-                onError(error);
-            }
-        });
-    };
-}
-/**
- * Return true if the object passed in implements any of the named methods.
- */
-function implementsAnyMethods(obj, methods) {
-    if (typeof obj !== 'object' || obj === null) {
-        return false;
-    }
-    for (const method of methods) {
-        if (method in obj && typeof obj[method] === 'function') {
-            return true;
-        }
-    }
-    return false;
-}
-function noop() {
-    // do nothing
-}
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Check to make sure the appropriate number of arguments are provided for a public function.
- * Throws an error if it fails.
- *
- * @param fnName The function name
- * @param minCount The minimum number of arguments to allow for the function call
- * @param maxCount The maximum number of argument to allow for the function call
- * @param argCount The actual number of arguments provided.
- */
-const validateArgCount = function (fnName, minCount, maxCount, argCount) {
-    let argError;
-    if (argCount < minCount) {
-        argError = 'at least ' + minCount;
-    }
-    else if (argCount > maxCount) {
-        argError = maxCount === 0 ? 'none' : 'no more than ' + maxCount;
-    }
-    if (argError) {
-        const error = fnName +
-            ' failed: Was called with ' +
-            argCount +
-            (argCount === 1 ? ' argument.' : ' arguments.') +
-            ' Expects ' +
-            argError +
-            '.';
-        throw new Error(error);
-    }
-};
-/**
- * Generates a string to prefix an error message about failed argument validation
- *
- * @param fnName The function name
- * @param argName The name of the argument
- * @return The prefix to add to the error thrown for validation.
- */
-function errorPrefix(fnName, argName) {
-    return `${fnName} failed: ${argName} argument `;
-}
-/**
- * @param fnName
- * @param argumentNumber
- * @param namespace
- * @param optional
- */
-function validateNamespace(fnName, namespace, optional) {
-    if (optional && !namespace) {
-        return;
-    }
-    if (typeof namespace !== 'string') {
-        //TODO: I should do more validation here. We only allow certain chars in namespaces.
-        throw new Error(errorPrefix(fnName, 'namespace') + 'must be a valid firebase namespace.');
-    }
-}
-function validateCallback(fnName, argumentName, 
-// eslint-disable-next-line @typescript-eslint/ban-types
-callback, optional) {
-    if (optional && !callback) {
-        return;
-    }
-    if (typeof callback !== 'function') {
-        throw new Error(errorPrefix(fnName, argumentName) + 'must be a valid function.');
-    }
-}
-function validateContextObject(fnName, argumentName, context, optional) {
-    if (optional && !context) {
-        return;
-    }
-    if (typeof context !== 'object' || context === null) {
-        throw new Error(errorPrefix(fnName, argumentName) + 'must be a valid context object.');
-    }
-}
-
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-// Code originally came from goog.crypt.stringToUtf8ByteArray, but for some reason they
-// automatically replaced '\r\n' with '\n', and they didn't handle surrogate pairs,
-// so it's been modified.
-// Note that not all Unicode characters appear as single characters in JavaScript strings.
-// fromCharCode returns the UTF-16 encoding of a character - so some Unicode characters
-// use 2 characters in JavaScript.  All 4-byte UTF-8 characters begin with a first
-// character in the range 0xD800 - 0xDBFF (the first character of a so-called surrogate
-// pair).
-// See http://www.ecma-international.org/ecma-262/5.1/#sec-15.1.3
-/**
- * @param {string} str
- * @return {Array}
- */
-const stringToByteArray = function (str) {
-    const out = [];
-    let p = 0;
-    for (let i = 0; i < str.length; i++) {
-        let c = str.charCodeAt(i);
-        // Is this the lead surrogate in a surrogate pair?
-        if (c >= 0xd800 && c <= 0xdbff) {
-            const high = c - 0xd800; // the high 10 bits.
-            i++;
-            assert(i < str.length, 'Surrogate pair missing trail surrogate.');
-            const low = str.charCodeAt(i) - 0xdc00; // the low 10 bits.
-            c = 0x10000 + (high << 10) + low;
-        }
-        if (c < 128) {
-            out[p++] = c;
-        }
-        else if (c < 2048) {
-            out[p++] = (c >> 6) | 192;
-            out[p++] = (c & 63) | 128;
-        }
-        else if (c < 65536) {
-            out[p++] = (c >> 12) | 224;
-            out[p++] = ((c >> 6) & 63) | 128;
-            out[p++] = (c & 63) | 128;
-        }
-        else {
-            out[p++] = (c >> 18) | 240;
-            out[p++] = ((c >> 12) & 63) | 128;
-            out[p++] = ((c >> 6) & 63) | 128;
-            out[p++] = (c & 63) | 128;
-        }
-    }
-    return out;
-};
-/**
- * Calculate length without actually converting; useful for doing cheaper validation.
- * @param {string} str
- * @return {number}
- */
-const stringLength = function (str) {
-    let p = 0;
-    for (let i = 0; i < str.length; i++) {
-        const c = str.charCodeAt(i);
-        if (c < 128) {
-            p++;
-        }
-        else if (c < 2048) {
-            p += 2;
-        }
-        else if (c >= 0xd800 && c <= 0xdbff) {
-            // Lead surrogate of a surrogate pair.  The pair together will take 4 bytes to represent.
-            p += 4;
-            i++; // skip trail surrogate.
-        }
-        else {
-            p += 3;
-        }
-    }
-    return p;
-};
-
-/**
- * @license
- * Copyright 2022 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Copied from https://stackoverflow.com/a/2117523
- * Generates a new uuid.
- * @public
- */
-const uuidv4 = function () {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = (Math.random() * 16) | 0, v = c === 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
-};
-
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * The amount of milliseconds to exponentially increase.
- */
-const DEFAULT_INTERVAL_MILLIS = 1000;
-/**
- * The factor to backoff by.
- * Should be a number greater than 1.
- */
-const DEFAULT_BACKOFF_FACTOR = 2;
-/**
- * The maximum milliseconds to increase to.
- *
- * <p>Visible for testing
- */
-const MAX_VALUE_MILLIS = (/* unused pure expression or super */ null && (4 * 60 * 60 * 1000)); // Four hours, like iOS and Android.
-/**
- * The percentage of backoff time to randomize by.
- * See
- * http://go/safe-client-behavior#step-1-determine-the-appropriate-retry-interval-to-handle-spike-traffic
- * for context.
- *
- * <p>Visible for testing
- */
-const RANDOM_FACTOR = 0.5;
-/**
- * Based on the backoff method from
- * https://github.com/google/closure-library/blob/master/closure/goog/math/exponentialbackoff.js.
- * Extracted here so we don't need to pass metadata and a stateful ExponentialBackoff object around.
- */
-function calculateBackoffMillis(backoffCount, intervalMillis = DEFAULT_INTERVAL_MILLIS, backoffFactor = DEFAULT_BACKOFF_FACTOR) {
-    // Calculates an exponentially increasing value.
-    // Deviation: calculates value from count and a constant interval, so we only need to save value
-    // and count to restore state.
-    const currBaseValue = intervalMillis * Math.pow(backoffFactor, backoffCount);
-    // A random "fuzz" to avoid waves of retries.
-    // Deviation: randomFactor is required.
-    const randomWait = Math.round(
-    // A fraction of the backoff value to add/subtract.
-    // Deviation: changes multiplication order to improve readability.
-    RANDOM_FACTOR *
-        currBaseValue *
-        // A random float (rounded to int by Math.round above) in the range [-1, 1]. Determines
-        // if we add or subtract.
-        (Math.random() - 0.5) *
-        2);
-    // Limits backoff to max to avoid effectively permanent backoff.
-    return Math.min(MAX_VALUE_MILLIS, currBaseValue + randomWait);
-}
-
-/**
- * @license
- * Copyright 2020 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Provide English ordinal letters after a number
- */
-function ordinal(i) {
-    if (!Number.isFinite(i)) {
-        return `${i}`;
-    }
-    return i + indicator(i);
-}
-function indicator(i) {
-    i = Math.abs(i);
-    const cent = i % 100;
-    if (cent >= 10 && cent <= 20) {
-        return 'th';
-    }
-    const dec = i % 10;
-    if (dec === 1) {
-        return 'st';
-    }
-    if (dec === 2) {
-        return 'nd';
-    }
-    if (dec === 3) {
-        return 'rd';
-    }
-    return 'th';
-}
-
-/**
- * @license
- * Copyright 2021 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-function getModularInstance(service) {
-    if (service && service._delegate) {
-        return service._delegate;
-    }
-    else {
-        return service;
-    }
-}
-
-
-//# sourceMappingURL=index.esm2017.js.map
-
-
-/***/ }),
-
-/***/ 7167:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   f: () => (/* binding */ decryptAllCredentials)
-/* harmony export */ });
-/* harmony import */ var _utils_indexdb__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1949);
-/* harmony import */ var _utils_crypto__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4902);
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+;// ./src/services/firebase.ts
+var firebase_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -37868,355 +37780,44 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
-
 /**
- * Decrypt all credentials for a user.
- * @param credentialsList List of encrypted credentials from Firestore
- * @returns Promise<ItemCredentialDecrypted[]>
+ * services/firebase.ts
+ * Low-level Firebase service functions for authentication and user management.
+ * No business logic, just direct API calls.
  */
-function decryptAllCredentials(credentialsList) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const decryptedItems = [];
-        if (!credentialsList.length) {
-            console.debug("No credential items provided.");
-            return decryptedItems;
-        }
-        let userSecretKey = null;
-        try {
-            userSecretKey = yield (0,_utils_indexdb__WEBPACK_IMPORTED_MODULE_0__/* .getUserSecretKey */ .jQ)();
-            if (!userSecretKey) {
-                throw new Error("User secret key not found in IndexedDB");
-            }
-        }
-        catch (e) {
-            console.error("Error retrieving user secret key:", e);
-            return decryptedItems;
-        }
-        for (const credential of credentialsList) {
-            try {
-                // Decrypt the item key
-                const itemKeyDecrypted = yield (0,_utils_crypto__WEBPACK_IMPORTED_MODULE_1__/* .decryptData */ .af)(userSecretKey, credential.item_key_encrypted);
-                // Decrypt the content
-                const contentDecrypted = yield (0,_utils_crypto__WEBPACK_IMPORTED_MODULE_1__/* .decryptData */ .af)(itemKeyDecrypted, credential.content_encrypted);
-                // Parse the decrypted JSON
-                const contentJson = JSON.parse(contentDecrypted);
-                // Build the decrypted item
-                const decryptedItem = {
-                    createdDateTime: credential.created_at.toDate(),
-                    lastUseDateTime: credential.last_used_at.toDate(),
-                    title: contentJson.title || '',
-                    username: contentJson.username || '',
-                    password: contentJson.password || '',
-                    note: contentJson.note || '',
-                    url: contentJson.url || '',
-                    itemKey: itemKeyDecrypted,
-                    document_reference: credential.document_reference || '',
-                };
-                decryptedItems.push(decryptedItem);
-            }
-            catch (e) {
-                console.debug(`Error processing credential:`, e);
-            }
-        }
-        return decryptedItems;
+
+
+
+
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const firebase_auth = getAuth(app);
+const firebase_db = getFirestore(app);
+// Get the current user from Firebase Auth (low-level)
+function getCurrentUser() {
+    console.log('[Firebase] Getting current user');
+    const user = firebase_auth.currentUser;
+    console.log('[Firebase] getCurrentUser success:', user ? 'User found' : 'No user');
+    return user;
+}
+// Sign in to Firebase with a custom token (low-level)
+function firebase_signInWithFirebaseToken(token) {
+    return firebase_awaiter(this, void 0, void 0, function* () {
+        console.log('[Firebase] Signing in with Firebase token');
+        yield signInWithCustomToken(firebase_auth, token);
+        console.log('[Firebase] signInWithFirebaseToken success');
+    });
+}
+// Sign out from Firebase (low-level)
+function firebase_signOutFromFirebase() {
+    return firebase_awaiter(this, void 0, void 0, function* () {
+        console.log('[Firebase] Signing out from Firebase');
+        yield signOut(firebase_auth);
+        console.log('[Firebase] signOutFromFirebase success');
     });
 }
 
-
-/***/ }),
-
-/***/ 7289:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   LC: () => (/* binding */ equal)
-/* harmony export */ });
-/* unused harmony exports select, lessOrEqual, compare */
-// Copyright (C) 2016 Dmitry Chestnykh
-// MIT License. See LICENSE file for details.
-/**
- * Package constant-time provides functions for performing algorithmically constant-time operations.
- */
-/**
- * NOTE! Due to the inability to guarantee real constant time evaluation of
- * anything in JavaScript VM, this is module is the best effort.
- */
-/**
- * Returns resultIfOne if subject is 1, or resultIfZero if subject is 0.
- *
- * Supports only 32-bit integers, so resultIfOne or resultIfZero are not
- * integers, they'll be converted to them with bitwise operations.
- */
-function select(subject, resultIfOne, resultIfZero) {
-    return (~(subject - 1) & resultIfOne) | ((subject - 1) & resultIfZero);
-}
-/**
- * Returns 1 if a <= b, or 0 if not.
- * Arguments must be positive 32-bit integers less than or equal to 2^31 - 1.
- */
-function lessOrEqual(a, b) {
-    return (((a | 0) - (b | 0) - 1) >>> 31) & 1;
-}
-/**
- * Returns 1 if a and b are of equal length and their contents
- * are equal, or 0 otherwise.
- *
- * Note that unlike in equal(), zero-length inputs are considered
- * the same, so this function will return 1.
- */
-function compare(a, b) {
-    if (a.length !== b.length) {
-        return 0;
-    }
-    let result = 0;
-    for (let i = 0; i < a.length; i++) {
-        result |= a[i] ^ b[i];
-    }
-    return (1 & ((result - 1) >>> 8));
-}
-/**
- * Returns true if a and b are of equal non-zero length,
- * and their contents are equal, or false otherwise.
- *
- * Note that unlike in compare() zero-length inputs are considered
- * _not_ equal, so this function will return false.
- */
-function equal(a, b) {
-    if (a.length === 0 || b.length === 0) {
-        return false;
-    }
-    return compare(a, b) !== 0;
-}
-//# sourceMappingURL=constant-time.js.map
-
-/***/ }),
-
-/***/ 7500:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   r: () => (/* binding */ replaceTraps),
-/* harmony export */   w: () => (/* binding */ wrap)
-/* harmony export */ });
-/* unused harmony exports a, i, u */
-const instanceOfAny = (object, constructors) => constructors.some((c) => object instanceof c);
-
-let idbProxyableTypes;
-let cursorAdvanceMethods;
-// This is a function to prevent it throwing up in node environments.
-function getIdbProxyableTypes() {
-    return (idbProxyableTypes ||
-        (idbProxyableTypes = [
-            IDBDatabase,
-            IDBObjectStore,
-            IDBIndex,
-            IDBCursor,
-            IDBTransaction,
-        ]));
-}
-// This is a function to prevent it throwing up in node environments.
-function getCursorAdvanceMethods() {
-    return (cursorAdvanceMethods ||
-        (cursorAdvanceMethods = [
-            IDBCursor.prototype.advance,
-            IDBCursor.prototype.continue,
-            IDBCursor.prototype.continuePrimaryKey,
-        ]));
-}
-const cursorRequestMap = new WeakMap();
-const transactionDoneMap = new WeakMap();
-const transactionStoreNamesMap = new WeakMap();
-const transformCache = new WeakMap();
-const reverseTransformCache = new WeakMap();
-function promisifyRequest(request) {
-    const promise = new Promise((resolve, reject) => {
-        const unlisten = () => {
-            request.removeEventListener('success', success);
-            request.removeEventListener('error', error);
-        };
-        const success = () => {
-            resolve(wrap(request.result));
-            unlisten();
-        };
-        const error = () => {
-            reject(request.error);
-            unlisten();
-        };
-        request.addEventListener('success', success);
-        request.addEventListener('error', error);
-    });
-    promise
-        .then((value) => {
-        // Since cursoring reuses the IDBRequest (*sigh*), we cache it for later retrieval
-        // (see wrapFunction).
-        if (value instanceof IDBCursor) {
-            cursorRequestMap.set(value, request);
-        }
-        // Catching to avoid "Uncaught Promise exceptions"
-    })
-        .catch(() => { });
-    // This mapping exists in reverseTransformCache but doesn't doesn't exist in transformCache. This
-    // is because we create many promises from a single IDBRequest.
-    reverseTransformCache.set(promise, request);
-    return promise;
-}
-function cacheDonePromiseForTransaction(tx) {
-    // Early bail if we've already created a done promise for this transaction.
-    if (transactionDoneMap.has(tx))
-        return;
-    const done = new Promise((resolve, reject) => {
-        const unlisten = () => {
-            tx.removeEventListener('complete', complete);
-            tx.removeEventListener('error', error);
-            tx.removeEventListener('abort', error);
-        };
-        const complete = () => {
-            resolve();
-            unlisten();
-        };
-        const error = () => {
-            reject(tx.error || new DOMException('AbortError', 'AbortError'));
-            unlisten();
-        };
-        tx.addEventListener('complete', complete);
-        tx.addEventListener('error', error);
-        tx.addEventListener('abort', error);
-    });
-    // Cache it for later retrieval.
-    transactionDoneMap.set(tx, done);
-}
-let idbProxyTraps = {
-    get(target, prop, receiver) {
-        if (target instanceof IDBTransaction) {
-            // Special handling for transaction.done.
-            if (prop === 'done')
-                return transactionDoneMap.get(target);
-            // Polyfill for objectStoreNames because of Edge.
-            if (prop === 'objectStoreNames') {
-                return target.objectStoreNames || transactionStoreNamesMap.get(target);
-            }
-            // Make tx.store return the only store in the transaction, or undefined if there are many.
-            if (prop === 'store') {
-                return receiver.objectStoreNames[1]
-                    ? undefined
-                    : receiver.objectStore(receiver.objectStoreNames[0]);
-            }
-        }
-        // Else transform whatever we get back.
-        return wrap(target[prop]);
-    },
-    set(target, prop, value) {
-        target[prop] = value;
-        return true;
-    },
-    has(target, prop) {
-        if (target instanceof IDBTransaction &&
-            (prop === 'done' || prop === 'store')) {
-            return true;
-        }
-        return prop in target;
-    },
-};
-function replaceTraps(callback) {
-    idbProxyTraps = callback(idbProxyTraps);
-}
-function wrapFunction(func) {
-    // Due to expected object equality (which is enforced by the caching in `wrap`), we
-    // only create one new func per func.
-    // Edge doesn't support objectStoreNames (booo), so we polyfill it here.
-    if (func === IDBDatabase.prototype.transaction &&
-        !('objectStoreNames' in IDBTransaction.prototype)) {
-        return function (storeNames, ...args) {
-            const tx = func.call(unwrap(this), storeNames, ...args);
-            transactionStoreNamesMap.set(tx, storeNames.sort ? storeNames.sort() : [storeNames]);
-            return wrap(tx);
-        };
-    }
-    // Cursor methods are special, as the behaviour is a little more different to standard IDB. In
-    // IDB, you advance the cursor and wait for a new 'success' on the IDBRequest that gave you the
-    // cursor. It's kinda like a promise that can resolve with many values. That doesn't make sense
-    // with real promises, so each advance methods returns a new promise for the cursor object, or
-    // undefined if the end of the cursor has been reached.
-    if (getCursorAdvanceMethods().includes(func)) {
-        return function (...args) {
-            // Calling the original function with the proxy as 'this' causes ILLEGAL INVOCATION, so we use
-            // the original object.
-            func.apply(unwrap(this), args);
-            return wrap(cursorRequestMap.get(this));
-        };
-    }
-    return function (...args) {
-        // Calling the original function with the proxy as 'this' causes ILLEGAL INVOCATION, so we use
-        // the original object.
-        return wrap(func.apply(unwrap(this), args));
-    };
-}
-function transformCachableValue(value) {
-    if (typeof value === 'function')
-        return wrapFunction(value);
-    // This doesn't return, it just creates a 'done' promise for the transaction,
-    // which is later returned for transaction.done (see idbObjectHandler).
-    if (value instanceof IDBTransaction)
-        cacheDonePromiseForTransaction(value);
-    if (instanceOfAny(value, getIdbProxyableTypes()))
-        return new Proxy(value, idbProxyTraps);
-    // Return the same value back if we're not going to transform it.
-    return value;
-}
-function wrap(value) {
-    // We sometimes generate multiple promises from a single IDBRequest (eg when cursoring), because
-    // IDB is weird and a single IDBRequest can yield many responses, so these can't be cached.
-    if (value instanceof IDBRequest)
-        return promisifyRequest(value);
-    // If we've already transformed this value before, reuse the transformed value.
-    // This is faster, but it also provides object equality.
-    if (transformCache.has(value))
-        return transformCache.get(value);
-    const newValue = transformCachableValue(value);
-    // Not all types are transformed.
-    // These may be primitive types, so they can't be WeakMap keys.
-    if (newValue !== value) {
-        transformCache.set(value, newValue);
-        reverseTransformCache.set(newValue, value);
-    }
-    return newValue;
-}
-const unwrap = (value) => reverseTransformCache.get(value);
-
-
-
-
-/***/ }),
-
-/***/ 7514:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getAllCachedCredentials: () => (/* binding */ getAllCachedCredentials),
-/* harmony export */   getAllCachedCredentialsWithFallback: () => (/* binding */ getAllCachedCredentialsWithFallback),
-/* harmony export */   getCachedCredential: () => (/* binding */ getCachedCredential),
-/* harmony export */   getCachedCredentialsByDomain: () => (/* binding */ getCachedCredentialsByDomain),
-/* harmony export */   openCacheDB: () => (/* binding */ openCacheDB),
-/* harmony export */   refreshCredentialCache: () => (/* binding */ refreshCredentialCache),
-/* harmony export */   saveCachedCredentials: () => (/* binding */ saveCachedCredentials)
-/* harmony export */ });
-/* harmony import */ var _utils_indexdb__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1949);
-/* harmony import */ var _firestoreCredentialService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5781);
-/* harmony import */ var _decryptCredentials__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7167);
-/* harmony import */ var _utils_crypto__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4902);
-/* harmony import */ var _firebase__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9487);
-/*
-Double-envelope cache principle:
-- On unlock: fetch all encrypted credentials, decrypt each with userSecretKey, then re-encrypt:
-    itemKeyCipher = AESGCM.encrypt(itemKey, userSecretKey)
-    passwordCipher = AESGCM.encrypt(passwordPlain, itemKey)
-- Persist { id, url, title, username, itemKeyCipher, passwordCipher } in IndexedDB.
-- Discard raw itemKey and passwordPlain.
-- On injection: read one cached record, decrypt itemKey with userSecretKey, then decrypt passwordPlain with that itemKey.
-*/
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+;// ./src/services/firestore.ts
+var firestore_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -38225,1447 +37826,184 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
-
-
-
-
-const DB_NAME = 'SimpliPassCache';
-const STORE_NAME = 'credentials';
-const DB_VERSION = 1;
-/**
- * Opens the IndexedDB cache database.
- * @returns Promise resolving to the IDBDatabase instance.
- */
-function openCacheDB() {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
-        request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-            }
-        };
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
-}
-/**
- * Saves an array of cached credentials to IndexedDB.
- * @param cached Array of CachedCredential objects.
- * @returns Promise<void>
- */
-function saveCachedCredentials(cached) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const db = yield openCacheDB();
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_NAME, 'readwrite');
-            const store = tx.objectStore(STORE_NAME);
-            cached.forEach(cred => {
-                if (!cred.id) {
-                    console.error('Missing id for credential:', cred);
-                }
-                store.put(cred);
-            });
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
-        });
-    });
-}
-/**
- * Retrieves all cached credentials from IndexedDB.
- * @returns Promise resolving to an array of CachedCredential objects.
- */
-function getAllCachedCredentials() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const db = yield openCacheDB();
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_NAME, 'readonly');
-            const store = tx.objectStore(STORE_NAME);
-            const request = store.getAll();
-            request.onsuccess = () => {
-                console.debug("Cache request result:", request.result);
-                resolve(request.result);
-            };
-            request.onerror = () => reject(request.error);
-        });
-    });
-}
-/**
- * Retrieves a single cached credential by its ID.
- * @param id Credential ID
- * @returns Promise resolving to the CachedCredential or null if not found.
- */
-function getCachedCredential(id) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const db = yield openCacheDB();
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_NAME, 'readonly');
-            const store = tx.objectStore(STORE_NAME);
-            const request = store.get(id);
-            request.onsuccess = () => resolve(request.result || null);
-            request.onerror = () => reject(request.error);
-        });
-    });
-}
-/**
- * Fetches all encrypted credentials from Firestore, decrypts, re-encrypts, stores, and returns them.
- * @param user The current authenticated user.
- * @returns Promise resolving to an array of CachedCredential objects.
- */
-function refreshCredentialCache(user) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (!user)
-            throw new Error('No user logged in');
-        const userSecretKey = yield (0,_utils_indexdb__WEBPACK_IMPORTED_MODULE_0__/* .getUserSecretKey */ .jQ)();
-        if (!userSecretKey)
-            throw new Error('User secret key not found');
-        // 1. Fetch encrypted credentials from Firestore
-        const encrypted = yield (0,_firestoreCredentialService__WEBPACK_IMPORTED_MODULE_1__/* .getAllCredentials */ .s3)(user.uid);
-        // 2. Decrypt all credentials (get plain itemKey and password)
-        const decrypted = yield (0,_decryptCredentials__WEBPACK_IMPORTED_MODULE_2__/* .decryptAllCredentials */ .f)(encrypted);
-        // 3. For each, re-encrypt as CachedCredential
-        const cached = [];
-        for (const cred of decrypted) {
-            const itemKeyCipher = yield (0,_utils_crypto__WEBPACK_IMPORTED_MODULE_3__/* .encryptData */ .yv)(userSecretKey, cred.itemKey);
-            const passwordCipher = yield (0,_utils_crypto__WEBPACK_IMPORTED_MODULE_3__/* .encryptData */ .yv)(cred.itemKey, cred.password);
-            cached.push({
-                id: cred.document_reference.id,
-                url: cred.url,
-                title: cred.title,
-                username: cred.username,
-                itemKeyCipher,
-                passwordCipher,
-            });
+var firestore_rest = (undefined && undefined.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
         }
-        // 4. Store in IndexedDB
-        yield saveCachedCredentials(cached);
-        return cached;
-    });
-}
-/**
- * Always returns the cached credentials. If cache is empty, refreshes it first.
- * @param user The current authenticated user.
- * @returns Promise resolving to an array of CachedCredential objects.
- */
-function getAllCachedCredentialsWithFallback(user) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const db = yield openCacheDB();
-        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-            const tx = db.transaction('credentials', 'readonly');
-            const store = tx.objectStore('credentials');
-            const request = store.getAll();
-            request.onsuccess = () => __awaiter(this, void 0, void 0, function* () {
-                let creds = request.result;
-                if (!creds || creds.length === 0) {
-                    try {
-                        creds = yield refreshCredentialCache(user);
-                    }
-                    catch (e) {
-                        reject(e);
-                        return;
-                    }
-                }
-                // Log every credential's URL when retrieved from cache
-                console.log('[Cache] Retrieved credentials from cache:');
-                creds.forEach(cred => {
-                    console.log(`[Cache] Credential ID: ${cred.id}, URL: ${cred.url}, Title: ${cred.title}`);
-                });
-                resolve(creds);
-            });
-            request.onerror = () => reject(request.error);
-        }));
-    });
-}
-/**
- * Helper function to extract registered domain from hostname (handles subdomains)
- */
-function getRegisteredDomain(hostname) {
-    const parts = hostname.split('.').filter(Boolean);
-    if (parts.length <= 2)
-        return hostname.replace(/^www\./, '');
-    return parts.slice(-2).join('.');
-}
-/**
- * Get cached credentials filtered by domain (robust, matches registered domain)
- * @param domain The root domain to filter by
- * @returns Promise resolving to an array of CachedCredential objects matching the domain
- */
-function getCachedCredentialsByDomain(domain) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let allCreds = yield getAllCachedCredentials();
-        if (!allCreds || allCreds.length === 0 && _firebase__WEBPACK_IMPORTED_MODULE_4__/* .auth */ .j2.currentUser) {
-            try {
-                allCreds = yield refreshCredentialCache(_firebase__WEBPACK_IMPORTED_MODULE_4__/* .auth */ .j2.currentUser);
-            }
-            catch (e) {
-                allCreds = [];
-            }
-        }
-        const pageDomain = getRegisteredDomain(domain).toLowerCase();
-        return allCreds.filter(cred => {
-            // 1. Try URL match if url is non-empty
-            if (cred.url && cred.url.trim() !== '') {
-                try {
-                    const credUrl = new URL(cred.url.startsWith('http') ? cred.url : 'https://' + cred.url);
-                    const credDomain = getRegisteredDomain(credUrl.hostname).toLowerCase();
-                    if (pageDomain.endsWith(credDomain) || credDomain.endsWith(pageDomain)) {
-                        return true;
-                    }
-                }
-                catch (_a) {
-                    if (cred.url.toLowerCase().includes(pageDomain) || pageDomain.includes(cred.url.toLowerCase())) {
-                        return true;
-                    }
-                }
-                // If url is present but does not match, fall back to title match
-                if (cred.title) {
-                    const title = cred.title.toLowerCase();
-                    if (title.includes(pageDomain) || pageDomain.includes(title)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            // 2. If url is empty, match by title (case-insensitive, substring or reverse)
-            if (cred.title) {
-                const title = cred.title.toLowerCase();
-                if (title.includes(pageDomain) || pageDomain.includes(title)) {
-                    return true;
-                }
-            }
-            return false;
-        });
-    });
-}
-/**
- * Helper function to extract root domain from hostname (same as content script)
- */
-function getRootDomain(hostname) {
-    const parts = hostname.split('.').filter(Boolean);
-    if (parts.length <= 2)
-        return hostname.replace(/^www\./, '');
-    return parts.slice(-2).join('.');
-}
-
-
-/***/ }),
-
-/***/ 8073:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   u: () => (/* binding */ wipe)
-/* harmony export */ });
-// Copyright (C) 2016 Dmitry Chestnykh
-// MIT License. See LICENSE file for details.
-/**
- * Sets all values in the given array to zero and returns it.
- *
- * The fact that it sets bytes to zero can be relied on.
- *
- * There is no guarantee that this function makes data disappear from memory,
- * as runtime implementation can, for example, have copying garbage collector
- * that will make copies of sensitive data before we wipe it. Or that an
- * operating system will write our data to swap or sleep image. Another thing
- * is that an optimizing compiler can remove calls to this function or make it
- * no-op. There's nothing we can do with it, so we just do our best and hope
- * that everything will be okay and good will triumph over evil.
- */
-function wipe(array) {
-    // Right now it's similar to array.fill(0). If it turns
-    // out that runtimes optimize this call away, maybe
-    // we can try something else.
-    for (let i = 0; i < array.length; i++) {
-        array[i] = 0;
-    }
-    return array;
-}
-//# sourceMappingURL=wipe.js.map
-
-/***/ }),
-
-/***/ 8461:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Dk: () => (/* binding */ getApps),
-/* harmony export */   KO: () => (/* binding */ registerVersion),
-/* harmony export */   MF: () => (/* binding */ SDK_VERSION),
-/* harmony export */   Sx: () => (/* binding */ getApp),
-/* harmony export */   Wp: () => (/* binding */ initializeApp),
-/* harmony export */   j6: () => (/* binding */ _getProvider),
-/* harmony export */   om: () => (/* binding */ _registerComponent),
-/* harmony export */   xZ: () => (/* binding */ _isFirebaseServerApp)
-/* harmony export */ });
-/* unused harmony exports _DEFAULT_ENTRY_NAME, _addComponent, _addOrOverwriteComponent, _apps, _clearComponents, _components, _isFirebaseApp, _removeServiceInstance, _serverApps, deleteApp, initializeServerApp, onLog, setLogLevel */
-/* harmony import */ var _firebase_component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5125);
-/* harmony import */ var _firebase_logger__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3424);
-/* harmony import */ var _firebase_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6743);
-/* harmony import */ var idb__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(602);
-
-
-
-
-
-
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-class PlatformLoggerServiceImpl {
-    constructor(container) {
-        this.container = container;
-    }
-    // In initial implementation, this will be called by installations on
-    // auth token refresh, and installations will send this string.
-    getPlatformInfoString() {
-        const providers = this.container.getProviders();
-        // Loop through providers and get library/version pairs from any that are
-        // version components.
-        return providers
-            .map(provider => {
-            if (isVersionServiceProvider(provider)) {
-                const service = provider.getImmediate();
-                return `${service.library}/${service.version}`;
-            }
-            else {
-                return null;
-            }
-        })
-            .filter(logString => logString)
-            .join(' ');
-    }
-}
-/**
- *
- * @param provider check if this provider provides a VersionService
- *
- * NOTE: Using Provider<'app-version'> is a hack to indicate that the provider
- * provides VersionService. The provider is not necessarily a 'app-version'
- * provider.
- */
-function isVersionServiceProvider(provider) {
-    const component = provider.getComponent();
-    return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */;
-}
-
-const name$q = "@firebase/app";
-const version$1 = "0.10.13";
-
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-const logger = new _firebase_logger__WEBPACK_IMPORTED_MODULE_1__/* .Logger */ .Vy('@firebase/app');
-
-const name$p = "@firebase/app-compat";
-
-const name$o = "@firebase/analytics-compat";
-
-const name$n = "@firebase/analytics";
-
-const name$m = "@firebase/app-check-compat";
-
-const name$l = "@firebase/app-check";
-
-const name$k = "@firebase/auth";
-
-const name$j = "@firebase/auth-compat";
-
-const name$i = "@firebase/database";
-
-const name$h = "@firebase/data-connect";
-
-const name$g = "@firebase/database-compat";
-
-const name$f = "@firebase/functions";
-
-const name$e = "@firebase/functions-compat";
-
-const name$d = "@firebase/installations";
-
-const name$c = "@firebase/installations-compat";
-
-const name$b = "@firebase/messaging";
-
-const name$a = "@firebase/messaging-compat";
-
-const name$9 = "@firebase/performance";
-
-const name$8 = "@firebase/performance-compat";
-
-const name$7 = "@firebase/remote-config";
-
-const name$6 = "@firebase/remote-config-compat";
-
-const name$5 = "@firebase/storage";
-
-const name$4 = "@firebase/storage-compat";
-
-const name$3 = "@firebase/firestore";
-
-const name$2 = "@firebase/vertexai-preview";
-
-const name$1 = "@firebase/firestore-compat";
-
-const name = "firebase";
-const version = "10.14.1";
-
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * The default app name
- *
- * @internal
- */
-const DEFAULT_ENTRY_NAME = '[DEFAULT]';
-const PLATFORM_LOG_STRING = {
-    [name$q]: 'fire-core',
-    [name$p]: 'fire-core-compat',
-    [name$n]: 'fire-analytics',
-    [name$o]: 'fire-analytics-compat',
-    [name$l]: 'fire-app-check',
-    [name$m]: 'fire-app-check-compat',
-    [name$k]: 'fire-auth',
-    [name$j]: 'fire-auth-compat',
-    [name$i]: 'fire-rtdb',
-    [name$h]: 'fire-data-connect',
-    [name$g]: 'fire-rtdb-compat',
-    [name$f]: 'fire-fn',
-    [name$e]: 'fire-fn-compat',
-    [name$d]: 'fire-iid',
-    [name$c]: 'fire-iid-compat',
-    [name$b]: 'fire-fcm',
-    [name$a]: 'fire-fcm-compat',
-    [name$9]: 'fire-perf',
-    [name$8]: 'fire-perf-compat',
-    [name$7]: 'fire-rc',
-    [name$6]: 'fire-rc-compat',
-    [name$5]: 'fire-gcs',
-    [name$4]: 'fire-gcs-compat',
-    [name$3]: 'fire-fst',
-    [name$1]: 'fire-fst-compat',
-    [name$2]: 'fire-vertex',
-    'fire-js': 'fire-js',
-    [name]: 'fire-js-all'
+    return t;
 };
 
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * @internal
- */
-const _apps = new Map();
-/**
- * @internal
- */
-const _serverApps = new Map();
-/**
- * Registered components.
- *
- * @internal
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const _components = new Map();
-/**
- * @param component - the component being added to this app's container
- *
- * @internal
- */
-function _addComponent(app, component) {
-    try {
-        app.container.addComponent(component);
-    }
-    catch (e) {
-        logger.debug(`Component ${component.name} failed to register with FirebaseApp ${app.name}`, e);
-    }
-}
-/**
- *
- * @internal
- */
-function _addOrOverwriteComponent(app, component) {
-    app.container.addOrOverwriteComponent(component);
-}
-/**
- *
- * @param component - the component to register
- * @returns whether or not the component is registered successfully
- *
- * @internal
- */
-function _registerComponent(component) {
-    const componentName = component.name;
-    if (_components.has(componentName)) {
-        logger.debug(`There were multiple attempts to register component ${componentName}.`);
-        return false;
-    }
-    _components.set(componentName, component);
-    // add the component to existing app instances
-    for (const app of _apps.values()) {
-        _addComponent(app, component);
-    }
-    for (const serverApp of _serverApps.values()) {
-        _addComponent(serverApp, component);
-    }
-    return true;
-}
-/**
- *
- * @param app - FirebaseApp instance
- * @param name - service name
- *
- * @returns the provider for the service with the matching name
- *
- * @internal
- */
-function _getProvider(app, name) {
-    const heartbeatController = app.container
-        .getProvider('heartbeat')
-        .getImmediate({ optional: true });
-    if (heartbeatController) {
-        void heartbeatController.triggerHeartbeat();
-    }
-    return app.container.getProvider(name);
-}
-/**
- *
- * @param app - FirebaseApp instance
- * @param name - service name
- * @param instanceIdentifier - service instance identifier in case the service supports multiple instances
- *
- * @internal
- */
-function _removeServiceInstance(app, name, instanceIdentifier = DEFAULT_ENTRY_NAME) {
-    _getProvider(app, name).clearInstance(instanceIdentifier);
-}
-/**
- *
- * @param obj - an object of type FirebaseApp or FirebaseOptions.
- *
- * @returns true if the provide object is of type FirebaseApp.
- *
- * @internal
- */
-function _isFirebaseApp(obj) {
-    return obj.options !== undefined;
-}
-/**
- *
- * @param obj - an object of type FirebaseApp.
- *
- * @returns true if the provided object is of type FirebaseServerAppImpl.
- *
- * @internal
- */
-function _isFirebaseServerApp(obj) {
-    return obj.settings !== undefined;
-}
-/**
- * Test only
- *
- * @internal
- */
-function _clearComponents() {
-    _components.clear();
-}
 
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-const ERRORS = {
-    ["no-app" /* AppError.NO_APP */]: "No Firebase App '{$appName}' has been created - " +
-        'call initializeApp() first',
-    ["bad-app-name" /* AppError.BAD_APP_NAME */]: "Illegal App name: '{$appName}'",
-    ["duplicate-app" /* AppError.DUPLICATE_APP */]: "Firebase App named '{$appName}' already exists with different options or config",
-    ["app-deleted" /* AppError.APP_DELETED */]: "Firebase App named '{$appName}' already deleted",
-    ["server-app-deleted" /* AppError.SERVER_APP_DELETED */]: 'Firebase Server App has been deleted',
-    ["no-options" /* AppError.NO_OPTIONS */]: 'Need to provide options, when not being deployed to hosting via source.',
-    ["invalid-app-argument" /* AppError.INVALID_APP_ARGUMENT */]: 'firebase.{$appName}() takes either no argument or a ' +
-        'Firebase App instance.',
-    ["invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */]: 'First argument to `onLog` must be null or a function.',
-    ["idb-open" /* AppError.IDB_OPEN */]: 'Error thrown when opening IndexedDB. Original error: {$originalErrorMessage}.',
-    ["idb-get" /* AppError.IDB_GET */]: 'Error thrown when reading from IndexedDB. Original error: {$originalErrorMessage}.',
-    ["idb-set" /* AppError.IDB_WRITE */]: 'Error thrown when writing to IndexedDB. Original error: {$originalErrorMessage}.',
-    ["idb-delete" /* AppError.IDB_DELETE */]: 'Error thrown when deleting from IndexedDB. Original error: {$originalErrorMessage}.',
-    ["finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */]: 'FirebaseServerApp deleteOnDeref field defined but the JS runtime does not support FinalizationRegistry.',
-    ["invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */]: 'FirebaseServerApp is not for use in browser environments.'
-};
-const ERROR_FACTORY = new _firebase_util__WEBPACK_IMPORTED_MODULE_2__/* .ErrorFactory */ .FA('app', 'Firebase', ERRORS);
 
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-class FirebaseAppImpl {
-    constructor(options, config, container) {
-        this._isDeleted = false;
-        this._options = Object.assign({}, options);
-        this._config = Object.assign({}, config);
-        this._name = config.name;
-        this._automaticDataCollectionEnabled =
-            config.automaticDataCollectionEnabled;
-        this._container = container;
-        this.container.addComponent(new _firebase_component__WEBPACK_IMPORTED_MODULE_0__/* .Component */ .uA('app', () => this, "PUBLIC" /* ComponentType.PUBLIC */));
-    }
-    get automaticDataCollectionEnabled() {
-        this.checkDestroyed();
-        return this._automaticDataCollectionEnabled;
-    }
-    set automaticDataCollectionEnabled(val) {
-        this.checkDestroyed();
-        this._automaticDataCollectionEnabled = val;
-    }
-    get name() {
-        this.checkDestroyed();
-        return this._name;
-    }
-    get options() {
-        this.checkDestroyed();
-        return this._options;
-    }
-    get config() {
-        this.checkDestroyed();
-        return this._config;
-    }
-    get container() {
-        return this._container;
-    }
-    get isDeleted() {
-        return this._isDeleted;
-    }
-    set isDeleted(val) {
-        this._isDeleted = val;
-    }
-    /**
-     * This function will throw an Error if the App has already been deleted -
-     * use before performing API actions on the App.
-     */
-    checkDestroyed() {
-        if (this.isDeleted) {
-            throw ERROR_FACTORY.create("app-deleted" /* AppError.APP_DELETED */, { appName: this._name });
-        }
-    }
-}
-
-/**
- * @license
- * Copyright 2023 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-class FirebaseServerAppImpl extends FirebaseAppImpl {
-    constructor(options, serverConfig, name, container) {
-        // Build configuration parameters for the FirebaseAppImpl base class.
-        const automaticDataCollectionEnabled = serverConfig.automaticDataCollectionEnabled !== undefined
-            ? serverConfig.automaticDataCollectionEnabled
-            : false;
-        // Create the FirebaseAppSettings object for the FirebaseAppImp constructor.
-        const config = {
-            name,
-            automaticDataCollectionEnabled
-        };
-        if (options.apiKey !== undefined) {
-            // Construct the parent FirebaseAppImp object.
-            super(options, config, container);
-        }
-        else {
-            const appImpl = options;
-            super(appImpl.options, config, container);
-        }
-        // Now construct the data for the FirebaseServerAppImpl.
-        this._serverConfig = Object.assign({ automaticDataCollectionEnabled }, serverConfig);
-        this._finalizationRegistry = null;
-        if (typeof FinalizationRegistry !== 'undefined') {
-            this._finalizationRegistry = new FinalizationRegistry(() => {
-                this.automaticCleanup();
-            });
-        }
-        this._refCount = 0;
-        this.incRefCount(this._serverConfig.releaseOnDeref);
-        // Do not retain a hard reference to the dref object, otherwise the FinalizationRegistry
-        // will never trigger.
-        this._serverConfig.releaseOnDeref = undefined;
-        serverConfig.releaseOnDeref = undefined;
-        registerVersion(name$q, version$1, 'serverapp');
-    }
-    toJSON() {
-        return undefined;
-    }
-    get refCount() {
-        return this._refCount;
-    }
-    // Increment the reference count of this server app. If an object is provided, register it
-    // with the finalization registry.
-    incRefCount(obj) {
-        if (this.isDeleted) {
-            return;
-        }
-        this._refCount++;
-        if (obj !== undefined && this._finalizationRegistry !== null) {
-            this._finalizationRegistry.register(obj, this);
-        }
-    }
-    // Decrement the reference count.
-    decRefCount() {
-        if (this.isDeleted) {
-            return 0;
-        }
-        return --this._refCount;
-    }
-    // Invoked by the FinalizationRegistry callback to note that this app should go through its
-    // reference counts and delete itself if no reference count remain. The coordinating logic that
-    // handles this is in deleteApp(...).
-    automaticCleanup() {
-        void deleteApp(this);
-    }
-    get settings() {
-        this.checkDestroyed();
-        return this._serverConfig;
-    }
-    /**
-     * This function will throw an Error if the App has already been deleted -
-     * use before performing API actions on the App.
-     */
-    checkDestroyed() {
-        if (this.isDeleted) {
-            throw ERROR_FACTORY.create("server-app-deleted" /* AppError.SERVER_APP_DELETED */);
-        }
-    }
-}
-
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * The current SDK version.
- *
- * @public
- */
-const SDK_VERSION = version;
-function initializeApp(_options, rawConfig = {}) {
-    let options = _options;
-    if (typeof rawConfig !== 'object') {
-        const name = rawConfig;
-        rawConfig = { name };
-    }
-    const config = Object.assign({ name: DEFAULT_ENTRY_NAME, automaticDataCollectionEnabled: false }, rawConfig);
-    const name = config.name;
-    if (typeof name !== 'string' || !name) {
-        throw ERROR_FACTORY.create("bad-app-name" /* AppError.BAD_APP_NAME */, {
-            appName: String(name)
-        });
-    }
-    options || (options = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__/* .getDefaultAppConfig */ .T9)());
-    if (!options) {
-        throw ERROR_FACTORY.create("no-options" /* AppError.NO_OPTIONS */);
-    }
-    const existingApp = _apps.get(name);
-    if (existingApp) {
-        // return the existing app if options and config deep equal the ones in the existing app.
-        if ((0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__/* .deepEqual */ .bD)(options, existingApp.options) &&
-            (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__/* .deepEqual */ .bD)(config, existingApp.config)) {
-            return existingApp;
-        }
-        else {
-            throw ERROR_FACTORY.create("duplicate-app" /* AppError.DUPLICATE_APP */, { appName: name });
-        }
-    }
-    const container = new _firebase_component__WEBPACK_IMPORTED_MODULE_0__/* .ComponentContainer */ .h1(name);
-    for (const component of _components.values()) {
-        container.addComponent(component);
-    }
-    const newApp = new FirebaseAppImpl(options, config, container);
-    _apps.set(name, newApp);
-    return newApp;
-}
-function initializeServerApp(_options, _serverAppConfig) {
-    if (isBrowser() && !isWebWorker()) {
-        // FirebaseServerApp isn't designed to be run in browsers.
-        throw ERROR_FACTORY.create("invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */);
-    }
-    if (_serverAppConfig.automaticDataCollectionEnabled === undefined) {
-        _serverAppConfig.automaticDataCollectionEnabled = false;
-    }
-    let appOptions;
-    if (_isFirebaseApp(_options)) {
-        appOptions = _options.options;
-    }
-    else {
-        appOptions = _options;
-    }
-    // Build an app name based on a hash of the configuration options.
-    const nameObj = Object.assign(Object.assign({}, _serverAppConfig), appOptions);
-    // However, Do not mangle the name based on releaseOnDeref, since it will vary between the
-    // construction of FirebaseServerApp instances. For example, if the object is the request headers.
-    if (nameObj.releaseOnDeref !== undefined) {
-        delete nameObj.releaseOnDeref;
-    }
-    const hashCode = (s) => {
-        return [...s].reduce((hash, c) => (Math.imul(31, hash) + c.charCodeAt(0)) | 0, 0);
-    };
-    if (_serverAppConfig.releaseOnDeref !== undefined) {
-        if (typeof FinalizationRegistry === 'undefined') {
-            throw ERROR_FACTORY.create("finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */, {});
-        }
-    }
-    const nameString = '' + hashCode(JSON.stringify(nameObj));
-    const existingApp = _serverApps.get(nameString);
-    if (existingApp) {
-        existingApp.incRefCount(_serverAppConfig.releaseOnDeref);
-        return existingApp;
-    }
-    const container = new ComponentContainer(nameString);
-    for (const component of _components.values()) {
-        container.addComponent(component);
-    }
-    const newApp = new FirebaseServerAppImpl(appOptions, _serverAppConfig, nameString, container);
-    _serverApps.set(nameString, newApp);
-    return newApp;
-}
-/**
- * Retrieves a {@link @firebase/app#FirebaseApp} instance.
- *
- * When called with no arguments, the default app is returned. When an app name
- * is provided, the app corresponding to that name is returned.
- *
- * An exception is thrown if the app being retrieved has not yet been
- * initialized.
- *
- * @example
- * ```javascript
- * // Return the default app
- * const app = getApp();
- * ```
- *
- * @example
- * ```javascript
- * // Return a named app
- * const otherApp = getApp("otherApp");
- * ```
- *
- * @param name - Optional name of the app to return. If no name is
- *   provided, the default is `"[DEFAULT]"`.
- *
- * @returns The app corresponding to the provided app name.
- *   If no app name is provided, the default app is returned.
- *
- * @public
- */
-function getApp(name = DEFAULT_ENTRY_NAME) {
-    const app = _apps.get(name);
-    if (!app && name === DEFAULT_ENTRY_NAME && (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__/* .getDefaultAppConfig */ .T9)()) {
-        return initializeApp();
-    }
-    if (!app) {
-        throw ERROR_FACTORY.create("no-app" /* AppError.NO_APP */, { appName: name });
-    }
-    return app;
-}
-/**
- * A (read-only) array of all initialized apps.
- * @public
- */
-function getApps() {
-    return Array.from(_apps.values());
-}
-/**
- * Renders this app unusable and frees the resources of all associated
- * services.
- *
- * @example
- * ```javascript
- * deleteApp(app)
- *   .then(function() {
- *     console.log("App deleted successfully");
- *   })
- *   .catch(function(error) {
- *     console.log("Error deleting app:", error);
- *   });
- * ```
- *
- * @public
- */
-async function deleteApp(app) {
-    let cleanupProviders = false;
-    const name = app.name;
-    if (_apps.has(name)) {
-        cleanupProviders = true;
-        _apps.delete(name);
-    }
-    else if (_serverApps.has(name)) {
-        const firebaseServerApp = app;
-        if (firebaseServerApp.decRefCount() <= 0) {
-            _serverApps.delete(name);
-            cleanupProviders = true;
-        }
-    }
-    if (cleanupProviders) {
-        await Promise.all(app.container
-            .getProviders()
-            .map(provider => provider.delete()));
-        app.isDeleted = true;
-    }
-}
-/**
- * Registers a library's name and version for platform logging purposes.
- * @param library - Name of 1p or 3p library (e.g. firestore, angularfire)
- * @param version - Current version of that library.
- * @param variant - Bundle variant, e.g., node, rn, etc.
- *
- * @public
- */
-function registerVersion(libraryKeyOrName, version, variant) {
-    var _a;
-    // TODO: We can use this check to whitelist strings when/if we set up
-    // a good whitelist system.
-    let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== void 0 ? _a : libraryKeyOrName;
-    if (variant) {
-        library += `-${variant}`;
-    }
-    const libraryMismatch = library.match(/\s|\//);
-    const versionMismatch = version.match(/\s|\//);
-    if (libraryMismatch || versionMismatch) {
-        const warning = [
-            `Unable to register library "${library}" with version "${version}":`
-        ];
-        if (libraryMismatch) {
-            warning.push(`library name "${library}" contains illegal characters (whitespace or "/")`);
-        }
-        if (libraryMismatch && versionMismatch) {
-            warning.push('and');
-        }
-        if (versionMismatch) {
-            warning.push(`version name "${version}" contains illegal characters (whitespace or "/")`);
-        }
-        logger.warn(warning.join(' '));
-        return;
-    }
-    _registerComponent(new _firebase_component__WEBPACK_IMPORTED_MODULE_0__/* .Component */ .uA(`${library}-version`, () => ({ library, version }), "VERSION" /* ComponentType.VERSION */));
-}
-/**
- * Sets log handler for all Firebase SDKs.
- * @param logCallback - An optional custom log handler that executes user code whenever
- * the Firebase SDK makes a logging call.
- *
- * @public
- */
-function onLog(logCallback, options) {
-    if (logCallback !== null && typeof logCallback !== 'function') {
-        throw ERROR_FACTORY.create("invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */);
-    }
-    setUserLogHandler(logCallback, options);
-}
-/**
- * Sets log level for all Firebase SDKs.
- *
- * All of the log types above the current log level are captured (i.e. if
- * you set the log level to `info`, errors are logged, but `debug` and
- * `verbose` logs are not).
- *
- * @public
- */
-function setLogLevel(logLevel) {
-    setLogLevel$1(logLevel);
-}
-
-/**
- * @license
- * Copyright 2021 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-const DB_NAME = 'firebase-heartbeat-database';
-const DB_VERSION = 1;
-const STORE_NAME = 'firebase-heartbeat-store';
-let dbPromise = null;
-function getDbPromise() {
-    if (!dbPromise) {
-        dbPromise = (0,idb__WEBPACK_IMPORTED_MODULE_3__/* .openDB */ .P2)(DB_NAME, DB_VERSION, {
-            upgrade: (db, oldVersion) => {
-                // We don't use 'break' in this switch statement, the fall-through
-                // behavior is what we want, because if there are multiple versions between
-                // the old version and the current version, we want ALL the migrations
-                // that correspond to those versions to run, not only the last one.
-                // eslint-disable-next-line default-case
-                switch (oldVersion) {
-                    case 0:
-                        try {
-                            db.createObjectStore(STORE_NAME);
-                        }
-                        catch (e) {
-                            // Safari/iOS browsers throw occasional exceptions on
-                            // db.createObjectStore() that may be a bug. Avoid blocking
-                            // the rest of the app functionality.
-                            console.warn(e);
-                        }
-                }
-            }
-        }).catch(e => {
-            throw ERROR_FACTORY.create("idb-open" /* AppError.IDB_OPEN */, {
-                originalErrorMessage: e.message
-            });
-        });
-    }
-    return dbPromise;
-}
-async function readHeartbeatsFromIndexedDB(app) {
-    try {
-        const db = await getDbPromise();
-        const tx = db.transaction(STORE_NAME);
-        const result = await tx.objectStore(STORE_NAME).get(computeKey(app));
-        // We already have the value but tx.done can throw,
-        // so we need to await it here to catch errors
-        await tx.done;
+/* Get a single user by uid */
+function getUser(uid) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        console.log('[Firestore] Getting user with uid:', uid);
+        const userRef = doc(db, 'users', uid);
+        const userSnap = yield getDoc(userRef);
+        const result = userSnap.exists() ? userSnap.data() : null;
+        console.log('[Firestore] getUser success:', result ? 'User found' : 'User not found');
         return result;
-    }
-    catch (e) {
-        if (e instanceof _firebase_util__WEBPACK_IMPORTED_MODULE_2__/* .FirebaseError */ .g) {
-            logger.warn(e.message);
-        }
-        else {
-            const idbGetError = ERROR_FACTORY.create("idb-get" /* AppError.IDB_GET */, {
-                originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
-            });
-            logger.warn(idbGetError.message);
-        }
-    }
+    });
 }
-async function writeHeartbeatsToIndexedDB(app, heartbeatObject) {
-    try {
-        const db = await getDbPromise();
-        const tx = db.transaction(STORE_NAME, 'readwrite');
-        const objectStore = tx.objectStore(STORE_NAME);
-        await objectStore.put(heartbeatObject, computeKey(app));
-        await tx.done;
-    }
-    catch (e) {
-        if (e instanceof _firebase_util__WEBPACK_IMPORTED_MODULE_2__/* .FirebaseError */ .g) {
-            logger.warn(e.message);
-        }
-        else {
-            const idbGetError = ERROR_FACTORY.create("idb-set" /* AppError.IDB_WRITE */, {
-                originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
-            });
-            logger.warn(idbGetError.message);
-        }
-    }
+/* Update an existing user */
+function updateUser(uid, data) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        console.log('[Firestore] Updating user with uid:', uid, 'data:', data);
+        const userRef = doc(db, 'users', uid);
+        yield updateDoc(userRef, data);
+        console.log('[Firestore] updateUser success');
+    });
 }
-function computeKey(app) {
-    return `${app.name}!${app.options.appId}`;
+/* Delete a user */
+function firestore_deleteUser(uid) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        console.log('[Firestore] Deleting user with uid:', uid);
+        const userRef = doc(db, 'users', uid);
+        yield deleteDoc(userRef);
+        console.log('[Firestore] deleteUser success');
+    });
 }
-
-/**
- * @license
- * Copyright 2021 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-const MAX_HEADER_BYTES = 1024;
-// 30 days
-const STORED_HEARTBEAT_RETENTION_MAX_MILLIS = 30 * 24 * 60 * 60 * 1000;
-class HeartbeatServiceImpl {
-    constructor(container) {
-        this.container = container;
-        /**
-         * In-memory cache for heartbeats, used by getHeartbeatsHeader() to generate
-         * the header string.
-         * Stores one record per date. This will be consolidated into the standard
-         * format of one record per user agent string before being sent as a header.
-         * Populated from indexedDB when the controller is instantiated and should
-         * be kept in sync with indexedDB.
-         * Leave public for easier testing.
-         */
-        this._heartbeatsCache = null;
-        const app = this.container.getProvider('app').getImmediate();
-        this._storage = new HeartbeatStorageImpl(app);
-        this._heartbeatsCachePromise = this._storage.read().then(result => {
-            this._heartbeatsCache = result;
-            return result;
+/* Get a single credential by userId and credentialId */
+function getCredentialInFirestore(userId, credentialId) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        console.log('[Firestore] Getting credential with userId:', userId, 'credentialId:', credentialId);
+        const credRef = doc(db, 'users', userId, 'my_credentials', credentialId);
+        const credSnap = yield getDoc(credRef);
+        if (!credSnap.exists()) {
+            console.log('[Firestore] getCredential success: Credential not found');
+            return null;
+        }
+        const data = credSnap.data();
+        // Explicitly map fields and add document_reference
+        const result = {
+            content_encrypted: data.content_encrypted,
+            item_key_encrypted: data.item_key_encrypted,
+            created_at: data.created_at,
+            last_used_at: data.last_used_at,
+            document_reference: credRef,
+        };
+        console.log('[Firestore] getCredential success: Credential found');
+        return result;
+    });
+}
+/* Get all credentials for a user */
+function getAllCredentialsInFirestore(userId) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        console.log('[Firestore] Getting all credentials for userId:', userId);
+        const credsCol = index_esm2017_collection(firebase_db, 'users', userId, 'my_credentials');
+        const credsSnap = yield index_esm2017_getDocs(credsCol);
+        const result = credsSnap.docs.map((docSnap) => {
+            const data = docSnap.data();
+            return {
+                id: docSnap.id,
+                content_encrypted: data.content_encrypted,
+                item_key_encrypted: data.item_key_encrypted,
+                created_at: data.created_at,
+                last_used_at: data.last_used_at,
+                document_reference: docSnap.ref,
+            };
         });
-    }
-    /**
-     * Called to report a heartbeat. The function will generate
-     * a HeartbeatsByUserAgent object, update heartbeatsCache, and persist it
-     * to IndexedDB.
-     * Note that we only store one heartbeat per day. So if a heartbeat for today is
-     * already logged, subsequent calls to this function in the same day will be ignored.
-     */
-    async triggerHeartbeat() {
-        var _a, _b;
-        try {
-            const platformLogger = this.container
-                .getProvider('platform-logger')
-                .getImmediate();
-            // This is the "Firebase user agent" string from the platform logger
-            // service, not the browser user agent.
-            const agent = platformLogger.getPlatformInfoString();
-            const date = getUTCDateString();
-            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null) {
-                this._heartbeatsCache = await this._heartbeatsCachePromise;
-                // If we failed to construct a heartbeats cache, then return immediately.
-                if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) {
-                    return;
-                }
-            }
-            // Do not store a heartbeat if one is already stored for this day
-            // or if a header has already been sent today.
-            if (this._heartbeatsCache.lastSentHeartbeatDate === date ||
-                this._heartbeatsCache.heartbeats.some(singleDateHeartbeat => singleDateHeartbeat.date === date)) {
-                return;
-            }
-            else {
-                // There is no entry for this date. Create one.
-                this._heartbeatsCache.heartbeats.push({ date, agent });
-            }
-            // Remove entries older than 30 days.
-            this._heartbeatsCache.heartbeats =
-                this._heartbeatsCache.heartbeats.filter(singleDateHeartbeat => {
-                    const hbTimestamp = new Date(singleDateHeartbeat.date).valueOf();
-                    const now = Date.now();
-                    return now - hbTimestamp <= STORED_HEARTBEAT_RETENTION_MAX_MILLIS;
-                });
-            return this._storage.overwrite(this._heartbeatsCache);
-        }
-        catch (e) {
-            logger.warn(e);
-        }
-    }
-    /**
-     * Returns a base64 encoded string which can be attached to the heartbeat-specific header directly.
-     * It also clears all heartbeats from memory as well as in IndexedDB.
-     *
-     * NOTE: Consuming product SDKs should not send the header if this method
-     * returns an empty string.
-     */
-    async getHeartbeatsHeader() {
-        var _a;
-        try {
-            if (this._heartbeatsCache === null) {
-                await this._heartbeatsCachePromise;
-            }
-            // If it's still null or the array is empty, there is no data to send.
-            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null ||
-                this._heartbeatsCache.heartbeats.length === 0) {
-                return '';
-            }
-            const date = getUTCDateString();
-            // Extract as many heartbeats from the cache as will fit under the size limit.
-            const { heartbeatsToSend, unsentEntries } = extractHeartbeatsForHeader(this._heartbeatsCache.heartbeats);
-            const headerString = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__/* .base64urlEncodeWithoutPadding */ .Uj)(JSON.stringify({ version: 2, heartbeats: heartbeatsToSend }));
-            // Store last sent date to prevent another being logged/sent for the same day.
-            this._heartbeatsCache.lastSentHeartbeatDate = date;
-            if (unsentEntries.length > 0) {
-                // Store any unsent entries if they exist.
-                this._heartbeatsCache.heartbeats = unsentEntries;
-                // This seems more likely than emptying the array (below) to lead to some odd state
-                // since the cache isn't empty and this will be called again on the next request,
-                // and is probably safest if we await it.
-                await this._storage.overwrite(this._heartbeatsCache);
-            }
-            else {
-                this._heartbeatsCache.heartbeats = [];
-                // Do not wait for this, to reduce latency.
-                void this._storage.overwrite(this._heartbeatsCache);
-            }
-            return headerString;
-        }
-        catch (e) {
-            logger.warn(e);
-            return '';
-        }
-    }
+        console.log('[Firestore] getAllCredentials success:', result.length, 'credentials found');
+        return result;
+    });
 }
-function getUTCDateString() {
-    const today = new Date();
-    // Returns date format 'YYYY-MM-DD'
-    return today.toISOString().substring(0, 10);
+/* Create a new credential for a user */
+function firestore_createCredentialInFirestore(userId, data) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        console.log('[Firestore] Creating credential for userId:', userId);
+        const credsCol = collection(db, 'users', userId, 'my_credentials');
+        // Remove document_reference before storing
+        const { document_reference } = data, dataToStore = firestore_rest(data, ["document_reference"]);
+        const docRef = yield addDoc(credsCol, dataToStore);
+        console.log('[Firestore] createCredential success, docId:', docRef.id);
+        return docRef;
+    });
 }
-function extractHeartbeatsForHeader(heartbeatsCache, maxSize = MAX_HEADER_BYTES) {
-    // Heartbeats grouped by user agent in the standard format to be sent in
-    // the header.
-    const heartbeatsToSend = [];
-    // Single date format heartbeats that are not sent.
-    let unsentEntries = heartbeatsCache.slice();
-    for (const singleDateHeartbeat of heartbeatsCache) {
-        // Look for an existing entry with the same user agent.
-        const heartbeatEntry = heartbeatsToSend.find(hb => hb.agent === singleDateHeartbeat.agent);
-        if (!heartbeatEntry) {
-            // If no entry for this user agent exists, create one.
-            heartbeatsToSend.push({
-                agent: singleDateHeartbeat.agent,
-                dates: [singleDateHeartbeat.date]
-            });
-            if (countBytes(heartbeatsToSend) > maxSize) {
-                // If the header would exceed max size, remove the added heartbeat
-                // entry and stop adding to the header.
-                heartbeatsToSend.pop();
-                break;
-            }
-        }
-        else {
-            heartbeatEntry.dates.push(singleDateHeartbeat.date);
-            // If the header would exceed max size, remove the added date
-            // and stop adding to the header.
-            if (countBytes(heartbeatsToSend) > maxSize) {
-                heartbeatEntry.dates.pop();
-                break;
-            }
-        }
-        // Pop unsent entry from queue. (Skipped if adding the entry exceeded
-        // quota and the loop breaks early.)
-        unsentEntries = unsentEntries.slice(1);
-    }
-    return {
-        heartbeatsToSend,
-        unsentEntries
-    };
+/* Update an existing credential */
+function firestore_updateCredentialInFirestore(userId, credentialId, data) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        console.log('[Firestore] Updating credential with userId:', userId, 'credentialId:', credentialId);
+        const credRef = doc(db, 'users', userId, 'my_credentials', credentialId);
+        // Remove document_reference before updating
+        const { document_reference } = data, dataToUpdate = firestore_rest(data, ["document_reference"]);
+        yield updateDoc(credRef, dataToUpdate);
+        console.log('[Firestore] updateCredential success');
+    });
 }
-class HeartbeatStorageImpl {
-    constructor(app) {
-        this.app = app;
-        this._canUseIndexedDBPromise = this.runIndexedDBEnvironmentCheck();
-    }
-    async runIndexedDBEnvironmentCheck() {
-        if (!(0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__/* .isIndexedDBAvailable */ .zW)()) {
-            return false;
-        }
-        else {
-            return (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__/* .validateIndexedDBOpenable */ .eX)()
-                .then(() => true)
-                .catch(() => false);
-        }
-    }
-    /**
-     * Read all heartbeats.
-     */
-    async read() {
-        const canUseIndexedDB = await this._canUseIndexedDBPromise;
-        if (!canUseIndexedDB) {
-            return { heartbeats: [] };
-        }
-        else {
-            const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
-            if (idbHeartbeatObject === null || idbHeartbeatObject === void 0 ? void 0 : idbHeartbeatObject.heartbeats) {
-                return idbHeartbeatObject;
-            }
-            else {
-                return { heartbeats: [] };
-            }
-        }
-    }
-    // overwrite the storage with the provided heartbeats
-    async overwrite(heartbeatsObject) {
-        var _a;
-        const canUseIndexedDB = await this._canUseIndexedDBPromise;
-        if (!canUseIndexedDB) {
-            return;
-        }
-        else {
-            const existingHeartbeatsObject = await this.read();
-            return writeHeartbeatsToIndexedDB(this.app, {
-                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
-                heartbeats: heartbeatsObject.heartbeats
-            });
-        }
-    }
-    // add heartbeats
-    async add(heartbeatsObject) {
-        var _a;
-        const canUseIndexedDB = await this._canUseIndexedDBPromise;
-        if (!canUseIndexedDB) {
-            return;
-        }
-        else {
-            const existingHeartbeatsObject = await this.read();
-            return writeHeartbeatsToIndexedDB(this.app, {
-                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
-                heartbeats: [
-                    ...existingHeartbeatsObject.heartbeats,
-                    ...heartbeatsObject.heartbeats
-                ]
-            });
-        }
-    }
+/* Delete a credential */
+function firestore_deleteCredentialInFirestore(userId, credentialId) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        console.log('[Firestore] Deleting credential with userId:', userId, 'credentialId:', credentialId);
+        const credRef = doc(db, 'users', userId, 'my_credentials', credentialId);
+        yield deleteDoc(credRef);
+        console.log('[Firestore] deleteCredential success');
+    });
 }
 /**
- * Calculate bytes of a HeartbeatsByUserAgent array after being wrapped
- * in a platform logging header JSON object, stringified, and converted
- * to base 64.
+ * Add a document to a collection (auto-ID)
  */
-function countBytes(heartbeatsCache) {
-    // base64 has a restricted set of characters, all of which should be 1 byte.
-    return (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__/* .base64urlEncodeWithoutPadding */ .Uj)(
-    // heartbeatsCache wrapper properties
-    JSON.stringify({ version: 2, heartbeats: heartbeatsCache })).length;
+function addDocument(collectionPath, data) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        const colRef = fsCollection(db, collectionPath);
+        return yield fsAddDoc(colRef, data);
+    });
+}
+/**
+ * Set (overwrite) a document at a specific path
+ */
+function setDocument(docPath, data) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        const docRef = fsDoc(db, docPath);
+        return yield setDoc(docRef, data);
+    });
+}
+/**
+ * Update a document at a specific path
+ */
+function updateDocument(docPath, data) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        const docRef = fsDoc(db, docPath);
+        return yield updateDoc(docRef, data);
+    });
+}
+/**
+ * Delete a document at a specific path
+ */
+function deleteDocument(docPath) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        const docRef = fsDoc(db, docPath);
+        return yield deleteDoc(docRef);
+    });
+}
+/**
+ * Get a document at a specific path
+ */
+function firestore_getDocument(docPath) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        const docRef = fsDoc(db, docPath);
+        const snap = yield getDoc(docRef);
+        return snap.exists() ? snap.data() : null;
+    });
+}
+/**
+ * Get all documents in a collection (optionally with query constraints)
+ */
+function getCollection(collectionPath, ...queryConstraints) {
+    return firestore_awaiter(this, void 0, void 0, function* () {
+        const colRef = fsCollection(db, collectionPath);
+        const q = queryConstraints.length ? query(colRef, ...queryConstraints) : colRef;
+        const snap = yield getDocs(q);
+        return snap.docs.map(doc => (Object.assign({ id: doc.id }, doc.data())));
+    });
 }
 
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-function registerCoreComponents(variant) {
-    _registerComponent(new _firebase_component__WEBPACK_IMPORTED_MODULE_0__/* .Component */ .uA('platform-logger', container => new PlatformLoggerServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */));
-    _registerComponent(new _firebase_component__WEBPACK_IMPORTED_MODULE_0__/* .Component */ .uA('heartbeat', container => new HeartbeatServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */));
-    // Register `app` package.
-    registerVersion(name$q, version$1, variant);
-    // BUILD_TARGET will be replaced by values like esm5, esm2017, cjs5, etc during the compilation
-    registerVersion(name$q, version$1, 'esm2017');
-    // Register platform SDK identifier (no version).
-    registerVersion('fire-js', '');
-}
-
-/**
- * Firebase App
- *
- * @remarks This package coordinates the communication between the different Firebase components
- * @packageDocumentation
- */
-registerCoreComponents('');
-
-
-//# sourceMappingURL=index.esm2017.js.map
-
-
-/***/ }),
-
-/***/ 8765:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* unused harmony exports mul, add, sub, rotl, rotr, isInteger, MAX_SAFE_INTEGER, isSafeInteger */
+;// ./node_modules/@stablelib/int/lib/int.js
 // Copyright (C) 2016 Dmitry Chestnykh
 // MIT License. See LICENSE file for details.
 /**
@@ -39692,7 +38030,7 @@ function rotr(x, n) {
 /**
  * Returns true if the argument is an integer number.
  */
-const isInteger = Number.isInteger;
+const int_isInteger = Number.isInteger;
 /**
  *  Math.pow(2, 53) - 1
  */
@@ -39701,112 +38039,9 @@ const MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER;
  * Returns true if the argument is a safe integer number
  * (-MIN_SAFE_INTEGER < number <= MAX_SAFE_INTEGER)
  */
-const isSafeInteger = Number.isSafeInteger;
+const int_isSafeInteger = Number.isSafeInteger;
 //# sourceMappingURL=int.js.map
-
-/***/ }),
-
-/***/ 8911:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1268);
-
-const firebaseConfig = _config__WEBPACK_IMPORTED_MODULE_0__/* .config */ .$.firebase;
-// Log the actual values to check if they're loaded
-console.log('Firebase Config Values:', {
-    apiKey: firebaseConfig.apiKey ? 'set' : 'not set',
-    authDomain: firebaseConfig.authDomain ? 'set' : 'not set',
-    projectId: firebaseConfig.projectId ? 'set' : 'not set',
-    storageBucket: firebaseConfig.storageBucket ? 'set' : 'not set',
-    messagingSenderId: firebaseConfig.messagingSenderId ? 'set' : 'not set',
-    appId: firebaseConfig.appId ? 'set' : 'not set',
-    measurementId: firebaseConfig.measurementId ? 'set' : 'not set'
-});
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (firebaseConfig);
-
-
-/***/ }),
-
-/***/ 9487:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   db: () => (/* binding */ initializedDb),
-/* harmony export */   j2: () => (/* binding */ initializedAuth)
-/* harmony export */ });
-/* unused harmony exports initializeFirebase, app */
-/* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(223);
-/* harmony import */ var firebase_auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5908);
-/* harmony import */ var firebase_firestore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2405);
-/* harmony import */ var _config_firebase__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8911);
-
-
-
-
-let app;
-let auth;
-let db;
-const initializeFirebase = () => {
-    try {
-        console.log('Initializing Firebase with config:', {
-            apiKey: _config_firebase__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A.apiKey,
-            projectId: _config_firebase__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A.projectId,
-            authDomain: _config_firebase__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A.authDomain,
-            // Don't log sensitive values
-            storageBucket: _config_firebase__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A.storageBucket ? 'set' : 'not set',
-            messagingSenderId: _config_firebase__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A.messagingSenderId ? 'set' : 'not set',
-            appId: _config_firebase__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A.appId ? 'set' : 'not set',
-            measurementId: _config_firebase__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A.measurementId ? 'set' : 'not set'
-        });
-        if (!(0,firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .getApps */ .Dk)().length) {
-            app = (0,firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .initializeApp */ .Wp)(_config_firebase__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A);
-            console.log('Firebase app initialized');
-        }
-        else {
-            app = (0,firebase_app__WEBPACK_IMPORTED_MODULE_0__/* .getApps */ .Dk)()[0];
-            console.log('Using existing Firebase app');
-        }
-        auth = (0,firebase_auth__WEBPACK_IMPORTED_MODULE_1__/* .getAuth */ .xI)(app);
-        db = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_2__/* .getFirestore */ .aU)(app);
-        console.log('Firebase services initialized');
-        return { app, auth, db };
-    }
-    catch (error) {
-        console.error('Firebase initialization error:', error);
-        throw error;
-    }
-};
-let initializedApp;
-let initializedAuth;
-let initializedDb;
-try {
-    const result = initializeFirebase();
-    initializedApp = result.app;
-    initializedAuth = result.auth;
-    initializedDb = result.db;
-}
-catch (error) {
-    console.error('Failed to initialize Firebase:', error);
-    throw error;
-}
-// Export initialized instances
-
-
-
-/***/ }),
-
-/***/ 9617:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   NA: () => (/* binding */ writeUint64LE),
-/* harmony export */   yH: () => (/* binding */ writeUint32LE)
-/* harmony export */ });
-/* unused harmony exports readInt16BE, readUint16BE, readInt16LE, readUint16LE, writeUint16BE, writeInt16BE, writeUint16LE, writeInt16LE, readInt32BE, readUint32BE, readInt32LE, readUint32LE, writeUint32BE, writeInt32BE, writeInt32LE, readInt64BE, readUint64BE, readInt64LE, readUint64LE, writeUint64BE, writeInt64BE, writeInt64LE, readUintBE, readUintLE, writeUintBE, writeUintLE, readFloat32BE, readFloat32LE, readFloat64BE, readFloat64LE, writeFloat32BE, writeFloat32LE, writeFloat64BE, writeFloat64LE */
-/* harmony import */ var _stablelib_int__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8765);
+;// ./node_modules/@stablelib/binary/lib/binary.js
 // Copyright (C) 2016 Dmitry Chestnykh
 // MIT License. See LICENSE file for details.
 /**
@@ -39904,7 +38139,7 @@ function readInt32LE(array, offset = 0) {
  * Reads 4 bytes from array starting at offset as little-endian
  * unsigned 32-bit integer and returns it.
  */
-function readUint32LE(array, offset = 0) {
+function binary_readUint32LE(array, offset = 0) {
     return ((array[offset + 3] << 24) |
         (array[offset + 2] << 16) |
         (array[offset + 1] << 8) |
@@ -39988,8 +38223,8 @@ function readInt64LE(array, offset = 0) {
  * IMPORTANT: due to JavaScript limitation, supports values up to 2^53-1.
  */
 function readUint64LE(array, offset = 0) {
-    const lo = readUint32LE(array, offset);
-    const hi = readUint32LE(array, offset + 4);
+    const lo = binary_readUint32LE(array, offset);
+    const hi = binary_readUint32LE(array, offset + 4);
     return hi * 0x100000000 + lo;
 }
 /**
@@ -40203,82 +38438,1825 @@ function writeFloat64LE(value, out = new Uint8Array(8), offset = 0) {
     return out;
 }
 //# sourceMappingURL=binary.js.map
+;// ./node_modules/@stablelib/wipe/lib/wipe.js
+// Copyright (C) 2016 Dmitry Chestnykh
+// MIT License. See LICENSE file for details.
+/**
+ * Sets all values in the given array to zero and returns it.
+ *
+ * The fact that it sets bytes to zero can be relied on.
+ *
+ * There is no guarantee that this function makes data disappear from memory,
+ * as runtime implementation can, for example, have copying garbage collector
+ * that will make copies of sensitive data before we wipe it. Or that an
+ * operating system will write our data to swap or sleep image. Another thing
+ * is that an optimizing compiler can remove calls to this function or make it
+ * no-op. There's nothing we can do with it, so we just do our best and hope
+ * that everything will be okay and good will triumph over evil.
+ */
+function wipe_wipe(array) {
+    // Right now it's similar to array.fill(0). If it turns
+    // out that runtimes optimize this call away, maybe
+    // we can try something else.
+    for (let i = 0; i < array.length; i++) {
+        array[i] = 0;
+    }
+    return array;
+}
+//# sourceMappingURL=wipe.js.map
+;// ./node_modules/@stablelib/chacha/lib/chacha.js
+// Copyright (C) 2016 Dmitry Chestnykh
+// MIT License. See LICENSE file for details.
+/**
+ * Package chacha implements ChaCha stream cipher.
+ */
 
-/***/ })
 
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/global */
-/******/ 	(() => {
-/******/ 		__webpack_require__.g = (function() {
-/******/ 			if (typeof globalThis === 'object') return globalThis;
-/******/ 			try {
-/******/ 				return this || new Function('return this')();
-/******/ 			} catch (e) {
-/******/ 				if (typeof window === 'object') return window;
-/******/ 			}
-/******/ 		})();
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__webpack_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/************************************************************************/
-var __webpack_exports__ = {};
-/* harmony import */ var _src_cache__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7514);
-/* harmony import */ var _utils_indexdb__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1949);
-/* harmony import */ var _utils_crypto__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4902);
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+// Number of ChaCha rounds (ChaCha20).
+const ROUNDS = 20;
+// Applies the ChaCha core function to 16-byte input,
+// 32-byte key key, and puts the result into 64-byte array out.
+function core(out, input, key) {
+    let j0 = 0x61707865; // "expa"  -- ChaCha's "sigma" constant
+    let j1 = 0x3320646E; // "nd 3"     for 32-byte keys
+    let j2 = 0x79622D32; // "2-by"
+    let j3 = 0x6B206574; // "te k"
+    let j4 = (key[3] << 24) | (key[2] << 16) | (key[1] << 8) | key[0];
+    let j5 = (key[7] << 24) | (key[6] << 16) | (key[5] << 8) | key[4];
+    let j6 = (key[11] << 24) | (key[10] << 16) | (key[9] << 8) | key[8];
+    let j7 = (key[15] << 24) | (key[14] << 16) | (key[13] << 8) | key[12];
+    let j8 = (key[19] << 24) | (key[18] << 16) | (key[17] << 8) | key[16];
+    let j9 = (key[23] << 24) | (key[22] << 16) | (key[21] << 8) | key[20];
+    let j10 = (key[27] << 24) | (key[26] << 16) | (key[25] << 8) | key[24];
+    let j11 = (key[31] << 24) | (key[30] << 16) | (key[29] << 8) | key[28];
+    let j12 = (input[3] << 24) | (input[2] << 16) | (input[1] << 8) | input[0];
+    let j13 = (input[7] << 24) | (input[6] << 16) | (input[5] << 8) | input[4];
+    let j14 = (input[11] << 24) | (input[10] << 16) | (input[9] << 8) | input[8];
+    let j15 = (input[15] << 24) | (input[14] << 16) | (input[13] << 8) | input[12];
+    let x0 = j0;
+    let x1 = j1;
+    let x2 = j2;
+    let x3 = j3;
+    let x4 = j4;
+    let x5 = j5;
+    let x6 = j6;
+    let x7 = j7;
+    let x8 = j8;
+    let x9 = j9;
+    let x10 = j10;
+    let x11 = j11;
+    let x12 = j12;
+    let x13 = j13;
+    let x14 = j14;
+    let x15 = j15;
+    for (let i = 0; i < ROUNDS; i += 2) {
+        x0 = x0 + x4 | 0;
+        x12 ^= x0;
+        x12 = x12 >>> (32 - 16) | x12 << 16;
+        x8 = x8 + x12 | 0;
+        x4 ^= x8;
+        x4 = x4 >>> (32 - 12) | x4 << 12;
+        x1 = x1 + x5 | 0;
+        x13 ^= x1;
+        x13 = x13 >>> (32 - 16) | x13 << 16;
+        x9 = x9 + x13 | 0;
+        x5 ^= x9;
+        x5 = x5 >>> (32 - 12) | x5 << 12;
+        x2 = x2 + x6 | 0;
+        x14 ^= x2;
+        x14 = x14 >>> (32 - 16) | x14 << 16;
+        x10 = x10 + x14 | 0;
+        x6 ^= x10;
+        x6 = x6 >>> (32 - 12) | x6 << 12;
+        x3 = x3 + x7 | 0;
+        x15 ^= x3;
+        x15 = x15 >>> (32 - 16) | x15 << 16;
+        x11 = x11 + x15 | 0;
+        x7 ^= x11;
+        x7 = x7 >>> (32 - 12) | x7 << 12;
+        x2 = x2 + x6 | 0;
+        x14 ^= x2;
+        x14 = x14 >>> (32 - 8) | x14 << 8;
+        x10 = x10 + x14 | 0;
+        x6 ^= x10;
+        x6 = x6 >>> (32 - 7) | x6 << 7;
+        x3 = x3 + x7 | 0;
+        x15 ^= x3;
+        x15 = x15 >>> (32 - 8) | x15 << 8;
+        x11 = x11 + x15 | 0;
+        x7 ^= x11;
+        x7 = x7 >>> (32 - 7) | x7 << 7;
+        x1 = x1 + x5 | 0;
+        x13 ^= x1;
+        x13 = x13 >>> (32 - 8) | x13 << 8;
+        x9 = x9 + x13 | 0;
+        x5 ^= x9;
+        x5 = x5 >>> (32 - 7) | x5 << 7;
+        x0 = x0 + x4 | 0;
+        x12 ^= x0;
+        x12 = x12 >>> (32 - 8) | x12 << 8;
+        x8 = x8 + x12 | 0;
+        x4 ^= x8;
+        x4 = x4 >>> (32 - 7) | x4 << 7;
+        x0 = x0 + x5 | 0;
+        x15 ^= x0;
+        x15 = x15 >>> (32 - 16) | x15 << 16;
+        x10 = x10 + x15 | 0;
+        x5 ^= x10;
+        x5 = x5 >>> (32 - 12) | x5 << 12;
+        x1 = x1 + x6 | 0;
+        x12 ^= x1;
+        x12 = x12 >>> (32 - 16) | x12 << 16;
+        x11 = x11 + x12 | 0;
+        x6 ^= x11;
+        x6 = x6 >>> (32 - 12) | x6 << 12;
+        x2 = x2 + x7 | 0;
+        x13 ^= x2;
+        x13 = x13 >>> (32 - 16) | x13 << 16;
+        x8 = x8 + x13 | 0;
+        x7 ^= x8;
+        x7 = x7 >>> (32 - 12) | x7 << 12;
+        x3 = x3 + x4 | 0;
+        x14 ^= x3;
+        x14 = x14 >>> (32 - 16) | x14 << 16;
+        x9 = x9 + x14 | 0;
+        x4 ^= x9;
+        x4 = x4 >>> (32 - 12) | x4 << 12;
+        x2 = x2 + x7 | 0;
+        x13 ^= x2;
+        x13 = x13 >>> (32 - 8) | x13 << 8;
+        x8 = x8 + x13 | 0;
+        x7 ^= x8;
+        x7 = x7 >>> (32 - 7) | x7 << 7;
+        x3 = x3 + x4 | 0;
+        x14 ^= x3;
+        x14 = x14 >>> (32 - 8) | x14 << 8;
+        x9 = x9 + x14 | 0;
+        x4 ^= x9;
+        x4 = x4 >>> (32 - 7) | x4 << 7;
+        x1 = x1 + x6 | 0;
+        x12 ^= x1;
+        x12 = x12 >>> (32 - 8) | x12 << 8;
+        x11 = x11 + x12 | 0;
+        x6 ^= x11;
+        x6 = x6 >>> (32 - 7) | x6 << 7;
+        x0 = x0 + x5 | 0;
+        x15 ^= x0;
+        x15 = x15 >>> (32 - 8) | x15 << 8;
+        x10 = x10 + x15 | 0;
+        x5 ^= x10;
+        x5 = x5 >>> (32 - 7) | x5 << 7;
+    }
+    writeUint32LE(x0 + j0 | 0, out, 0);
+    writeUint32LE(x1 + j1 | 0, out, 4);
+    writeUint32LE(x2 + j2 | 0, out, 8);
+    writeUint32LE(x3 + j3 | 0, out, 12);
+    writeUint32LE(x4 + j4 | 0, out, 16);
+    writeUint32LE(x5 + j5 | 0, out, 20);
+    writeUint32LE(x6 + j6 | 0, out, 24);
+    writeUint32LE(x7 + j7 | 0, out, 28);
+    writeUint32LE(x8 + j8 | 0, out, 32);
+    writeUint32LE(x9 + j9 | 0, out, 36);
+    writeUint32LE(x10 + j10 | 0, out, 40);
+    writeUint32LE(x11 + j11 | 0, out, 44);
+    writeUint32LE(x12 + j12 | 0, out, 48);
+    writeUint32LE(x13 + j13 | 0, out, 52);
+    writeUint32LE(x14 + j14 | 0, out, 56);
+    writeUint32LE(x15 + j15 | 0, out, 60);
+}
+/**
+ * Encrypt src with ChaCha20 stream generated for the given 32-byte key and
+ * 8-byte (as in original implementation) or 12-byte (as in RFC7539) nonce and
+ * write the result into dst and return it.
+ *
+ * dst and src may be the same, but otherwise must not overlap.
+ *
+ * If nonce is 12 bytes, users should not encrypt more than 256 GiB with the
+ * same key and nonce, otherwise the stream will repeat. The function will
+ * throw error if counter overflows to prevent this.
+ *
+ * If nonce is 8 bytes, the output is practically unlimited (2^70 bytes, which
+ * is more than a million petabytes). However, it is not recommended to
+ * generate 8-byte nonces randomly, as the chance of collision is high.
+ *
+ * Never use the same key and nonce to encrypt more than one message.
+ *
+ * If nonceInplaceCounterLength is not 0, the nonce is assumed to be a 16-byte
+ * array with stream counter in first nonceInplaceCounterLength bytes and nonce
+ * in the last remaining bytes. The counter will be incremented inplace for
+ * each ChaCha block. This is useful if you need to encrypt one stream of data
+ * in chunks.
+ */
+function streamXOR(key, nonce, src, dst, nonceInplaceCounterLength = 0) {
+    // We only support 256-bit keys.
+    if (key.length !== 32) {
+        throw new Error("ChaCha: key size must be 32 bytes");
+    }
+    if (dst.length < src.length) {
+        throw new Error("ChaCha: destination is shorter than source");
+    }
+    let nc;
+    let counterLength;
+    if (nonceInplaceCounterLength === 0) {
+        if (nonce.length !== 8 && nonce.length !== 12) {
+            throw new Error("ChaCha nonce must be 8 or 12 bytes");
+        }
+        nc = new Uint8Array(16);
+        // First counterLength bytes of nc are counter, starting with zero.
+        counterLength = nc.length - nonce.length;
+        // Last bytes of nc after counterLength are nonce, set them.
+        nc.set(nonce, counterLength);
+    }
+    else {
+        if (nonce.length !== 16) {
+            throw new Error("ChaCha nonce with counter must be 16 bytes");
+        }
+        // This will update passed nonce with counter inplace.
+        nc = nonce;
+        counterLength = nonceInplaceCounterLength;
+    }
+    // Allocate temporary space for ChaCha block.
+    const block = new Uint8Array(64);
+    for (let i = 0; i < src.length; i += 64) {
+        // Generate a block.
+        core(block, nc, key);
+        // XOR block bytes with src into dst.
+        for (let j = i; j < i + 64 && j < src.length; j++) {
+            dst[j] = src[j] ^ block[j - i];
+        }
+        // Increment counter.
+        incrementCounter(nc, 0, counterLength);
+    }
+    // Cleanup temporary space.
+    wipe_wipe(block);
+    if (nonceInplaceCounterLength === 0) {
+        // Cleanup counter.
+        wipe_wipe(nc);
+    }
+    return dst;
+}
+/**
+ * Generate ChaCha20 stream for the given 32-byte key and 8-byte or 12-byte
+ * nonce and write it into dst and return it.
+ *
+ * Never use the same key and nonce to generate more than one stream.
+ *
+ * If nonceInplaceCounterLength is not 0, it behaves the same with respect to
+ * the nonce as described in the streamXOR documentation.
+ *
+ * stream is like streamXOR with all-zero src.
+ */
+function stream(key, nonce, dst, nonceInplaceCounterLength = 0) {
+    wipe_wipe(dst);
+    return streamXOR(key, nonce, dst, dst, nonceInplaceCounterLength);
+}
+function incrementCounter(counter, pos, len) {
+    let carry = 1;
+    while (len--) {
+        carry = carry + (counter[pos] & 0xff) | 0;
+        counter[pos] = carry & 0xff;
+        carry >>>= 8;
+        pos++;
+    }
+    if (carry > 0) {
+        throw new Error("ChaCha: counter overflow");
+    }
+}
+//# sourceMappingURL=chacha.js.map
+;// ./node_modules/@stablelib/poly1305/lib/poly1305.js
+// Copyright (C) 2016 Dmitry Chestnykh
+// MIT License. See LICENSE file for details.
+/**
+ * Package poly1305 implements Poly1305 one-time message authentication algorithm.
+ */
+
+
+const DIGEST_LENGTH = 16;
+// Port of Andrew Moon's Poly1305-donna-16. Public domain.
+// https://github.com/floodyberry/poly1305-donna
+/**
+ * Poly1305 computes 16-byte authenticator of message using
+ * a one-time 32-byte key.
+ *
+ * Important: key should be used for only one message,
+ * it should never repeat.
+ */
+class Poly1305 {
+    digestLength = DIGEST_LENGTH;
+    _buffer = new Uint8Array(16);
+    _r = new Uint16Array(10);
+    _h = new Uint16Array(10);
+    _pad = new Uint16Array(8);
+    _leftover = 0;
+    _fin = 0;
+    _finished = false;
+    constructor(key) {
+        let t0 = key[0] | key[1] << 8;
+        this._r[0] = (t0) & 0x1fff;
+        let t1 = key[2] | key[3] << 8;
+        this._r[1] = ((t0 >>> 13) | (t1 << 3)) & 0x1fff;
+        let t2 = key[4] | key[5] << 8;
+        this._r[2] = ((t1 >>> 10) | (t2 << 6)) & 0x1f03;
+        let t3 = key[6] | key[7] << 8;
+        this._r[3] = ((t2 >>> 7) | (t3 << 9)) & 0x1fff;
+        let t4 = key[8] | key[9] << 8;
+        this._r[4] = ((t3 >>> 4) | (t4 << 12)) & 0x00ff;
+        this._r[5] = ((t4 >>> 1)) & 0x1ffe;
+        let t5 = key[10] | key[11] << 8;
+        this._r[6] = ((t4 >>> 14) | (t5 << 2)) & 0x1fff;
+        let t6 = key[12] | key[13] << 8;
+        this._r[7] = ((t5 >>> 11) | (t6 << 5)) & 0x1f81;
+        let t7 = key[14] | key[15] << 8;
+        this._r[8] = ((t6 >>> 8) | (t7 << 8)) & 0x1fff;
+        this._r[9] = ((t7 >>> 5)) & 0x007f;
+        this._pad[0] = key[16] | key[17] << 8;
+        this._pad[1] = key[18] | key[19] << 8;
+        this._pad[2] = key[20] | key[21] << 8;
+        this._pad[3] = key[22] | key[23] << 8;
+        this._pad[4] = key[24] | key[25] << 8;
+        this._pad[5] = key[26] | key[27] << 8;
+        this._pad[6] = key[28] | key[29] << 8;
+        this._pad[7] = key[30] | key[31] << 8;
+    }
+    _blocks(m, mpos, bytes) {
+        let hibit = this._fin ? 0 : 1 << 11;
+        let h0 = this._h[0], h1 = this._h[1], h2 = this._h[2], h3 = this._h[3], h4 = this._h[4], h5 = this._h[5], h6 = this._h[6], h7 = this._h[7], h8 = this._h[8], h9 = this._h[9];
+        let r0 = this._r[0], r1 = this._r[1], r2 = this._r[2], r3 = this._r[3], r4 = this._r[4], r5 = this._r[5], r6 = this._r[6], r7 = this._r[7], r8 = this._r[8], r9 = this._r[9];
+        while (bytes >= 16) {
+            let t0 = m[mpos + 0] | m[mpos + 1] << 8;
+            h0 += (t0) & 0x1fff;
+            let t1 = m[mpos + 2] | m[mpos + 3] << 8;
+            h1 += ((t0 >>> 13) | (t1 << 3)) & 0x1fff;
+            let t2 = m[mpos + 4] | m[mpos + 5] << 8;
+            h2 += ((t1 >>> 10) | (t2 << 6)) & 0x1fff;
+            let t3 = m[mpos + 6] | m[mpos + 7] << 8;
+            h3 += ((t2 >>> 7) | (t3 << 9)) & 0x1fff;
+            let t4 = m[mpos + 8] | m[mpos + 9] << 8;
+            h4 += ((t3 >>> 4) | (t4 << 12)) & 0x1fff;
+            h5 += ((t4 >>> 1)) & 0x1fff;
+            let t5 = m[mpos + 10] | m[mpos + 11] << 8;
+            h6 += ((t4 >>> 14) | (t5 << 2)) & 0x1fff;
+            let t6 = m[mpos + 12] | m[mpos + 13] << 8;
+            h7 += ((t5 >>> 11) | (t6 << 5)) & 0x1fff;
+            let t7 = m[mpos + 14] | m[mpos + 15] << 8;
+            h8 += ((t6 >>> 8) | (t7 << 8)) & 0x1fff;
+            h9 += ((t7 >>> 5)) | hibit;
+            let c = 0;
+            let d0 = c;
+            d0 += h0 * r0;
+            d0 += h1 * (5 * r9);
+            d0 += h2 * (5 * r8);
+            d0 += h3 * (5 * r7);
+            d0 += h4 * (5 * r6);
+            c = (d0 >>> 13);
+            d0 &= 0x1fff;
+            d0 += h5 * (5 * r5);
+            d0 += h6 * (5 * r4);
+            d0 += h7 * (5 * r3);
+            d0 += h8 * (5 * r2);
+            d0 += h9 * (5 * r1);
+            c += (d0 >>> 13);
+            d0 &= 0x1fff;
+            let d1 = c;
+            d1 += h0 * r1;
+            d1 += h1 * r0;
+            d1 += h2 * (5 * r9);
+            d1 += h3 * (5 * r8);
+            d1 += h4 * (5 * r7);
+            c = (d1 >>> 13);
+            d1 &= 0x1fff;
+            d1 += h5 * (5 * r6);
+            d1 += h6 * (5 * r5);
+            d1 += h7 * (5 * r4);
+            d1 += h8 * (5 * r3);
+            d1 += h9 * (5 * r2);
+            c += (d1 >>> 13);
+            d1 &= 0x1fff;
+            let d2 = c;
+            d2 += h0 * r2;
+            d2 += h1 * r1;
+            d2 += h2 * r0;
+            d2 += h3 * (5 * r9);
+            d2 += h4 * (5 * r8);
+            c = (d2 >>> 13);
+            d2 &= 0x1fff;
+            d2 += h5 * (5 * r7);
+            d2 += h6 * (5 * r6);
+            d2 += h7 * (5 * r5);
+            d2 += h8 * (5 * r4);
+            d2 += h9 * (5 * r3);
+            c += (d2 >>> 13);
+            d2 &= 0x1fff;
+            let d3 = c;
+            d3 += h0 * r3;
+            d3 += h1 * r2;
+            d3 += h2 * r1;
+            d3 += h3 * r0;
+            d3 += h4 * (5 * r9);
+            c = (d3 >>> 13);
+            d3 &= 0x1fff;
+            d3 += h5 * (5 * r8);
+            d3 += h6 * (5 * r7);
+            d3 += h7 * (5 * r6);
+            d3 += h8 * (5 * r5);
+            d3 += h9 * (5 * r4);
+            c += (d3 >>> 13);
+            d3 &= 0x1fff;
+            let d4 = c;
+            d4 += h0 * r4;
+            d4 += h1 * r3;
+            d4 += h2 * r2;
+            d4 += h3 * r1;
+            d4 += h4 * r0;
+            c = (d4 >>> 13);
+            d4 &= 0x1fff;
+            d4 += h5 * (5 * r9);
+            d4 += h6 * (5 * r8);
+            d4 += h7 * (5 * r7);
+            d4 += h8 * (5 * r6);
+            d4 += h9 * (5 * r5);
+            c += (d4 >>> 13);
+            d4 &= 0x1fff;
+            let d5 = c;
+            d5 += h0 * r5;
+            d5 += h1 * r4;
+            d5 += h2 * r3;
+            d5 += h3 * r2;
+            d5 += h4 * r1;
+            c = (d5 >>> 13);
+            d5 &= 0x1fff;
+            d5 += h5 * r0;
+            d5 += h6 * (5 * r9);
+            d5 += h7 * (5 * r8);
+            d5 += h8 * (5 * r7);
+            d5 += h9 * (5 * r6);
+            c += (d5 >>> 13);
+            d5 &= 0x1fff;
+            let d6 = c;
+            d6 += h0 * r6;
+            d6 += h1 * r5;
+            d6 += h2 * r4;
+            d6 += h3 * r3;
+            d6 += h4 * r2;
+            c = (d6 >>> 13);
+            d6 &= 0x1fff;
+            d6 += h5 * r1;
+            d6 += h6 * r0;
+            d6 += h7 * (5 * r9);
+            d6 += h8 * (5 * r8);
+            d6 += h9 * (5 * r7);
+            c += (d6 >>> 13);
+            d6 &= 0x1fff;
+            let d7 = c;
+            d7 += h0 * r7;
+            d7 += h1 * r6;
+            d7 += h2 * r5;
+            d7 += h3 * r4;
+            d7 += h4 * r3;
+            c = (d7 >>> 13);
+            d7 &= 0x1fff;
+            d7 += h5 * r2;
+            d7 += h6 * r1;
+            d7 += h7 * r0;
+            d7 += h8 * (5 * r9);
+            d7 += h9 * (5 * r8);
+            c += (d7 >>> 13);
+            d7 &= 0x1fff;
+            let d8 = c;
+            d8 += h0 * r8;
+            d8 += h1 * r7;
+            d8 += h2 * r6;
+            d8 += h3 * r5;
+            d8 += h4 * r4;
+            c = (d8 >>> 13);
+            d8 &= 0x1fff;
+            d8 += h5 * r3;
+            d8 += h6 * r2;
+            d8 += h7 * r1;
+            d8 += h8 * r0;
+            d8 += h9 * (5 * r9);
+            c += (d8 >>> 13);
+            d8 &= 0x1fff;
+            let d9 = c;
+            d9 += h0 * r9;
+            d9 += h1 * r8;
+            d9 += h2 * r7;
+            d9 += h3 * r6;
+            d9 += h4 * r5;
+            c = (d9 >>> 13);
+            d9 &= 0x1fff;
+            d9 += h5 * r4;
+            d9 += h6 * r3;
+            d9 += h7 * r2;
+            d9 += h8 * r1;
+            d9 += h9 * r0;
+            c += (d9 >>> 13);
+            d9 &= 0x1fff;
+            c = (((c << 2) + c)) | 0;
+            c = (c + d0) | 0;
+            d0 = c & 0x1fff;
+            c = (c >>> 13);
+            d1 += c;
+            h0 = d0;
+            h1 = d1;
+            h2 = d2;
+            h3 = d3;
+            h4 = d4;
+            h5 = d5;
+            h6 = d6;
+            h7 = d7;
+            h8 = d8;
+            h9 = d9;
+            mpos += 16;
+            bytes -= 16;
+        }
+        this._h[0] = h0;
+        this._h[1] = h1;
+        this._h[2] = h2;
+        this._h[3] = h3;
+        this._h[4] = h4;
+        this._h[5] = h5;
+        this._h[6] = h6;
+        this._h[7] = h7;
+        this._h[8] = h8;
+        this._h[9] = h9;
+    }
+    finish(mac, macpos = 0) {
+        const g = new Uint16Array(10);
+        let c;
+        let mask;
+        let f;
+        let i;
+        if (this._leftover) {
+            i = this._leftover;
+            this._buffer[i++] = 1;
+            for (; i < 16; i++) {
+                this._buffer[i] = 0;
+            }
+            this._fin = 1;
+            this._blocks(this._buffer, 0, 16);
+        }
+        c = this._h[1] >>> 13;
+        this._h[1] &= 0x1fff;
+        for (i = 2; i < 10; i++) {
+            this._h[i] += c;
+            c = this._h[i] >>> 13;
+            this._h[i] &= 0x1fff;
+        }
+        this._h[0] += (c * 5);
+        c = this._h[0] >>> 13;
+        this._h[0] &= 0x1fff;
+        this._h[1] += c;
+        c = this._h[1] >>> 13;
+        this._h[1] &= 0x1fff;
+        this._h[2] += c;
+        g[0] = this._h[0] + 5;
+        c = g[0] >>> 13;
+        g[0] &= 0x1fff;
+        for (i = 1; i < 10; i++) {
+            g[i] = this._h[i] + c;
+            c = g[i] >>> 13;
+            g[i] &= 0x1fff;
+        }
+        g[9] -= (1 << 13);
+        mask = (c ^ 1) - 1;
+        for (i = 0; i < 10; i++) {
+            g[i] &= mask;
+        }
+        mask = ~mask;
+        for (i = 0; i < 10; i++) {
+            this._h[i] = (this._h[i] & mask) | g[i];
+        }
+        this._h[0] = ((this._h[0]) | (this._h[1] << 13)) & 0xffff;
+        this._h[1] = ((this._h[1] >>> 3) | (this._h[2] << 10)) & 0xffff;
+        this._h[2] = ((this._h[2] >>> 6) | (this._h[3] << 7)) & 0xffff;
+        this._h[3] = ((this._h[3] >>> 9) | (this._h[4] << 4)) & 0xffff;
+        this._h[4] = ((this._h[4] >>> 12) | (this._h[5] << 1) | (this._h[6] << 14)) & 0xffff;
+        this._h[5] = ((this._h[6] >>> 2) | (this._h[7] << 11)) & 0xffff;
+        this._h[6] = ((this._h[7] >>> 5) | (this._h[8] << 8)) & 0xffff;
+        this._h[7] = ((this._h[8] >>> 8) | (this._h[9] << 5)) & 0xffff;
+        f = this._h[0] + this._pad[0];
+        this._h[0] = f & 0xffff;
+        for (i = 1; i < 8; i++) {
+            f = (((this._h[i] + this._pad[i]) | 0) + (f >>> 16)) | 0;
+            this._h[i] = f & 0xffff;
+        }
+        mac[macpos + 0] = this._h[0] >>> 0;
+        mac[macpos + 1] = this._h[0] >>> 8;
+        mac[macpos + 2] = this._h[1] >>> 0;
+        mac[macpos + 3] = this._h[1] >>> 8;
+        mac[macpos + 4] = this._h[2] >>> 0;
+        mac[macpos + 5] = this._h[2] >>> 8;
+        mac[macpos + 6] = this._h[3] >>> 0;
+        mac[macpos + 7] = this._h[3] >>> 8;
+        mac[macpos + 8] = this._h[4] >>> 0;
+        mac[macpos + 9] = this._h[4] >>> 8;
+        mac[macpos + 10] = this._h[5] >>> 0;
+        mac[macpos + 11] = this._h[5] >>> 8;
+        mac[macpos + 12] = this._h[6] >>> 0;
+        mac[macpos + 13] = this._h[6] >>> 8;
+        mac[macpos + 14] = this._h[7] >>> 0;
+        mac[macpos + 15] = this._h[7] >>> 8;
+        this._finished = true;
+        return this;
+    }
+    update(m) {
+        let mpos = 0;
+        let bytes = m.length;
+        let want;
+        if (this._leftover) {
+            want = (16 - this._leftover);
+            if (want > bytes) {
+                want = bytes;
+            }
+            for (let i = 0; i < want; i++) {
+                this._buffer[this._leftover + i] = m[mpos + i];
+            }
+            bytes -= want;
+            mpos += want;
+            this._leftover += want;
+            if (this._leftover < 16) {
+                return this;
+            }
+            this._blocks(this._buffer, 0, 16);
+            this._leftover = 0;
+        }
+        if (bytes >= 16) {
+            want = bytes - (bytes % 16);
+            this._blocks(m, mpos, want);
+            mpos += want;
+            bytes -= want;
+        }
+        if (bytes) {
+            for (let i = 0; i < bytes; i++) {
+                this._buffer[this._leftover + i] = m[mpos + i];
+            }
+            this._leftover += bytes;
+        }
+        return this;
+    }
+    digest() {
+        // TODO(dchest): it behaves differently than other hashes/HMAC,
+        // because it throws when finished — others just return saved result.
+        if (this._finished) {
+            throw new Error("Poly1305 was finished");
+        }
+        let mac = new Uint8Array(16);
+        this.finish(mac);
+        return mac;
+    }
+    clean() {
+        wipe_wipe(this._buffer);
+        wipe_wipe(this._r);
+        wipe_wipe(this._h);
+        wipe_wipe(this._pad);
+        this._leftover = 0;
+        this._fin = 0;
+        this._finished = true; // mark as finished even if not
+        return this;
+    }
+}
+/**
+ * Returns 16-byte authenticator of data using a one-time 32-byte key.
+ *
+ * Important: key should be used for only one message, it should never repeat.
+ */
+function oneTimeAuth(key, data) {
+    const h = new Poly1305(key);
+    h.update(data);
+    const digest = h.digest();
+    h.clean();
+    return digest;
+}
+/**
+ * Returns true if two authenticators are 16-byte long and equal.
+ * Uses contant-time comparison to avoid leaking timing information.
+ */
+function equal(a, b) {
+    if (a.length !== DIGEST_LENGTH || b.length !== DIGEST_LENGTH) {
+        return false;
+    }
+    return constantTimeEqual(a, b);
+}
+//# sourceMappingURL=poly1305.js.map
+;// ./node_modules/@stablelib/constant-time/lib/constant-time.js
+// Copyright (C) 2016 Dmitry Chestnykh
+// MIT License. See LICENSE file for details.
+/**
+ * Package constant-time provides functions for performing algorithmically constant-time operations.
+ */
+/**
+ * NOTE! Due to the inability to guarantee real constant time evaluation of
+ * anything in JavaScript VM, this is module is the best effort.
+ */
+/**
+ * Returns resultIfOne if subject is 1, or resultIfZero if subject is 0.
+ *
+ * Supports only 32-bit integers, so resultIfOne or resultIfZero are not
+ * integers, they'll be converted to them with bitwise operations.
+ */
+function constant_time_select(subject, resultIfOne, resultIfZero) {
+    return (~(subject - 1) & resultIfOne) | ((subject - 1) & resultIfZero);
+}
+/**
+ * Returns 1 if a <= b, or 0 if not.
+ * Arguments must be positive 32-bit integers less than or equal to 2^31 - 1.
+ */
+function lessOrEqual(a, b) {
+    return (((a | 0) - (b | 0) - 1) >>> 31) & 1;
+}
+/**
+ * Returns 1 if a and b are of equal length and their contents
+ * are equal, or 0 otherwise.
+ *
+ * Note that unlike in equal(), zero-length inputs are considered
+ * the same, so this function will return 1.
+ */
+function compare(a, b) {
+    if (a.length !== b.length) {
+        return 0;
+    }
+    let result = 0;
+    for (let i = 0; i < a.length; i++) {
+        result |= a[i] ^ b[i];
+    }
+    return (1 & ((result - 1) >>> 8));
+}
+/**
+ * Returns true if a and b are of equal non-zero length,
+ * and their contents are equal, or false otherwise.
+ *
+ * Note that unlike in compare() zero-length inputs are considered
+ * _not_ equal, so this function will return false.
+ */
+function constant_time_equal(a, b) {
+    if (a.length === 0 || b.length === 0) {
+        return false;
+    }
+    return compare(a, b) !== 0;
+}
+//# sourceMappingURL=constant-time.js.map
+;// ./node_modules/@stablelib/chacha20poly1305/lib/chacha20poly1305.js
+// Copyright (C) 2016 Dmitry Chestnykh
+// MIT License. See LICENSE file for details.
+
+
+
+
+
+const KEY_LENGTH = 32;
+const NONCE_LENGTH = 12;
+const TAG_LENGTH = 16;
+const ZEROS = new Uint8Array(16);
+/**
+ * ChaCha20-Poly1305 Authenticated Encryption with Associated Data.
+ *
+ * Defined in RFC7539.
+ */
+class ChaCha20Poly1305 {
+    nonceLength = NONCE_LENGTH;
+    tagLength = TAG_LENGTH;
+    _key;
+    /**
+     * Creates a new instance with the given 32-byte key.
+     */
+    constructor(key) {
+        if (key.length !== KEY_LENGTH) {
+            throw new Error("ChaCha20Poly1305 needs 32-byte key");
+        }
+        // Copy key.
+        this._key = new Uint8Array(key);
+    }
+    /**
+     * Encrypts and authenticates plaintext, authenticates associated data,
+     * and returns sealed ciphertext, which includes authentication tag.
+     *
+     * RFC7539 specifies 12 bytes for nonce. It may be this 12-byte nonce
+     * ("IV"), or full 16-byte counter (called "32-bit fixed-common part")
+     * and nonce.
+     *
+     * If dst is given (it must be the size of plaintext + the size of tag
+     * length) the result will be put into it. Dst and plaintext must not
+     * overlap.
+     */
+    seal(nonce, plaintext, associatedData, dst) {
+        if (nonce.length > 16) {
+            throw new Error("ChaCha20Poly1305: incorrect nonce length");
+        }
+        // Allocate space for counter, and set nonce as last bytes of it.
+        const counter = new Uint8Array(16);
+        counter.set(nonce, counter.length - nonce.length);
+        // Generate authentication key by taking first 32-bytes of stream.
+        // We pass full counter, which has 12-byte nonce and 4-byte block counter,
+        // and it will get incremented after generating the block, which is
+        // exactly what we need: we only use the first 32 bytes of 64-byte
+        // ChaCha block and discard the next 32 bytes.
+        const authKey = new Uint8Array(32);
+        stream(this._key, counter, authKey, 4);
+        // Allocate space for sealed ciphertext.
+        const resultLength = plaintext.length + this.tagLength;
+        let result;
+        if (dst) {
+            if (dst.length !== resultLength) {
+                throw new Error("ChaCha20Poly1305: incorrect destination length");
+            }
+            result = dst;
+        }
+        else {
+            result = new Uint8Array(resultLength);
+        }
+        // Encrypt plaintext.
+        streamXOR(this._key, counter, plaintext, result, 4);
+        // Authenticate.
+        // XXX: can "simplify" here: pass full result (which is already padded
+        // due to zeroes prepared for tag), and ciphertext length instead of
+        // subarray of result.
+        this._authenticate(result.subarray(result.length - this.tagLength, result.length), authKey, result.subarray(0, result.length - this.tagLength), associatedData);
+        // Cleanup.
+        wipe_wipe(counter);
+        return result;
+    }
+    /**
+     * Authenticates sealed ciphertext (which includes authentication tag) and
+     * associated data, decrypts ciphertext and returns decrypted plaintext.
+     *
+     * RFC7539 specifies 12 bytes for nonce. It may be this 12-byte nonce
+     * ("IV"), or full 16-byte counter (called "32-bit fixed-common part")
+     * and nonce.
+     *
+     * If authentication fails, it returns null.
+     *
+     * If dst is given (it must be of ciphertext length minus tag length),
+     * the result will be put into it. Dst and plaintext must not overlap.
+     */
+    open(nonce, sealed, associatedData, dst) {
+        if (nonce.length > 16) {
+            throw new Error("ChaCha20Poly1305: incorrect nonce length");
+        }
+        // Sealed ciphertext should at least contain tag.
+        if (sealed.length < this.tagLength) {
+            // TODO(dchest): should we throw here instead?
+            return null;
+        }
+        // Allocate space for counter, and set nonce as last bytes of it.
+        const counter = new Uint8Array(16);
+        counter.set(nonce, counter.length - nonce.length);
+        // Generate authentication key by taking first 32-bytes of stream.
+        const authKey = new Uint8Array(32);
+        stream(this._key, counter, authKey, 4);
+        // Authenticate.
+        // XXX: can simplify and avoid allocation: since authenticate()
+        // already allocates tag (from Poly1305.digest(), it can return)
+        // it instead of copying to calculatedTag. But then in seal()
+        // we'll need to copy it.
+        const calculatedTag = new Uint8Array(this.tagLength);
+        this._authenticate(calculatedTag, authKey, sealed.subarray(0, sealed.length - this.tagLength), associatedData);
+        // Constant-time compare tags and return null if they differ.
+        if (!constant_time_equal(calculatedTag, sealed.subarray(sealed.length - this.tagLength, sealed.length))) {
+            return null;
+        }
+        // Allocate space for decrypted plaintext.
+        const resultLength = sealed.length - this.tagLength;
+        let result;
+        if (dst) {
+            if (dst.length !== resultLength) {
+                throw new Error("ChaCha20Poly1305: incorrect destination length");
+            }
+            result = dst;
+        }
+        else {
+            result = new Uint8Array(resultLength);
+        }
+        // Decrypt.
+        streamXOR(this._key, counter, sealed.subarray(0, sealed.length - this.tagLength), result, 4);
+        // Cleanup.
+        wipe_wipe(counter);
+        return result;
+    }
+    clean() {
+        wipe_wipe(this._key);
+        return this;
+    }
+    _authenticate(tagOut, authKey, ciphertext, associatedData) {
+        // Initialize Poly1305 with authKey.
+        const h = new Poly1305(authKey);
+        // Authenticate padded associated data.
+        if (associatedData) {
+            h.update(associatedData);
+            if (associatedData.length % 16 > 0) {
+                h.update(ZEROS.subarray(associatedData.length % 16));
+            }
+        }
+        // Authenticate padded ciphertext.
+        h.update(ciphertext);
+        if (ciphertext.length % 16 > 0) {
+            h.update(ZEROS.subarray(ciphertext.length % 16));
+        }
+        // Authenticate length of associated data.
+        // XXX: can avoid allocation here?
+        const length = new Uint8Array(8);
+        if (associatedData) {
+            writeUint64LE(associatedData.length, length);
+        }
+        h.update(length);
+        // Authenticate length of ciphertext.
+        writeUint64LE(ciphertext.length, length);
+        h.update(length);
+        // Get tag and copy it into tagOut.
+        const tag = h.digest();
+        for (let i = 0; i < tag.length; i++) {
+            tagOut[i] = tag[i];
+        }
+        // Cleanup.
+        h.clean();
+        wipe_wipe(tag);
+        wipe_wipe(length);
+    }
+}
+//# sourceMappingURL=chacha20poly1305.js.map
+;// ./node_modules/@stablelib/random/lib/source/system.js
+// Copyright (C) 2024 Dmitry Chestnykh
+// MIT License. See LICENSE file for details.
+const QUOTA = 65536;
+class SystemRandomSource {
+    isAvailable = false;
+    isInstantiated = false;
+    constructor() {
+        if (typeof crypto !== "undefined" && 'getRandomValues' in crypto) {
+            this.isAvailable = true;
+            this.isInstantiated = true;
+        }
+    }
+    randomBytes(length) {
+        if (!this.isAvailable) {
+            throw new Error("System random byte generator is not available.");
+        }
+        const out = new Uint8Array(length);
+        for (let i = 0; i < out.length; i += QUOTA) {
+            crypto.getRandomValues(out.subarray(i, i + Math.min(out.length - i, QUOTA)));
+        }
+        return out;
+    }
+}
+//# sourceMappingURL=system.js.map
+;// ./node_modules/@stablelib/random/lib/random.js
+// Copyright (C) 2016 Dmitry Chestnykh
+// MIT License. See LICENSE file for details.
+
+
+
+const defaultRandomSource = new SystemRandomSource();
+function randomBytes(length, prng = defaultRandomSource) {
+    return prng.randomBytes(length);
+}
+/**
+ * Returns a uniformly random unsigned 32-bit integer.
+ */
+function randomUint32(prng = defaultRandomSource) {
+    // Generate 4-byte random buffer.
+    const buf = randomBytes(4, prng);
+    // Convert bytes from buffer into a 32-bit integer.
+    // It's not important which byte order to use, since
+    // the result is random.
+    const result = readUint32LE(buf);
+    // Clean the buffer.
+    wipe(buf);
+    return result;
+}
+/** 62 alphanumeric characters for default charset of randomString() */
+const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+/**
+ * Returns a uniform random string of the given length
+ * with characters from the given charset.
+ *
+ * Charset must not have more than 256 characters.
+ *
+ * Default charset generates case-sensitive alphanumeric
+ * strings (0-9, A-Z, a-z).
+ */
+function randomString(length, charset = ALPHANUMERIC, prng = defaultRandomSource) {
+    if (charset.length < 2) {
+        throw new Error("randomString charset is too short");
+    }
+    if (charset.length > 256) {
+        throw new Error("randomString charset is too long");
+    }
+    let out = '';
+    const charsLen = charset.length;
+    const maxByte = 256 - (256 % charsLen);
+    while (length > 0) {
+        const buf = randomBytes(Math.ceil(length * 256 / maxByte), prng);
+        for (let i = 0; i < buf.length && length > 0; i++) {
+            const randomByte = buf[i];
+            if (randomByte < maxByte) {
+                out += charset.charAt(randomByte % charsLen);
+                length--;
+            }
+        }
+        wipe(buf);
+    }
+    return out;
+}
+/**
+ * Returns uniform random string containing at least the given
+ * number of bits of entropy.
+ *
+ * For example, randomStringForEntropy(128) will return a 22-character
+ * alphanumeric string, while randomStringForEntropy(128, "0123456789")
+ * will return a 39-character numeric string, both will contain at
+ * least 128 bits of entropy.
+ *
+ * Default charset generates case-sensitive alphanumeric
+ * strings (0-9, A-Z, a-z).
+ */
+function randomStringForEntropy(bits, charset = ALPHANUMERIC, prng = defaultRandomSource) {
+    const length = Math.ceil(bits / (Math.log(charset.length) / Math.LN2));
+    return randomString(length, charset, prng);
+}
+//# sourceMappingURL=random.js.map
+;// ./src/utils/crypto.ts
+var crypto_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+// utils/crypto.ts
+
+
+function base64UrlToBytes(base64url) {
+    let base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+    while (base64.length % 4)
+        base64 += '=';
+    return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+}
+function bytesToBase64(bytes) {
+    return btoa(String.fromCharCode(...bytes));
+}
+function base64ToBytes(base64) {
+    return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+}
+function crypto_deriveKey(masterPassword, saltBase64Url) {
+    return crypto_awaiter(this, void 0, void 0, function* () {
+        const salt = base64UrlToBytes(saltBase64Url);
+        const enc = new TextEncoder();
+        const passwordKey = yield window.crypto.subtle.importKey('raw', enc.encode(masterPassword), { name: 'PBKDF2' }, false, ['deriveBits']);
+        const derivedBits = yield window.crypto.subtle.deriveBits({
+            name: 'PBKDF2',
+            salt: salt,
+            iterations: 300000,
+            hash: 'SHA-256',
+        }, passwordKey, 256);
+        const derivedKey = bytesToBase64(new Uint8Array(derivedBits))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+        return derivedKey;
+    });
+}
+function crypto_encryptData(symmetricKey, plainText) {
+    const key = base64UrlToBytes(symmetricKey);
+    const algo = new ChaCha20Poly1305(key);
+    const nonce = randomBytes(12);
+    const plaintextBytes = new TextEncoder().encode(plainText);
+    const encrypted = algo.seal(nonce, plaintextBytes);
+    const result = new Uint8Array(nonce.length + encrypted.length);
+    result.set(nonce, 0);
+    result.set(encrypted, nonce.length);
+    return bytesToBase64(result);
+}
+function decryptData(symmetricKey, encryptedData) {
+    const key = base64UrlToBytes(symmetricKey);
+    const algo = new ChaCha20Poly1305(key);
+    const encryptedBytes = base64ToBytes(encryptedData);
+    const nonce = encryptedBytes.slice(0, 12);
+    const ciphertextAndMac = encryptedBytes.slice(12);
+    const decrypted = algo.open(nonce, ciphertextAndMac);
+    if (!decrypted)
+        throw new Error('Decryption failed');
+    return new TextDecoder().decode(decrypted);
+}
+function generateItemKey() {
+    const key = window.crypto.getRandomValues(new Uint8Array(32));
+    // Standard base64
+    let base64 = btoa(String.fromCharCode(...key));
+    // Convert to base64url
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+;// ./src/services/cognito.ts
+var cognito_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+/**
+ * services/cognito.ts
+ * Low-level Cognito service functions for authentication and user management.
+ * No business logic, just direct API calls.
+ */
+
+/**
+ * Full Cognito login flow (handles sign-in, MFA, token extraction, user attributes, Firebase token)
+ * Returns: { mfaRequired, mfaUser, idToken, firebaseToken, userAttributes }
+ */
+function cognito_loginWithCognito(email, password) {
+    return cognito_awaiter(this, void 0, void 0, function* () {
+        var _a;
+        console.log('[Cognito] Starting login with email:', email);
+        // Sign in with Cognito
+        const user = yield signIn({ username: email, password });
+        const mfaSteps = [
+            'CONFIRM_SIGN_IN_WITH_SMS_CODE',
+            'CONFIRM_SIGN_IN_WITH_TOTP_CODE',
+            'CONFIRM_SIGN_IN_WITH_EMAIL_CODE',
+            'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
+            'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED',
+            'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
+        ];
+        if (user.nextStep && mfaSteps.includes(user.nextStep.signInStep)) {
+            console.log('[Cognito] loginWithCognito success: MFA required');
+            return { mfaRequired: true, mfaUser: user };
+        }
+        // Authenticated, get tokens and user attributes
+        const { tokens } = yield fetchAuthSession();
+        const idToken = (_a = tokens === null || tokens === void 0 ? void 0 : tokens.idToken) === null || _a === void 0 ? void 0 : _a.toString();
+        if (!idToken)
+            throw new Error('No IdToken found');
+        const parts = idToken.split('.');
+        if (parts.length !== 3)
+            throw new Error('Invalid JWT structure');
+        const payload = JSON.parse(atob(parts[1]));
+        const firebaseToken = payload.firebaseToken;
+        if (!firebaseToken)
+            throw new Error('Firebase token not found in Cognito ID token claims');
+        const userAttributes = yield fetchUserAttributes();
+        console.log('[Cognito] loginWithCognito success: User authenticated');
+        return { mfaRequired: false, idToken, firebaseToken, userAttributes };
+    });
+}
+/**
+ * Confirm MFA step with Cognito (low-level)
+ * Returns: { idToken, firebaseToken, userAttributes }
+ */
+function cognito_confirmMfaWithCognito(code) {
+    return cognito_awaiter(this, void 0, void 0, function* () {
+        var _a;
+        console.log('[Cognito] Confirming MFA with code');
+        const user = yield confirmSignIn({ challengeResponse: code });
+        const { tokens } = yield fetchAuthSession();
+        const idToken = (_a = tokens === null || tokens === void 0 ? void 0 : tokens.idToken) === null || _a === void 0 ? void 0 : _a.toString();
+        if (!idToken)
+            throw new Error('No IdToken found');
+        const parts = idToken.split('.');
+        if (parts.length !== 3)
+            throw new Error('Invalid JWT structure');
+        const payload = JSON.parse(atob(parts[1]));
+        const firebaseToken = payload.firebaseToken;
+        if (!firebaseToken)
+            throw new Error('Firebase token not found in Cognito ID token claims');
+        const userAttributes = yield fetchUserAttributes();
+        console.log('[Cognito] confirmMfaWithCognito success');
+        return { idToken, firebaseToken, userAttributes, user };
+    });
+}
+/**
+ * Fetch user attributes from Cognito (low-level)
+ */
+function fetchUserAttributesCognito() {
+    return cognito_awaiter(this, void 0, void 0, function* () {
+        console.log('[Cognito] Fetching user attributes');
+        const attributes = yield fetchUserAttributes();
+        console.log('[Cognito] fetchUserAttributesCognito success');
+        return attributes;
+    });
+}
+/**
+ * Fetch user salt from Cognito (low-level, wrapper for attribute fetch)
+ */
+function fetchUserSaltCognito() {
+    return cognito_awaiter(this, void 0, void 0, function* () {
+        console.log('[Cognito] Fetching user salt');
+        const attrs = yield fetchUserAttributes();
+        const salt = attrs['custom:salt'] || '';
+        console.log('[Cognito] fetchUserSaltCognito success');
+        return salt;
+    });
+}
+/**
+ * Sign out from Cognito (low-level)
+ */
+function cognito_signOutCognito() {
+    return cognito_awaiter(this, void 0, void 0, function* () {
+        console.log('[Cognito] Signing out from Cognito');
+        yield signOut();
+        console.log('[Cognito] signOutCognito success');
+    });
+}
+/**
+ * Get Cognito tokens and Firebase token from the current session (low-level)
+ */
+function getCognitoTokensAndFirebaseToken() {
+    return cognito_awaiter(this, void 0, void 0, function* () {
+        var _a;
+        console.log('[Cognito] Getting Cognito tokens and Firebase token');
+        const { tokens } = yield fetchAuthSession();
+        const idToken = (_a = tokens === null || tokens === void 0 ? void 0 : tokens.idToken) === null || _a === void 0 ? void 0 : _a.toString();
+        if (!idToken)
+            throw new Error('No IdToken found');
+        const parts = idToken.split('.');
+        if (parts.length !== 3)
+            throw new Error('Invalid JWT structure');
+        const payload = JSON.parse(atob(parts[1]));
+        const firebaseToken = payload.firebaseToken;
+        if (!firebaseToken)
+            throw new Error('Firebase token not found in Cognito ID token claims');
+        console.log('[Cognito] getCognitoTokensAndFirebaseToken success');
+        return { idToken, firebaseToken };
+    });
+}
+
+;// ./src/services/indexdb.ts
+// Generic IndexedDB utilities for CRUD operations
+// No business logic, only parameterized helpers
+function indexdb_openDB(dbName, version) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, version);
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            // Always create both stores if missing
+            if (!db.objectStoreNames.contains('user')) {
+                db.createObjectStore('user');
+            }
+            if (!db.objectStoreNames.contains('credentials')) {
+                db.createObjectStore('credentials');
+            }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+// Store a value under a key (singleton value)
+function indexdb_putItem(db, storeName, key, value) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readwrite');
+        const store = tx.objectStore(storeName);
+        store.put(value, key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+// Get a value by key (singleton value)
+function getItem(db, storeName, key) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readonly');
+        const store = tx.objectStore(storeName);
+        const request = store.get(key);
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+    });
+}
+function getAllItems(db, storeName) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readonly');
+        const store = tx.objectStore(storeName);
+        const request = store.getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+function indexdb_deleteItem(db, storeName, key) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readwrite');
+        const store = tx.objectStore(storeName);
+        store.delete(key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+function indexdb_clearStore(db, storeName) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readwrite');
+        const store = tx.objectStore(storeName);
+        const clearRequest = store.clear();
+        clearRequest.onsuccess = () => resolve();
+        clearRequest.onerror = () => reject(clearRequest.error);
+    });
+}
+
+;// ./src/logic/user.ts
+var user_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+/**
+ * business/user.ts
+ * High-level business logic for user authentication and user management.
+ * Calls low-level service functions in services/cognito.ts and services/firebase.ts.
+ */
+
+
+
+
+
+const user_DB_NAME = 'SimpliPassCache';
+const user_STORE_NAME = 'user';
+const user_DB_VERSION = 1;
+const REMEMBER_EMAIL_KEY = 'simplipass_remembered_email';
+// Get user secret key from IndexedDB
+function user_getUserSecretKey() {
+    return user_awaiter(this, void 0, void 0, function* () {
+        console.log('[User] Getting user secret key from IndexedDB');
+        const db = yield indexdb_openDB(user_DB_NAME, user_DB_VERSION);
+        const result = yield getItem(db, user_STORE_NAME, 'UserSecretKey');
+        console.log('[User] getUserSecretKey success:', result ? 'Key found: ' + result : 'Key not found');
+        return result;
+    });
+}
+// Store user secret key in IndexedDB
+function storeUserSecretKey(key) {
+    return user_awaiter(this, void 0, void 0, function* () {
+        console.log('[User] Storing user secret key in IndexedDB');
+        const db = yield openDB(user_DB_NAME, user_DB_VERSION);
+        yield putItem(db, user_STORE_NAME, 'UserSecretKey', key);
+        console.log('[User] storeUserSecretKey success');
+    });
+}
+// Delete user secret key from IndexedDB
+function deleteUserSecretKey() {
+    return user_awaiter(this, void 0, void 0, function* () {
+        console.log('[User] Deleting user secret key from IndexedDB');
+        const db = yield openDB(user_DB_NAME, user_DB_VERSION);
+        yield deleteItem(db, user_STORE_NAME, 'UserSecretKey');
+        console.log('[User] deleteUserSecretKey success');
+    });
+}
+// High-level login function for the popup.
+// Handles email remembering, Cognito sign-in, MFA, secret key derivation, Firebase sign-in, and credential refresh.
+function loginUser(_a) {
+    return user_awaiter(this, arguments, void 0, function* ({ email, password, rememberEmail }) {
+        console.log('[User] Starting login process for email:', email);
+        // Remember email logic
+        if (rememberEmail && email) {
+            localStorage.setItem(REMEMBER_EMAIL_KEY, email);
+        }
+        else if (!rememberEmail) {
+            localStorage.removeItem(REMEMBER_EMAIL_KEY);
+        }
+        // Call low-level Cognito login
+        const result = yield loginWithCognito(email, password);
+        if (result.mfaRequired) {
+            console.log('[User] loginUser success: MFA required');
+            return { mfaRequired: true, mfaUser: result.mfaUser };
+        }
+        // Derive and store user secret key
+        const userSalt = result.userAttributes['custom:salt'];
+        if (userSalt) {
+            const userSecretKey = yield deriveKey(password, userSalt);
+            yield storeUserSecretKey(userSecretKey);
+        }
+        // Sign in with Firebase (low-level)
+        yield signInWithFirebaseToken(result.firebaseToken);
+        yield refreshCredentialsInVaultDb(getCurrentUserFromFirebase());
+        console.log('[User] loginUser success: User fully authenticated');
+        return { mfaRequired: false };
+    });
+}
+// High-level MFA confirmation function for the popup.
+function confirmMfa(_a) {
+    return user_awaiter(this, arguments, void 0, function* ({ code, password, mfaUser }) {
+        console.log('[User] Confirming MFA with code');
+        const result = yield confirmMfaWithCognito(code);
+        const userSalt = result.userAttributes['custom:salt'];
+        if (userSalt) {
+            const userSecretKey = yield deriveKey(password, userSalt);
+            yield storeUserSecretKey(userSecretKey);
+        }
+        yield signInWithFirebaseToken(result.firebaseToken);
+        console.log('[User] confirmMfa success');
+        return result.user;
+    });
+}
+// High-level logout function for the popup.
+function logoutUser() {
+    return user_awaiter(this, void 0, void 0, function* () {
+        console.log('[User] Starting logout process');
+        yield deleteUserSecretKey();
+        yield clearStore(yield openDB(user_DB_NAME, user_DB_VERSION), user_STORE_NAME);
+        yield signOutFromFirebase();
+        yield signOutCognito();
+        console.log('[User] logoutUser success');
+    });
+}
+
+;// ./src/services/cryptography.ts
+// cryptography.ts 
+// Services for cryptography for items
+var cryptography_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+/**
+ * Decrypt a credential item using the user's secret key.
+ * Returns a CredentialDecrypted object.
+ */
+function decryptCredential(userSecretKey, itemToDecrypt) {
+    return cryptography_awaiter(this, void 0, void 0, function* () {
+        try {
+            const itemKey = yield decryptData(userSecretKey, itemToDecrypt.item_key_encrypted);
+            const decryptedContent = yield decryptData(itemKey, itemToDecrypt.content_encrypted);
+            const contentJson = JSON.parse(decryptedContent);
+            return {
+                createdDateTime: itemToDecrypt.created_at.toDate(),
+                lastUseDateTime: itemToDecrypt.last_used_at.toDate(),
+                title: contentJson.title || '',
+                username: contentJson.username || '',
+                password: contentJson.password || '',
+                note: contentJson.note || '',
+                url: contentJson.url || '',
+                itemKey: itemKey,
+                document_reference: itemToDecrypt.document_reference,
+            };
+        }
+        catch (error) {
+            console.error('❌ Decryption failed for item', itemToDecrypt.document_reference, error);
+            console.error('🔐 Encrypted content:', itemToDecrypt.content_encrypted);
+            console.error('🔑 Encrypted item key:', itemToDecrypt.item_key_encrypted);
+            throw error;
+        }
+    });
+}
+/**
+ * Decrypt an array of credential items using the user's secret key.
+ * Returns an array of CredentialDecrypted objects.
+ */
+function decryptAllCredentials(userSecretKey, credentialsList) {
+    return cryptography_awaiter(this, void 0, void 0, function* () {
+        console.log('[Cryptography] Decrypting all credentials:', credentialsList.length, 'credentials');
+        const decryptedItems = [];
+        if (!credentialsList.length) {
+            console.debug('No credential items provided.');
+            return decryptedItems;
+        }
+        for (const credential of credentialsList) {
+            try {
+                if (typeof credential.item_key_encrypted !== 'string' ||
+                    typeof credential.content_encrypted !== 'string') {
+                    console.error('[Cryptography] Malformed credential:', credential);
+                    continue;
+                }
+                const decryptedItem = yield decryptCredential(userSecretKey, credential);
+                decryptedItems.push(decryptedItem);
+            }
+            catch (e) {
+                console.debug(`[Cryptography] Error processing credential:`, e);
+            }
+        }
+        console.log('[Cryptography] decryptAllCredentials success:', decryptedItems.length, 'credentials decrypted');
+        return decryptedItems;
+    });
+}
+/**
+ * Encrypt a credential item using the user's secret key.
+ * Returns a CredentialEncrypted object.
+ */
+function cryptography_encryptCredential(userSecretKey, itemToEncrypt) {
+    return cryptography_awaiter(this, void 0, void 0, function* () {
+        // Build the content dictionary
+        const contentDict = {
+            title: itemToEncrypt.title,
+            username: itemToEncrypt.username || '',
+            password: itemToEncrypt.password,
+            note: itemToEncrypt.note || '',
+            url: itemToEncrypt.url || '',
+        };
+        // Convert to JSON string
+        const contentString = JSON.stringify(contentDict);
+        // Encrypt content and item key
+        const itemKey = itemToEncrypt.itemKey;
+        const content_encrypted = yield encryptData(itemKey, contentString);
+        const item_key_encrypted = yield encryptData(userSecretKey, itemKey);
+        // Return the encrypted item
+        return {
+            created_at: Timestamp.fromDate(itemToEncrypt.createdDateTime),
+            content_encrypted,
+            item_key_encrypted,
+            last_used_at: Timestamp.fromDate(itemToEncrypt.lastUseDateTime),
+            document_reference: itemToEncrypt.document_reference || null,
+        };
+    });
+}
+
+;// ./src/utils/domain.ts
+/**
+ * Extracts the root domain from a hostname, removing 'www.' and subdomains.
+ * @param hostname The full hostname (e.g., 'www.example.co.uk')
+ * @returns The root domain (e.g., 'example.co.uk')
+ */
+function getRootDomain(hostname) {
+    const parts = hostname.split('.').filter(Boolean);
+    if (parts.length <= 2)
+        return hostname.replace(/^www\./, '');
+    return parts.slice(-2).join('.');
+}
+/* Helper function to extract registered domain from hostname (handles subdomains) */
+function getRegisteredDomain(hostname) {
+    const parts = hostname.split('.').filter(Boolean);
+    if (parts.length <= 2)
+        return hostname.replace(/^www\./, '');
+    return parts.slice(-2).join('.');
+}
+function matchesCredentialDomainOrTitle(cred, pageDomain) {
+    pageDomain = pageDomain.toLowerCase();
+    // 1. Try URL match if url is non-empty
+    if (cred.url && cred.url.trim() !== '') {
+        try {
+            const credUrl = new URL(cred.url.startsWith('http') ? cred.url : 'https://' + cred.url);
+            const credDomain = getRegisteredDomain(credUrl.hostname).toLowerCase();
+            if (pageDomain.endsWith(credDomain) || credDomain.endsWith(pageDomain)) {
+                return true;
+            }
+        }
+        catch (_a) {
+            if (cred.url.toLowerCase().includes(pageDomain) ||
+                pageDomain.includes(cred.url.toLowerCase())) {
+                return true;
+            }
+        }
+        // If url is present but does not match, fall back to title match
+        if (cred.title) {
+            const title = cred.title.toLowerCase();
+            if (title.includes(pageDomain) || pageDomain.includes(title)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    // 2. If url is empty, match by title (case-insensitive, substring or reverse)
+    if (cred.title) {
+        const title = cred.title.toLowerCase();
+        if (title.includes(pageDomain) || pageDomain.includes(title)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+;// ./src/logic/items.ts
+var items_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+
+
+
+
+
+const items_DB_NAME = 'SimpliPassCache';
+const items_STORE_NAME = 'credentials';
+const items_DB_VERSION = 1;
+/* Fetches all encrypted credentials from Firestore, decrypts, re-encrypts, stores, and returns them */
+function items_refreshCredentialsInVaultDb(user) {
+    return items_awaiter(this, void 0, void 0, function* () {
+        console.log('[Items] Refreshing credentials in vault DB for user:', user === null || user === void 0 ? void 0 : user.uid);
+        if (!user)
+            throw new Error('No user logged in');
+        const userSecretKey = yield user_getUserSecretKey();
+        if (!userSecretKey)
+            throw new Error('User secret key not found');
+        // 1. Fetch encrypted credentials from Firestore
+        const encrypted = yield getAllCredentialsInFirestore(user.uid);
+        // 2. Decrypt all credentials (get plain itemKey and password)
+        const decrypted = yield decryptAllCredentials(userSecretKey, encrypted);
+        // 3. For each, re-encrypt as CredentialFromVaultDb and store in array
+        const itemsToStoreInIndexDb = decrypted.map((cred) => {
+            var _a;
+            const itemKeyCipher = crypto_encryptData(userSecretKey, cred.itemKey);
+            const passwordCipher = crypto_encryptData(cred.itemKey, cred.password);
+            return {
+                id: ((_a = cred.document_reference) === null || _a === void 0 ? void 0 : _a.id) || '',
+                url: cred.url,
+                title: cred.title,
+                username: cred.username,
+                itemKeyCipher,
+                passwordCipher,
+                note: cred.note || '',
+            };
+        });
+        // 4. Store in IndexedDB
+        yield saveCredentialsInVaultDb(itemsToStoreInIndexDb);
+        console.log('[Items] refreshCredentialsInVaultDb success:', itemsToStoreInIndexDb.length, 'credentials processed');
+        return itemsToStoreInIndexDb;
+    });
+}
+/* Always returns the cached credentials. If cache is empty, refreshes it first. */
+function getAllCredentialsFromVaultDbWithFallback(user) {
+    return items_awaiter(this, void 0, void 0, function* () {
+        console.log('[Items] Getting all credentials from vault DB with fallback for user:', user === null || user === void 0 ? void 0 : user.uid);
+        // First try to get credentials from cache
+        let creds = yield getAllCredentialsFromVaultDb();
+        // If cache is empty and user is logged in, refresh from Firestore
+        if (!creds || creds.length === 0) {
+            if (auth.currentUser) {
+                try {
+                    creds = yield items_refreshCredentialsInVaultDb(auth.currentUser);
+                }
+                catch (e) {
+                    console.error('[Items] Error refreshing credentials:', e);
+                    creds = [];
+                }
+            }
+            else {
+                creds = [];
+            }
+        }
+        // Log every credential's URL when retrieved from cache
+        console.log('[Cache] Retrieved credentials from cache:');
+        creds.forEach((cred) => {
+            console.log(`[Cache] Credential ID: ${cred.id}, URL: ${cred.url}, Title: ${cred.title}`);
+        });
+        console.log('[Items] getAllCredentialsFromVaultDbWithFallback success:', creds.length, 'credentials');
+        return creds;
+    });
+}
+/* Saves an array of half decrypted credentials to IndexedDB */
+function saveCredentialsInVaultDb(cached) {
+    return items_awaiter(this, void 0, void 0, function* () {
+        console.log('[Items] Saving credentials to vault DB:', cached.length, 'credentials');
+        const db = yield indexdb_openDB(items_DB_NAME, items_DB_VERSION);
+        for (const cred of cached) {
+            yield indexdb_putItem(db, items_STORE_NAME, cred.id, cred);
+        }
+        console.log('[Items] saveCredentialsInVaultDb success');
+    });
+}
+/* Retrieves all cached credentials from IndexedDB */
+function getAllCredentialsFromVaultDb() {
+    return items_awaiter(this, void 0, void 0, function* () {
+        console.log('[Items] Getting all credentials from vault DB');
+        const db = yield indexdb_openDB(items_DB_NAME, items_DB_VERSION);
+        const result = yield getAllItems(db, items_STORE_NAME);
+        console.log('[Items] getAllCredentialsFromVaultDb success:', result.length, 'credentials');
+        return result;
+    });
+}
+/* Retrieves a single cached credential by its ID from IndexedDB */
+function getCredentialFromVaultDb(id) {
+    return items_awaiter(this, void 0, void 0, function* () {
+        console.log('[Items] Getting credential from vault DB with ID:', id);
+        const db = yield indexdb_openDB(items_DB_NAME, items_DB_VERSION);
+        const result = yield getItem(db, items_STORE_NAME, id);
+        console.log('[Items] getCredentialFromVaultDb success:', result ? 'Credential found' : 'Credential not found');
+        return result;
+    });
+}
+/* Get cached credentials filtered by domain (robust, matches registered domain) */
+function getCredentialsByDomainFromVaultDb(domain) {
+    return items_awaiter(this, void 0, void 0, function* () {
+        console.log('[Items] Getting credentials by domain from vault DB:', domain);
+        let allCreds = yield getAllCredentialsFromVaultDb();
+        if (!allCreds || (allCreds.length === 0 && firebase_auth.currentUser)) {
+            try {
+                allCreds = yield items_refreshCredentialsInVaultDb(firebase_auth.currentUser);
+            }
+            catch (e) {
+                allCreds = [];
+            }
+        }
+        const pageDomain = getRegisteredDomain(domain).toLowerCase();
+        const filtered = allCreds.filter((cred) => {
+            // 1. Try URL match if url is non-empty
+            if (cred.url && cred.url.trim() !== '') {
+                try {
+                    const credUrl = new URL(cred.url.startsWith('http') ? cred.url : 'https://' + cred.url);
+                    const credDomain = getRegisteredDomain(credUrl.hostname).toLowerCase();
+                    if (pageDomain.endsWith(credDomain) || credDomain.endsWith(pageDomain)) {
+                        return true;
+                    }
+                }
+                catch (_a) {
+                    if (cred.url.toLowerCase().includes(pageDomain) ||
+                        pageDomain.includes(cred.url.toLowerCase())) {
+                        return true;
+                    }
+                }
+                // If url is present but does not match, fall back to title match
+                if (cred.title) {
+                    const title = cred.title.toLowerCase();
+                    if (title.includes(pageDomain) || pageDomain.includes(title)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            // 2. If url is empty, match by title (case-insensitive, substring or reverse)
+            if (cred.title) {
+                const title = cred.title.toLowerCase();
+                if (title.includes(pageDomain) || pageDomain.includes(title)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+        console.log('[Items] getCredentialsByDomainFromVaultDb success:', filtered.length, 'credentials found for domain:', domain);
+        return filtered;
+    });
+}
+// Create a credential: encrypt, store in Firestore, then add to IndexedDB if successful.
+function createCredential(cred) {
+    return items_awaiter(this, void 0, void 0, function* () {
+        const userSecretKey = yield getUserSecretKey();
+        const user = auth.currentUser;
+        if (!userSecretKey || !user)
+            throw new Error('User not authenticated');
+        // 1. Encrypt the credential
+        const encrypted = yield encryptCredential(userSecretKey, cred);
+        // 2. Store in Firestore
+        const docRef = yield createCredentialInFirestore(user.uid, encrypted);
+        // 3. Add to IndexedDB
+        const db = yield openDB(items_DB_NAME, items_DB_VERSION);
+        // Use the docRef.id as the key
+        const credForIndexDb = {
+            id: docRef.id,
+            url: cred.url,
+            title: cred.title,
+            username: cred.username,
+            itemKeyCipher: encryptData(userSecretKey, cred.itemKey),
+            passwordCipher: encryptData(cred.itemKey, cred.password),
+            note: cred.note || '',
+        };
+        yield putItem(db, items_STORE_NAME, credForIndexDb.id, credForIndexDb);
+    });
+}
+// Update a credential: encrypt, update in Firestore, then update in IndexedDB if successful.
+function updateCredential(credentialId, cred) {
+    return items_awaiter(this, void 0, void 0, function* () {
+        const userSecretKey = yield getUserSecretKey();
+        const user = auth.currentUser;
+        if (!userSecretKey || !user)
+            throw new Error('User not authenticated');
+        // 1. Encrypt the credential
+        const encrypted = yield encryptCredential(userSecretKey, cred);
+        // 2. Update in Firestore
+        yield updateCredentialInFirestore(user.uid, credentialId, encrypted);
+        // 3. Update in IndexedDB
+        const db = yield openDB(items_DB_NAME, items_DB_VERSION);
+        const credForIndexDb = {
+            id: credentialId,
+            url: cred.url,
+            title: cred.title,
+            username: cred.username,
+            itemKeyCipher: encryptData(userSecretKey, cred.itemKey),
+            passwordCipher: encryptData(cred.itemKey, cred.password),
+            note: cred.note || '',
+        };
+        yield putItem(db, items_STORE_NAME, credForIndexDb.id, credForIndexDb);
+    });
+}
+// Delete a credential: remove from Firestore, then from IndexedDB if successful.
+function deleteCredential(credentialId) {
+    return items_awaiter(this, void 0, void 0, function* () {
+        const user = auth.currentUser;
+        if (!user)
+            throw new Error('User not authenticated');
+        // 1. Delete from Firestore
+        yield deleteCredentialInFirestore(user.uid, credentialId);
+        // 2. Delete from IndexedDB
+        const db = yield openDB(items_DB_NAME, items_DB_VERSION);
+        yield deleteItem(db, items_STORE_NAME, credentialId);
+    });
+}
+
+;// ./src/background/index.ts
+var background_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -40307,24 +40285,26 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         return true;
     }
     // Popup requests credential injection
-    if (msg.type === 'INJECT_CREDENTIAL' && msg.credentialId && sender.tab && typeof sender.tab.id === 'number') {
-        Promise.resolve(/* import() */).then(__webpack_require__.bind(__webpack_require__, 7514)).then((_a) => __awaiter(void 0, [_a], void 0, function* ({ getCachedCredential }) {
-            const cred = yield getCachedCredential(msg.credentialId);
+    if (msg.type === 'INJECT_CREDENTIAL' &&
+        msg.credentialId &&
+        sender.tab &&
+        typeof sender.tab.id === 'number') {
+        getCredentialFromVaultDb(msg.credentialId).then((cred) => background_awaiter(void 0, void 0, void 0, function* () {
             if (cred) {
                 // Decrypt password
-                const userSecretKey = yield (0,_utils_indexdb__WEBPACK_IMPORTED_MODULE_1__/* .getUserSecretKey */ .jQ)();
+                const userSecretKey = yield user_getUserSecretKey();
                 if (!userSecretKey) {
                     sendResponse({ success: false, error: 'User secret key not found' });
                     return;
                 }
-                const itemKey = yield (0,_utils_crypto__WEBPACK_IMPORTED_MODULE_2__/* .decryptData */ .af)(userSecretKey, cred.itemKeyCipher);
-                const password = yield (0,_utils_crypto__WEBPACK_IMPORTED_MODULE_2__/* .decryptData */ .af)(itemKey, cred.passwordCipher);
+                const itemKey = yield decryptData(userSecretKey, cred.itemKeyCipher);
+                const password = yield decryptData(itemKey, cred.passwordCipher);
                 const tabId = sender.tab && typeof sender.tab.id === 'number' ? sender.tab.id : undefined;
                 if (tabId !== undefined) {
                     chrome.tabs.sendMessage(tabId, {
                         type: 'INJECT_CREDENTIAL',
                         username: cred.username,
-                        password
+                        password,
                     });
                     sendResponse({ success: true });
                 }
@@ -40340,22 +40320,24 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     }
     // Handle in-page picker credential request
     if (msg.type === 'GET_CACHED_CREDENTIALS' && msg.domain) {
-        (0,_src_cache__WEBPACK_IMPORTED_MODULE_0__.getCachedCredentialsByDomain)(msg.domain).then(creds => {
+        getCredentialsByDomainFromVaultDb(msg.domain).then((creds) => {
             sendResponse(creds);
         });
         return true; // async
     }
     // Handle user secret key request from content script
     if (msg.type === 'GET_USER_SECRET_KEY') {
-        (0,_utils_indexdb__WEBPACK_IMPORTED_MODULE_1__/* .getUserSecretKey */ .jQ)().then(key => {
+        user_getUserSecretKey()
+            .then((key) => {
             sendResponse({ key });
-        }).catch(() => {
+        })
+            .catch(() => {
             sendResponse({ key: null });
         });
         return true;
     }
 });
-chrome.tabs.onActivated.addListener(activeInfo => {
+chrome.tabs.onActivated.addListener((activeInfo) => {
     const tabId = activeInfo.tabId;
     if (!pageState[tabId]) {
         // Ask the content script to send page info
@@ -40365,7 +40347,7 @@ chrome.tabs.onActivated.addListener(activeInfo => {
                 const domain = window.location.hostname;
                 const hasLogin = !!document.querySelector('form input[type="password"]');
                 chrome.runtime.sendMessage({ type: 'PAGE_INFO', domain, hasLogin });
-            }
+            },
         });
     }
 });

@@ -2,7 +2,7 @@
 
 ## Design System & UI Consistency
 
-This project uses a centralized design system for all UI components and styles. All colors, spacing, typography, and radii are defined as CSS variables in `popup/styles/design-system.css`.
+This project uses a centralized design system for all UI components and styles. All colors, spacing, typography, and radii are defined as CSS variables in `src/styles/tokens.css`.
 
 ### Design Tokens
 - **Colors:** --color-primary, --color-secondary, --color-accent, --color-error, etc.
@@ -22,7 +22,7 @@ This project uses a centralized design system for all UI components and styles. 
 ### How to Use
 - **Never use hardcoded colors, spacing, or font sizes.** Always use the tokens and utility classes.
 - **All new components must use the shared Button, Input, Card, and utility classes.**
-- **See `popup/styles/design-system.css` for full documentation and examples.**
+- **See `src/styles/tokens.css` for full documentation and examples.**
 
 ---
 
@@ -40,17 +40,31 @@ A Chrome extension for password management.
 ## Project Structure
 
 ```
-├── manifest.json          # Extension configuration
-├── popup/                 # Popup UI files
-│   ├── popup.html        # Popup HTML
-│   ├── popup.css         # Popup styles
-│   └── popup.js          # Popup logic
-├── background/           # Background scripts
-│   └── background.js     # Service worker
-├── content/             # Content scripts
-│   └── content.js       # Page injection script
-└── assets/             # Static assets
-    └── icons/          # Extension icons
+src/
+├─ background/  # Service worker entrypoint (background logic)
+│   └─ index.ts
+├─ content/     # Content scripts and in-page popovers
+│   ├─ content-script.ts
+│   └─ popovers/
+│       ├─ InPageCredentialPicker.tsx
+│       ├─ OtherPopover.tsx
+│       └─ InPagePickerShadowStyles.ts
+├─ popup/       # Popup React app
+│   ├─ pages/
+│   │   ├─ HomePage.tsx
+│   │   ├─ SettingsPage.tsx
+│   │   └─ GeneratorPage.tsx
+│   ├─ components/
+│   ├─ styles/
+│   └─ Popup.tsx
+├─ components/  # Shared React components (Button, Icon, etc.)
+├─ hooks/       # Custom React hooks
+├─ api/         # API clients (Firebase, Cognito, etc.)
+├─ db/          # IndexedDB utilities
+├─ utils/       # Pure helpers (domain, crypto, etc.)
+├─ types/       # Shared TypeScript types
+└─ styles/
+    └─ tokens.css  # Global design tokens (CSS variables)
 ```
 
 ## Development
