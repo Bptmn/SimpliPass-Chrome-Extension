@@ -1,24 +1,25 @@
-import '../src/styles/tailwind.css';
-import '../src/styles/tokens.css';
+import type { Preview } from '@storybook/react';
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import '../src/shared/styles/tailwind.css';
+import '../src/shared/styles/tokens.css';
 
-export const decorators = [
-  (Story: React.FC) => (
-    <div
-      style={{
-        width: 350,
-        height: 550,
-        minWidth: 350,
-        minHeight: 550,
-        margin: 0,
-        padding: 0,
-        overflow: 'hidden',
-        background: 'var(--primary-background)',
-        boxSizing: 'border-box',
-        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
-      }}
-    >
-      <Story />
-    </div>
-  ),
-]; 
+const preview: Preview = {
+  parameters: {
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/i,
+      },
+    },
+  },
+  decorators: [
+    (Story: React.ComponentType) => (
+      <BrowserRouter>
+        <Story />
+      </BrowserRouter>
+    ),
+  ],
+};
+
+export default preview;

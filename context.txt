@@ -1,40 +1,105 @@
-# SimpliPass Chrome Extension – Project Overview
+# SimpliPass Chrome Extension – Project Context
+
+## 🔐 Project Purpose  
+SimpliPass is a **zero-knowledge password manager** implemented as a Chrome Extension.  
+It enables users to securely **store, generate, and autofill credentials** on any website, without ever exposing plaintext passwords to our servers.  
+All encryption and decryption is done **locally** using Web Crypto, with keys derived from the user’s master password.
+
+---
+
+## 🧭 Project Structure
+
+The codebase follows a **feature-driven architecture**. Each domain feature is isolated and self-contained inside `/src/features/*`.
+
+src/
+│
+├── app/ # Chrome extension entry points
+│ ├── background/ # Background service logic
+│ ├── content/ # Content script injected into web pages
+│ └── popup/ # React-based popup interface (entry point)
+│
+├── features/ # Feature-based domain logic
+│ ├── auth/ # Authentication, unlock, session, onboarding
+│ ├── credentials/ # Vault management, CRUD for credentials
+│ ├── generator/ # Password generator logic and UI
+│ └── settings/ # User preferences, language, etc.
+│
+├── services/ # External services (api, crypto, storage)
+│ ├── api/ # Data fetchers / local API calls
+│ ├── crypto/ # Web Crypto API wrapper
+│ └── storage/ # Chrome and IndexedDB abstractions
+│
+├── shared/
+  ├── assets/ 
+  ├── config/ 
+│ ├── components/ # Shared UI elements (buttons, modals, etc.)
+│ ├── hooks/ # Reusable logic (e.g. useClipboard, useLock)
+│ ├── utils/ # Pure utility functions
+│ ├── types/ # Global TypeScript types
+│ └── styles/ # Tokens, utilities, base.css (design system)
 
 
-Project explanation and rules:
 
-1. Project Purpose  
-SimpliPass is a zero-knowledge password manager implemented as a Chrome Extension. It enables users to securely store, generate, and autofill credentials on any website, without ever exposing plaintext passwords to our servers or storage. All encryption and decryption happen locally, using keys derived from the user’s master password.
+- Every feature or shared folder contains its own `index.ts` barrel export.
+- All imports are **absolute** thanks to path mappings in `tsconfig.json` and Webpack aliasing.
 
-2. Design Principles  
-- Consistency
-  - Use a shared design system for colors, typography, spacing.  
-  - Reusable React components for common UI patterns (buttons, cards, inputs).  
-- Accessibility
-  - ARIA labels on interactive elements.  
-  - Keyboard-navigable popups and lists.  
-- Performance
-  - Virtualize lists when vault grows large.  
-  - Minimize background script memory footprint; clear caches on lock.  
-- Maintainability 
-  - Clear project structure: `/src/components`, `/src/db`, `/src/popup`, `/content-script.js`, `/background.js`.  
-  - TDD approach: Jest + React Testing Library for UI logic.  
+---
 
-3. Security-First Mindset
-   - Zero-knowledge: never persist plaintext secrets.  
-   - Always sanitize any user-input or DOM-derived data before use.  
-   - Use Web Crypto API for all encryption and decryption; do not polyfill.
+## 🎨 Design System & Accessibility
 
-4. AI Collaboration Guidelines  
-- Role: You are SimpliPass’s “Senior UX Engineer & Secure-Architecture Advisor.”  
-- Behavior
-  1. Code-Only Responses**: Provide complete code diffs or new files; avoid prose advice unless explicitly requested.  
-  2. Design Coherence**: Uphold the PRD style tokens and component conventions.  
-  3. Proactive Improvement**: Suggest refactors, performance tweaks, and accessibility enhancements. 
-  4. Never modify anything inside the Dist folder.
+- Design tokens are defined in `shared/styles/tokens.css`
+- Utility classes follow `shared/styles/utilities.css`
+- All components follow **accessible HTML patterns** (ARIA, keyboard navigation)
+- Reusable UI components live in `shared/components/*`, styled with **CSS Modules**
 
-5. Documentation & Comments 
-    - Always comment the code to explain main logic and function
-    - Always comment a file at its beginning to explain its role
-    - Maintain a high-level READMEfor overall architecture.
+---
+
+## ⚙️ Build & Tooling
+
+- **Code splitting** is applied via `React.lazy` and Webpack chunking
+- **Storybook** is configured to showcase all components in isolation
+- **Testing** is done with **Jest** for logic and **React Testing Library** for UI
+- Code formatting and linting use ESLint, Prettier, and Husky (pre-commit)
+- CI/CD pipeline ensures build/test/format steps are validated
+
+---
+
+## 🔐 Security-First Mindset
+
+- **Zero-knowledge**: no plaintext secrets are stored, ever
+- All encryption/decryption is done with the **Web Crypto API**
+- Inputs and DOM data are **always sanitized**
+- Sensitive operations are isolated in `services/crypto/` and `services/storage/`
+- No external scripts or unsafe eval allowed in extension context
+
+---
+
+## 🤖 AI Collaboration Guidelines (Cursor)
+
+- **Your Role**: You are SimpliPass’s **“Senior UX Engineer & Secure-Architecture Advisor”**
+- **Behavior Expectations**:
+  1. ✅ **Code-Only Responses** unless prose is requested
+  2. ✅ **Design Coherence**: follow existing component and style conventions
+  3. ✅ **Proactive Improvement**: Suggest performance, security, DX, or a11y improvements
+  4. 🚫 **Never modify anything inside `/dist`**
+  5. ✅ **Always maintain or improve code readability and structure**
+
+---
+
+## 📚 Documentation & Comments
+
+- Each file must start with a **single-line summary comment**
+- Use section comments to separate major areas (`=== HOOKS ===`, `=== RENDERING ===`)
+- Complex logic must be explained via **JSDoc-style inline comments**
+- Each feature folder includes a **README.md** explaining its scope and API
+
+---
+
+## ✅ Non-Negotiables
+
+- ❌ No relative imports (`../../..`)
+- ✅ All business logic must stay in features or services – keep UI dumb
+- ✅ Performance-critical components should log render time (in dev mode only)
+- ✅ Unit test all core logic and reusable components
+- ✅ Always prioritize security, UX consistency, and dev experience
 

@@ -3,14 +3,8 @@
   "name": "SimpliPass",
   "version": "1.0.0",
   "description": "A Chrome extension for password management",
-  "permissions": [
-    "tabs",
-    "storage",
-    "scripting"
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "permissions": ["tabs", "storage", "scripting"],
+  "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -48,4 +42,4 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   }
-} 
+}
