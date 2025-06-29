@@ -1,0 +1,127 @@
+@import './tokens.css';
+
+.loginBackground {
+  background: var(--primary-background);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-page-container {
+  width: 350px;
+  height: 550px;
+  min-width: 350px;
+  min-height: 550px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.loginFormSection {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.loginCard {
+  background: var(--primary-background);
+  max-width: 360px;
+  width: 100%;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.loginLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.loginCheckboxRow {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loginCheckboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-primary);
+}
+
+.loginCheckbox {
+  margin-right: 6px;
+}
+
+.loginCustomCheckbox {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--color-primary);
+  border-radius: 4px;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.loginCheckboxText {
+  font-size: 14px;
+}
+
+.errorMessage {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.page-container {
+  padding: 15px 20px 15px;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.page-content {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+  flex: 1;
+}

@@ -1,0 +1,35 @@
+{
+  "name": "simplipass-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "yarn workspace @simplipass/web dev",
+    "dev:web": "yarn workspace @simplipass/web dev",
+    "dev:mobile": "yarn workspace @simplipass/mobile start",
+    "build": "yarn workspace @simplipass/web build",
+    "build:web": "yarn workspace @simplipass/web build",
+    "build:mobile": "yarn workspace @simplipass/mobile build",
+    "test": "yarn workspaces run test",
+    "test:web": "yarn workspace @simplipass/web test",
+    "test:mobile": "yarn workspace @simplipass/mobile test",
+    "test:shared": "yarn workspace @simplipass/shared test",
+    "lint": "yarn workspaces run lint",
+    "format": "yarn workspaces run format",
+    "type-check": "yarn workspaces run type-check",
+    "storybook": "yarn workspace @simplipass/web storybook",
+    "build-storybook": "yarn workspace @simplipass/web build-storybook",
+    "clean": "yarn workspaces run clean"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/parser": "^8.34.1",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.5.0",
+    "prettier": "^3.6.0",
+    "typescript": "^5.2.2"
+  }
+}
