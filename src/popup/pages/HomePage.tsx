@@ -24,6 +24,8 @@ import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
 import SkeletonCard from '../components/SkeletonCard';
 import Toast, { useToast } from '../components/Toast';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
 
 /**
  * Custom hook to debounce a value by a given delay.

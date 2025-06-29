@@ -1,5 +1,7 @@
 import React from 'react';
 import styles from '../styles/SkeletonCard.module.css';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
 
 export const SkeletonCard: React.FC = () => (
   <div className={styles.skeletonCard}>

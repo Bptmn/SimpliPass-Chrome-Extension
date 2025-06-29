@@ -13,10 +13,14 @@ export interface UserProfile {
 
 const UserContext = createContext<UserProfile | null>(null);
 
-export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const UserProvider: React.FC<{ children: ReactNode; value?: UserProfile | null }> = ({ children, value }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
 
   useEffect(() => {
+    if (value !== undefined) {
+      setUser(value);
+      return;
+    }
     let unsubscribeUser: (() => void) | undefined;
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       if (unsubscribeUser) {
@@ -35,7 +39,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (unsubscribeUser) unsubscribeUser();
       unsubscribeAuth();
     };
-  }, []);
+  }, [value]);
 
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 };

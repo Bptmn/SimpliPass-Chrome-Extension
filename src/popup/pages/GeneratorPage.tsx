@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { checkPasswordStrength } from 'utils/checkPasswordStrength';
 import { passwordGenerator } from 'utils/passwordGenerator';
 import '../styles/GeneratorPage.css';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
+import { useToast } from '../components/Toast';
 
 export const GeneratorPage: React.FC = () => {
   const [hasUppercase, setHasUppercase] = useState(true);
@@ -14,7 +17,7 @@ export const GeneratorPage: React.FC = () => {
   const [passwordStrength, setPasswordStrength] = useState<
     'weak' | 'average' | 'strong' | 'perfect'
   >('weak');
-  const [toast, setToast] = useState('');
+  const { showToast } = useToast();
 
   // Generate password and check strength on mount and whenever options change
   useEffect(() => {
@@ -31,8 +34,7 @@ export const GeneratorPage: React.FC = () => {
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(generatedPassword);
-    setToast('Mot de passe copié');
-    setTimeout(() => setToast(''), 2000);
+    showToast('Mot de passe copié !');
   };
 
   const handleRegenerate = () => {
@@ -77,7 +79,7 @@ export const GeneratorPage: React.FC = () => {
                       <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                     </svg>
-                    <span>copy</span>
+                    <span>copier</span>
                   </div>
                 </button>
               </div>
@@ -166,7 +168,6 @@ export const GeneratorPage: React.FC = () => {
           </div>
         </div>
       </div>
-      {toast && <div className="toast show">{toast}</div>}
     </div>
   );
 };

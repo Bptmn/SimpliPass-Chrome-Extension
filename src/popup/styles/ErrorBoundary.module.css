@@ -1,5 +1,5 @@
+@import '../../styles/common.css';
 @import '../../styles/tokens.css';
-
 
 /* Error Boundary Component Styles */
 .error-boundary {

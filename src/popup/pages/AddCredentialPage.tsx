@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from 'hooks/useUser';
 import { passwordGenerator } from 'utils/passwordGenerator';
@@ -11,7 +11,9 @@ import Toast, { useToast } from '../components/Toast';
 import '../styles/HomePage.css';
 import '../styles/AddCredentialPage.css';
 import { generateItemKey } from 'utils/crypto';
-import { LazyCredentialIcon } from 'popup/components/LazyCredentialIcon';
+import { Input, InputPasswordGenerator } from '../components/InputVariants';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
 
 interface AddCredentialPageProps {
   link?: string;
@@ -29,6 +31,12 @@ export const AddCredentialPage: React.FC<AddCredentialPageProps> = ({ link = '',
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast, showToast } = useToast();
+
+  useEffect(() => {
+    if (user?.email) {
+      setUsername(user.email);
+    }
+  }, [user?.email]);
 
   const handleGeneratePassword = () => {
     setPassword(passwordGenerator(true, true, true, true, 16));
@@ -86,75 +94,56 @@ export const AddCredentialPage: React.FC<AddCredentialPageProps> = ({ link = '',
           <div className="details-title">Ajouter un identifiant</div>
         </div>
         <form className="form-container" onSubmit={handleSubmit}>
-        <div className="form-section">
-          <label className="inputLabel" htmlFor="title">Nom de l'identifiant</label>
-          <input
+          <Input
+            label="Nom de l'identifiant"
             id="title"
             type="text"
-            className="input"
-            placeholder="[credentialsTitle]"
             value={title}
-            onChange={e => setTitle(e.target.value)}
+            onChange={setTitle}
+            placeholder="[credentialsTitle]"
             required
           />
-        </div>
-        <div className="form-section">
-          <label className="inputLabel" htmlFor="username">Email / Nom d'utilisateur</label>
-          <input
+          <Input
+            label="Email / Nom d'utilisateur"
             id="username"
             type="email"
-            className="input loginInputWrapper"
+            value={username}
+            onChange={setUsername}
             placeholder="[userEmail]"
             autoComplete="email"
-            value={username}
-            onChange={e => setUsername(e.target.value)}
             required
           />
-        </div>
-        <div className="form-section">
-          <label className="inputLabel" htmlFor="password">Mot de passe</label>
-            <input
-              id="password"
-              type="text"
-              className="input"
-              placeholder="Entrez un mot de passe..."
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-            />
-            <div className="flex-end">
-            <button type="button" className="btn btn-secondary" onClick={handleGeneratePassword}>
-              Générer un mot de passe
-            </button>
-          <div className="password-strength font-md-primary">Sécurité forte <Icon name="security" size={18} color="var(--color-success)" /></div>
-          <div className="advanced-options">Options avancées (générateur)</div>
-        </div>
-        </div>
-        <div className="form-section">
-          <label className="inputLabel" htmlFor="url">Lien <span className="optional">(optionnel)</span></label>
-          <input
+          <InputPasswordGenerator
+            label="Mot de passe"
+            id="password"
+            value={password}
+            onChange={setPassword}
+            onGenerate={handleGeneratePassword}
+            placeholder="Entrez un mot de passe..."
+            required
+            passwordStrength="Sécurité forte"
+            Icon={Icon}
+            onAdvancedOptions={() => {}}
+          />
+          <Input
+            label="Lien"
             id="url"
             type="text"
-            className="input"
-            placeholder="[credentialUrl]"
             value={url}
-            onChange={e => setUrl(e.target.value)}
+            onChange={setUrl}
+            placeholder="[credentialUrl]"
           />
-        </div>
-        <div className="form-section">
-          <label className="inputLabel" htmlFor="note">Note <span className="optional">(optionnel)</span></label>
-          <input
+          <Input
+            label="Note"
             id="note"
             type="text"
-            className="input"
-            placeholder="Entrez une note..."
             value={note}
-            onChange={e => setNote(e.target.value)}
+            onChange={setNote}
+            placeholder="Entrez une note..."
           />
-        </div>
-        <button className="btn btn-primary full-width" type="submit" disabled={loading}>
-          Ajouter
-        </button>
+          <button className="btn btn-primary full-width" type="submit" disabled={loading}>
+            Ajouter
+          </button>
         </form>
       </div>
     </div>

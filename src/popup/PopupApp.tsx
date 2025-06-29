@@ -21,6 +21,7 @@ import { AddCredentialPage } from './pages/AddCredentialPage';
 import { config } from 'config/config';
 import { auth } from 'services/firebase';
 import { PageState, CredentialMeta } from 'types/types';
+import { ToastProvider } from './components/Toast';
 
 Amplify.configure({ Auth: { Cognito: config.Cognito } });
 
@@ -126,34 +127,36 @@ export const PopupApp: React.FC = () => {
 
   console.log('Rendering main content...');
   return (
-    <div className="container">
-      {user && <Navbar />}
-      <div id="content">
-        <Routes>
-          {!user ? (
-            <Route path="*" element={<LoginPage />} />
-          ) : (
-            <>
-              <Route path="/" element={<Navigate to="/home" replace />} />
-              <Route
-                path="/home"
-                element={
-                  <HomePage
-                    user={user}
-                    pageState={pageState}
-                    suggestions={suggestions}
-                    onInjectCredential={handleInjectCredential}
-                  />
-                }
-              />
-              <Route path="/generator" element={<GeneratorPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/add-credential" element={<AddCredentialPage />} />
-            </>
-          )}
-        </Routes>
+    <ToastProvider>
+      <div className="container">
+        {user && <Navbar />}
+        <div id="content">
+          <Routes>
+            {!user ? (
+              <Route path="*" element={<LoginPage />} />
+            ) : (
+              <>
+                <Route path="/" element={<Navigate to="/home" replace />} />
+                <Route
+                  path="/home"
+                  element={
+                    <HomePage
+                      user={user}
+                      pageState={pageState}
+                      suggestions={suggestions}
+                      onInjectCredential={handleInjectCredential}
+                    />
+                  }
+                />
+                <Route path="/generator" element={<GeneratorPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/add-credential" element={<AddCredentialPage />} />
+              </>
+            )}
+          </Routes>
+        </div>
+        {user && <HelperBar />}
       </div>
-      {user && <HelperBar />}
-    </div>
+    </ToastProvider>
   );
 };

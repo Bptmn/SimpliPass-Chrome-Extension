@@ -4,6 +4,9 @@ import { ErrorBanner } from '../components/ErrorBanner';
 import { EmailConfirmationPage } from './EmailConfirmationPage';
 import '../styles/LoginPage.css';
 import { loginUser, confirmMfa, logoutUser } from 'logic/user';
+import { Input } from '../components/InputVariants';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
 
 const REMEMBER_EMAIL_KEY = 'simplipass_remembered_email';
 
@@ -118,18 +121,20 @@ const LoginPage: React.FC = () => {
         </div>
         <form className="loginForm" onSubmit={handleLogin} autoComplete="on">
           <div className="form-section">
-            <label className="inputLabel" htmlFor="login-email">
+            <label className="input-label" htmlFor="login-email">
               Adresse email
             </label>
-
-              <input
-                type="email"
+            <div style={{ position: 'relative' }}>
+              <Input
                 id="login-email"
+                label=""
+                type="email"
                 placeholder="Votre adresse email…"
                 autoComplete="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={`loginInput input${emailError ? ' inputError' : ''}`}
+                onChange={setEmail}
+                required
+                error={emailError}
                 disabled={isLoading}
               />
               {email && !isLoading && (
@@ -141,10 +146,12 @@ const LoginPage: React.FC = () => {
                     e.preventDefault();
                     setEmail('');
                   }}
+                  style={{ position: 'absolute', right: 8, top: 8 }}
                 >
                   ×
                 </button>
               )}
+            </div>
             {emailError && <div className="errorMessage">{emailError}</div>}
             <div className="loginCheckboxRow">
               <label className="loginCheckboxLabel">
@@ -161,17 +168,20 @@ const LoginPage: React.FC = () => {
             </div>
           </div>
           <div className="form-section">
-            <label className="inputLabel" htmlFor="login-password">
+            <label className="input-label" htmlFor="login-password">
               Mot de passe maître
             </label>
-              <input
-                type={showPassword ? 'text' : 'password'}
+            <div style={{ position: 'relative' }}>
+              <Input
                 id="login-password"
+                label=""
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Votre mot de passe maître.."
                 autoComplete="current-password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`loginInput input${passwordError ? ' inputError' : ''}`}
+                onChange={setPassword}
+                required
+                error={passwordError}
                 disabled={isLoading}
               />
               <button
@@ -183,6 +193,7 @@ const LoginPage: React.FC = () => {
                   setShowPassword((v) => !v);
                 }}
                 disabled={isLoading}
+                style={{ position: 'absolute', right: 8, top: 8 }}
               >
                 {showPassword ? (
                   <svg width="20" height="20" fill="none" viewBox="0 0 20 20">
@@ -203,7 +214,8 @@ const LoginPage: React.FC = () => {
                     <path d="M4 4l12 12" stroke="#74787a" strokeWidth="2" />
                   </svg>
                 )}
-              </button>     
+              </button>
+            </div>
             {passwordError && <div className="errorMessage">{passwordError}</div>}
           </div>
           <button className="btn btn-primary" type="submit" disabled={isLoading}>

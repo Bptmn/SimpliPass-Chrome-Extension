@@ -2,6 +2,8 @@
 import React from 'react';
 
 import { IconsMap, IconKey } from 'utils/icon';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
 
 interface Props {
   name: IconKey;

@@ -4,6 +4,8 @@
 // and communicates actions (pick, close) and sizing (height/width) back to the parent.
 
 import React, { useEffect, useRef } from 'react';
+import '../../styles/tokens.css';
+import '../../styles/common.css';
 import './PopoverCredentialPicker.css';
 import { createRoot } from 'react-dom/client';
 

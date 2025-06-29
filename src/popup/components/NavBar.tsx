@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 import { Icon } from './Icon';
 import styles from '../styles/Navbar.module.css';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
 
 interface NavItem {
   path: string;

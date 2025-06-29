@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from '../styles/CredentialIcon.module.css';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
 
 export const LazyCredentialIcon: React.FC<{
   title: string;

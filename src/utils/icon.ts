@@ -24,6 +24,7 @@ import {
   MdArrowForwardIos,
   MdVisibility,
   MdVisibilityOff,
+  MdCheckCircle,
 } from 'react-icons/md';
 
 export const IconsMap = {
@@ -52,6 +53,7 @@ export const IconsMap = {
   arrowForward: MdArrowForwardIos,
   visibility: MdVisibility,
   visibilityOff: MdVisibilityOff,
+  checkCircle: MdCheckCircle,
 } as const;
 
 export type IconKey = keyof typeof IconsMap;

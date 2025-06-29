@@ -3,6 +3,9 @@ import { CredentialDecrypted } from '../../types/types';
 import { updateCredential } from '../../logic/items';
 import { checkPasswordStrength } from '../../utils/checkPasswordStrength';
 import { passwordGenerator } from '../../utils/passwordGenerator';
+import './ModifyCredentialPage.css';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
 
 interface ModifyCredentialPageProps {
   credential: CredentialDecrypted;
@@ -56,32 +59,32 @@ const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center px-4 py-6 w-full max-w-md mx-auto">
-      <div className="flex items-center w-full mb-6">
-        <button className="mr-2 text-2xl text-blue-400" aria-label="Retour">←</button>
-        <h2 className="text-2xl font-semibold text-blue-600 flex-1 text-center">Modifier un identifiant</h2>
+    <div className="modify-credential-page">
+      <div className="modify-credential-header">
+        <button className="modify-credential-back-btn" aria-label="Retour">←</button>
+        <h2 className="modify-credential-title">Modifier un identifiant</h2>
       </div>
       {/* Title */}
       <Field label="Nom de l'identifiant" value={title} onChange={setTitle} onClear={() => setTitle('')} />
       {/* Username */}
       <Field label="Email / Nom d'utilisateur :" value={username} onChange={setUsername} onClear={() => setUsername('')} />
       {/* Password */}
-      <div className="w-full mb-4">
-        <div className="flex justify-between items-center mb-1">
-          <label className="text-gray-600 font-medium">Mot de passe</label>
-          <span className="text-green-500 flex items-center gap-1 text-sm">
-            {passwordStrength} <span className="inline-block">🛡️</span>
+      <div className="modify-credential-field">
+        <div className="modify-credential-field-header">
+          <label className="modify-credential-label">Mot de passe</label>
+          <span className="modify-credential-password-strength">
+            {passwordStrength} <span>🛡️</span>
           </span>
         </div>
-        <div className="relative flex items-center bg-gray-100 rounded-xl px-4 py-3 mb-1">
+        <div className="modify-credential-input-container">
           <input
-            className="flex-1 bg-transparent outline-none text-blue-700 text-base font-medium"
+            className="modify-credential-input"
             type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={e => setPassword(e.target.value)}
           />
           <button
-            className="ml-2 text-gray-400 hover:text-gray-600"
+            className="modify-credential-btn"
             type="button"
             aria-label="Afficher/Masquer le mot de passe"
             onClick={() => setShowPassword(v => !v)}
@@ -89,7 +92,7 @@ const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
             {showPassword ? '🙈' : '👁️'}
           </button>
           <button
-            className="ml-2 text-gray-400 hover:text-gray-600"
+            className="modify-credential-btn"
             type="button"
             aria-label="Effacer"
             onClick={() => setPassword('')}
@@ -98,23 +101,23 @@ const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
           </button>
         </div>
         <button
-          className="w-full bg-blue-500 text-white rounded-full py-2 font-semibold shadow mb-1 mt-2"
+          className="modify-credential-generate-btn"
           type="button"
           onClick={handleGeneratePassword}
         >
           Générer un mot de passe
         </button>
-        <div className="text-center text-blue-500 text-sm cursor-pointer mb-2">Options avancées (générateur)</div>
+        <div className="modify-credential-advanced-link">Options avancées (générateur)</div>
       </div>
       {/* URL */}
       <Field label="Lien :" value={url} onChange={setUrl} onClear={() => setUrl('')} />
       {/* Note */}
       <Field label="Note :" value={note} onChange={setNote} onClear={() => setNote('')} />
       {/* Error */}
-      {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
+      {error && <div className="modify-credential-error">{error}</div>}
       {/* Confirm Button */}
       <button
-        className="w-full bg-teal-500 text-white rounded-full py-3 font-semibold text-lg mt-4 shadow disabled:opacity-60"
+        className="modify-credential-confirm-btn"
         type="button"
         onClick={handleConfirm}
         disabled={loading}
@@ -133,18 +136,18 @@ interface FieldProps {
   onClear: () => void;
 }
 const Field: React.FC<FieldProps> = ({ label, value, onChange, onClear }) => (
-  <div className="w-full mb-4">
-    <label className="text-gray-600 font-medium mb-1 block">{label}</label>
-    <div className="flex items-center bg-gray-100 rounded-xl px-4 py-3">
+  <div className="modify-credential-field">
+    <label className="modify-credential-label">{label}</label>
+    <div className="modify-credential-input-container">
       <input
-        className="flex-1 bg-transparent outline-none text-blue-700 text-base font-medium"
+        className="modify-credential-input"
         type="text"
         value={value}
         onChange={e => onChange(e.target.value)}
       />
       {value && (
         <button
-          className="ml-2 text-gray-400 hover:text-gray-600"
+          className="modify-credential-btn"
           type="button"
           aria-label="Effacer"
           onClick={onClear}

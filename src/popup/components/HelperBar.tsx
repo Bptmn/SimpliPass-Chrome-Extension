@@ -12,6 +12,8 @@ import styles from '../styles/HelperBar.module.css';
 import { Icon } from './Icon';
 import { refreshCredentialsInVaultDb } from 'logic/items';
 import { auth } from 'services/firebase';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
 
 export const HelperBar: React.FC = () => {
   const navigate = useNavigate();

@@ -10,7 +10,6 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { MemoryRouter } from 'react-router-dom';
 import './popup.css';
-import 'styles/tailwind.css';
 
 import { PopupApp } from './PopupApp';
 import { ErrorBoundary } from './components/ErrorBoundary';

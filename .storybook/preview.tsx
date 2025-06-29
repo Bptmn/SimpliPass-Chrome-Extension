@@ -1,6 +1,7 @@
-import '../src/styles/tailwind.css';
 import '../src/styles/tokens.css';
 import React from 'react';
+import { ToastProvider } from '../src/popup/components/Toast';
+import '../src/styles/common.css';
 
 export const decorators = [
   (Story: React.FC) => (
@@ -18,7 +19,9 @@ export const decorators = [
         fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
       }}
     >
-      <Story />
+      <ToastProvider>
+        <Story />
+      </ToastProvider>
     </div>
   ),
 ]; 

@@ -9,6 +9,8 @@ import { logoutUser } from 'logic/user';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
 import { Toast, useToast } from '../components/Toast';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
 
 const SettingsPage: React.FC = () => {
   const user = useUser();

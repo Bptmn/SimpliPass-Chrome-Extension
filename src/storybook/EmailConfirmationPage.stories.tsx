@@ -1,5 +1,6 @@
 import React from 'react';
 import { EmailConfirmationPage } from '../popup/pages/EmailConfirmationPage';
+import { MemoryRouter } from 'react-router-dom';
 
 export default {
   title: 'Pages/EmailConfirmationPage',
@@ -7,5 +8,11 @@ export default {
 };
 
 export const Default = () => (
-  <EmailConfirmationPage email="user@example.com" onConfirm={() => {}} onResend={() => {}} />
+  <MemoryRouter>
+    <EmailConfirmationPage
+      email="user@example.com"
+      onConfirm={() => {}}
+      onResend={() => {}}
+    />
+  </MemoryRouter>
 ); 

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import '../styles/LoginPage.css';
+import '../styles/EmailConfirmationPage.css';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
+import { useNavigate } from 'react-router-dom';
 
 interface EmailConfirmationPageProps {
   email: string;
@@ -14,7 +17,7 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
 }) => {
   const [code, setCode] = useState<string[]>(['', '', '', '', '', '']);
   const [error, setError] = useState('');
-
+  const navigate = useNavigate();
   const handleInput = (value: string, idx: number) => {
     if (!/^[0-9a-zA-Z]?$/.test(value)) return;
     const newCode = [...code];
@@ -37,49 +40,50 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
 
   return (
     <div className="page-container">
-      <div className="page-content">
-        <div className="loginLabel" style={{ marginBottom: 8 }}>
-          Vérifier votre adresse email:
+      <div className="page-content" style={{ gap: '30px' }}>
+      <div className="page-header">
+          <button className="back-btn" onClick={() => navigate('/')} aria-label="Retour">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <div className="details-title">Vérification d'email</div>
         </div>
-        <div className="loginInput" style={{ marginBottom: 16, fontSize: 13 }}>
-          {email}
+        <div className="email-confirm-container">
+          <div className="email-confirm-label">Vérifier votre adresse email: </div>
+          <div className="email-confirm-email">{email}</div>
         </div>
-        <div className="loginLabel" style={{ marginBottom: 8, fontWeight: 600, fontSize: 15 }}>
-          Entrez le code reçu par email :
-        </div>
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 16 }}>
-          {code.map((c, idx) => (
-            <input
-              key={idx}
-              id={`code-input-${idx}`}
-              type="text"
-              inputMode="text"
-              maxLength={1}
-              value={c}
-              onChange={(e) => handleInput(e.target.value, idx)}
-              style={{
-                width: 36,
-                height: 36,
-                textAlign: 'center',
-                fontSize: 20,
-                borderRadius: 8,
-                border: '1px solid #d0d0d0',
-                background: 'var(--secondary-background)',
-              }}
-            />
-          ))}
+        <div className="email-confirm-code-box">
+          <div className="email-confirm-code-label">Entrez le code reçu par email :</div>
+          <div className="email-confirm-code-inputs">
+            {code.map((c, idx) => (
+              <input
+                key={idx}
+                id={`code-input-${idx}`}
+                type="text"
+                inputMode="text"
+                maxLength={1}
+                value={c}
+                onChange={(e) => handleInput(e.target.value, idx)}
+              />
+            ))}
+          </div>
         </div>
         {error && <div className="errorMessage">{error}</div>}
-        <button className="btn btn-primary" style={{ marginBottom: 12 }} onClick={handleConfirm}>
+        <button className="btn email-confirm-btn" onClick={handleConfirm}>
           Confirmer
         </button>
         <button
-          className="btn btn-secondary"
-          style={{
-            background: 'none',
-            border: '1px solid var(--color-secondary)',
-            color: 'var(--color-secondary)',
-          }}
+          className="email-confirm-btn-outline"
           onClick={onResend}
         >
           Envoyer un nouvel email de confirmation

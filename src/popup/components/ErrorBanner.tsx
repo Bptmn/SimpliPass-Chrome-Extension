@@ -1,5 +1,7 @@
 import React from 'react';
 import styles from '../styles/ErrorBoundary.module.css';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
 
 interface ErrorBannerProps {
   message: string;

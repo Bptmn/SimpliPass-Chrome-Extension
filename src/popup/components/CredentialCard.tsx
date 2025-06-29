@@ -11,6 +11,8 @@ import { decryptData } from 'utils/crypto';
 import { getUserSecretKey } from 'logic/user'; 
 import styles from '../styles/CredentialCard.module.css';
 import { LazyCredentialIcon } from './LazyCredentialIcon';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
 
 // Props for CredentialCard
 interface CredentialCardProps {

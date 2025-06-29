@@ -5,6 +5,9 @@ import { LazyCredentialIcon } from '../components/LazyCredentialIcon';
 import '../styles/CredentialDetailsPage.css';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
+import '../../styles/common.css';
+import '../../styles/tokens.css';
+import { useToast } from '../components/Toast';
 
 interface CredentialDetailsPageProps {
   credential: CredentialDecrypted;
@@ -18,9 +21,12 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const [showMeta, setShowMeta] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const handleCopy = (value: string) => {
+  const { showToast } = useToast();
+
+  const handleCopy = (value: string, label: string) => {
     try {
       navigator.clipboard.writeText(value);
+      showToast(`${label} copié !`);
     } catch {
       setError('Erreur lors de la copie.');
     }
@@ -39,8 +45,8 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
     <div className="page-container">
       {error && <ErrorBanner message={error} />}
       <div className="page-content">
-        <div className="page-header details-header">
-          <button className="back-btn" onClick={onBack} aria-label="Retour">
+        <div className="page-header-container">
+        <button className="back-btn" onClick={onBack} aria-label="Retour" style={{ position: 'unset'}}>
             <svg
               width="28"
               height="28"
@@ -54,10 +60,12 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </button>
+        <div className="page-header details-header">
           <div className="details-icon-center">
             <LazyCredentialIcon title={credential.title} url={credential.url} />
           </div>
           <div className="details-title">{credential.title}</div>
+        </div>
         </div>
 
         {/* Credential fields (email and password) */}
@@ -71,7 +79,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
             {credential.username && (
               <button
                 className="btn-copy details-copy-btn"
-                onClick={() => handleCopy(credential.username)}
+                onClick={() => handleCopy(credential.username, "Nom d'utilisateur")}
                 aria-label="Copier le titulaire"
               >
                 <div className="btn-copy-container">
@@ -102,7 +110,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
             {credential.password && (
               <button
                 className="btnCopy"
-                onClick={() => handleCopy(credential.password)}
+                onClick={() => handleCopy(credential.password, "Mot de passe")}
                 aria-label="Copier le numéro de carte"
               >
                 <div className="btnCopyContainer">
@@ -136,7 +144,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
           {credential.note && (
             <button
               className="btn-copy details-copy-btn"
-              onClick={() => handleCopy(credential.note)}
+              onClick={() => handleCopy(credential.note, "Note")}
               aria-label="Copier la note"
             >
               <div className="btn-copy-container">
