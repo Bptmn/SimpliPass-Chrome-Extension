@@ -1,0 +1,159 @@
+@import './tokens.css';
+
+.generator-content {
+  padding: 15px 20px;
+}
+
+.generator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.generator-item-spacing {
+  gap: 6px;
+}
+
+.section-label {
+  font-size: 12px;
+  color: var(--color-accent);
+  font-weight: 500;
+  margin: 0;
+}
+
+.generated-password-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.password-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.password-text {
+  flex: 1;
+  font-size: 16px;
+  color: var(--color-text);
+  word-break: break-all;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  background: var(--primary-background);
+  padding: 12px;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--color-border);
+  min-height: 20px;
+}
+
+.btn-copy {
+  width: 42px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.strength-label {
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.strength-strong {
+  color: var(--color-primary);
+}
+
+.slider-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 15px !important;
+}
+
+.slider-section input[type='range'] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--color-primary);
+  height: 6px;
+  border-radius: 3px;
+}
+
+.options-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--color-primary);
+}
+
+.option-row span {
+  flex: 1;
+  font-weight: 500;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 22px;
+}
+
+.switch input[type='checkbox'] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ccc;
+  border-radius: 22px;
+  transition: background 0.2s;
+}
+
+.switch input:checked + .switch-slider {
+  background: var(--color-secondary);
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: '';
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.switch input:checked + .switch-slider:before {
+  transform: translateX(16px);
+}
+
+.regenerate-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+}

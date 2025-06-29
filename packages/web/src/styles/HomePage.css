@@ -1,0 +1,72 @@
+@import './tokens.css';
+
+.home-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.search-bar {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.search-bar-icon {
+  position: absolute;
+  left: 10px;
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  height: 42px;
+  border-radius: 20px;
+  background: var(--secondary-background);
+  border: none;
+  padding: 0 20px 0 48px;
+  font-size: var(--font-size-sm);
+  box-sizing: border-box;
+  color: var(--color-text);
+  transition: box-shadow 0.2s;
+}
+
+.search-input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(46, 174, 151, 0.2);
+}
+
+.suggestions-section {
+  gap: 10px;
+}
+
+.all-items-section {
+  gap: 10px;
+}
+
+.suggestion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0;
+  border-radius: 8px;
+}
+
+.credential-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.loading-spinner {
+  margin: 2rem auto;
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--color-secondary, #888);
+}
