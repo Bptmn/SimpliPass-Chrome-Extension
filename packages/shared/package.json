@@ -1,6 +1,7 @@
 {
   "name": "@simplipass/shared",
   "version": "1.0.0",
+  "description": "Shared utilities and types for SimpliPass",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
@@ -12,16 +13,12 @@
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "format": "prettier --write src",
     "format:check": "prettier --check src",
-    "clean": "rm -rf dist node_modules"
+    "clean": "rm -rf node_modules dist"
   },
-  "dependencies": {
-    "@stablelib/chacha20poly1305": "^2.0.1",
-    "@stablelib/random": "^2.0.1",
-    "zxcvbn": "^4.4.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/zxcvbn": "^4.4.5",
+    "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
     "eslint": "^8.57.1",
@@ -35,17 +32,18 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "setupFilesAfterEnv": [],
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx"],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx"
+    ],
     "transform": {
       "^.+\\.(ts|tsx)$": "ts-jest"
     },
     "testMatch": [
       "**/__tests__/**/*.[jt]s?(x)",
       "**/?(*.)+(spec|test).[tj]s?(x)"
-    ],
-    "moduleNameMapping": {
-      "^@simplipass/shared/(.*)$": "<rootDir>/src/$1"
-    }
+    ]
   }
 }
