@@ -3,11 +3,12 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   stories: [
-    '../src/storybook/**/*.stories.@(js|jsx|ts|tsx)',
+    '../packages/**/*.stories.@(js|jsx|ts|tsx)',
+    '../packages/**/*.stories.mdx',
   ],
   addons: [
+    '@storybook/addon-links',
     '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
   ],
   framework: {
     name: '@storybook/react-webpack5',
@@ -17,17 +18,56 @@ module.exports = {
     autodocs: 'tag',
   },
   webpackFinal: async (config) => {
+    // Add TypeScript and JSX loader
     config.module.rules.push({
-      test: /\.(ts|tsx)$/,
+      test: /\.(ts|tsx|js|jsx)$/,
+      exclude: /node_modules/,
       use: [
         {
-          loader: require.resolve('ts-loader'),
+          loader: require.resolve('babel-loader'),
+          options: {
+            presets: [
+              ['@babel/preset-env', { targets: 'defaults' }],
+              '@babel/preset-react',
+              '@babel/preset-typescript',
+            ],
+            plugins: [
+              ['@babel/plugin-proposal-class-properties', { loose: true }],
+              ['@babel/plugin-proposal-private-methods', { loose: true }],
+              ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
+            ],
+          },
         },
       ],
     });
-    config.resolve.extensions.push('.ts', '.tsx');
-    config.resolve.plugins = config.resolve.plugins || [];
-    config.resolve.plugins.push(new TsconfigPathsPlugin());
+
+    // Add React Native Web alias
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'react-native$': 'react-native-web',
+      '@app': require('path').resolve(__dirname, '../packages/app'),
+      '@design': require('path').resolve(__dirname, '../packages/app/design'),
+      '@components': require('path').resolve(__dirname, '../packages/app/components'),
+      '@screens': require('path').resolve(__dirname, '../packages/app/screens'),
+      '@hooks': require('path').resolve(__dirname, '../packages/app/hooks'),
+      '@utils': require('path').resolve(__dirname, '../packages/app/utils'),
+      '@logic': require('path').resolve(__dirname, '../packages/app/logic'),
+      '@shared': require('path').resolve(__dirname, '../packages/shared'),
+      '@extension': require('path').resolve(__dirname, '../packages/extension'),
+      '@mobile': require('path').resolve(__dirname, '../packages/mobile'),
+    };
+    
+    // Add web extensions
+    config.resolve.extensions = [
+      '.web.ts',
+      '.web.tsx',
+      '.ts',
+      '.tsx',
+      '.js',
+      '.jsx',
+      '.json',
+    ];
+    
     return config;
   },
   typescript: {

@@ -18,27 +18,27 @@
 /******/ 	
 /************************************************************************/
 
-;// ./src/config/firebase.ts
-const firebaseConfig = {
-    apiKey: "AIzaSyBLXniW7Nz3-odWJ6jwFFWDckyMPY7DlwI" || 0,
-    authDomain: "simpli-pass-amplify-gen-hetve5.firebaseapp.com" || 0,
-    projectId: "simpli-pass-amplify-gen-hetve5" || 0,
-    storageBucket: "simpli-pass-amplify-gen-hetve5.firebasestorage.app" || 0,
-    messagingSenderId: "307909442902" || 0,
-    appId: "1:307909442902:web:bdb7e4ef9def0a028beaf7" || 0,
-    measurementId: "MISSING_ENV_VAR".REACT_APP_FIREBASE_MEASUREMENT_ID || '',
+;// ./packages/extension/config/firebase.ts
+var firebaseConfig = {
+  apiKey: "AIzaSyBLXniW7Nz3-odWJ6jwFFWDckyMPY7DlwI" || 0,
+  authDomain: "simpli-pass-amplify-gen-hetve5.firebaseapp.com" || 0,
+  projectId: "simpli-pass-amplify-gen-hetve5" || 0,
+  storageBucket: "simpli-pass-amplify-gen-hetve5.firebasestorage.app" || 0,
+  messagingSenderId: "307909442902" || 0,
+  appId: "1:307909442902:web:bdb7e4ef9def0a028beaf7" || 0,
+  measurementId: "MISSING_ENV_VAR".REACT_APP_FIREBASE_MEASUREMENT_ID || ''
 };
+
 // Log the actual values to check if they're loaded
 console.log('Firebase Config Values:', {
-    apiKey: firebaseConfig.apiKey ? 'set' : 'not set',
-    authDomain: firebaseConfig.authDomain ? 'set' : 'not set',
-    projectId: firebaseConfig.projectId ? 'set' : 'not set',
-    storageBucket: firebaseConfig.storageBucket ? 'set' : 'not set',
-    messagingSenderId: firebaseConfig.messagingSenderId ? 'set' : 'not set',
-    appId: firebaseConfig.appId ? 'set' : 'not set',
-    measurementId: firebaseConfig.measurementId ? 'set' : 'not set',
+  apiKey: firebaseConfig.apiKey ? 'set' : 'not set',
+  authDomain: firebaseConfig.authDomain ? 'set' : 'not set',
+  projectId: firebaseConfig.projectId ? 'set' : 'not set',
+  storageBucket: firebaseConfig.storageBucket ? 'set' : 'not set',
+  messagingSenderId: firebaseConfig.messagingSenderId ? 'set' : 'not set',
+  appId: firebaseConfig.appId ? 'set' : 'not set',
+  measurementId: firebaseConfig.measurementId ? 'set' : 'not set'
 });
-
 
 ;// ./node_modules/@firebase/util/dist/index.esm2017.js
 /**
@@ -37770,16 +37770,11 @@ let Fe = null;
 
 //# sourceMappingURL=index.esm.js.map
 
-;// ./src/services/firebase.ts
-var firebase_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+;// ./packages/app/logic/firebase.ts
+function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { var o = function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); }; o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 /**
  * services/firebase.ts
  * Low-level Firebase service functions for authentication and user management.
@@ -37789,220 +37784,453 @@ var firebase_awaiter = (undefined && undefined.__awaiter) || function (thisArg, 
 
 
 
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const firebase_auth = getAuth(app);
-const firebase_db = getFirestore(app);
+var app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+var firebase_auth = getAuth(app);
+var firebase_db = getFirestore(app);
+
 // Get the current user from Firebase Auth (low-level)
 function getCurrentUser() {
-    console.log('[Firebase] Getting current user');
-    const user = firebase_auth.currentUser;
-    console.log('[Firebase] getCurrentUser success:', user ? 'User found' : 'No user');
-    return user;
-}
-// Sign in to Firebase with a custom token (low-level)
-function firebase_signInWithFirebaseToken(token) {
-    return firebase_awaiter(this, void 0, void 0, function* () {
-        console.log('[Firebase] Signing in with Firebase token');
-        yield signInWithCustomToken(firebase_auth, token);
-        console.log('[Firebase] signInWithFirebaseToken success');
-    });
-}
-// Sign out from Firebase (low-level)
-function firebase_signOutFromFirebase() {
-    return firebase_awaiter(this, void 0, void 0, function* () {
-        console.log('[Firebase] Signing out from Firebase');
-        yield signOut(firebase_auth);
-        console.log('[Firebase] signOutFromFirebase success');
-    });
+  console.log('[Firebase] Getting current user');
+  var user = firebase_auth.currentUser;
+  console.log('[Firebase] getCurrentUser success:', user ? 'User found' : 'No user');
+  return user;
 }
 
-;// ./src/services/firestore.ts
-var firestore_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var firestore_rest = (undefined && undefined.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
+// Sign in to Firebase with a custom token (low-level)
+function firebase_signInWithFirebaseToken(_x) {
+  return _signInWithFirebaseToken.apply(this, arguments);
+}
+
+// Sign out from Firebase (low-level)
+function _signInWithFirebaseToken() {
+  _signInWithFirebaseToken = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(token) {
+    return _regenerator().w(function (_context) {
+      while (1) switch (_context.n) {
+        case 0:
+          console.log('[Firebase] Signing in with Firebase token');
+          _context.n = 1;
+          return signInWithCustomToken(firebase_auth, token);
+        case 1:
+          console.log('[Firebase] signInWithFirebaseToken success');
+        case 2:
+          return _context.a(2);
+      }
+    }, _callee);
+  }));
+  return _signInWithFirebaseToken.apply(this, arguments);
+}
+function firebase_signOutFromFirebase() {
+  return _signOutFromFirebase.apply(this, arguments);
+}
+function _signOutFromFirebase() {
+  _signOutFromFirebase = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
+    return _regenerator().w(function (_context2) {
+      while (1) switch (_context2.n) {
+        case 0:
+          console.log('[Firebase] Signing out from Firebase');
+          _context2.n = 1;
+          return signOut(firebase_auth);
+        case 1:
+          console.log('[Firebase] signOutFromFirebase success');
+        case 2:
+          return _context2.a(2);
+      }
+    }, _callee2);
+  }));
+  return _signOutFromFirebase.apply(this, arguments);
+}
+;// ./packages/app/logic/firestore.ts
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var _excluded = (/* unused pure expression or super */ null && (["document_reference"])),
+  _excluded2 = (/* unused pure expression or super */ null && (["document_reference"]));
+function firestore_ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? firestore_ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : firestore_ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
+function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
+function firestore_regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return firestore_regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (firestore_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, firestore_regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, firestore_regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), firestore_regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", firestore_regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), firestore_regeneratorDefine2(u), firestore_regeneratorDefine2(u, o, "Generator"), firestore_regeneratorDefine2(u, n, function () { return this; }), firestore_regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (firestore_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function firestore_regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } firestore_regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { var o = function o(r, n) { firestore_regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); }; o("next", 0), o("throw", 1), o("return", 2); } }, firestore_regeneratorDefine2(e, r, n, t); }
+function firestore_asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function firestore_asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { firestore_asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { firestore_asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 
 
 
 /* Get a single user by uid */
-function getUser(uid) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        console.log('[Firestore] Getting user with uid:', uid);
-        const userRef = doc(db, 'users', uid);
-        const userSnap = yield getDoc(userRef);
-        const result = userSnap.exists() ? userSnap.data() : null;
-        console.log('[Firestore] getUser success:', result ? 'User found' : 'User not found');
-        return result;
-    });
+function getUser(_x) {
+  return _getUser.apply(this, arguments);
 }
+
 /* Update an existing user */
-function updateUser(uid, data) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        console.log('[Firestore] Updating user with uid:', uid, 'data:', data);
-        const userRef = doc(db, 'users', uid);
-        yield updateDoc(userRef, data);
-        console.log('[Firestore] updateUser success');
-    });
+function _getUser() {
+  _getUser = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee(uid) {
+    var userRef, userSnap, result;
+    return firestore_regenerator().w(function (_context) {
+      while (1) switch (_context.n) {
+        case 0:
+          console.log('[Firestore] Getting user with uid:', uid);
+          userRef = doc(db, 'users', uid);
+          _context.n = 1;
+          return getDoc(userRef);
+        case 1:
+          userSnap = _context.v;
+          result = userSnap.exists() ? userSnap.data() : null;
+          console.log('[Firestore] getUser success:', result ? 'User found' : 'User not found');
+          return _context.a(2, result);
+      }
+    }, _callee);
+  }));
+  return _getUser.apply(this, arguments);
 }
+function updateUser(_x2, _x3) {
+  return _updateUser.apply(this, arguments);
+}
+
 /* Delete a user */
-function firestore_deleteUser(uid) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        console.log('[Firestore] Deleting user with uid:', uid);
-        const userRef = doc(db, 'users', uid);
-        yield deleteDoc(userRef);
-        console.log('[Firestore] deleteUser success');
-    });
+function _updateUser() {
+  _updateUser = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee2(uid, data) {
+    var userRef;
+    return firestore_regenerator().w(function (_context2) {
+      while (1) switch (_context2.n) {
+        case 0:
+          console.log('[Firestore] Updating user with uid:', uid, 'data:', data);
+          userRef = doc(db, 'users', uid);
+          _context2.n = 1;
+          return updateDoc(userRef, data);
+        case 1:
+          console.log('[Firestore] updateUser success');
+        case 2:
+          return _context2.a(2);
+      }
+    }, _callee2);
+  }));
+  return _updateUser.apply(this, arguments);
 }
+function firestore_deleteUser(_x4) {
+  return _deleteUser.apply(this, arguments);
+}
+
 /* Get a single credential by userId and credentialId */
-function getCredentialInFirestore(userId, credentialId) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        console.log('[Firestore] Getting credential with userId:', userId, 'credentialId:', credentialId);
-        const credRef = doc(db, 'users', userId, 'my_credentials', credentialId);
-        const credSnap = yield getDoc(credRef);
-        if (!credSnap.exists()) {
-            console.log('[Firestore] getCredential success: Credential not found');
-            return null;
-        }
-        const data = credSnap.data();
-        // Explicitly map fields and add document_reference
-        const result = {
+function _deleteUser() {
+  _deleteUser = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee3(uid) {
+    var userRef;
+    return firestore_regenerator().w(function (_context3) {
+      while (1) switch (_context3.n) {
+        case 0:
+          console.log('[Firestore] Deleting user with uid:', uid);
+          userRef = doc(db, 'users', uid);
+          _context3.n = 1;
+          return deleteDoc(userRef);
+        case 1:
+          console.log('[Firestore] deleteUser success');
+        case 2:
+          return _context3.a(2);
+      }
+    }, _callee3);
+  }));
+  return _deleteUser.apply(this, arguments);
+}
+function getCredentialInFirestore(_x5, _x6) {
+  return _getCredentialInFirestore.apply(this, arguments);
+}
+
+/* Get all credentials for a user */
+function _getCredentialInFirestore() {
+  _getCredentialInFirestore = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee4(userId, credentialId) {
+    var credRef, credSnap, data, result;
+    return firestore_regenerator().w(function (_context4) {
+      while (1) switch (_context4.n) {
+        case 0:
+          console.log('[Firestore] Getting credential with userId:', userId, 'credentialId:', credentialId);
+          credRef = doc(db, 'users', userId, 'my_credentials', credentialId);
+          _context4.n = 1;
+          return getDoc(credRef);
+        case 1:
+          credSnap = _context4.v;
+          if (credSnap.exists()) {
+            _context4.n = 2;
+            break;
+          }
+          console.log('[Firestore] getCredential success: Credential not found');
+          return _context4.a(2, null);
+        case 2:
+          data = credSnap.data(); // Explicitly map fields and add document_reference
+          result = {
             content_encrypted: data.content_encrypted,
             item_key_encrypted: data.item_key_encrypted,
             created_at: data.created_at,
             last_used_at: data.last_used_at,
-            document_reference: credRef,
-        };
-        console.log('[Firestore] getCredential success: Credential found');
-        return result;
-    });
+            document_reference: credRef
+          };
+          console.log('[Firestore] getCredential success: Credential found');
+          return _context4.a(2, result);
+      }
+    }, _callee4);
+  }));
+  return _getCredentialInFirestore.apply(this, arguments);
 }
-/* Get all credentials for a user */
-function getAllCredentialsInFirestore(userId) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        console.log('[Firestore] Getting all credentials for userId:', userId);
-        const credsCol = index_esm2017_collection(firebase_db, 'users', userId, 'my_credentials');
-        const credsSnap = yield index_esm2017_getDocs(credsCol);
-        const result = credsSnap.docs.map((docSnap) => {
-            const data = docSnap.data();
-            return {
-                id: docSnap.id,
-                content_encrypted: data.content_encrypted,
-                item_key_encrypted: data.item_key_encrypted,
-                created_at: data.created_at,
-                last_used_at: data.last_used_at,
-                document_reference: docSnap.ref,
-            };
-        });
-        console.log('[Firestore] getAllCredentials success:', result.length, 'credentials found');
-        return result;
-    });
+function getAllCredentialsInFirestore(_x7) {
+  return _getAllCredentialsInFirestore.apply(this, arguments);
 }
+
 /* Create a new credential for a user */
-function firestore_createCredentialInFirestore(userId, data) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        console.log('[Firestore] Creating credential for userId:', userId);
-        const credsCol = collection(db, 'users', userId, 'my_credentials');
-        // Remove document_reference before storing
-        const { document_reference } = data, dataToStore = firestore_rest(data, ["document_reference"]);
-        const docRef = yield addDoc(credsCol, dataToStore);
-        console.log('[Firestore] createCredential success, docId:', docRef.id);
-        return docRef;
-    });
+function _getAllCredentialsInFirestore() {
+  _getAllCredentialsInFirestore = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee5(userId) {
+    var credsCol, credsSnap, result;
+    return firestore_regenerator().w(function (_context5) {
+      while (1) switch (_context5.n) {
+        case 0:
+          console.log('[Firestore] Getting all credentials for userId:', userId);
+          credsCol = index_esm2017_collection(firebase_db, 'users', userId, 'my_credentials');
+          _context5.n = 1;
+          return index_esm2017_getDocs(credsCol);
+        case 1:
+          credsSnap = _context5.v;
+          result = credsSnap.docs.map(function (docSnap) {
+            var data = docSnap.data();
+            return {
+              id: docSnap.id,
+              content_encrypted: data.content_encrypted,
+              item_key_encrypted: data.item_key_encrypted,
+              created_at: data.created_at,
+              last_used_at: data.last_used_at,
+              document_reference: docSnap.ref
+            };
+          });
+          console.log('[Firestore] getAllCredentials success:', result.length, 'credentials found');
+          return _context5.a(2, result);
+      }
+    }, _callee5);
+  }));
+  return _getAllCredentialsInFirestore.apply(this, arguments);
 }
+function firestore_createCredentialInFirestore(_x8, _x9) {
+  return _createCredentialInFirestore.apply(this, arguments);
+}
+
 /* Update an existing credential */
-function firestore_updateCredentialInFirestore(userId, credentialId, data) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        console.log('[Firestore] Updating credential with userId:', userId, 'credentialId:', credentialId);
-        const credRef = doc(db, 'users', userId, 'my_credentials', credentialId);
-        // Remove document_reference before updating
-        const { document_reference } = data, dataToUpdate = firestore_rest(data, ["document_reference"]);
-        yield updateDoc(credRef, dataToUpdate);
-        console.log('[Firestore] updateCredential success');
-    });
+function _createCredentialInFirestore() {
+  _createCredentialInFirestore = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee6(userId, data) {
+    var credsCol, _document_reference, dataToStore, docRef;
+    return firestore_regenerator().w(function (_context6) {
+      while (1) switch (_context6.n) {
+        case 0:
+          console.log('[Firestore] Creating credential for userId:', userId);
+          credsCol = collection(db, 'users', userId, 'my_credentials'); // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          _document_reference = data.document_reference, dataToStore = _objectWithoutProperties(data, _excluded);
+          _context6.n = 1;
+          return addDoc(credsCol, dataToStore);
+        case 1:
+          docRef = _context6.v;
+          console.log('[Firestore] createCredential success, docId:', docRef.id);
+          return _context6.a(2, docRef);
+      }
+    }, _callee6);
+  }));
+  return _createCredentialInFirestore.apply(this, arguments);
 }
+function firestore_updateCredentialInFirestore(_x0, _x1, _x10) {
+  return _updateCredentialInFirestore.apply(this, arguments);
+}
+
 /* Delete a credential */
-function firestore_deleteCredentialInFirestore(userId, credentialId) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        console.log('[Firestore] Deleting credential with userId:', userId, 'credentialId:', credentialId);
-        const credRef = doc(db, 'users', userId, 'my_credentials', credentialId);
-        yield deleteDoc(credRef);
-        console.log('[Firestore] deleteCredential success');
-    });
+function _updateCredentialInFirestore() {
+  _updateCredentialInFirestore = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee7(userId, credentialId, data) {
+    var credRef, _document_reference, dataToUpdate;
+    return firestore_regenerator().w(function (_context7) {
+      while (1) switch (_context7.n) {
+        case 0:
+          console.log('[Firestore] Updating credential with userId:', userId, 'credentialId:', credentialId);
+          credRef = doc(db, 'users', userId, 'my_credentials', credentialId); // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          _document_reference = data.document_reference, dataToUpdate = _objectWithoutProperties(data, _excluded2);
+          _context7.n = 1;
+          return updateDoc(credRef, dataToUpdate);
+        case 1:
+          console.log('[Firestore] updateCredential success');
+        case 2:
+          return _context7.a(2);
+      }
+    }, _callee7);
+  }));
+  return _updateCredentialInFirestore.apply(this, arguments);
 }
+function firestore_deleteCredentialInFirestore(_x11, _x12) {
+  return _deleteCredentialInFirestore.apply(this, arguments);
+}
+
 /**
  * Add a document to a collection (auto-ID)
  */
-function addDocument(collectionPath, data) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        const colRef = fsCollection(db, collectionPath);
-        return yield fsAddDoc(colRef, data);
-    });
+function _deleteCredentialInFirestore() {
+  _deleteCredentialInFirestore = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee8(userId, credentialId) {
+    var credRef;
+    return firestore_regenerator().w(function (_context8) {
+      while (1) switch (_context8.n) {
+        case 0:
+          console.log('[Firestore] Deleting credential with userId:', userId, 'credentialId:', credentialId);
+          credRef = doc(db, 'users', userId, 'my_credentials', credentialId);
+          _context8.n = 1;
+          return deleteDoc(credRef);
+        case 1:
+          console.log('[Firestore] deleteCredential success');
+        case 2:
+          return _context8.a(2);
+      }
+    }, _callee8);
+  }));
+  return _deleteCredentialInFirestore.apply(this, arguments);
 }
+function addDocument(_x13, _x14) {
+  return _addDocument.apply(this, arguments);
+}
+
 /**
  * Set (overwrite) a document at a specific path
  */
-function setDocument(docPath, data) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        const docRef = fsDoc(db, docPath);
-        return yield setDoc(docRef, data);
-    });
+function _addDocument() {
+  _addDocument = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee9(collectionPath, data) {
+    var colRef;
+    return firestore_regenerator().w(function (_context9) {
+      while (1) switch (_context9.n) {
+        case 0:
+          colRef = fsCollection(db, collectionPath);
+          _context9.n = 1;
+          return fsAddDoc(colRef, data);
+        case 1:
+          return _context9.a(2, _context9.v);
+      }
+    }, _callee9);
+  }));
+  return _addDocument.apply(this, arguments);
 }
+function setDocument(_x15, _x16) {
+  return _setDocument.apply(this, arguments);
+}
+
 /**
  * Update a document at a specific path
  */
-function updateDocument(docPath, data) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        const docRef = fsDoc(db, docPath);
-        return yield updateDoc(docRef, data);
-    });
+function _setDocument() {
+  _setDocument = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee0(docPath, data) {
+    var docRef;
+    return firestore_regenerator().w(function (_context0) {
+      while (1) switch (_context0.n) {
+        case 0:
+          docRef = fsDoc(db, docPath);
+          _context0.n = 1;
+          return setDoc(docRef, data);
+        case 1:
+          return _context0.a(2, _context0.v);
+      }
+    }, _callee0);
+  }));
+  return _setDocument.apply(this, arguments);
 }
+function updateDocument(_x17, _x18) {
+  return _updateDocument.apply(this, arguments);
+}
+
 /**
  * Delete a document at a specific path
  */
-function deleteDocument(docPath) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        const docRef = fsDoc(db, docPath);
-        return yield deleteDoc(docRef);
-    });
+function _updateDocument() {
+  _updateDocument = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee1(docPath, data) {
+    var docRef;
+    return firestore_regenerator().w(function (_context1) {
+      while (1) switch (_context1.n) {
+        case 0:
+          docRef = fsDoc(db, docPath);
+          _context1.n = 1;
+          return updateDoc(docRef, data);
+        case 1:
+          return _context1.a(2, _context1.v);
+      }
+    }, _callee1);
+  }));
+  return _updateDocument.apply(this, arguments);
 }
+function deleteDocument(_x19) {
+  return _deleteDocument.apply(this, arguments);
+}
+
 /**
  * Get a document at a specific path
  */
-function firestore_getDocument(docPath) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        const docRef = fsDoc(db, docPath);
-        const snap = yield getDoc(docRef);
-        return snap.exists() ? snap.data() : null;
-    });
+function _deleteDocument() {
+  _deleteDocument = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee10(docPath) {
+    var docRef;
+    return firestore_regenerator().w(function (_context10) {
+      while (1) switch (_context10.n) {
+        case 0:
+          docRef = fsDoc(db, docPath);
+          _context10.n = 1;
+          return deleteDoc(docRef);
+        case 1:
+          return _context10.a(2, _context10.v);
+      }
+    }, _callee10);
+  }));
+  return _deleteDocument.apply(this, arguments);
 }
+function firestore_getDocument(_x20) {
+  return _getDocument.apply(this, arguments);
+}
+
 /**
  * Get all documents in a collection (optionally with query constraints)
  */
-function getCollection(collectionPath, ...queryConstraints) {
-    return firestore_awaiter(this, void 0, void 0, function* () {
-        const colRef = fsCollection(db, collectionPath);
-        const q = queryConstraints.length ? query(colRef, ...queryConstraints) : colRef;
-        const snap = yield getDocs(q);
-        return snap.docs.map(doc => (Object.assign({ id: doc.id }, doc.data())));
-    });
+function _getDocument() {
+  _getDocument = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee11(docPath) {
+    var docRef, snap;
+    return firestore_regenerator().w(function (_context11) {
+      while (1) switch (_context11.n) {
+        case 0:
+          docRef = fsDoc(db, docPath);
+          _context11.n = 1;
+          return getDoc(docRef);
+        case 1:
+          snap = _context11.v;
+          return _context11.a(2, snap.exists() ? snap.data() : null);
+      }
+    }, _callee11);
+  }));
+  return _getDocument.apply(this, arguments);
 }
-
+function getCollection(_x21) {
+  return _getCollection.apply(this, arguments);
+}
+function _getCollection() {
+  _getCollection = firestore_asyncToGenerator(/*#__PURE__*/firestore_regenerator().m(function _callee12(collectionPath) {
+    var colRef,
+      _len,
+      queryConstraints,
+      _key,
+      q,
+      snap,
+      _args12 = arguments;
+    return firestore_regenerator().w(function (_context12) {
+      while (1) switch (_context12.n) {
+        case 0:
+          colRef = fsCollection(db, collectionPath);
+          for (_len = _args12.length, queryConstraints = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            queryConstraints[_key - 1] = _args12[_key];
+          }
+          q = queryConstraints.length ? query.apply(void 0, [colRef].concat(queryConstraints)) : colRef;
+          _context12.n = 1;
+          return getDocs(q);
+        case 1:
+          snap = _context12.v;
+          return _context12.a(2, snap.docs.map(function (doc) {
+            return _objectSpread({
+              id: doc.id
+            }, doc.data());
+          }));
+      }
+    }, _callee12);
+  }));
+  return _getCollection.apply(this, arguments);
+}
 ;// ./node_modules/@stablelib/int/lib/int.js
 // Copyright (C) 2016 Dmitry Chestnykh
 // MIT License. See LICENSE file for details.
@@ -39474,293 +39702,195 @@ function randomStringForEntropy(bits, charset = ALPHANUMERIC, prng = defaultRand
     return randomString(length, charset, prng);
 }
 //# sourceMappingURL=random.js.map
-;// ./src/utils/crypto.ts
-var crypto_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+;// ./packages/app/utils/crypto.ts
+function crypto_regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return crypto_regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (crypto_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, crypto_regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, crypto_regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), crypto_regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", crypto_regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), crypto_regeneratorDefine2(u), crypto_regeneratorDefine2(u, o, "Generator"), crypto_regeneratorDefine2(u, n, function () { return this; }), crypto_regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (crypto_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function crypto_regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } crypto_regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { var o = function o(r, n) { crypto_regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); }; o("next", 0), o("throw", 1), o("return", 2); } }, crypto_regeneratorDefine2(e, r, n, t); }
+function crypto_asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function crypto_asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { crypto_asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { crypto_asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 // utils/crypto.ts
 
 
 function base64UrlToBytes(base64url) {
-    let base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4)
-        base64 += '=';
-    return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  var base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4) base64 += '=';
+  return Uint8Array.from(atob(base64), function (c) {
+    return c.charCodeAt(0);
+  });
 }
 function bytesToBase64(bytes) {
-    return btoa(String.fromCharCode(...bytes));
+  return btoa(String.fromCharCode.apply(String, _toConsumableArray(bytes)));
 }
 function base64ToBytes(base64) {
-    return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  return Uint8Array.from(atob(base64), function (c) {
+    return c.charCodeAt(0);
+  });
 }
-function crypto_deriveKey(masterPassword, saltBase64Url) {
-    return crypto_awaiter(this, void 0, void 0, function* () {
-        const salt = base64UrlToBytes(saltBase64Url);
-        const enc = new TextEncoder();
-        const passwordKey = yield window.crypto.subtle.importKey('raw', enc.encode(masterPassword), { name: 'PBKDF2' }, false, ['deriveBits']);
-        const derivedBits = yield window.crypto.subtle.deriveBits({
+function crypto_deriveKey(_x, _x2) {
+  return _deriveKey.apply(this, arguments);
+}
+function _deriveKey() {
+  _deriveKey = crypto_asyncToGenerator(/*#__PURE__*/crypto_regenerator().m(function _callee(masterPassword, saltBase64Url) {
+    var salt, enc, passwordKey, derivedBits, derivedKey;
+    return crypto_regenerator().w(function (_context) {
+      while (1) switch (_context.n) {
+        case 0:
+          salt = base64UrlToBytes(saltBase64Url);
+          enc = new TextEncoder();
+          _context.n = 1;
+          return window.crypto.subtle.importKey('raw', enc.encode(masterPassword), {
+            name: 'PBKDF2'
+          }, false, ['deriveBits']);
+        case 1:
+          passwordKey = _context.v;
+          _context.n = 2;
+          return window.crypto.subtle.deriveBits({
             name: 'PBKDF2',
             salt: salt,
             iterations: 300000,
-            hash: 'SHA-256',
-        }, passwordKey, 256);
-        const derivedKey = bytesToBase64(new Uint8Array(derivedBits))
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=+$/, '');
-        return derivedKey;
-    });
+            hash: 'SHA-256'
+          }, passwordKey, 256);
+        case 2:
+          derivedBits = _context.v;
+          derivedKey = bytesToBase64(new Uint8Array(derivedBits)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+          return _context.a(2, derivedKey);
+      }
+    }, _callee);
+  }));
+  return _deriveKey.apply(this, arguments);
 }
 function crypto_encryptData(symmetricKey, plainText) {
-    const key = base64UrlToBytes(symmetricKey);
-    const algo = new ChaCha20Poly1305(key);
-    const nonce = randomBytes(12);
-    const plaintextBytes = new TextEncoder().encode(plainText);
-    const encrypted = algo.seal(nonce, plaintextBytes);
-    const result = new Uint8Array(nonce.length + encrypted.length);
-    result.set(nonce, 0);
-    result.set(encrypted, nonce.length);
-    return bytesToBase64(result);
+  var key = base64UrlToBytes(symmetricKey);
+  var algo = new ChaCha20Poly1305(key);
+  var nonce = randomBytes(12);
+  var plaintextBytes = new TextEncoder().encode(plainText);
+  var encrypted = algo.seal(nonce, plaintextBytes);
+  var result = new Uint8Array(nonce.length + encrypted.length);
+  result.set(nonce, 0);
+  result.set(encrypted, nonce.length);
+  return bytesToBase64(result);
 }
 function decryptData(symmetricKey, encryptedData) {
-    const key = base64UrlToBytes(symmetricKey);
-    const algo = new ChaCha20Poly1305(key);
-    const encryptedBytes = base64ToBytes(encryptedData);
-    const nonce = encryptedBytes.slice(0, 12);
-    const ciphertextAndMac = encryptedBytes.slice(12);
-    const decrypted = algo.open(nonce, ciphertextAndMac);
-    if (!decrypted)
-        throw new Error('Decryption failed');
-    return new TextDecoder().decode(decrypted);
+  var key = base64UrlToBytes(symmetricKey);
+  var algo = new ChaCha20Poly1305(key);
+  var encryptedBytes = base64ToBytes(encryptedData);
+  var nonce = encryptedBytes.slice(0, 12);
+  var ciphertextAndMac = encryptedBytes.slice(12);
+  var decrypted = algo.open(nonce, ciphertextAndMac);
+  if (!decrypted) throw new Error('Decryption failed');
+  return new TextDecoder().decode(decrypted);
 }
 function generateItemKey() {
-    const key = window.crypto.getRandomValues(new Uint8Array(32));
-    // Standard base64
-    let base64 = btoa(String.fromCharCode(...key));
-    // Convert to base64url
-    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  var key = window.crypto.getRandomValues(new Uint8Array(32));
+  // Standard base64
+  var base64 = btoa(String.fromCharCode.apply(String, _toConsumableArray(key)));
+  // Convert to base64url
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
-
-;// ./src/services/cognito.ts
-var cognito_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-/**
- * services/cognito.ts
- * Low-level Cognito service functions for authentication and user management.
- * No business logic, just direct API calls.
- */
-
-/**
- * Full Cognito login flow (handles sign-in, MFA, token extraction, user attributes, Firebase token)
- * Returns: { mfaRequired, mfaUser, idToken, firebaseToken, userAttributes }
- */
-function cognito_loginWithCognito(email, password) {
-    return cognito_awaiter(this, void 0, void 0, function* () {
-        var _a;
-        console.log('[Cognito] Starting login with email:', email);
-        // Sign in with Cognito
-        const user = yield signIn({ username: email, password });
-        const mfaSteps = [
-            'CONFIRM_SIGN_IN_WITH_SMS_CODE',
-            'CONFIRM_SIGN_IN_WITH_TOTP_CODE',
-            'CONFIRM_SIGN_IN_WITH_EMAIL_CODE',
-            'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
-            'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED',
-            'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
-        ];
-        if (user.nextStep && mfaSteps.includes(user.nextStep.signInStep)) {
-            console.log('[Cognito] loginWithCognito success: MFA required');
-            return { mfaRequired: true, mfaUser: user };
-        }
-        // Authenticated, get tokens and user attributes
-        const { tokens } = yield fetchAuthSession();
-        const idToken = (_a = tokens === null || tokens === void 0 ? void 0 : tokens.idToken) === null || _a === void 0 ? void 0 : _a.toString();
-        if (!idToken)
-            throw new Error('No IdToken found');
-        const parts = idToken.split('.');
-        if (parts.length !== 3)
-            throw new Error('Invalid JWT structure');
-        const payload = JSON.parse(atob(parts[1]));
-        const firebaseToken = payload.firebaseToken;
-        if (!firebaseToken)
-            throw new Error('Firebase token not found in Cognito ID token claims');
-        const userAttributes = yield fetchUserAttributes();
-        console.log('[Cognito] loginWithCognito success: User authenticated');
-        return { mfaRequired: false, idToken, firebaseToken, userAttributes };
-    });
-}
-/**
- * Confirm MFA step with Cognito (low-level)
- * Returns: { idToken, firebaseToken, userAttributes }
- */
-function cognito_confirmMfaWithCognito(code) {
-    return cognito_awaiter(this, void 0, void 0, function* () {
-        var _a;
-        console.log('[Cognito] Confirming MFA with code');
-        const user = yield confirmSignIn({ challengeResponse: code });
-        const { tokens } = yield fetchAuthSession();
-        const idToken = (_a = tokens === null || tokens === void 0 ? void 0 : tokens.idToken) === null || _a === void 0 ? void 0 : _a.toString();
-        if (!idToken)
-            throw new Error('No IdToken found');
-        const parts = idToken.split('.');
-        if (parts.length !== 3)
-            throw new Error('Invalid JWT structure');
-        const payload = JSON.parse(atob(parts[1]));
-        const firebaseToken = payload.firebaseToken;
-        if (!firebaseToken)
-            throw new Error('Firebase token not found in Cognito ID token claims');
-        const userAttributes = yield fetchUserAttributes();
-        console.log('[Cognito] confirmMfaWithCognito success');
-        return { idToken, firebaseToken, userAttributes, user };
-    });
-}
-/**
- * Fetch user attributes from Cognito (low-level)
- */
-function fetchUserAttributesCognito() {
-    return cognito_awaiter(this, void 0, void 0, function* () {
-        console.log('[Cognito] Fetching user attributes');
-        const attributes = yield fetchUserAttributes();
-        console.log('[Cognito] fetchUserAttributesCognito success');
-        return attributes;
-    });
-}
-/**
- * Fetch user salt from Cognito (low-level, wrapper for attribute fetch)
- */
-function fetchUserSaltCognito() {
-    return cognito_awaiter(this, void 0, void 0, function* () {
-        console.log('[Cognito] Fetching user salt');
-        const attrs = yield fetchUserAttributes();
-        const salt = attrs['custom:salt'] || '';
-        console.log('[Cognito] fetchUserSaltCognito success');
-        return salt;
-    });
-}
-/**
- * Sign out from Cognito (low-level)
- */
-function cognito_signOutCognito() {
-    return cognito_awaiter(this, void 0, void 0, function* () {
-        console.log('[Cognito] Signing out from Cognito');
-        yield signOut();
-        console.log('[Cognito] signOutCognito success');
-    });
-}
-/**
- * Get Cognito tokens and Firebase token from the current session (low-level)
- */
-function getCognitoTokensAndFirebaseToken() {
-    return cognito_awaiter(this, void 0, void 0, function* () {
-        var _a;
-        console.log('[Cognito] Getting Cognito tokens and Firebase token');
-        const { tokens } = yield fetchAuthSession();
-        const idToken = (_a = tokens === null || tokens === void 0 ? void 0 : tokens.idToken) === null || _a === void 0 ? void 0 : _a.toString();
-        if (!idToken)
-            throw new Error('No IdToken found');
-        const parts = idToken.split('.');
-        if (parts.length !== 3)
-            throw new Error('Invalid JWT structure');
-        const payload = JSON.parse(atob(parts[1]));
-        const firebaseToken = payload.firebaseToken;
-        if (!firebaseToken)
-            throw new Error('Firebase token not found in Cognito ID token claims');
-        console.log('[Cognito] getCognitoTokensAndFirebaseToken success');
-        return { idToken, firebaseToken };
-    });
-}
-
-;// ./src/services/indexdb.ts
+;// ./packages/app/logic/indexdb.ts
 // Generic IndexedDB utilities for CRUD operations
 // No business logic, only parameterized helpers
+
 function indexdb_openDB(dbName, version) {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open(dbName, version);
-        request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            // Always create both stores if missing
-            if (!db.objectStoreNames.contains('user')) {
-                db.createObjectStore('user');
-            }
-            if (!db.objectStoreNames.contains('credentials')) {
-                db.createObjectStore('credentials');
-            }
-        };
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
-}
-// Store a value under a key (singleton value)
-function indexdb_putItem(db, storeName, key, value) {
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction(storeName, 'readwrite');
-        const store = tx.objectStore(storeName);
-        store.put(value, key);
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-    });
-}
-// Get a value by key (singleton value)
-function getItem(db, storeName, key) {
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction(storeName, 'readonly');
-        const store = tx.objectStore(storeName);
-        const request = store.get(key);
-        request.onsuccess = () => resolve(request.result || null);
-        request.onerror = () => reject(request.error);
-    });
-}
-function getAllItems(db, storeName) {
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction(storeName, 'readonly');
-        const store = tx.objectStore(storeName);
-        const request = store.getAll();
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
-}
-function indexdb_deleteItem(db, storeName, key) {
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction(storeName, 'readwrite');
-        const store = tx.objectStore(storeName);
-        store.delete(key);
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-    });
-}
-function indexdb_clearStore(db, storeName) {
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction(storeName, 'readwrite');
-        const store = tx.objectStore(storeName);
-        const clearRequest = store.clear();
-        clearRequest.onsuccess = () => resolve();
-        clearRequest.onerror = () => reject(clearRequest.error);
-    });
+  return new Promise(function (resolve, reject) {
+    var request = indexedDB.open(dbName, version);
+    request.onupgradeneeded = function (event) {
+      var db = event.target.result;
+      // Always create both stores if missing
+      if (!db.objectStoreNames.contains('user')) {
+        db.createObjectStore('user');
+      }
+      if (!db.objectStoreNames.contains('credentials')) {
+        db.createObjectStore('credentials');
+      }
+    };
+    request.onsuccess = function () {
+      return resolve(request.result);
+    };
+    request.onerror = function () {
+      return reject(request.error);
+    };
+  });
 }
 
-;// ./src/logic/user.ts
-var user_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+// Store a value under a key (singleton value)
+function indexdb_putItem(db, storeName, key, value) {
+  return new Promise(function (resolve, reject) {
+    var tx = db.transaction(storeName, 'readwrite');
+    var store = tx.objectStore(storeName);
+    store.put(value, key);
+    tx.oncomplete = function () {
+      return resolve();
+    };
+    tx.onerror = function () {
+      return reject(tx.error);
+    };
+  });
+}
+
+// Get a value by key (singleton value)
+function getItem(db, storeName, key) {
+  return new Promise(function (resolve, reject) {
+    var tx = db.transaction(storeName, 'readonly');
+    var store = tx.objectStore(storeName);
+    var request = store.get(key);
+    request.onsuccess = function () {
+      return resolve(request.result || null);
+    };
+    request.onerror = function () {
+      return reject(request.error);
+    };
+  });
+}
+function getAllItems(db, storeName) {
+  return new Promise(function (resolve, reject) {
+    var tx = db.transaction(storeName, 'readonly');
+    var store = tx.objectStore(storeName);
+    var request = store.getAll();
+    request.onsuccess = function () {
+      return resolve(request.result);
+    };
+    request.onerror = function () {
+      return reject(request.error);
+    };
+  });
+}
+function indexdb_deleteItem(db, storeName, key) {
+  return new Promise(function (resolve, reject) {
+    var tx = db.transaction(storeName, 'readwrite');
+    var store = tx.objectStore(storeName);
+    store["delete"](key);
+    tx.oncomplete = function () {
+      return resolve();
+    };
+    tx.onerror = function () {
+      return reject(tx.error);
+    };
+  });
+}
+function indexdb_clearStore(db, storeName) {
+  return new Promise(function (resolve, reject) {
+    var tx = db.transaction(storeName, 'readwrite');
+    var store = tx.objectStore(storeName);
+    var clearRequest = store.clear();
+    clearRequest.onsuccess = function () {
+      return resolve();
+    };
+    clearRequest.onerror = function () {
+      return reject(clearRequest.error);
+    };
+  });
+}
+;// ./packages/app/logic/user.ts
+function user_regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return user_regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (user_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, user_regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, user_regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), user_regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", user_regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), user_regeneratorDefine2(u), user_regeneratorDefine2(u, o, "Generator"), user_regeneratorDefine2(u, n, function () { return this; }), user_regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (user_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function user_regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } user_regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { var o = function o(r, n) { user_regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); }; o("next", 0), o("throw", 1), o("return", 2); } }, user_regeneratorDefine2(e, r, n, t); }
+function user_asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function user_asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { user_asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { user_asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 /**
  * business/user.ts
  * High-level business logic for user authentication and user management.
@@ -39771,266 +39901,470 @@ var user_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arg
 
 
 
-const user_DB_NAME = 'SimpliPassCache';
-const user_STORE_NAME = 'user';
-const user_DB_VERSION = 1;
-const REMEMBER_EMAIL_KEY = 'simplipass_remembered_email';
+var user_DB_NAME = 'SimpliPassCache';
+var user_STORE_NAME = 'user';
+var user_DB_VERSION = 1;
+var REMEMBER_EMAIL_KEY = 'simplipass_remembered_email';
+
 // Get user secret key from IndexedDB
 function user_getUserSecretKey() {
-    return user_awaiter(this, void 0, void 0, function* () {
-        console.log('[User] Getting user secret key from IndexedDB');
-        const db = yield indexdb_openDB(user_DB_NAME, user_DB_VERSION);
-        const result = yield getItem(db, user_STORE_NAME, 'UserSecretKey');
-        console.log('[User] getUserSecretKey success:', result ? 'Key found: ' + result : 'Key not found');
-        return result;
-    });
-}
-// Store user secret key in IndexedDB
-function storeUserSecretKey(key) {
-    return user_awaiter(this, void 0, void 0, function* () {
-        console.log('[User] Storing user secret key in IndexedDB');
-        const db = yield openDB(user_DB_NAME, user_DB_VERSION);
-        yield putItem(db, user_STORE_NAME, 'UserSecretKey', key);
-        console.log('[User] storeUserSecretKey success');
-    });
-}
-// Delete user secret key from IndexedDB
-function deleteUserSecretKey() {
-    return user_awaiter(this, void 0, void 0, function* () {
-        console.log('[User] Deleting user secret key from IndexedDB');
-        const db = yield openDB(user_DB_NAME, user_DB_VERSION);
-        yield deleteItem(db, user_STORE_NAME, 'UserSecretKey');
-        console.log('[User] deleteUserSecretKey success');
-    });
-}
-// High-level login function for the popup.
-// Handles email remembering, Cognito sign-in, MFA, secret key derivation, Firebase sign-in, and credential refresh.
-function loginUser(_a) {
-    return user_awaiter(this, arguments, void 0, function* ({ email, password, rememberEmail }) {
-        console.log('[User] Starting login process for email:', email);
-        // Remember email logic
-        if (rememberEmail && email) {
-            localStorage.setItem(REMEMBER_EMAIL_KEY, email);
-        }
-        else if (!rememberEmail) {
-            localStorage.removeItem(REMEMBER_EMAIL_KEY);
-        }
-        // Call low-level Cognito login
-        const result = yield loginWithCognito(email, password);
-        if (result.mfaRequired) {
-            console.log('[User] loginUser success: MFA required');
-            return { mfaRequired: true, mfaUser: result.mfaUser };
-        }
-        // Derive and store user secret key
-        const userSalt = result.userAttributes['custom:salt'];
-        if (userSalt) {
-            const userSecretKey = yield deriveKey(password, userSalt);
-            yield storeUserSecretKey(userSecretKey);
-        }
-        // Sign in with Firebase (low-level)
-        yield signInWithFirebaseToken(result.firebaseToken);
-        yield refreshCredentialsInVaultDb(getCurrentUserFromFirebase());
-        console.log('[User] loginUser success: User fully authenticated');
-        return { mfaRequired: false };
-    });
-}
-// High-level MFA confirmation function for the popup.
-function confirmMfa(_a) {
-    return user_awaiter(this, arguments, void 0, function* ({ code, password, mfaUser }) {
-        console.log('[User] Confirming MFA with code');
-        const result = yield confirmMfaWithCognito(code);
-        const userSalt = result.userAttributes['custom:salt'];
-        if (userSalt) {
-            const userSecretKey = yield deriveKey(password, userSalt);
-            yield storeUserSecretKey(userSecretKey);
-        }
-        yield signInWithFirebaseToken(result.firebaseToken);
-        console.log('[User] confirmMfa success');
-        return result.user;
-    });
-}
-// High-level logout function for the popup.
-function logoutUser() {
-    return user_awaiter(this, void 0, void 0, function* () {
-        console.log('[User] Starting logout process');
-        yield deleteUserSecretKey();
-        yield clearStore(yield openDB(user_DB_NAME, user_DB_VERSION), user_STORE_NAME);
-        yield signOutFromFirebase();
-        yield signOutCognito();
-        console.log('[User] logoutUser success');
-    });
+  return _getUserSecretKey.apply(this, arguments);
 }
 
-;// ./src/services/cryptography.ts
+// Store user secret key in IndexedDB
+function _getUserSecretKey() {
+  _getUserSecretKey = user_asyncToGenerator(/*#__PURE__*/user_regenerator().m(function _callee() {
+    var db, result;
+    return user_regenerator().w(function (_context) {
+      while (1) switch (_context.n) {
+        case 0:
+          console.log('[User] Getting user secret key from IndexedDB');
+          _context.n = 1;
+          return indexdb_openDB(user_DB_NAME, user_DB_VERSION);
+        case 1:
+          db = _context.v;
+          _context.n = 2;
+          return getItem(db, user_STORE_NAME, 'UserSecretKey');
+        case 2:
+          result = _context.v;
+          console.log('[User] getUserSecretKey success:', result ? 'Key found: ' + result : 'Key not found');
+          return _context.a(2, result);
+      }
+    }, _callee);
+  }));
+  return _getUserSecretKey.apply(this, arguments);
+}
+function storeUserSecretKey(_x) {
+  return _storeUserSecretKey.apply(this, arguments);
+}
+
+// Delete user secret key from IndexedDB
+function _storeUserSecretKey() {
+  _storeUserSecretKey = user_asyncToGenerator(/*#__PURE__*/user_regenerator().m(function _callee2(key) {
+    var db;
+    return user_regenerator().w(function (_context2) {
+      while (1) switch (_context2.n) {
+        case 0:
+          console.log('[User] Storing user secret key in IndexedDB');
+          _context2.n = 1;
+          return openDB(user_DB_NAME, user_DB_VERSION);
+        case 1:
+          db = _context2.v;
+          _context2.n = 2;
+          return putItem(db, user_STORE_NAME, 'UserSecretKey', key);
+        case 2:
+          console.log('[User] storeUserSecretKey success');
+        case 3:
+          return _context2.a(2);
+      }
+    }, _callee2);
+  }));
+  return _storeUserSecretKey.apply(this, arguments);
+}
+function deleteUserSecretKey() {
+  return _deleteUserSecretKey.apply(this, arguments);
+}
+
+// High-level login function for the popup.
+// Handles email remembering, Cognito sign-in, MFA, secret key derivation, Firebase sign-in, and credential refresh.
+function _deleteUserSecretKey() {
+  _deleteUserSecretKey = user_asyncToGenerator(/*#__PURE__*/user_regenerator().m(function _callee3() {
+    var db;
+    return user_regenerator().w(function (_context3) {
+      while (1) switch (_context3.n) {
+        case 0:
+          console.log('[User] Deleting user secret key from IndexedDB');
+          _context3.n = 1;
+          return openDB(user_DB_NAME, user_DB_VERSION);
+        case 1:
+          db = _context3.v;
+          _context3.n = 2;
+          return deleteItem(db, user_STORE_NAME, 'UserSecretKey');
+        case 2:
+          console.log('[User] deleteUserSecretKey success');
+        case 3:
+          return _context3.a(2);
+      }
+    }, _callee3);
+  }));
+  return _deleteUserSecretKey.apply(this, arguments);
+}
+function loginUser(_x2) {
+  return _loginUser.apply(this, arguments);
+}
+
+// High-level MFA confirmation function for the popup.
+function _loginUser() {
+  _loginUser = user_asyncToGenerator(/*#__PURE__*/user_regenerator().m(function _callee4(_ref) {
+    var email, password, rememberEmail, result, userSalt, userSecretKey;
+    return user_regenerator().w(function (_context4) {
+      while (1) switch (_context4.n) {
+        case 0:
+          email = _ref.email, password = _ref.password, rememberEmail = _ref.rememberEmail;
+          console.log('[User] Starting login process for email:', email);
+          // Remember email logic
+          if (rememberEmail && email) {
+            localStorage.setItem(REMEMBER_EMAIL_KEY, email);
+          } else if (!rememberEmail) {
+            localStorage.removeItem(REMEMBER_EMAIL_KEY);
+          }
+
+          // Call low-level Cognito login
+          _context4.n = 1;
+          return loginWithCognito(email, password);
+        case 1:
+          result = _context4.v;
+          if (!result.mfaRequired) {
+            _context4.n = 2;
+            break;
+          }
+          console.log('[User] loginUser success: MFA required');
+          return _context4.a(2, {
+            mfaRequired: true,
+            mfaUser: result.mfaUser
+          });
+        case 2:
+          // Derive and store user secret key
+          userSalt = result.userAttributes['custom:salt'];
+          if (!userSalt) {
+            _context4.n = 4;
+            break;
+          }
+          _context4.n = 3;
+          return deriveKey(password, userSalt);
+        case 3:
+          userSecretKey = _context4.v;
+          _context4.n = 4;
+          return storeUserSecretKey(userSecretKey);
+        case 4:
+          _context4.n = 5;
+          return signInWithFirebaseToken(result.firebaseToken);
+        case 5:
+          _context4.n = 6;
+          return refreshCredentialsInVaultDb(getCurrentUserFromFirebase());
+        case 6:
+          console.log('[User] loginUser success: User fully authenticated');
+          return _context4.a(2, {
+            mfaRequired: false
+          });
+      }
+    }, _callee4);
+  }));
+  return _loginUser.apply(this, arguments);
+}
+function confirmMfa(_x3) {
+  return _confirmMfa.apply(this, arguments);
+}
+
+// High-level logout function for the popup.
+function _confirmMfa() {
+  _confirmMfa = user_asyncToGenerator(/*#__PURE__*/user_regenerator().m(function _callee5(_ref2) {
+    var code, password, _mfaUser, result, userSalt, userSecretKey;
+    return user_regenerator().w(function (_context5) {
+      while (1) switch (_context5.n) {
+        case 0:
+          code = _ref2.code, password = _ref2.password, _mfaUser = _ref2._mfaUser;
+          console.log('[User] Confirming MFA with code');
+          _context5.n = 1;
+          return confirmMfaWithCognito(code);
+        case 1:
+          result = _context5.v;
+          userSalt = result.userAttributes['custom:salt'];
+          if (!userSalt) {
+            _context5.n = 3;
+            break;
+          }
+          _context5.n = 2;
+          return deriveKey(password, userSalt);
+        case 2:
+          userSecretKey = _context5.v;
+          _context5.n = 3;
+          return storeUserSecretKey(userSecretKey);
+        case 3:
+          _context5.n = 4;
+          return signInWithFirebaseToken(result.firebaseToken);
+        case 4:
+          console.log('[User] confirmMfa success');
+          return _context5.a(2, result.user);
+      }
+    }, _callee5);
+  }));
+  return _confirmMfa.apply(this, arguments);
+}
+function logoutUser() {
+  return _logoutUser.apply(this, arguments);
+}
+function _logoutUser() {
+  _logoutUser = user_asyncToGenerator(/*#__PURE__*/user_regenerator().m(function _callee6() {
+    var _t, _t2, _t3;
+    return user_regenerator().w(function (_context6) {
+      while (1) switch (_context6.n) {
+        case 0:
+          console.log('[User] Starting logout process');
+          _context6.n = 1;
+          return deleteUserSecretKey();
+        case 1:
+          _t = clearStore;
+          _context6.n = 2;
+          return openDB(user_DB_NAME, user_DB_VERSION);
+        case 2:
+          _t2 = _context6.v;
+          _t3 = user_STORE_NAME;
+          _context6.n = 3;
+          return _t(_t2, _t3);
+        case 3:
+          _context6.n = 4;
+          return signOutFromFirebase();
+        case 4:
+          _context6.n = 5;
+          return signOutCognito();
+        case 5:
+          console.log('[User] logoutUser success');
+        case 6:
+          return _context6.a(2);
+      }
+    }, _callee6);
+  }));
+  return _logoutUser.apply(this, arguments);
+}
+;// ./packages/app/logic/cryptography.ts
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = cryptography_unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function cryptography_unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return cryptography_arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? cryptography_arrayLikeToArray(r, a) : void 0; } }
+function cryptography_arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function cryptography_regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return cryptography_regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (cryptography_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, cryptography_regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, cryptography_regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), cryptography_regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", cryptography_regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), cryptography_regeneratorDefine2(u), cryptography_regeneratorDefine2(u, o, "Generator"), cryptography_regeneratorDefine2(u, n, function () { return this; }), cryptography_regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (cryptography_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function cryptography_regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } cryptography_regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { var o = function o(r, n) { cryptography_regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); }; o("next", 0), o("throw", 1), o("return", 2); } }, cryptography_regeneratorDefine2(e, r, n, t); }
+function cryptography_asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function cryptography_asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { cryptography_asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { cryptography_asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 // cryptography.ts 
 // Services for cryptography for items
-var cryptography_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+
+
 
 
 /**
  * Decrypt a credential item using the user's secret key.
  * Returns a CredentialDecrypted object.
  */
-function decryptCredential(userSecretKey, itemToDecrypt) {
-    return cryptography_awaiter(this, void 0, void 0, function* () {
-        try {
-            const itemKey = yield decryptData(userSecretKey, itemToDecrypt.item_key_encrypted);
-            const decryptedContent = yield decryptData(itemKey, itemToDecrypt.content_encrypted);
-            const contentJson = JSON.parse(decryptedContent);
-            return {
-                createdDateTime: itemToDecrypt.created_at.toDate(),
-                lastUseDateTime: itemToDecrypt.last_used_at.toDate(),
-                title: contentJson.title || '',
-                username: contentJson.username || '',
-                password: contentJson.password || '',
-                note: contentJson.note || '',
-                url: contentJson.url || '',
-                itemKey: itemKey,
-                document_reference: itemToDecrypt.document_reference,
-            };
-        }
-        catch (error) {
-            console.error('❌ Decryption failed for item', itemToDecrypt.document_reference, error);
-            console.error('🔐 Encrypted content:', itemToDecrypt.content_encrypted);
-            console.error('🔑 Encrypted item key:', itemToDecrypt.item_key_encrypted);
-            throw error;
-        }
-    });
+function decryptCredential(_x, _x2) {
+  return _decryptCredential.apply(this, arguments);
 }
+
 /**
  * Decrypt an array of credential items using the user's secret key.
  * Returns an array of CredentialDecrypted objects.
  */
-function decryptAllCredentials(userSecretKey, credentialsList) {
-    return cryptography_awaiter(this, void 0, void 0, function* () {
-        console.log('[Cryptography] Decrypting all credentials:', credentialsList.length, 'credentials');
-        const decryptedItems = [];
-        if (!credentialsList.length) {
-            console.debug('No credential items provided.');
-            return decryptedItems;
-        }
-        for (const credential of credentialsList) {
-            try {
-                if (typeof credential.item_key_encrypted !== 'string' ||
-                    typeof credential.content_encrypted !== 'string') {
-                    console.error('[Cryptography] Malformed credential:', credential);
-                    continue;
-                }
-                const decryptedItem = yield decryptCredential(userSecretKey, credential);
-                decryptedItems.push(decryptedItem);
-            }
-            catch (e) {
-                console.debug(`[Cryptography] Error processing credential:`, e);
-            }
-        }
-        console.log('[Cryptography] decryptAllCredentials success:', decryptedItems.length, 'credentials decrypted');
-        return decryptedItems;
-    });
+function _decryptCredential() {
+  _decryptCredential = cryptography_asyncToGenerator(/*#__PURE__*/cryptography_regenerator().m(function _callee(userSecretKey, itemToDecrypt) {
+    var itemKey, decryptedContent, contentJson, _t;
+    return cryptography_regenerator().w(function (_context) {
+      while (1) switch (_context.n) {
+        case 0:
+          _context.p = 0;
+          _context.n = 1;
+          return decryptData(userSecretKey, itemToDecrypt.item_key_encrypted);
+        case 1:
+          itemKey = _context.v;
+          _context.n = 2;
+          return decryptData(itemKey, itemToDecrypt.content_encrypted);
+        case 2:
+          decryptedContent = _context.v;
+          contentJson = JSON.parse(decryptedContent);
+          return _context.a(2, {
+            createdDateTime: itemToDecrypt.created_at.toDate(),
+            lastUseDateTime: itemToDecrypt.last_used_at.toDate(),
+            title: contentJson.title || '',
+            username: contentJson.username || '',
+            password: contentJson.password || '',
+            note: contentJson.note || '',
+            url: contentJson.url || '',
+            itemKey: itemKey,
+            document_reference: itemToDecrypt.document_reference
+          });
+        case 3:
+          _context.p = 3;
+          _t = _context.v;
+          console.error('❌ Decryption failed for item', itemToDecrypt.document_reference, _t);
+          console.error('🔐 Encrypted content:', itemToDecrypt.content_encrypted);
+          console.error('🔑 Encrypted item key:', itemToDecrypt.item_key_encrypted);
+          throw _t;
+        case 4:
+          return _context.a(2);
+      }
+    }, _callee, null, [[0, 3]]);
+  }));
+  return _decryptCredential.apply(this, arguments);
 }
+function decryptAllCredentials(_x3, _x4) {
+  return _decryptAllCredentials.apply(this, arguments);
+}
+
 /**
  * Encrypt a credential item using the user's secret key.
  * Returns a CredentialEncrypted object.
  */
-function cryptography_encryptCredential(userSecretKey, itemToEncrypt) {
-    return cryptography_awaiter(this, void 0, void 0, function* () {
-        // Build the content dictionary
-        const contentDict = {
+function _decryptAllCredentials() {
+  _decryptAllCredentials = cryptography_asyncToGenerator(/*#__PURE__*/cryptography_regenerator().m(function _callee2(userSecretKey, credentialsList) {
+    var decryptedItems, _iterator, _step, credential, decryptedItem, _t2, _t3;
+    return cryptography_regenerator().w(function (_context2) {
+      while (1) switch (_context2.n) {
+        case 0:
+          console.log('[Cryptography] Decrypting all credentials:', credentialsList.length, 'credentials');
+          decryptedItems = [];
+          if (credentialsList.length) {
+            _context2.n = 1;
+            break;
+          }
+          console.debug('No credential items provided.');
+          return _context2.a(2, decryptedItems);
+        case 1:
+          _iterator = _createForOfIteratorHelper(credentialsList);
+          _context2.p = 2;
+          _iterator.s();
+        case 3:
+          if ((_step = _iterator.n()).done) {
+            _context2.n = 9;
+            break;
+          }
+          credential = _step.value;
+          _context2.p = 4;
+          if (!(typeof credential.item_key_encrypted !== 'string' || typeof credential.content_encrypted !== 'string')) {
+            _context2.n = 5;
+            break;
+          }
+          console.error('[Cryptography] Malformed credential:', credential);
+          return _context2.a(3, 8);
+        case 5:
+          _context2.n = 6;
+          return decryptCredential(userSecretKey, credential);
+        case 6:
+          decryptedItem = _context2.v;
+          decryptedItems.push(decryptedItem);
+          _context2.n = 8;
+          break;
+        case 7:
+          _context2.p = 7;
+          _t2 = _context2.v;
+          console.debug("[Cryptography] Error processing credential:", _t2);
+        case 8:
+          _context2.n = 3;
+          break;
+        case 9:
+          _context2.n = 11;
+          break;
+        case 10:
+          _context2.p = 10;
+          _t3 = _context2.v;
+          _iterator.e(_t3);
+        case 11:
+          _context2.p = 11;
+          _iterator.f();
+          return _context2.f(11);
+        case 12:
+          console.log('[Cryptography] decryptAllCredentials success:', decryptedItems.length, 'credentials decrypted');
+          return _context2.a(2, decryptedItems);
+      }
+    }, _callee2, null, [[4, 7], [2, 10, 11, 12]]);
+  }));
+  return _decryptAllCredentials.apply(this, arguments);
+}
+function cryptography_encryptCredential(_x5, _x6) {
+  return _encryptCredential.apply(this, arguments);
+}
+function _encryptCredential() {
+  _encryptCredential = cryptography_asyncToGenerator(/*#__PURE__*/cryptography_regenerator().m(function _callee3(userSecretKey, itemToEncrypt) {
+    var contentDict, contentString, itemKey, content_encrypted, item_key_encrypted;
+    return cryptography_regenerator().w(function (_context3) {
+      while (1) switch (_context3.n) {
+        case 0:
+          // Build the content dictionary
+          contentDict = {
             title: itemToEncrypt.title,
             username: itemToEncrypt.username || '',
             password: itemToEncrypt.password,
             note: itemToEncrypt.note || '',
-            url: itemToEncrypt.url || '',
-        };
-        // Convert to JSON string
-        const contentString = JSON.stringify(contentDict);
-        // Encrypt content and item key
-        const itemKey = itemToEncrypt.itemKey;
-        const content_encrypted = yield encryptData(itemKey, contentString);
-        const item_key_encrypted = yield encryptData(userSecretKey, itemKey);
-        // Return the encrypted item
-        return {
+            url: itemToEncrypt.url || ''
+          }; // Convert to JSON string
+          contentString = JSON.stringify(contentDict); // Encrypt content and item key
+          itemKey = itemToEncrypt.itemKey;
+          _context3.n = 1;
+          return encryptData(itemKey, contentString);
+        case 1:
+          content_encrypted = _context3.v;
+          _context3.n = 2;
+          return encryptData(userSecretKey, itemKey);
+        case 2:
+          item_key_encrypted = _context3.v;
+          return _context3.a(2, {
             created_at: Timestamp.fromDate(itemToEncrypt.createdDateTime),
-            content_encrypted,
-            item_key_encrypted,
+            content_encrypted: content_encrypted,
+            item_key_encrypted: item_key_encrypted,
             last_used_at: Timestamp.fromDate(itemToEncrypt.lastUseDateTime),
-            document_reference: itemToEncrypt.document_reference || null,
-        };
-    });
+            document_reference: itemToEncrypt.document_reference || null
+          });
+      }
+    }, _callee3);
+  }));
+  return _encryptCredential.apply(this, arguments);
 }
-
-;// ./src/utils/domain.ts
+;// ./packages/app/utils/domain.ts
 /**
  * Extracts the root domain from a hostname, removing 'www.' and subdomains.
  * @param hostname The full hostname (e.g., 'www.example.co.uk')
  * @returns The root domain (e.g., 'example.co.uk')
  */
 function getRootDomain(hostname) {
-    const parts = hostname.split('.').filter(Boolean);
-    if (parts.length <= 2)
-        return hostname.replace(/^www\./, '');
-    return parts.slice(-2).join('.');
+  var parts = hostname.split('.').filter(Boolean);
+  if (parts.length <= 2) return hostname.replace(/^www\./, '');
+  return parts.slice(-2).join('.');
 }
+
 /* Helper function to extract registered domain from hostname (handles subdomains) */
 function getRegisteredDomain(hostname) {
-    const parts = hostname.split('.').filter(Boolean);
-    if (parts.length <= 2)
-        return hostname.replace(/^www\./, '');
-    return parts.slice(-2).join('.');
+  var parts = hostname.split('.').filter(Boolean);
+  if (parts.length <= 2) return hostname.replace(/^www\./, '');
+  return parts.slice(-2).join('.');
 }
 function matchesCredentialDomainOrTitle(cred, pageDomain) {
-    pageDomain = pageDomain.toLowerCase();
-    // 1. Try URL match if url is non-empty
-    if (cred.url && cred.url.trim() !== '') {
-        try {
-            const credUrl = new URL(cred.url.startsWith('http') ? cred.url : 'https://' + cred.url);
-            const credDomain = getRegisteredDomain(credUrl.hostname).toLowerCase();
-            if (pageDomain.endsWith(credDomain) || credDomain.endsWith(pageDomain)) {
-                return true;
-            }
-        }
-        catch (_a) {
-            if (cred.url.toLowerCase().includes(pageDomain) ||
-                pageDomain.includes(cred.url.toLowerCase())) {
-                return true;
-            }
-        }
-        // If url is present but does not match, fall back to title match
-        if (cred.title) {
-            const title = cred.title.toLowerCase();
-            if (title.includes(pageDomain) || pageDomain.includes(title)) {
-                return true;
-            }
-        }
-        return false;
+  pageDomain = pageDomain.toLowerCase();
+  // 1. Try URL match if url is non-empty
+  if (cred.url && cred.url.trim() !== '') {
+    try {
+      var credUrl = new URL(cred.url.startsWith('http') ? cred.url : 'https://' + cred.url);
+      var credDomain = getRegisteredDomain(credUrl.hostname).toLowerCase();
+      if (pageDomain.endsWith(credDomain) || credDomain.endsWith(pageDomain)) {
+        return true;
+      }
+    } catch (_unused) {
+      if (cred.url.toLowerCase().includes(pageDomain) || pageDomain.includes(cred.url.toLowerCase())) {
+        return true;
+      }
     }
-    // 2. If url is empty, match by title (case-insensitive, substring or reverse)
+    // If url is present but does not match, fall back to title match
     if (cred.title) {
-        const title = cred.title.toLowerCase();
-        if (title.includes(pageDomain) || pageDomain.includes(title)) {
-            return true;
-        }
+      var title = cred.title.toLowerCase();
+      if (title.includes(pageDomain) || pageDomain.includes(title)) {
+        return true;
+      }
     }
     return false;
+  }
+  // 2. If url is empty, match by title (case-insensitive, substring or reverse)
+  if (cred.title) {
+    var _title = cred.title.toLowerCase();
+    if (_title.includes(pageDomain) || pageDomain.includes(_title)) {
+      return true;
+    }
+  }
+  return false;
 }
-
-;// ./src/logic/items.ts
-var items_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+;// ./packages/app/logic/items.ts
+function items_createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = items_unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function items_unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return items_arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? items_arrayLikeToArray(r, a) : void 0; } }
+function items_arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function items_regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return items_regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (items_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, items_regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, items_regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), items_regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", items_regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), items_regeneratorDefine2(u), items_regeneratorDefine2(u, o, "Generator"), items_regeneratorDefine2(u, n, function () { return this; }), items_regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (items_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function items_regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } items_regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { var o = function o(r, n) { items_regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); }; o("next", 0), o("throw", 1), o("return", 2); } }, items_regeneratorDefine2(e, r, n, t); }
+function items_asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function items_asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { items_asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { items_asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 
 
 
@@ -40040,318 +40374,582 @@ var items_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _ar
 
 
 
-const items_DB_NAME = 'SimpliPassCache';
-const items_STORE_NAME = 'credentials';
-const items_DB_VERSION = 1;
+var items_DB_NAME = 'SimpliPassCache';
+var items_STORE_NAME = 'credentials';
+var items_DB_VERSION = 1;
+
 /* Fetches all encrypted credentials from Firestore, decrypts, re-encrypts, stores, and returns them */
-function items_refreshCredentialsInVaultDb(user) {
-    return items_awaiter(this, void 0, void 0, function* () {
-        console.log('[Items] Refreshing credentials in vault DB for user:', user === null || user === void 0 ? void 0 : user.uid);
-        if (!user)
-            throw new Error('No user logged in');
-        const userSecretKey = yield user_getUserSecretKey();
-        if (!userSecretKey)
-            throw new Error('User secret key not found');
-        // 1. Fetch encrypted credentials from Firestore
-        const encrypted = yield getAllCredentialsInFirestore(user.uid);
-        // 2. Decrypt all credentials (get plain itemKey and password)
-        const decrypted = yield decryptAllCredentials(userSecretKey, encrypted);
-        // 3. For each, re-encrypt as CredentialFromVaultDb and store in array
-        const itemsToStoreInIndexDb = decrypted.map((cred) => {
-            var _a;
-            const itemKeyCipher = crypto_encryptData(userSecretKey, cred.itemKey);
-            const passwordCipher = crypto_encryptData(cred.itemKey, cred.password);
-            return {
-                id: ((_a = cred.document_reference) === null || _a === void 0 ? void 0 : _a.id) || '',
-                url: cred.url,
-                title: cred.title,
-                username: cred.username,
-                itemKeyCipher,
-                passwordCipher,
-                note: cred.note || '',
-            };
-        });
-        // 4. Store in IndexedDB
-        yield saveCredentialsInVaultDb(itemsToStoreInIndexDb);
-        console.log('[Items] refreshCredentialsInVaultDb success:', itemsToStoreInIndexDb.length, 'credentials processed');
-        return itemsToStoreInIndexDb;
-    });
+function items_refreshCredentialsInVaultDb(_x) {
+  return _refreshCredentialsInVaultDb.apply(this, arguments);
 }
+
 /* Always returns the cached credentials. If cache is empty, refreshes it first. */
-function getAllCredentialsFromVaultDbWithFallback(user) {
-    return items_awaiter(this, void 0, void 0, function* () {
-        console.log('[Items] Getting all credentials from vault DB with fallback for user:', user === null || user === void 0 ? void 0 : user.uid);
-        // First try to get credentials from cache
-        let creds = yield getAllCredentialsFromVaultDb();
-        // If cache is empty and user is logged in, refresh from Firestore
-        if (!creds || creds.length === 0) {
-            if (auth.currentUser) {
-                try {
-                    creds = yield items_refreshCredentialsInVaultDb(auth.currentUser);
-                }
-                catch (e) {
-                    console.error('[Items] Error refreshing credentials:', e);
-                    creds = [];
-                }
-            }
-            else {
-                creds = [];
-            }
-        }
-        // Log every credential's URL when retrieved from cache
-        console.log('[Cache] Retrieved credentials from cache:');
-        creds.forEach((cred) => {
-            console.log(`[Cache] Credential ID: ${cred.id}, URL: ${cred.url}, Title: ${cred.title}`);
-        });
-        console.log('[Items] getAllCredentialsFromVaultDbWithFallback success:', creds.length, 'credentials');
-        return creds;
-    });
+function _refreshCredentialsInVaultDb() {
+  _refreshCredentialsInVaultDb = items_asyncToGenerator(/*#__PURE__*/items_regenerator().m(function _callee(user) {
+    var userSecretKey, encrypted, decrypted, itemsToStoreInIndexDb;
+    return items_regenerator().w(function (_context) {
+      while (1) switch (_context.n) {
+        case 0:
+          console.log('[Items] Refreshing credentials in vault DB for user:', user === null || user === void 0 ? void 0 : user.uid);
+          if (user) {
+            _context.n = 1;
+            break;
+          }
+          throw new Error('No user logged in');
+        case 1:
+          _context.n = 2;
+          return user_getUserSecretKey();
+        case 2:
+          userSecretKey = _context.v;
+          if (userSecretKey) {
+            _context.n = 3;
+            break;
+          }
+          throw new Error('User secret key not found');
+        case 3:
+          _context.n = 4;
+          return getAllCredentialsInFirestore(user.uid);
+        case 4:
+          encrypted = _context.v;
+          _context.n = 5;
+          return decryptAllCredentials(userSecretKey, encrypted);
+        case 5:
+          decrypted = _context.v;
+          // 3. For each, re-encrypt as CredentialFromVaultDb and store in array
+          itemsToStoreInIndexDb = decrypted.map(function (cred) {
+            var _cred$document_refere;
+            var itemKeyCipher = crypto_encryptData(userSecretKey, cred.itemKey);
+            var passwordCipher = crypto_encryptData(cred.itemKey, cred.password);
+            return {
+              id: ((_cred$document_refere = cred.document_reference) === null || _cred$document_refere === void 0 ? void 0 : _cred$document_refere.id) || '',
+              url: cred.url,
+              title: cred.title,
+              username: cred.username,
+              itemKeyCipher: itemKeyCipher,
+              passwordCipher: passwordCipher,
+              note: cred.note || ''
+            };
+          }); // 4. Store in IndexedDB
+          _context.n = 6;
+          return saveCredentialsInVaultDb(itemsToStoreInIndexDb);
+        case 6:
+          console.log('[Items] refreshCredentialsInVaultDb success:', itemsToStoreInIndexDb.length, 'credentials processed');
+          return _context.a(2, itemsToStoreInIndexDb);
+      }
+    }, _callee);
+  }));
+  return _refreshCredentialsInVaultDb.apply(this, arguments);
 }
+function getAllCredentialsFromVaultDbWithFallback(_x2) {
+  return _getAllCredentialsFromVaultDbWithFallback.apply(this, arguments);
+}
+
 /* Saves an array of half decrypted credentials to IndexedDB */
-function saveCredentialsInVaultDb(cached) {
-    return items_awaiter(this, void 0, void 0, function* () {
-        console.log('[Items] Saving credentials to vault DB:', cached.length, 'credentials');
-        const db = yield indexdb_openDB(items_DB_NAME, items_DB_VERSION);
-        for (const cred of cached) {
-            yield indexdb_putItem(db, items_STORE_NAME, cred.id, cred);
-        }
-        console.log('[Items] saveCredentialsInVaultDb success');
-    });
+function _getAllCredentialsFromVaultDbWithFallback() {
+  _getAllCredentialsFromVaultDbWithFallback = items_asyncToGenerator(/*#__PURE__*/items_regenerator().m(function _callee2(user) {
+    var creds, _t;
+    return items_regenerator().w(function (_context2) {
+      while (1) switch (_context2.n) {
+        case 0:
+          console.log('[Items] Getting all credentials from vault DB with fallback for user:', user === null || user === void 0 ? void 0 : user.uid);
+
+          // First try to get credentials from cache
+          _context2.n = 1;
+          return getAllCredentialsFromVaultDb();
+        case 1:
+          creds = _context2.v;
+          if (!(!creds || creds.length === 0)) {
+            _context2.n = 7;
+            break;
+          }
+          if (!auth.currentUser) {
+            _context2.n = 6;
+            break;
+          }
+          _context2.p = 2;
+          _context2.n = 3;
+          return items_refreshCredentialsInVaultDb(auth.currentUser);
+        case 3:
+          creds = _context2.v;
+          _context2.n = 5;
+          break;
+        case 4:
+          _context2.p = 4;
+          _t = _context2.v;
+          console.error('[Items] Error refreshing credentials');
+          creds = [];
+        case 5:
+          _context2.n = 7;
+          break;
+        case 6:
+          creds = [];
+        case 7:
+          // Log every credential's URL when retrieved from cache
+          console.log('[Cache] Retrieved credentials from cache:');
+          creds.forEach(function (cred) {
+            console.log("[Cache] Credential ID: ".concat(cred.id, ", URL: ").concat(cred.url, ", Title: ").concat(cred.title));
+          });
+          console.log('[Items] getAllCredentialsFromVaultDbWithFallback success:', creds.length, 'credentials');
+          return _context2.a(2, creds);
+      }
+    }, _callee2, null, [[2, 4]]);
+  }));
+  return _getAllCredentialsFromVaultDbWithFallback.apply(this, arguments);
 }
+function saveCredentialsInVaultDb(_x3) {
+  return _saveCredentialsInVaultDb.apply(this, arguments);
+}
+
 /* Retrieves all cached credentials from IndexedDB */
+function _saveCredentialsInVaultDb() {
+  _saveCredentialsInVaultDb = items_asyncToGenerator(/*#__PURE__*/items_regenerator().m(function _callee3(cached) {
+    var db, _iterator, _step, cred, _t2;
+    return items_regenerator().w(function (_context3) {
+      while (1) switch (_context3.n) {
+        case 0:
+          console.log('[Items] Saving credentials to vault DB:', cached.length, 'credentials');
+          _context3.n = 1;
+          return indexdb_openDB(items_DB_NAME, items_DB_VERSION);
+        case 1:
+          db = _context3.v;
+          _iterator = items_createForOfIteratorHelper(cached);
+          _context3.p = 2;
+          _iterator.s();
+        case 3:
+          if ((_step = _iterator.n()).done) {
+            _context3.n = 5;
+            break;
+          }
+          cred = _step.value;
+          _context3.n = 4;
+          return indexdb_putItem(db, items_STORE_NAME, cred.id, cred);
+        case 4:
+          _context3.n = 3;
+          break;
+        case 5:
+          _context3.n = 7;
+          break;
+        case 6:
+          _context3.p = 6;
+          _t2 = _context3.v;
+          _iterator.e(_t2);
+        case 7:
+          _context3.p = 7;
+          _iterator.f();
+          return _context3.f(7);
+        case 8:
+          console.log('[Items] saveCredentialsInVaultDb success');
+        case 9:
+          return _context3.a(2);
+      }
+    }, _callee3, null, [[2, 6, 7, 8]]);
+  }));
+  return _saveCredentialsInVaultDb.apply(this, arguments);
+}
 function getAllCredentialsFromVaultDb() {
-    return items_awaiter(this, void 0, void 0, function* () {
-        console.log('[Items] Getting all credentials from vault DB');
-        const db = yield indexdb_openDB(items_DB_NAME, items_DB_VERSION);
-        const result = yield getAllItems(db, items_STORE_NAME);
-        console.log('[Items] getAllCredentialsFromVaultDb success:', result.length, 'credentials');
-        return result;
-    });
+  return _getAllCredentialsFromVaultDb.apply(this, arguments);
 }
+
 /* Retrieves a single cached credential by its ID from IndexedDB */
-function getCredentialFromVaultDb(id) {
-    return items_awaiter(this, void 0, void 0, function* () {
-        console.log('[Items] Getting credential from vault DB with ID:', id);
-        const db = yield indexdb_openDB(items_DB_NAME, items_DB_VERSION);
-        const result = yield getItem(db, items_STORE_NAME, id);
-        console.log('[Items] getCredentialFromVaultDb success:', result ? 'Credential found' : 'Credential not found');
-        return result;
-    });
+function _getAllCredentialsFromVaultDb() {
+  _getAllCredentialsFromVaultDb = items_asyncToGenerator(/*#__PURE__*/items_regenerator().m(function _callee4() {
+    var db, result;
+    return items_regenerator().w(function (_context4) {
+      while (1) switch (_context4.n) {
+        case 0:
+          console.log('[Items] Getting all credentials from vault DB');
+          _context4.n = 1;
+          return indexdb_openDB(items_DB_NAME, items_DB_VERSION);
+        case 1:
+          db = _context4.v;
+          _context4.n = 2;
+          return getAllItems(db, items_STORE_NAME);
+        case 2:
+          result = _context4.v;
+          console.log('[Items] getAllCredentialsFromVaultDb success:', result.length, 'credentials');
+          return _context4.a(2, result);
+      }
+    }, _callee4);
+  }));
+  return _getAllCredentialsFromVaultDb.apply(this, arguments);
 }
+function getCredentialFromVaultDb(_x4) {
+  return _getCredentialFromVaultDb.apply(this, arguments);
+}
+
 /* Get cached credentials filtered by domain (robust, matches registered domain) */
-function getCredentialsByDomainFromVaultDb(domain) {
-    return items_awaiter(this, void 0, void 0, function* () {
-        console.log('[Items] Getting credentials by domain from vault DB:', domain);
-        let allCreds = yield getAllCredentialsFromVaultDb();
-        if (!allCreds || (allCreds.length === 0 && firebase_auth.currentUser)) {
-            try {
-                allCreds = yield items_refreshCredentialsInVaultDb(firebase_auth.currentUser);
-            }
-            catch (e) {
-                allCreds = [];
-            }
-        }
-        const pageDomain = getRegisteredDomain(domain).toLowerCase();
-        const filtered = allCreds.filter((cred) => {
+function _getCredentialFromVaultDb() {
+  _getCredentialFromVaultDb = items_asyncToGenerator(/*#__PURE__*/items_regenerator().m(function _callee5(id) {
+    var db, result;
+    return items_regenerator().w(function (_context5) {
+      while (1) switch (_context5.n) {
+        case 0:
+          console.log('[Items] Getting credential from vault DB with ID:', id);
+          _context5.n = 1;
+          return indexdb_openDB(items_DB_NAME, items_DB_VERSION);
+        case 1:
+          db = _context5.v;
+          _context5.n = 2;
+          return getItem(db, items_STORE_NAME, id);
+        case 2:
+          result = _context5.v;
+          console.log('[Items] getCredentialFromVaultDb success:', result ? 'Credential found' : 'Credential not found');
+          return _context5.a(2, result);
+      }
+    }, _callee5);
+  }));
+  return _getCredentialFromVaultDb.apply(this, arguments);
+}
+function getCredentialsByDomainFromVaultDb(_x5) {
+  return _getCredentialsByDomainFromVaultDb.apply(this, arguments);
+}
+
+// Create a credential: encrypt, store in Firestore, then add to IndexedDB if successful.
+function _getCredentialsByDomainFromVaultDb() {
+  _getCredentialsByDomainFromVaultDb = items_asyncToGenerator(/*#__PURE__*/items_regenerator().m(function _callee6(domain) {
+    var allCreds, pageDomain, filtered, _t3;
+    return items_regenerator().w(function (_context6) {
+      while (1) switch (_context6.n) {
+        case 0:
+          console.log('[Items] Getting credentials by domain from vault DB:', domain);
+          _context6.n = 1;
+          return getAllCredentialsFromVaultDb();
+        case 1:
+          allCreds = _context6.v;
+          if (!(!allCreds || allCreds.length === 0 && firebase_auth.currentUser)) {
+            _context6.n = 5;
+            break;
+          }
+          _context6.p = 2;
+          _context6.n = 3;
+          return items_refreshCredentialsInVaultDb(firebase_auth.currentUser);
+        case 3:
+          allCreds = _context6.v;
+          _context6.n = 5;
+          break;
+        case 4:
+          _context6.p = 4;
+          _t3 = _context6.v;
+          allCreds = [];
+        case 5:
+          pageDomain = getRegisteredDomain(domain).toLowerCase();
+          filtered = allCreds.filter(function (cred) {
             // 1. Try URL match if url is non-empty
             if (cred.url && cred.url.trim() !== '') {
-                try {
-                    const credUrl = new URL(cred.url.startsWith('http') ? cred.url : 'https://' + cred.url);
-                    const credDomain = getRegisteredDomain(credUrl.hostname).toLowerCase();
-                    if (pageDomain.endsWith(credDomain) || credDomain.endsWith(pageDomain)) {
-                        return true;
-                    }
+              try {
+                var credUrl = new URL(cred.url.startsWith('http') ? cred.url : 'https://' + cred.url);
+                var credDomain = getRegisteredDomain(credUrl.hostname).toLowerCase();
+                if (pageDomain.endsWith(credDomain) || credDomain.endsWith(pageDomain)) {
+                  return true;
                 }
-                catch (_a) {
-                    if (cred.url.toLowerCase().includes(pageDomain) ||
-                        pageDomain.includes(cred.url.toLowerCase())) {
-                        return true;
-                    }
+              } catch (_unused3) {
+                if (cred.url.toLowerCase().includes(pageDomain) || pageDomain.includes(cred.url.toLowerCase())) {
+                  return true;
                 }
-                // If url is present but does not match, fall back to title match
-                if (cred.title) {
-                    const title = cred.title.toLowerCase();
-                    if (title.includes(pageDomain) || pageDomain.includes(title)) {
-                        return true;
-                    }
+              }
+              // If url is present but does not match, fall back to title match
+              if (cred.title) {
+                var title = cred.title.toLowerCase();
+                if (title.includes(pageDomain) || pageDomain.includes(title)) {
+                  return true;
                 }
-                return false;
+              }
+              return false;
             }
             // 2. If url is empty, match by title (case-insensitive, substring or reverse)
             if (cred.title) {
-                const title = cred.title.toLowerCase();
-                if (title.includes(pageDomain) || pageDomain.includes(title)) {
-                    return true;
-                }
+              var _title = cred.title.toLowerCase();
+              if (_title.includes(pageDomain) || pageDomain.includes(_title)) {
+                return true;
+              }
             }
             return false;
-        });
-        console.log('[Items] getCredentialsByDomainFromVaultDb success:', filtered.length, 'credentials found for domain:', domain);
-        return filtered;
-    });
+          });
+          console.log('[Items] getCredentialsByDomainFromVaultDb success:', filtered.length, 'credentials found for domain:', domain);
+          return _context6.a(2, filtered);
+      }
+    }, _callee6, null, [[2, 4]]);
+  }));
+  return _getCredentialsByDomainFromVaultDb.apply(this, arguments);
 }
-// Create a credential: encrypt, store in Firestore, then add to IndexedDB if successful.
-function createCredential(cred) {
-    return items_awaiter(this, void 0, void 0, function* () {
-        const userSecretKey = yield getUserSecretKey();
-        const user = auth.currentUser;
-        if (!userSecretKey || !user)
-            throw new Error('User not authenticated');
-        // 1. Encrypt the credential
-        const encrypted = yield encryptCredential(userSecretKey, cred);
-        // 2. Store in Firestore
-        const docRef = yield createCredentialInFirestore(user.uid, encrypted);
-        // 3. Add to IndexedDB
-        const db = yield openDB(items_DB_NAME, items_DB_VERSION);
-        // Use the docRef.id as the key
-        const credForIndexDb = {
+function createCredential(_x6) {
+  return _createCredential.apply(this, arguments);
+}
+
+// Update a credential: encrypt, update in Firestore, then update in IndexedDB if successful.
+function _createCredential() {
+  _createCredential = items_asyncToGenerator(/*#__PURE__*/items_regenerator().m(function _callee7(cred) {
+    var userSecretKey, user, encrypted, docRef, db, credForIndexDb;
+    return items_regenerator().w(function (_context7) {
+      while (1) switch (_context7.n) {
+        case 0:
+          _context7.n = 1;
+          return getUserSecretKey();
+        case 1:
+          userSecretKey = _context7.v;
+          user = auth.currentUser;
+          if (!(!userSecretKey || !user)) {
+            _context7.n = 2;
+            break;
+          }
+          throw new Error('User not authenticated');
+        case 2:
+          _context7.n = 3;
+          return encryptCredential(userSecretKey, cred);
+        case 3:
+          encrypted = _context7.v;
+          _context7.n = 4;
+          return createCredentialInFirestore(user.uid, encrypted);
+        case 4:
+          docRef = _context7.v;
+          _context7.n = 5;
+          return openDB(items_DB_NAME, items_DB_VERSION);
+        case 5:
+          db = _context7.v;
+          // Use the docRef.id as the key
+          credForIndexDb = {
             id: docRef.id,
             url: cred.url,
             title: cred.title,
             username: cred.username,
             itemKeyCipher: encryptData(userSecretKey, cred.itemKey),
             passwordCipher: encryptData(cred.itemKey, cred.password),
-            note: cred.note || '',
-        };
-        yield putItem(db, items_STORE_NAME, credForIndexDb.id, credForIndexDb);
-    });
+            note: cred.note || ''
+          };
+          _context7.n = 6;
+          return putItem(db, items_STORE_NAME, credForIndexDb.id, credForIndexDb);
+        case 6:
+          return _context7.a(2);
+      }
+    }, _callee7);
+  }));
+  return _createCredential.apply(this, arguments);
 }
-// Update a credential: encrypt, update in Firestore, then update in IndexedDB if successful.
-function updateCredential(credentialId, cred) {
-    return items_awaiter(this, void 0, void 0, function* () {
-        const userSecretKey = yield getUserSecretKey();
-        const user = auth.currentUser;
-        if (!userSecretKey || !user)
-            throw new Error('User not authenticated');
-        // 1. Encrypt the credential
-        const encrypted = yield encryptCredential(userSecretKey, cred);
-        // 2. Update in Firestore
-        yield updateCredentialInFirestore(user.uid, credentialId, encrypted);
-        // 3. Update in IndexedDB
-        const db = yield openDB(items_DB_NAME, items_DB_VERSION);
-        const credForIndexDb = {
+function updateCredential(_x7, _x8) {
+  return _updateCredential.apply(this, arguments);
+}
+
+// Delete a credential: remove from Firestore, then from IndexedDB if successful.
+function _updateCredential() {
+  _updateCredential = items_asyncToGenerator(/*#__PURE__*/items_regenerator().m(function _callee8(credentialId, cred) {
+    var userSecretKey, user, encrypted, db, credForIndexDb;
+    return items_regenerator().w(function (_context8) {
+      while (1) switch (_context8.n) {
+        case 0:
+          _context8.n = 1;
+          return getUserSecretKey();
+        case 1:
+          userSecretKey = _context8.v;
+          user = auth.currentUser;
+          if (!(!userSecretKey || !user)) {
+            _context8.n = 2;
+            break;
+          }
+          throw new Error('User not authenticated');
+        case 2:
+          _context8.n = 3;
+          return encryptCredential(userSecretKey, cred);
+        case 3:
+          encrypted = _context8.v;
+          _context8.n = 4;
+          return updateCredentialInFirestore(user.uid, credentialId, encrypted);
+        case 4:
+          _context8.n = 5;
+          return openDB(items_DB_NAME, items_DB_VERSION);
+        case 5:
+          db = _context8.v;
+          credForIndexDb = {
             id: credentialId,
             url: cred.url,
             title: cred.title,
             username: cred.username,
             itemKeyCipher: encryptData(userSecretKey, cred.itemKey),
             passwordCipher: encryptData(cred.itemKey, cred.password),
-            note: cred.note || '',
-        };
-        yield putItem(db, items_STORE_NAME, credForIndexDb.id, credForIndexDb);
-    });
+            note: cred.note || ''
+          };
+          _context8.n = 6;
+          return putItem(db, items_STORE_NAME, credForIndexDb.id, credForIndexDb);
+        case 6:
+          return _context8.a(2);
+      }
+    }, _callee8);
+  }));
+  return _updateCredential.apply(this, arguments);
 }
-// Delete a credential: remove from Firestore, then from IndexedDB if successful.
-function deleteCredential(credentialId) {
-    return items_awaiter(this, void 0, void 0, function* () {
-        const user = auth.currentUser;
-        if (!user)
-            throw new Error('User not authenticated');
-        // 1. Delete from Firestore
-        yield deleteCredentialInFirestore(user.uid, credentialId);
-        // 2. Delete from IndexedDB
-        const db = yield openDB(items_DB_NAME, items_DB_VERSION);
-        yield deleteItem(db, items_STORE_NAME, credentialId);
-    });
+function deleteCredential(_x9) {
+  return _deleteCredential.apply(this, arguments);
 }
+function _deleteCredential() {
+  _deleteCredential = items_asyncToGenerator(/*#__PURE__*/items_regenerator().m(function _callee9(credentialId) {
+    var user, db;
+    return items_regenerator().w(function (_context9) {
+      while (1) switch (_context9.n) {
+        case 0:
+          user = auth.currentUser;
+          if (user) {
+            _context9.n = 1;
+            break;
+          }
+          throw new Error('User not authenticated');
+        case 1:
+          _context9.n = 2;
+          return deleteCredentialInFirestore(user.uid, credentialId);
+        case 2:
+          _context9.n = 3;
+          return openDB(items_DB_NAME, items_DB_VERSION);
+        case 3:
+          db = _context9.v;
+          _context9.n = 4;
+          return deleteItem(db, items_STORE_NAME, credentialId);
+        case 4:
+          return _context9.a(2);
+      }
+    }, _callee9);
+  }));
+  return _deleteCredential.apply(this, arguments);
+}
+;// ./packages/extension/background.ts
+function background_regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return background_regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (background_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, background_regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, background_regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), background_regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", background_regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), background_regeneratorDefine2(u), background_regeneratorDefine2(u, o, "Generator"), background_regeneratorDefine2(u, n, function () { return this; }), background_regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (background_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function background_regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } background_regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { var o = function o(r, n) { background_regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); }; o("next", 0), o("throw", 1), o("return", 2); } }, background_regeneratorDefine2(e, r, n, t); }
+function background_asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function background_asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { background_asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { background_asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 
-;// ./src/background/index.ts
-var background_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 
 
 
 /**
  * Stores page info per tab.
  */
-const pageState = {};
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    // Do not initialize Firebase on every message
-    var _a;
-    // Store page info
-    if (msg.type === 'PAGE_INFO' && ((_a = sender.tab) === null || _a === void 0 ? void 0 : _a.id) != null) {
-        pageState[sender.tab.id] = { url: msg.url, domain: msg.domain, hasLoginForm: msg.hasLoginForm };
-    }
-    // Popup requests current page state
-    if (msg.type === 'GET_PAGE_STATE' && msg.tabId != null) {
-        sendResponse(pageState[msg.tabId] || null);
-        return true;
-    }
-    // Popup requests credential injection
-    if (msg.type === 'INJECT_CREDENTIAL' &&
-        msg.credentialId &&
-        sender.tab &&
-        typeof sender.tab.id === 'number') {
-        getCredentialFromVaultDb(msg.credentialId).then((cred) => background_awaiter(void 0, void 0, void 0, function* () {
-            if (cred) {
-                // Decrypt password
-                const userSecretKey = yield user_getUserSecretKey();
-                if (!userSecretKey) {
-                    sendResponse({ success: false, error: 'User secret key not found' });
-                    return;
-                }
-                const itemKey = yield decryptData(userSecretKey, cred.itemKeyCipher);
-                const password = yield decryptData(itemKey, cred.passwordCipher);
-                const tabId = sender.tab && typeof sender.tab.id === 'number' ? sender.tab.id : undefined;
-                if (tabId !== undefined) {
-                    chrome.tabs.sendMessage(tabId, {
-                        type: 'INJECT_CREDENTIAL',
-                        username: cred.username,
-                        password,
-                    });
-                    sendResponse({ success: true });
-                }
-                else {
-                    sendResponse({ success: false, error: 'Tab ID not found' });
-                }
-            }
-            else {
-                sendResponse({ success: false });
-            }
-        }));
-        return true;
-    }
-    // Handle in-page picker credential request
-    if (msg.type === 'GET_CACHED_CREDENTIALS' && msg.domain) {
-        getCredentialsByDomainFromVaultDb(msg.domain).then((creds) => {
-            sendResponse(creds);
-        });
-        return true; // async
-    }
-    // Handle user secret key request from content script
-    if (msg.type === 'GET_USER_SECRET_KEY') {
-        user_getUserSecretKey()
-            .then((key) => {
-            sendResponse({ key });
-        })
-            .catch(() => {
-            sendResponse({ key: null });
-        });
-        return true;
-    }
-});
-chrome.tabs.onActivated.addListener((activeInfo) => {
-    const tabId = activeInfo.tabId;
-    if (!pageState[tabId]) {
-        // Ask the content script to send page info
-        chrome.scripting.executeScript({
-            target: { tabId },
-            func: () => {
-                const domain = window.location.hostname;
-                const hasLogin = !!document.querySelector('form input[type="password"]');
-                chrome.runtime.sendMessage({ type: 'PAGE_INFO', domain, hasLogin });
-            },
-        });
-    }
-});
+var pageState = {};
+chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+  var _sender$tab;
+  // Do not initialize Firebase on every message
 
+  // Store page info
+  if (msg.type === 'PAGE_INFO' && ((_sender$tab = sender.tab) === null || _sender$tab === void 0 ? void 0 : _sender$tab.id) != null) {
+    pageState[sender.tab.id] = {
+      url: msg.url,
+      domain: msg.domain,
+      hasLoginForm: msg.hasLoginForm
+    };
+  }
+
+  // Popup requests current page state
+  if (msg.type === 'GET_PAGE_STATE' && msg.tabId != null) {
+    sendResponse(pageState[msg.tabId] || null);
+    return true;
+  }
+
+  // Popup requests credential injection
+  if (msg.type === 'INJECT_CREDENTIAL' && msg.credentialId && sender.tab && typeof sender.tab.id === 'number') {
+    getCredentialFromVaultDb(msg.credentialId).then(/*#__PURE__*/function () {
+      var _ref = background_asyncToGenerator(/*#__PURE__*/background_regenerator().m(function _callee(cred) {
+        var userSecretKey, itemKey, password, tabId;
+        return background_regenerator().w(function (_context) {
+          while (1) switch (_context.n) {
+            case 0:
+              if (!cred) {
+                _context.n = 5;
+                break;
+              }
+              _context.n = 1;
+              return user_getUserSecretKey();
+            case 1:
+              userSecretKey = _context.v;
+              if (userSecretKey) {
+                _context.n = 2;
+                break;
+              }
+              sendResponse({
+                success: false,
+                error: 'User secret key not found'
+              });
+              return _context.a(2);
+            case 2:
+              _context.n = 3;
+              return decryptData(userSecretKey, cred.itemKeyCipher);
+            case 3:
+              itemKey = _context.v;
+              _context.n = 4;
+              return decryptData(itemKey, cred.passwordCipher);
+            case 4:
+              password = _context.v;
+              tabId = sender.tab && typeof sender.tab.id === 'number' ? sender.tab.id : undefined;
+              if (tabId !== undefined) {
+                chrome.tabs.sendMessage(tabId, {
+                  type: 'INJECT_CREDENTIAL',
+                  username: cred.username,
+                  password: password
+                });
+                sendResponse({
+                  success: true
+                });
+              } else {
+                sendResponse({
+                  success: false,
+                  error: 'Tab ID not found'
+                });
+              }
+              _context.n = 6;
+              break;
+            case 5:
+              sendResponse({
+                success: false
+              });
+            case 6:
+              return _context.a(2);
+          }
+        }, _callee);
+      }));
+      return function (_x) {
+        return _ref.apply(this, arguments);
+      };
+    }());
+    return true;
+  }
+
+  // Handle in-page picker credential request
+  if (msg.type === 'GET_CACHED_CREDENTIALS' && msg.domain) {
+    getCredentialsByDomainFromVaultDb(msg.domain).then(function (creds) {
+      sendResponse(creds);
+    });
+    return true; // async
+  }
+
+  // Handle user secret key request from content script
+  if (msg.type === 'GET_USER_SECRET_KEY') {
+    user_getUserSecretKey().then(function (key) {
+      sendResponse({
+        key: key
+      });
+    })["catch"](function () {
+      sendResponse({
+        key: null
+      });
+    });
+    return true;
+  }
+});
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+  var tabId = activeInfo.tabId;
+  if (!pageState[tabId]) {
+    // Ask the content script to send page info
+    chrome.scripting.executeScript({
+      target: {
+        tabId: tabId
+      },
+      func: function func() {
+        var domain = window.location.hostname;
+        var hasLogin = !!document.querySelector('form input[type="password"]');
+        chrome.runtime.sendMessage({
+          type: 'PAGE_INFO',
+          domain: domain,
+          hasLogin: hasLogin
+        });
+      }
+    });
+  }
+});
 /******/ })()
 ;
 //# sourceMappingURL=background.js.map

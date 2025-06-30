@@ -8,10 +8,10 @@ module.exports = {
   mode: 'development',
   devtool: 'source-map',
   entry: {
-    background: './src/background/index.ts',
-    popup: './src/popup/Popup.tsx',
-    content: './src/content/content-script.ts',
-    'src/content/popovers/PopoverCredentialPicker': './src/content/popovers/PopoverCredentialPicker.tsx',
+    background: './packages/extension/background.ts',
+    popup: './packages/extension/index.ts',
+    content: './packages/extension/content.ts',
+    'src/content/popovers/PopoverCredentialPicker': './packages/extension/PopoverCredentialPicker.tsx',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -25,7 +25,7 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: 'babel-loader',
         exclude: /node_modules/,
       },
       {
@@ -51,10 +51,20 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.json'],
+    extensions: ['.web.ts', '.web.tsx', '.ts', '.tsx', '.js', '.json'],
     plugins: [new TsconfigPathsPlugin()],
     alias: {
-      'tokens.css': path.resolve(__dirname, 'src/styles/tokens.css'),
+      'react-native$': 'react-native-web',
+      '@app': path.resolve(__dirname, 'packages/app'),
+      '@design': path.resolve(__dirname, 'packages/app/design'),
+      '@components': path.resolve(__dirname, 'packages/app/components'),
+      '@screens': path.resolve(__dirname, 'packages/app/screens'),
+      '@hooks': path.resolve(__dirname, 'packages/app/hooks'),
+      '@utils': path.resolve(__dirname, 'packages/app/utils'),
+      '@logic': path.resolve(__dirname, 'packages/app/logic'),
+      '@shared': path.resolve(__dirname, 'packages/shared'),
+      '@extension': path.resolve(__dirname, 'packages/extension'),
+      '@mobile': path.resolve(__dirname, 'packages/mobile'),
     },
   },
   plugins: [
@@ -64,14 +74,12 @@ module.exports = {
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'manifest.json', to: '.' },
-        { from: 'src/popup/popup.html', to: '.' },
-        { from: 'src/popup/popup.css', to: '.' },
-        { from: 'assets/icons', to: 'assets/icons' },
-        { from: 'src/styles/tokens.css', to: '.' },
-        // Only copy HTML and CSS for popover
-        { from: 'src/content/popovers/PopoverCredentialPicker.html', to: 'src/content/popovers/PopoverCredentialPicker.html' },
-        { from: 'src/content/popovers/PopoverCredentialPicker.css', to: 'src/content/popovers/PopoverCredentialPicker.css' },
+        { from: 'packages/extension/public/manifest.json', to: '.' },
+        { from: 'packages/extension/popup/popup.html', to: '.' },
+        { from: 'packages/extension/popup/popup.css', to: '.' },
+        { from: 'packages/extension/public/icons', to: 'assets/icons' },
+        { from: 'packages/extension/PopoverCredentialPicker.html', to: 'src/content/popovers/PopoverCredentialPicker.html' },
+        { from: 'packages/extension/PopoverCredentialPicker.css', to: 'src/content/popovers/PopoverCredentialPicker.css' },
       ],
     }),
   ],

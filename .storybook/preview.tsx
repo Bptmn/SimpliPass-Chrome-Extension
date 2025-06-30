@@ -1,27 +1,36 @@
-import '../src/styles/tokens.css';
 import React from 'react';
-import { ToastProvider } from '../src/popup/components/Toast';
-import '../src/styles/common.css';
+import { ToastProvider } from '../packages/app/components/Toast';
 
+export const parameters = {
+  actions: { argTypesRegex: '^on[A-Z].*' },
+  controls: {
+    matchers: {
+      color: /(background|color)$/i,
+      date: /Date$/,
+    },
+  },
+  backgrounds: {
+    default: 'light',
+    values: [
+      {
+        name: 'light',
+        value: '#ffffff',
+      },
+      {
+        name: 'dark',
+        value: '#333333',
+      },
+    ],
+  },
+};
+
+// Global decorator to wrap stories in ToastProvider only
 export const decorators = [
-  (Story: React.FC) => (
-    <div
-      style={{
-        width: 350,
-        height: 550,
-        minWidth: 350,
-        minHeight: 550,
-        margin: 0,
-        padding: 0,
-        overflow: 'hidden',
-        background: 'var(--primary-background)',
-        boxSizing: 'border-box',
-        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
-      }}
-    >
-      <ToastProvider>
+  (Story) => (
+    <ToastProvider>
+      <div style={{ padding: 20, backgroundColor: '#ffffff' }}>
         <Story />
-      </ToastProvider>
-    </div>
+      </div>
+    </ToastProvider>
   ),
 ]; 
