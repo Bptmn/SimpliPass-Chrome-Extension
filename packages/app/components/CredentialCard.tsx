@@ -4,12 +4,10 @@
 
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { CredentialFromVaultDb } from '@shared/types';
-import { decryptData } from '@utils/crypto';
-import { getUserSecretKey } from '@logic/user';
+import { CredentialDecrypted } from '@app/core/types/types';
 import CopyButton from './CopyButton';
 import { colors } from '@design/colors';
-import { layout, padding, radius, spacing } from '@design/layout';
+import { layout, radius, spacing } from '@design/layout';
 
 // Minimal RN-compatible LazyCredentialIcon
 const LazyCredentialIcon: React.FC<{ title: string; url?: string }> = ({ title }) => (
@@ -27,7 +25,7 @@ const ErrorBanner: React.FC<{ message: string }> = ({ message }) => (
 );
 
 interface CredentialCardProps {
-  cred: CredentialFromVaultDb;
+  cred: CredentialDecrypted;
   onClick?: () => void;
   hideCopyBtn?: boolean;
   onCopy?: () => void;
@@ -44,11 +42,8 @@ const CredentialCardComponent: React.FC<CredentialCardProps> = ({
   // Handles copying the password to clipboard
   const handleCopy = async () => {
     try {
-      const userSecretKey = await getUserSecretKey();
-      if (!userSecretKey) throw new Error('User secret key not found');
-      const itemKey = await decryptData(userSecretKey, cred.itemKeyCipher);
-      const password = await decryptData(itemKey, cred.passwordCipher);
-      await navigator.clipboard.writeText(password);
+      // Password is already decrypted in the new architecture
+      await navigator.clipboard.writeText(cred.password);
       if (onCopy) onCopy();
     } catch {
       setError('Erreur lors de la copie du mot de passe.');
@@ -72,7 +67,7 @@ const CredentialCardComponent: React.FC<CredentialCardProps> = ({
           </View>
         </View>
         {!hideCopyBtn && (
-          <CopyButton textToCopy={''} onClick={handleCopy} />
+          <CopyButton textToCopy={cred.password} onClick={handleCopy} />
         )}
       </Pressable>
     </>

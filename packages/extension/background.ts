@@ -1,7 +1,7 @@
-import { getCredentialsByDomainFromVaultDb, getCredentialFromVaultDb } from '@logic/items';
-import { PageState, CredentialFromVaultDb } from '@shared/types';
-import { decryptData } from '@utils/crypto';
-import { getUserSecretKey } from '@logic/user';
+import { getItemById, getAllItems } from '@app/core/logic/items';
+import { PageState } from '@app/core/types/types';
+import { getUserSecretKey } from '@app/core/logic/user';
+
 
 /**
  * Stores page info per tab.
@@ -29,39 +29,75 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     sender.tab &&
     typeof sender.tab.id === 'number'
   ) {
-    getCredentialFromVaultDb(msg.credentialId).then(async (cred: CredentialFromVaultDb | null) => {
-      if (cred) {
-        // Decrypt password
+    (async () => {
+      try {
         const userSecretKey = await getUserSecretKey();
         if (!userSecretKey) {
           sendResponse({ success: false, error: 'User secret key not found' });
           return;
         }
-        const itemKey = await decryptData(userSecretKey, cred.itemKeyCipher);
-        const password = await decryptData(itemKey, cred.passwordCipher);
-        const tabId = sender.tab && typeof sender.tab.id === 'number' ? sender.tab.id : undefined;
-        if (tabId !== undefined) {
-          chrome.tabs.sendMessage(tabId, {
-            type: 'INJECT_CREDENTIAL',
-            username: cred.username,
-            password,
-          });
-          sendResponse({ success: true });
-        } else {
-          sendResponse({ success: false, error: 'Tab ID not found' });
+
+        // Get user ID
+        const { auth } = await import('@app/core/auth/auth.adapter');
+        const currentUser = await auth.getCurrentUser();
+        if (!currentUser) {
+          sendResponse({ success: false, error: 'User not authenticated' });
+          return;
         }
-      } else {
-        sendResponse({ success: false });
+
+        const cred = await getItemById(currentUser.uid, msg.credentialId, userSecretKey);
+        if (cred && 'username' in cred) {
+          // It's a credential
+          const tabId = sender.tab && typeof sender.tab.id === 'number' ? sender.tab.id : undefined;
+          if (tabId !== undefined) {
+            chrome.tabs.sendMessage(tabId, {
+              type: 'INJECT_CREDENTIAL',
+              username: cred.username,
+              password: cred.password,
+            });
+            sendResponse({ success: true });
+          } else {
+            sendResponse({ success: false, error: 'Tab ID not found' });
+          }
+        } else {
+          sendResponse({ success: false, error: 'Credential not found' });
+        }
+      } catch (error) {
+        sendResponse({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
       }
-    });
+    })();
     return true;
   }
 
   // Handle in-page picker credential request
   if (msg.type === 'GET_CACHED_CREDENTIALS' && msg.domain) {
-    getCredentialsByDomainFromVaultDb(msg.domain).then((creds) => {
-      sendResponse(creds);
-    });
+    (async () => {
+      try {
+        const userSecretKey = await getUserSecretKey();
+        if (!userSecretKey) {
+          sendResponse([]);
+          return;
+        }
+
+        // Get user ID (we'll need to get this from auth adapter)
+        const { auth } = await import('@app/core/auth/auth.adapter');
+        const currentUser = await auth.getCurrentUser();
+        if (!currentUser) {
+          sendResponse([]);
+          return;
+        }
+
+        const allItems = await getAllItems(currentUser.uid, userSecretKey);
+        // Filter credentials for this domain
+        const domainCredentials = allItems.filter(item => 
+          'username' in item && item.url && item.url.includes(msg.domain)
+        );
+        sendResponse(domainCredentials);
+      } catch (error) {
+        console.error('Error getting cached credentials:', error);
+        sendResponse([]);
+      }
+    })();
     return true; // async
   }
 

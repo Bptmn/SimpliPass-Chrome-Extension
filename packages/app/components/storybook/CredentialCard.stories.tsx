@@ -1,6 +1,6 @@
 import React from 'react';
 import { CredentialCard } from '../CredentialCard';
-import { CredentialFromVaultDb } from '@shared/types';
+import { CredentialFromVaultDb } from '@app/core/types/types';
 
 export default {
   title: 'Components/CredentialCard',

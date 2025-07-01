@@ -24,8 +24,8 @@ import PopupLayout from '@components/PopupLayout';
 
 // Import config and services
 import { config } from '@extension/config/config';
-import { auth } from '@logic/firebase';
-import { PageState, CredentialMeta } from '@shared/types';
+import { auth } from '@app/core/auth/auth.adapter';
+import { PageState } from '@app/core/types/types';
 import { ToastProvider } from '@components/Toast';
 
 Amplify.configure({ Auth: { Cognito: config.Cognito } });
@@ -33,12 +33,11 @@ Amplify.configure({ Auth: { Cognito: config.Cognito } });
 export const PopupApp: React.FC = () => {
   console.log('PopupApp component rendering...');
 
-  // State for user, loading, error, page info, and credential suggestions
-  const [user, setUser] = useState<typeof auth.currentUser | null>(null);
+  // State for user, loading, error, and page info
+  const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pageState, setPageState] = useState<PageState | null>(null);
-  const [suggestions] = useState<CredentialMeta[]>([]);
 
   useEffect(() => {
     console.log('PopupApp useEffect running...');
@@ -65,31 +64,22 @@ export const PopupApp: React.FC = () => {
       );
     });
 
-    // Listen for authentication state changes
-    try {
-      console.log('Setting up auth state listener...');
-      const unsubscribe = auth.onAuthStateChanged(
-        (u) => {
-          console.log('Auth state changed:', u);
-          setUser(u);
-          setIsLoading(false);
-        },
-        (error) => {
-          console.error('Auth state change error:', error);
-          setError(error.message);
-          setIsLoading(false);
-        },
-      );
+    // Check authentication state
+    const checkAuthState = async () => {
+      try {
+        console.log('Checking auth state...');
+        const currentUser = await auth.getCurrentUser();
+        console.log('Auth state checked:', currentUser);
+        setUser(currentUser);
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Auth check error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to check authentication');
+        setIsLoading(false);
+      }
+    };
 
-      return () => {
-        console.log('Cleaning up auth state listener...');
-        unsubscribe();
-      };
-    } catch (err) {
-      console.error('Firebase initialization error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to initialize Firebase');
-      setIsLoading(false);
-    }
+    checkAuthState();
   }, []);
 
   console.log('Current render state:', { isLoading, error, user });
@@ -150,7 +140,6 @@ export const PopupApp: React.FC = () => {
                   <HomePage
                     user={user}
                     pageState={pageState}
-                    suggestions={suggestions}
                     onInjectCredential={handleInjectCredential}
                   />
                 }

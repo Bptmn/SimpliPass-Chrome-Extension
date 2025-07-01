@@ -1,6 +1,6 @@
 import React from 'react';
 import { CredentialDetailsPage } from '../CredentialDetailsPage';
-import { CredentialDecrypted } from '@shared/types';
+import { CredentialDecrypted } from '@app/core/types/types';
 import { MemoryRouter } from 'react-router-dom';
 
 export default {

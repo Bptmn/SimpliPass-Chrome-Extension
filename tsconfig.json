@@ -27,7 +27,7 @@
       "@screens/*": ["packages/app/screens/*"],
       "@hooks/*": ["packages/app/hooks/*"],
       "@utils/*": ["packages/app/utils/*"],
-      "@logic/*": ["packages/app/logic/*"],
+      "@logic/*": ["packages/app/core/logic/*"],
       "@shared/*": ["packages/shared/*"],
       "@extension/*": ["packages/extension/*"],
       "@mobile/*": ["packages/mobile/*"]

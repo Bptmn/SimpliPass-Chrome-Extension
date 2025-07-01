@@ -7,6 +7,7 @@ import './popup/popup.css';
 import { PopupApp } from './popup/PopupApp';
 import { ErrorBoundary } from '../app/components/ErrorBoundary';
 import { UserProvider } from '../app/hooks/useUser';
+import { initStorage } from '../app/core/database/localDB';
 
 const initializeApp = () => {
   console.log('Initializing Chrome extension app...');
@@ -46,10 +47,23 @@ const initializeApp = () => {
   }
 };
 
+const startApp = async () => {
+  try {
+    await initStorage();
+    initializeApp();
+  } catch (e) {
+    const rootElement = document.getElementById('root');
+    if (rootElement) {
+      rootElement.innerHTML = `<div style='color: red; padding: 20px;'><h2>Fatal Error Initializing Storage</h2><pre>${e instanceof Error ? e.message : String(e)}</pre></div>`;
+    }
+    console.error('Failed to initialize storage:', e);
+  }
+};
+
 if (document.readyState === 'loading') {
   console.log('Document still loading, waiting for DOMContentLoaded...');
-  document.addEventListener('DOMContentLoaded', initializeApp);
+  document.addEventListener('DOMContentLoaded', startApp);
 } else {
   console.log('Document already loaded, initializing immediately...');
-  initializeApp();
+  startApp();
 } 

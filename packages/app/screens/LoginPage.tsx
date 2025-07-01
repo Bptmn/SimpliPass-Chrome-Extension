@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { EmailConfirmationPage } from './EmailConfirmationPage';
-import { loginUser, confirmMfa } from '@logic/user';
+import { loginUser, confirmMfa } from '@app/core/logic/user';
 import { Input } from '../components/InputVariants';
 import { colors } from '@design/colors';
 import { layout, radius, spacing } from '@design/layout';

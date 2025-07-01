@@ -5,7 +5,7 @@
 import React, { useState, Suspense } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useUser } from '@hooks/useUser';
-import { logoutUser } from '@logic/user';
+import { logoutUser } from '@app/core/logic/user';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
 import { Toast, useToast } from '../components/Toast';

@@ -10,8 +10,9 @@ import { useNavigate } from 'react-router-dom';
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 
 import { Icon } from './Icon';
-import { refreshCredentialsInVaultDb } from '@logic/items';
-import { auth } from '@logic/firebase';
+import { refreshItems } from '@app/core/logic/items';
+import { auth } from '@app/core/auth/auth.adapter';
+import { getUserSecretKey } from '@app/core/logic/user';
 import { colors } from '@design/colors';
 import { layout, padding, radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
@@ -32,9 +33,13 @@ export const HelperBar: React.FC = () => {
 
   // Handler for the refresh button (uses business logic)
   const handleRefresh = async () => {
-    if (auth.currentUser) {
-      await refreshCredentialsInVaultDb(auth.currentUser);
-      window.location.reload();
+    const currentUser = await auth.getCurrentUser();
+    if (currentUser) {
+      const userSecretKey = await getUserSecretKey();
+      if (userSecretKey) {
+        await refreshItems(currentUser.uid, userSecretKey);
+        window.location.reload();
+      }
     } else {
       console.log('No user logged in, cannot refresh cache');
     }

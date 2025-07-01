@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useUser } from '@hooks/useUser';
 import { passwordGenerator } from '@utils/passwordGenerator';
-import { createCredential } from '@logic/items';
-import { CredentialDecrypted } from '@shared/types';
+import { addItem } from '@app/core/logic/items';
+import { getUserSecretKey } from '@app/core/logic/user';
+import { CredentialDecrypted } from '@app/core/types/types';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
 import Toast, { useToast } from '../components/Toast';
@@ -42,10 +43,20 @@ export const AddCredentialPage: React.FC<AddCredentialPageProps> = ({ link = '',
   };
 
   const handleSubmit = async () => {
+    if (!user) {
+      setError('Utilisateur non connecté');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
-      const cred: CredentialDecrypted = {
+      const userSecretKey = await getUserSecretKey();
+      if (!userSecretKey) {
+        throw new Error('Clé de sécurité utilisateur introuvable');
+      }
+
+      const newCredential: Omit<CredentialDecrypted, 'id'> = {
         createdDateTime: new Date(),
         lastUseDateTime: new Date(),
         title,
@@ -54,9 +65,9 @@ export const AddCredentialPage: React.FC<AddCredentialPageProps> = ({ link = '',
         note,
         url,
         itemKey: generateItemKey(), // Generate a random itemKey
-        document_reference: null,
       };
-      await createCredential(cred);
+
+      await addItem(user.uid, userSecretKey, newCredential);
       showToast('Identifiant ajouté avec succès');
       setTimeout(() => {
         if (onSuccess) onSuccess();

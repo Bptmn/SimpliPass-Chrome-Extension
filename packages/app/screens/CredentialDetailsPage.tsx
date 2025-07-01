@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
-import { CredentialDecrypted } from '@shared/types';
+import { useNavigate } from 'react-router-dom';
+import { CredentialDecrypted } from '@app/core/types/types';
+import { deleteItem } from '@app/core/logic/items';
+import { useUser } from '@hooks/useUser';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
 import { LazyCredentialIcon } from '../components/LazyCredentialIcon';
@@ -18,9 +21,12 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   credential,
   onBack,
 }) => {
+  const navigate = useNavigate();
+  const user = useUser();
   const [showMeta, setShowMeta] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { toast, showToast } = useToast();
 
   const handleCopy = (value: string, label: string) => {
@@ -38,6 +44,35 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
       window.open(normalizedUrl, '_blank');
     } catch {
       setError("Erreur lors de l'ouverture du lien.");
+    }
+  };
+
+  const handleEdit = () => {
+    navigate('/modify-credential', { state: { credential } });
+  };
+
+  const handleDelete = async () => {
+    if (!user) {
+      setError('Utilisateur non connecté');
+      return;
+    }
+
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet identifiant ?')) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      await deleteItem(user.uid, credential.id);
+      showToast('Identifiant supprimé avec succès');
+      setTimeout(() => {
+        onBack();
+      }, 1200);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Erreur lors de la suppression.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -143,10 +178,20 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
 
           {/* Actions */}
           <View style={styles.actionsRow}>
-            <Pressable style={[styles.actionBtn, styles.editBtn]} accessibilityRole="button">
+            <Pressable 
+              style={[styles.actionBtn, styles.editBtn, loading ? styles.btnDisabled : null]} 
+              onPress={handleEdit}
+              disabled={loading}
+              accessibilityRole="button"
+            >
               <Text style={styles.actionBtnText}>Modifier</Text>
             </Pressable>
-            <Pressable style={[styles.actionBtn, styles.deleteBtn]} accessibilityRole="button">
+            <Pressable 
+              style={[styles.actionBtn, styles.deleteBtn, loading ? styles.btnDisabled : null]} 
+              onPress={handleDelete}
+              disabled={loading}
+              accessibilityRole="button"
+            >
               <Text style={styles.actionBtnText}>Supprimer</Text>
             </Pressable>
           </View>
@@ -327,6 +372,9 @@ const styles = StyleSheet.create({
   },
   deleteBtn: {
     backgroundColor: colors.error,
+  },
+  btnDisabled: {
+    backgroundColor: colors.disabled,
   },
   actionBtnText: {
     color: colors.white,

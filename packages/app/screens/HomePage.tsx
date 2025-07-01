@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@hooks/useUser';
-import { auth } from '@logic/firebase';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Platform } from 'react-native';
 
 import { CredentialDetailsPage } from './CredentialDetailsPage';
+import { getAllItems } from '@app/core/logic/items';
+import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@app/core/states';
 import {
-  getAllCredentialsFromVaultDbWithFallback,
-  getCredentialsByDomainFromVaultDb,
-} from '@logic/items';
-import {
-  CredentialFromVaultDb,
   HomePageProps,
   CredentialDecrypted,
-} from '@shared/types';
-import { decryptData } from '@utils/crypto';
-import { getUserSecretKey } from '@logic/user';
+} from '@app/core/types/types';
+import { getUserSecretKey } from '@app/core/logic/user';
 import { CredentialCard } from '../components/CredentialCard';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
@@ -45,14 +40,15 @@ function useDebouncedValue<T>(value: T, delay: number): T {
  */
 export const HomePage: React.FC<HomePageProps> = ({
   user: _userProp, // ignore this prop, use context
-  pageState,
-  suggestions: _suggestions,
+  pageState: _pageState,
   onInjectCredential: _onInjectCredential,
 }) => {
   const user = useUser();
-  // State for all credentials, domain suggestions, search filter, selected credential, error, and loading
-  const [allCreds, setAllCreds] = useState<CredentialFromVaultDb[]>([]);
-  const [domainSuggestions, setDomainSuggestions] = useState<CredentialFromVaultDb[]>([]);
+  const { credentials } = useCredentialsStore();
+  const { bankCards } = useBankCardsStore();
+  const { secureNotes } = useSecureNotesStore();
+  
+  // State for search filter, selected credential, error, and loading
   const [filter, setFilter] = useState('');
   const [selected, setSelected] = useState<CredentialDecrypted | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -60,17 +56,24 @@ export const HomePage: React.FC<HomePageProps> = ({
   const { toast, showToast } = useToast();
   const debouncedFilter = useDebouncedValue(filter, 250);
 
+  // Category state: 'credentials', 'bankCards', 'secureNotes'
+  const [category, setCategory] = useState<'credentials' | 'bankCards' | 'secureNotes'>('credentials');
+
+  // Debug logging
+  console.log('[HomePage] Render', { user, loading, credentials, bankCards, secureNotes });
+
   /**
-   * Fetch all cached credentials for the current user on mount or when user changes.
-   * Clears the cache and loads fresh credentials.
+   * Load items when user changes
    */
   useEffect(() => {
     if (!user) return;
     setLoading(true);
     (async () => {
       try {
-        const creds = await getAllCredentialsFromVaultDbWithFallback(auth.currentUser);
-        setAllCreds(creds);
+        const userSecretKey = await getUserSecretKey();
+        if (userSecretKey) {
+          await getAllItems(user.uid, userSecretKey);
+        }
       } catch {
         setError('Erreur lors du chargement des identifiants.');
       } finally {
@@ -79,55 +82,31 @@ export const HomePage: React.FC<HomePageProps> = ({
     })();
   }, [user]);
 
-  /**
-   * When the pageState (domain) changes, fetch domain-matching suggestions.
-   */
-  useEffect(() => {
-    (async () => {
-      if (!pageState?.domain || !user) {
-        setDomainSuggestions([]);
-        return;
-      }
-      try {
-        const suggestions = await getCredentialsByDomainFromVaultDb(pageState.domain);
-        setDomainSuggestions(suggestions);
-      } catch {
-        setError('Erreur lors de la récupération des suggestions.');
-        setDomainSuggestions([]);
-      }
-    })();
-  }, [pageState?.domain, user]);
-
-  // Filter credentials by search input (debounced)
-  const filtered = allCreds.filter((cred) =>
-    cred.title?.toLowerCase().includes(debouncedFilter.toLowerCase()),
-  );
+  // Filter items by search input (debounced) based on category
+  const getFilteredItems = () => {
+    const items = category === 'credentials' ? credentials : 
+                  category === 'bankCards' ? bankCards : 
+                  secureNotes;
+    
+    return items.filter((item) =>
+      item.title?.toLowerCase().includes(debouncedFilter.toLowerCase()),
+    );
+  };
 
   /**
    * Handles click on a credential card:
-   * - Decrypts the credential and shows the detail page
+   * - Shows the detail page with the decrypted credential
    */
-  const handleCardClick = async (cred: CredentialFromVaultDb) => {
-    try {
-      const userSecretKey = await getUserSecretKey();
-      if (!userSecretKey) throw new Error('User secret key not found');
-      const itemKey = await decryptData(userSecretKey, cred.itemKeyCipher);
-      const password = await decryptData(itemKey, cred.passwordCipher);
-      const decrypted: CredentialDecrypted = {
-        createdDateTime: new Date(),
-        lastUseDateTime: new Date(),
-        title: cred.title,
-        username: cred.username,
-        password,
-        note: cred.note || '',
-        url: cred.url,
-        itemKey,
-        document_reference: null,
-      };
-      setSelected(decrypted);
-    } catch {
-      setError("Erreur lors du déchiffrement de l'identifiant.");
-    }
+  const handleCardClick = (cred: CredentialDecrypted) => {
+    setSelected(cred);
+  };
+
+  /**
+   * Handles click on other item types (for now just logs)
+   */
+  const handleOtherItemClick = (item: any) => {
+    console.log('Item clicked:', item);
+    // TODO: Implement detail pages for bank cards and secure notes
   };
 
   // If a credential is selected, show the detail page
@@ -135,7 +114,8 @@ export const HomePage: React.FC<HomePageProps> = ({
     return <CredentialDetailsPage credential={selected} onBack={() => setSelected(null)} />;
   }
 
-  if (user === null) {
+  // Show loading spinner only if loading and user is null
+  if (loading && user === null) {
     return (
       <View style={styles.pageContainer}>
         <Text style={styles.loadingSpinner}>Chargement du profil utilisateur...</Text>
@@ -165,6 +145,28 @@ export const HomePage: React.FC<HomePageProps> = ({
         />
       </View>
 
+      {/* Category Row */}
+      <View style={styles.categoryRow}>
+        <Pressable
+          style={[styles.categoryBtn, category === 'credentials' && styles.categoryBtnActive]}
+          onPress={() => setCategory('credentials')}
+        >
+          <Text style={[styles.categoryBtnText, category === 'credentials' && styles.categoryBtnTextActive]}>*** Identifiants</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.categoryBtn, category === 'bankCards' && styles.categoryBtnActive]}
+          onPress={() => setCategory('bankCards')}
+        >
+          <Text style={[styles.categoryBtnText, category === 'bankCards' && styles.categoryBtnTextActive]}>Cartes bancaire</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.categoryBtn, category === 'secureNotes' && styles.categoryBtnActive]}
+          onPress={() => setCategory('secureNotes')}
+        >
+          <Text style={[styles.categoryBtnText, category === 'secureNotes' && styles.categoryBtnTextActive]}>Notes sécurisées</Text>
+        </Pressable>
+      </View>
+
       {/* Scrollable Content */}
       <ScrollView 
         style={styles.scrollView} 
@@ -172,48 +174,82 @@ export const HomePage: React.FC<HomePageProps> = ({
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.homeContent}>
-          {/* Suggestions for the current domain */}
-          <View style={styles.pageSection}>
-            <Text style={styles.sectionTitle}>Suggestions</Text>
-            <View style={styles.suggestionList}>
-              {loading ? (
-                <Text style={styles.emptyState}>Aucune suggestion pour cette page.</Text>
-              ) : domainSuggestions.length === 0 ? (
-                <Text style={styles.emptyState}>Aucune suggestion pour cette page.</Text>
-              ) : (
-                domainSuggestions.map((suggestion) => (
-                  <CredentialCard
-                    key={suggestion.id}
-                    cred={suggestion}
-                    hideCopyBtn={false}
-                    onCopy={() => showToast('Mot de passe copié !')}
-                    onClick={() => handleCardClick(suggestion)}
-                  />
-                ))
-              )}
+          {category === 'credentials' && (
+            <View style={styles.pageSection}>
+              <Text style={styles.sectionTitle}>Identifiants</Text>
+              <View style={styles.credentialList}>
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
+                ) : getFilteredItems().length === 0 ? (
+                  <Text style={styles.emptyState}>Aucun identifiant trouvé.</Text>
+                ) : (
+                  getFilteredItems().map((item) => {
+                    if ('username' in item) {
+                      return (
+                        <CredentialCard 
+                          key={item.id} 
+                          cred={item} 
+                          onCopy={() => showToast('Mot de passe copié !')}
+                          onClick={() => handleCardClick(item)}
+                        />
+                      );
+                    } else {
+                      return (
+                        <CredentialCard 
+                          key={item.id} 
+                          cred={item as any} 
+                          onCopy={() => showToast('Contenu copié !')}
+                          onClick={() => handleOtherItemClick(item)}
+                        />
+                      );
+                    }
+                  })
+                )}
+              </View>
             </View>
-          </View>
-
-          {/* All credentials section */}
-          <View style={styles.pageSection}>
-            <Text style={styles.sectionTitle}>Tous les identifiants</Text>
-            <View style={styles.credentialList}>
-              {loading ? (
-                Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
-              ) : filtered.length === 0 ? (
-                <Text style={styles.emptyState}>Aucun identifiant trouvé.</Text>
-              ) : (
-                filtered.map((cred) => (
-                  <CredentialCard 
-                    key={cred.id} 
-                    cred={cred} 
-                    onCopy={() => showToast('Mot de passe copié !')}
-                    onClick={() => handleCardClick(cred)}
-                  />
-                ))
-              )}
+          )}
+          {category === 'bankCards' && (
+            <View style={styles.pageSection}>
+              <Text style={styles.sectionTitle}>Cartes bancaire</Text>
+              <View style={styles.credentialList}>
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
+                ) : getFilteredItems().length === 0 ? (
+                  <Text style={styles.emptyState}>Aucune carte trouvée.</Text>
+                ) : (
+                  getFilteredItems().map((item) => (
+                    <CredentialCard 
+                      key={item.id} 
+                      cred={item as any} 
+                      onCopy={() => showToast('Contenu copié !')}
+                      onClick={() => handleOtherItemClick(item)}
+                    />
+                  ))
+                )}
+              </View>
             </View>
-          </View>
+          )}
+          {category === 'secureNotes' && (
+            <View style={styles.pageSection}>
+              <Text style={styles.sectionTitle}>Notes sécurisées</Text>
+              <View style={styles.credentialList}>
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
+                ) : getFilteredItems().length === 0 ? (
+                  <Text style={styles.emptyState}>Aucune note trouvée.</Text>
+                ) : (
+                  getFilteredItems().map((item) => (
+                    <CredentialCard 
+                      key={item.id} 
+                      cred={item as any} 
+                      onCopy={() => showToast('Contenu copié !')}
+                      onClick={() => handleOtherItemClick(item)}
+                    />
+                  ))
+                )}
+              </View>
+            </View>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -292,5 +328,31 @@ const styles = StyleSheet.create({
   suggestionList: {
     flexDirection: 'column',
     marginBottom: spacing.xs,
+  },
+  // Add styles for category row and buttons
+  categoryRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+    gap: spacing.sm,
+  },
+  categoryBtn: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: 20,
+    backgroundColor: layout.secondaryBackground,
+    marginRight: spacing.sm,
+  },
+  categoryBtnActive: {
+    backgroundColor: colors.secondary,
+  },
+  categoryBtnText: {
+    color: colors.textSecondary,
+    fontWeight: '600',
+    fontSize: typography.fontSize.md,
+  },
+  categoryBtnTextActive: {
+    color: colors.white,
   },
 });

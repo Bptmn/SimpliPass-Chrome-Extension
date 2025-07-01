@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
-import { CredentialDecrypted } from '@shared/types';
-import { updateCredential } from '@logic/items';
+import { CredentialDecrypted } from '@app/core/types/types';
+import { updateItem } from '@app/core/logic/items';
+import { getUserSecretKey } from '@app/core/logic/user';
+import { useUser } from '@hooks/useUser';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Toast, useToast } from '../components/Toast';
 import { Input } from '../components/InputVariants';
@@ -13,6 +15,7 @@ import { typography } from '@design/typography';
 export const ModifyCredentialPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const user = useUser();
   const credential = location.state?.credential as CredentialDecrypted;
   
   const [title, setTitle] = useState(credential?.title || '');
@@ -31,13 +34,20 @@ export const ModifyCredentialPage: React.FC = () => {
   }, [credential, navigate]);
 
   const handleSubmit = async () => {
-    if (!credential) return;
+    if (!credential || !user) {
+      setError('Utilisateur non connecté ou identifiant introuvable');
+      return;
+    }
     
     setLoading(true);
     setError(null);
     try {
-      const updatedCredential: CredentialDecrypted = {
-        ...credential,
+      const userSecretKey = await getUserSecretKey();
+      if (!userSecretKey) {
+        throw new Error('Clé de sécurité utilisateur introuvable');
+      }
+
+      const updates: Partial<CredentialDecrypted> = {
         title,
         username,
         password,
@@ -45,7 +55,8 @@ export const ModifyCredentialPage: React.FC = () => {
         note,
         lastUseDateTime: new Date(),
       };
-      await updateCredential(credential.title, updatedCredential);
+
+      await updateItem(user.uid, credential.id, userSecretKey, updates);
       showToast('Identifiant modifié avec succès');
       setTimeout(() => {
         navigate('/');
