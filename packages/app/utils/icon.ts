@@ -9,7 +9,6 @@ import {
   MdAdd,
   MdPassword,
   MdCreditCard,
-  MdStickyNote2,
   MdLoop,
   MdHelpOutline,
   MdRefresh,
@@ -25,6 +24,7 @@ import {
   MdVisibility,
   MdVisibilityOff,
   MdCheckCircle,
+  MdNotes,
 } from 'react-icons/md';
 
 export const IconsMap = {
@@ -38,7 +38,6 @@ export const IconsMap = {
   add: MdAdd,
   password: MdPassword,
   creditCard: MdCreditCard,
-  stickyNote: MdStickyNote2,
   loop: MdLoop,
   help: MdHelpOutline,
   refresh: MdRefresh,
@@ -54,6 +53,7 @@ export const IconsMap = {
   visibility: MdVisibility,
   visibilityOff: MdVisibilityOff,
   checkCircle: MdCheckCircle,
-} as const;
+  note: MdNotes,
+  } as const;
 
 export type IconKey = keyof typeof IconsMap;

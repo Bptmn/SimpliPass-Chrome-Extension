@@ -7,11 +7,10 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
-  CollectionReference,
-  DocumentReference,
+  DocumentData,
   QuerySnapshot,
   DocumentSnapshot,
-  DocumentData
+  DocumentReference
 } from 'firebase/firestore';
 
 // Firebase is already initialized in @firebase.ts and exports the 'db' instance

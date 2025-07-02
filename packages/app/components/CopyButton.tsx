@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet, Alert } from 'react-native';
 import { Icon } from './Icon';
 import { colors } from '@design/colors';
-import { layout, padding, radius, spacing } from '@design/layout';
+import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 
 interface CopyButtonProps {
@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
     width: 42,
   },
   container: {
-    display: 'flex',
     alignItems: 'center',
+    display: 'flex',
     flexDirection: 'column',
     height: '100%',
     justifyContent: 'space-evenly',

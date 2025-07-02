@@ -19,9 +19,9 @@ const PopupLayout: React.FC<PopupLayoutProps> = ({ children }) => {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'white',
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: 'white',
     ...(Platform.OS === 'web' && {
       height: 550,
       maxHeight: 550,

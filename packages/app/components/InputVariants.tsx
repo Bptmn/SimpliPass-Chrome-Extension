@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { colors } from '@design/colors';
-import { layout, padding, radius, spacing } from '@design/layout';
+import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { IconKey } from '@utils/icon';
 
@@ -83,8 +83,8 @@ export const InputPasswordGenerator: React.FC<InputPasswordGeneratorProps> = ({
       <Text style={styles.inputLabel}>{label}</Text>
       {passwordStrength && (
         <View style={styles.passwordStrength}>
-          <Text>{passwordStrength} </Text>
-          {Icon && <Icon name="security" size={18} color={colors.success} />}
+          <Text style={styles.passwordStrengthText}>{passwordStrength} </Text>
+          {Icon && <Icon name="security" size={18} color={colors.secondary} />}
         </View>
       )}
     </View>
@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
   formSection: {
     flexDirection: 'column',
     marginBottom: spacing.md,
+    width: '100%',
   },
   generateBtn: {
     backgroundColor: colors.secondary,
@@ -163,13 +164,16 @@ const styles = StyleSheet.create({
   passwordStrength: {
     alignItems: 'center',
     flexDirection: 'row',
-    // gap: spacing.xs,
-    // Instead of gap, use marginRight on the first child if needed
   },
   passwordStrengthContainer: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 2,
+  },
+  passwordStrengthText: {
+    color: colors.secondary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: '500',
   },
 }); 

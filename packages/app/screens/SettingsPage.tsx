@@ -4,17 +4,19 @@
 
 import React, { useState, Suspense } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
-import { useUser } from '@hooks/useUser';
+import { useUserStore } from '@app/core/states/user';
 import { logoutUser } from '@app/core/logic/user';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
 import { Toast, useToast } from '../components/Toast';
 import { colors } from '@design/colors';
-import { layout, padding, radius, spacing } from '@design/layout';
+import { layout, radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
+import { Button } from '../components/Buttons';
 
 const SettingsPage: React.FC = () => {
-  const user = useUser();
+  const user = useUserStore((state) => state.user);
+  console.log('[SettingsPage] user:', user);
   const [error, setError] = useState<string | null>(null);
   const { toast, showToast } = useToast();
 
@@ -86,11 +88,7 @@ const SettingsPage: React.FC = () => {
                 <View style={styles.userIcon}>
                   <Icon name="person" size={25} color={colors.secondary} />
                 </View>
-                <Text style={styles.userEmail}>{user ? user.email : 'Non connecté'}</Text>
-              </View>
-              <View style={styles.userDetails}>
-                <Text style={styles.userSubscriptionTitle}>Abonnement :</Text>
-                <Text style={styles.userSubscriptionValue}> Basic</Text>
+                <Text style={styles.userEmail}>{user?.email || 'Non connecté'}</Text>
               </View>
             </View>
           </View>
@@ -110,20 +108,18 @@ const SettingsPage: React.FC = () => {
             </View>
           </View>
           <View style={styles.btnList}>
-            <Pressable
-              style={[styles.btn, styles.btnSecondary, styles.feedbackBtn]}
-              accessibilityLabel="Donnez votre avis"
-            >
-              <Text style={styles.btnText}>Donnez votre avis</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.btn, styles.btnPrimary, styles.logoutBtn]}
+            <Button
+              text="Donnez votre avis"
+              color={colors.secondary}
+              size="medium"
+              onPress={() => {}}
+            />
+            <Button
+              text="Se déconnecter"
+              color={colors.primary}
+              size="medium"
               onPress={handleLogout}
-              accessibilityLabel="Se déconnecter"
-              accessibilityRole="button"
-            >
-              <Text style={styles.btnText}>Se déconnecter</Text>
-            </Pressable>
+            />
           </View>
         </View>
       </ScrollView>
@@ -157,6 +153,11 @@ const styles = StyleSheet.create({
   },
   feedbackBtn: {
     marginBottom: spacing.xs,
+  },
+  infoText: {
+    color: colors.primary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: '400',
   },
   logoutBtn: {
     marginBottom: 0,
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   pageContent: {
-    flex: 1,
+    // Removed flex: 1 to allow scrolling
   },
   pageSection: {
     marginBottom: spacing.md,
@@ -220,6 +221,12 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  sectionTitle: {
+    color: colors.primary,
+    fontSize: typography.fontSize.md,
+    fontWeight: '500',
+    marginBottom: spacing.sm,
   },
   userDetails: {
     alignItems: 'center',
@@ -241,27 +248,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: spacing.sm,
     width: 50,
-  },
-  userSubscriptionTitle: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-  },
-  userSubscriptionValue: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-  },
-  sectionTitle: {
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
-    fontWeight: '500',
-    marginBottom: spacing.sm,
-  },
-  infoText: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '400',
   },
 });
 

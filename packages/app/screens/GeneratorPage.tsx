@@ -1,24 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView, Platform } from 'react-native';
 
 import { checkPasswordStrength } from '@utils/checkPasswordStrength';
 import { passwordGenerator } from '@utils/passwordGenerator';
-import { useToast } from '../components/Toast';
+
 import { colors } from '@design/colors';
-import { layout, padding, radius, spacing } from '@design/layout';
+import { padding, radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import CopyButton from '../components/CopyButton';
+import { Button } from '../components/Buttons';
+
+// Slider component for web and native
+type PasswordLengthSliderProps = {
+  value: number;
+  onChange: (v: number) => void;
+  min: number;
+  max: number;
+};
+const PasswordLengthSlider: React.FC<PasswordLengthSliderProps> = ({ value, onChange, min, max }) => {
+  if (Platform.OS === 'web') {
+    return (
+      <View style={styles.sliderRow}>
+        <Text style={styles.sliderLabel}>{min}</Text>
+        <input
+          type="range"
+          min={min}
+          max={max}
+          value={value}
+          onChange={e => onChange(Number(e.target.value))}
+          style={styles.slider}
+        />
+        <Text style={styles.sliderLabel}>{max}</Text>
+        <Text style={styles.sliderValue}>Longueur : [{value}]</Text>
+      </View>
+    );
+  }
+  // For native, fallback to a simple row (could use a native slider if available)
+  return (
+    <View style={styles.sliderRow}>
+      <Text style={styles.sliderLabel}>{min}</Text>
+      <Text style={styles.sliderValue}>Longueur : [{value}]</Text>
+    </View>
+  );
+};
 
 export const GeneratorPage: React.FC = () => {
   const [hasUppercase, setHasUppercase] = useState(true);
   const [hasNumbers, setHasNumbers] = useState(true);
   const [hasLowercase] = useState(true); // Always true as in Flutter code
   const [hasSpecialCharacters, setHasSpecialCharacters] = useState(true);
+  const [passwordLength, setPasswordLength] = useState(12);
   const [generatedPassword, setGeneratedPassword] = useState('');
   const [passwordStrength, setPasswordStrength] = useState<
     'weak' | 'average' | 'strong' | 'perfect'
   >('weak');
-  const { showToast } = useToast();
 
   // Generate password and check strength on mount and whenever options change
   useEffect(() => {
@@ -27,11 +62,11 @@ export const GeneratorPage: React.FC = () => {
       hasUppercase,
       hasLowercase,
       hasSpecialCharacters,
-      12
+      passwordLength
     );
     setGeneratedPassword(pwd);
     setPasswordStrength(checkPasswordStrength(pwd));
-  }, [hasNumbers, hasUppercase, hasLowercase, hasSpecialCharacters]);
+  }, [hasNumbers, hasUppercase, hasLowercase, hasSpecialCharacters, passwordLength]);
 
   const handleRegenerate = () => {
     const pwd = passwordGenerator(
@@ -39,7 +74,7 @@ export const GeneratorPage: React.FC = () => {
       hasUppercase,
       hasLowercase,
       hasSpecialCharacters,
-      12
+      passwordLength
     );
     setGeneratedPassword(pwd);
     setPasswordStrength(checkPasswordStrength(pwd));
@@ -56,7 +91,7 @@ export const GeneratorPage: React.FC = () => {
                 <View style={styles.passwordDisplay}>
                   <Text style={styles.passwordText}>{generatedPassword}</Text>
                   <CopyButton textToCopy={generatedPassword} ariaLabel="Copy password for this credential">
-                    copier
+                    <Text>copier</Text>
                   </CopyButton>
                 </View>
                 <Text style={[
@@ -76,6 +111,17 @@ export const GeneratorPage: React.FC = () => {
                         : 'forte'}
                 </Text>
               </View>
+            </View>
+
+            {/* Password Length Slider */}
+            <View style={styles.generatorItemSpacing}>
+              <Text style={styles.sectionLabel}>Longueur</Text>
+              <PasswordLengthSlider
+                value={passwordLength}
+                onChange={setPasswordLength}
+                min={5}
+                max={25}
+              />
             </View>
 
             <View style={styles.generatorItemSpacing}>
@@ -112,10 +158,12 @@ export const GeneratorPage: React.FC = () => {
             </View>
 
             <View style={styles.pageSection}>
-              <Pressable style={[styles.btn, styles.btnPrimary, styles.regenerateBtn]} onPress={handleRegenerate}>
-                <Text style={styles.regenerateIcon}>🔄</Text>
-                <Text style={styles.btnText}>Générer à nouveau</Text>
-              </Pressable>
+              <Button
+                text="Générer à nouveau"
+                color={colors.primary}
+                size="medium"
+                onPress={handleRegenerate}
+              />
             </View>
           </View>
         </View>
@@ -133,26 +181,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
-  btnCopy: {
-    alignItems: 'center',
-    backgroundColor: colors.secondary,
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    flexDirection: 'row',
-    height: 38,
-    justifyContent: 'center',
-    marginLeft: spacing.sm,
-    padding: padding.xs,
-    width: 42,
-  },
-  btnCopyContainer: {
-    alignItems: 'center',
-    flexDirection: 'column',
-    height: '100%',
-    justifyContent: 'center',
-    width: '100%',
-  },
   btnPrimary: {
     backgroundColor: colors.primary,
   },
@@ -161,17 +189,9 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     fontWeight: '600',
   },
-  copyIcon: {
-    color: colors.white,
-    fontSize: 22,
-  },
-  copyText: {
-    color: colors.white,
-    fontSize: 10,
-    lineHeight: 1,
-  },
+
   generatedPasswordCard: {
-    backgroundColor: layout.secondaryBackground,
+    backgroundColor: colors.bgAlt,
     borderColor: colors.border,
     borderRadius: radius.md,
     borderWidth: 1,
@@ -204,7 +224,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   optionsSection: {
-    backgroundColor: layout.secondaryBackground,
+    backgroundColor: colors.bgAlt,
     borderColor: colors.border,
     borderRadius: radius.md,
     borderWidth: 1,
@@ -213,7 +233,7 @@ const styles = StyleSheet.create({
     padding: padding.md,
   },
   pageContainer: {
-    backgroundColor: layout.primaryBackground,
+    backgroundColor: colors.bg,
     flex: 1,
     padding: spacing.md,
   },
@@ -226,7 +246,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   passwordText: {
-    backgroundColor: layout.primaryBackground,
+    backgroundColor: colors.bg,
     borderColor: colors.border,
     borderRadius: radius.md,
     borderWidth: 1,
@@ -247,11 +267,40 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginRight: spacing.xs,
   },
+  scrollView: {
+    flex: 1,
+  },
   sectionLabel: {
     color: colors.accent,
     fontSize: typography.fontSize.xs,
     fontWeight: '500',
     margin: 0,
+  },
+  slider: {
+    accentColor: colors.primary,
+    borderRadius: 8,
+    flex: 1,
+    height: 4,
+    marginHorizontal: spacing.sm,
+    maxWidth: 200,
+    minWidth: 120,
+  },
+  sliderLabel: {
+    color: colors.textSecondary,
+    fontSize: typography.fontSize.sm,
+    marginRight: spacing.xs,
+  },
+  sliderRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  sliderValue: {
+    color: colors.secondary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: '600',
+    marginLeft: spacing.md,
   },
   strengthAverage: { color: '#ffb300' },
   strengthLabel: {
@@ -284,8 +333,5 @@ const styles = StyleSheet.create({
   },
   switchSliderActive: {
     transform: [{ translateX: 16 }],
-  },
-  scrollView: {
-    flex: 1,
   },
 });

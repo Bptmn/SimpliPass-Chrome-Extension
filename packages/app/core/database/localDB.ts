@@ -8,7 +8,7 @@
 import { Platform } from 'react-native';
 
 // Import platform-specific implementations
-import * as IndexedDB from '../../utils/indexedDB';
+import * as IndexedDB from '@extension/utils/indexedDB';
 
 // Mobile secure storage will be imported conditionally
 interface SecureStorageModule {
@@ -24,12 +24,20 @@ interface SecureStorageModule {
 
 let SecureStorage: SecureStorageModule | null = null;
 
-// Try to import mobile secure storage (will fail on web, which is expected)
-try {
-  SecureStorage = require('../../../mobile/utils/secureStorage');
-} catch (error) {
-  // Secure storage not available (web environment)
-}
+// Initialize secure storage module only on mobile
+const initSecureStorageModule = async (): Promise<void> => {
+  if (Platform.OS !== 'web') {
+    try {
+      const module = await import('../../../mobile/utils/secureStorage');
+      SecureStorage = module as SecureStorageModule;
+    } catch {
+      console.error('Failed to initialize mobile storage');
+    }
+  }
+};
+
+// Initialize on module load
+initSecureStorageModule();
 
 interface StorageConfig {
   // IndexedDB config
@@ -225,8 +233,6 @@ export const getStorageInfo = async (config: StorageConfig = {}): Promise<any> =
     throw new Error('No suitable storage system available for this platform');
   }
 };
-
-
 
 /**
  * Get the current platform

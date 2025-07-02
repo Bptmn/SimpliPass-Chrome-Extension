@@ -8,6 +8,8 @@ import { Input } from '../components/InputVariants';
 import { colors } from '@design/colors';
 import { layout, radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
+import { useUserStore } from '@app/core/states/user';
+import { Button } from '../components/Buttons';
 
 const REMEMBER_EMAIL_KEY = 'simplipass_remembered_email';
 
@@ -23,6 +25,7 @@ const LoginPage: React.FC = () => {
   const [_mfaUser, setMfaUser] = useState<unknown>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
 
   useEffect(() => {
     // On mount, check if email is remembered
@@ -68,6 +71,9 @@ const LoginPage: React.FC = () => {
         setMfaUser(result.mfaUser);
         setIsLoading(false);
       } else {
+        // After successful login, set user in Zustand store (redundant if already done in loginUser, but ensures sync)
+        const currentUser = useUserStore.getState().user;
+        setUser(currentUser);
         navigate('/home');
       }
     } catch (error) {
@@ -81,7 +87,7 @@ const LoginPage: React.FC = () => {
     if (!_mfaUser) return;
     setIsLoading(true);
     try {
-      await confirmMfa({ code, password, _mfaUser });
+      await confirmMfa({ code, password });
       navigate('/home');
     } catch (error: any) {
       setError(error.message || 'Code invalide ou expiré.');
@@ -104,8 +110,7 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <View style={styles.pageContainer}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={styles.pageContainer}>
         <View style={styles.pageContent}>
           {/* Logo */}
           <View style={styles.loginLogo}>
@@ -182,22 +187,17 @@ const LoginPage: React.FC = () => {
               </View>
               {passwordError ? <Text style={styles.errorMessage}>{passwordError}</Text> : null}
             </View>
-            <Pressable
-              style={[styles.btn, styles.btnPrimary, isLoading ? styles.btnDisabled : null]}
+            <Button
+              text="Se connecter"
+              color={colors.primary}
+              size="medium"
               onPress={handleLogin}
               disabled={isLoading}
-              accessibilityRole="button"
-            >
-              {isLoading ? (
-                <View style={styles.spinner} />
-              ) : (
-                <Text style={styles.btnText}>Se connecter</Text>
-              )}
-            </Pressable>
+            />
           </View>
         </View>
       </ScrollView>
-    </View>
+
   );
 };
 

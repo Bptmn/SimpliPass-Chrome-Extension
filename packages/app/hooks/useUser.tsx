@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useUserStore } from '@app/core/states';
-import { auth } from '@app/core/auth/auth.adapter';
+import React, { createContext, ReactNode } from 'react';
+import { useUserStore } from '@app/core/states/user';
 
 // UserProfile interface matching our User type
 export interface UserProfile {
@@ -13,62 +12,21 @@ export interface UserProfile {
 const UserContext = createContext<UserProfile | null>(null);
 
 export const UserProvider: React.FC<{ children: ReactNode; value?: UserProfile | null }> = ({ children, value }) => {
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const { user: storeUser, setUser: setStoreUser } = useUserStore();
+  // Use Zustand store as the canonical source of user state
+  const storeUser = useUserStore((state) => state.user);
 
-  useEffect(() => {
-    if (value !== undefined) {
-      setUser(value);
-      return;
-    }
-
-    // Check if we have a user in the store
-    if (storeUser) {
-      setUser({
+  // Prefer explicit value if provided (for testing or overrides)
+  const user = value !== undefined ? value : storeUser
+    ? {
         uid: storeUser.uid,
         email: storeUser.email,
-        displayName: storeUser.display_name
-      });
-      return;
-    }
-
-    // Check auth adapter for current user
-    const checkCurrentUser = async () => {
-      try {
-        const currentUser = await auth.getCurrentUser();
-        if (currentUser) {
-          const userProfile: UserProfile = {
-            uid: currentUser.uid,
-            email: currentUser.email || '',
-            displayName: currentUser.displayName
-          };
-          setUser(userProfile);
-          
-          // Also set in store
-          setStoreUser({
-            uid: currentUser.uid,
-            email: currentUser.email || '',
-            created_time: new Date() as any,
-            phone_number: '',
-            salt: '',
-            display_name: currentUser.displayName || '',
-            photo_url: currentUser.photoURL || ''
-          });
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error('Error getting current user:', error);
-        setUser(null);
+        // No displayName in canonical User type, but keep for compatibility
       }
-    };
-
-    checkCurrentUser();
-  }, [value, storeUser, setStoreUser]);
+    : null;
 
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 };
 
-export function useUser(): UserProfile | null {
-  return useContext(UserContext);
+export function useUser() {
+  return useUserStore((state) => state.user);
 } 

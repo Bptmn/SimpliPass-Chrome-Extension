@@ -22,7 +22,7 @@ const DEFAULT_PREFIX = 'Simplipass_';
 /**
  * Initialize the AsyncStorage (no-op for AsyncStorage, but kept for interface consistency)
  */
-export const initDB = async (config: AsyncStorageConfig = {}): Promise<void> => {
+export const initDB = async (_config: AsyncStorageConfig = {}): Promise<void> => {
   // AsyncStorage doesn't need initialization, but we keep this for interface consistency
   return Promise.resolve();
 };
@@ -160,14 +160,13 @@ export const deleteDB = async (
  * Get database size (approximate)
  */
 export const getDBSize = async (
-  config: AsyncStorageConfig = {}
+  _config: AsyncStorageConfig = {}
 ): Promise<number> => {
-  const { prefix = DEFAULT_PREFIX } = config;
+  const { prefix = DEFAULT_PREFIX } = _config;
   
   try {
     const allKeys = await AsyncStorage.getAllKeys();
-    const keysWithPrefix = allKeys.filter((key: string) => key.startsWith(prefix));
-    return keysWithPrefix.length;
+    return allKeys.filter((key: string) => key.startsWith(prefix)).length;
   } catch (error) {
     throw new Error(`Failed to get database size: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
@@ -184,14 +183,9 @@ export const isAsyncStorageSupported = (): boolean => {
  * Utility function to get database info
  */
 export const getDBInfo = async (
-  config: AsyncStorageConfig = {}
+  _config: AsyncStorageConfig = {}
 ): Promise<{ name: string; version: number; stores: string[] }> => {
-  const { prefix = DEFAULT_PREFIX } = config;
-  
   try {
-    const allKeys = await AsyncStorage.getAllKeys();
-    const keysWithPrefix = allKeys.filter((key: string) => key.startsWith(prefix));
-    
     return {
       name: 'AsyncStorage',
       version: 1,
@@ -212,10 +206,8 @@ export const getStorageSize = async (
   
   try {
     const allKeys = await AsyncStorage.getAllKeys();
-    const keysWithPrefix = allKeys.filter((key: string) => key.startsWith(prefix));
-    
     let totalSize = 0;
-    for (const key of keysWithPrefix as string[]) {
+    for (const key of allKeys.filter((key: string) => key.startsWith(prefix)) as string[]) {
       const value = await AsyncStorage.getItem(key);
       if (value) {
         totalSize += key.length + value.length;

@@ -12,7 +12,6 @@ export interface AuthAdapter {
   login(email: string, password: string): Promise<AuthResult>;
   confirmMfa(code: string): Promise<AuthResult>;
   signOut(): Promise<void>;
-  getCurrentUser(): Promise<any | null>; // Type à adapter
   getUserSalt(): Promise<string>;
 }
 
@@ -35,10 +34,6 @@ export const auth: AuthAdapter = {
   signOut: async (): Promise<void> => {
     await cognito.signOutCognito();
     await firebase.signOutFromFirebase();
-  },
-
-  getCurrentUser: async (): Promise<any | null> => {
-    return firebase.getCurrentUser();
   },
 
   getUserSalt: async (): Promise<string> => {

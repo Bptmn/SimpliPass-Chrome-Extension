@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { colors } from '@design/colors';
-import { layout, padding, radius, spacing } from '@design/layout';
-import { typography } from '@app/design/typography';
+import { radius } from '@design/layout';
+import { typography } from '@design/typography';
 
 interface LazyCredentialIconProps {
   title: string;

@@ -16,9 +16,7 @@ const DEFAULT_SERVICE = 'com.simplipass.app';
 /**
  * Initialize secure storage (no-op for keychain, but kept for API consistency)
  */
-export const initSecureStorage = async (
-  config: SecureStorageConfig = {}
-): Promise<void> => {
+export const initSecureStorage = async (_config: SecureStorageConfig = {}): Promise<void> => {
   // Keychain doesn't need initialization, but we can check if it's available
   try {
     await Keychain.getSupportedBiometryType();
@@ -35,20 +33,14 @@ export const setSecureItem = async <T>(
   value: T,
   config: SecureStorageConfig = {}
 ): Promise<void> => {
-  const { service = DEFAULT_SERVICE, accessControl, accessible } = config;
+  const { service = DEFAULT_SERVICE } = config;
   
   try {
     const serializedValue = JSON.stringify(value);
     
-    const options: Keychain.Options = {
-      service,
-      accessControl,
-      accessible,
-    };
-    
-    await Keychain.setInternetCredentials(key, key, serializedValue, options);
-  } catch (error) {
-    throw new Error(`Failed to store secure item: ${error}`);
+    await Keychain.setInternetCredentials(service, key, serializedValue);
+  } catch {
+    throw new Error('Failed to store secure item');
   }
 };
 
@@ -57,9 +49,9 @@ export const setSecureItem = async <T>(
  */
 export const getSecureItem = async <T>(
   key: string,
-  config: SecureStorageConfig = {}
+  _config: SecureStorageConfig = {}
 ): Promise<T | null> => {
-  const { service = DEFAULT_SERVICE } = config;
+  const { service = DEFAULT_SERVICE } = _config;
   
   try {
     const credentials = await Keychain.getInternetCredentials(service);
@@ -71,7 +63,7 @@ export const getSecureItem = async <T>(
     return JSON.parse(credentials.password);
   } catch (error) {
     // If item doesn't exist, return null instead of throwing
-    if (error === Keychain.ERRORS.ITEM_NOT_FOUND) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'ITEM_NOT_FOUND') {
       return null;
     }
     throw new Error(`Failed to retrieve secure item: ${error}`);
@@ -83,14 +75,14 @@ export const getSecureItem = async <T>(
  */
 export const removeSecureItem = async (
   key: string,
-  config: SecureStorageConfig = {}
+  _config: SecureStorageConfig = {}
 ): Promise<void> => {
-  const { service = DEFAULT_SERVICE } = config;
+  const { service = DEFAULT_SERVICE } = _config;
   
   try {
     await Keychain.resetInternetCredentials(service);
-  } catch (error) {
-    throw new Error(`Failed to remove secure item: ${error}`);
+  } catch {
+    throw new Error('Failed to remove secure item');
   }
 };
 
@@ -99,14 +91,14 @@ export const removeSecureItem = async (
  */
 export const hasSecureItem = async (
   key: string,
-  config: SecureStorageConfig = {}
+  _config: SecureStorageConfig = {}
 ): Promise<boolean> => {
-  const { service = DEFAULT_SERVICE } = config;
+  const { service = DEFAULT_SERVICE } = _config;
   
   try {
     const credentials = await Keychain.getInternetCredentials(service);
     return credentials !== false && credentials.username === key;
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -116,7 +108,7 @@ export const hasSecureItem = async (
  * Note: Keychain doesn't provide a direct way to list all items
  */
 export const getAllSecureKeys = async (
-  config: SecureStorageConfig = {}
+  _config: SecureStorageConfig = {}
 ): Promise<string[]> => {
   // Keychain doesn't provide a way to list all items for security reasons
   // This is a limitation of the platform APIs
@@ -127,10 +119,11 @@ export const getAllSecureKeys = async (
  * Clear all secure items from the keychain
  */
 export const clearAllSecureItems = async (
-  config: SecureStorageConfig = {}
+  _config: SecureStorageConfig = {}
 ): Promise<void> => {
   try {
-    await Keychain.clearAll();
+    // Keychain doesn't have a clearAll method, so we'll throw an error
+    throw new Error('Keychain does not support clearing all items for security reasons');
   } catch (error) {
     throw new Error(`Failed to clear all secure items: ${error}`);
   }

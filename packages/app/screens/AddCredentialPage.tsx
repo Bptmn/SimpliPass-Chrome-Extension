@@ -12,8 +12,9 @@ import Toast, { useToast } from '../components/Toast';
 import { generateItemKey } from '@utils/crypto';
 import { Input, InputPasswordGenerator } from '../components/InputVariants';
 import { colors } from '@design/colors';
-import { layout, padding, radius, spacing } from '@design/layout';
+import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
+import { Button } from '../components/Buttons';
 
 interface AddCredentialPageProps {
   link?: string;
@@ -140,14 +141,13 @@ export const AddCredentialPage: React.FC<AddCredentialPageProps> = ({ link = '',
               onChange={setNote}
               placeholder="Entrez une note..."
             />
-            <Pressable
-              style={[styles.btn, styles.btnPrimary, styles.fullWidth, loading ? styles.btnDisabled : null]}
+            <Button
+              text="Ajouter"
+              color={colors.primary}
+              size="medium"
               onPress={handleSubmit}
               disabled={loading}
-              accessibilityRole="button"
-            >
-              <Text style={styles.btnText}>Ajouter</Text>
-            </Pressable>
+            />
           </View>
         </View>
       </ScrollView>
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   pageContainer: {
-    backgroundColor: layout.primaryBackground,
+    backgroundColor: colors.bg,
     flex: 1,
     padding: spacing.md,
   },

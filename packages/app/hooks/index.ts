@@ -1,2 +1,2 @@
 // Re-export all hooks
-export { useUser, UserProvider } from './useUser'; 
+export { useUser } from './useUser'; 

@@ -6,8 +6,10 @@
 import { auth } from '../auth/auth.adapter';
 import { setItem, getItem, removeItem, clearAll } from '@app/core/database/localDB';
 import { deriveKey } from '@app/utils/crypto';
-import { getAllItems } from '@app/core/logic/items';
 import { useUserStore } from '@app/core/states';
+import { db } from '@app/core/auth/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { User } from '@app/core/types/types';
 
 const REMEMBER_EMAIL_KEY = 'simplipass_remembered_email';
 const USER_SECRET_KEY = 'UserSecretKey';
@@ -32,9 +34,14 @@ export async function loginUser({
     localStorage.removeItem(REMEMBER_EMAIL_KEY);
   }
 
+  // Always sign out before attempting login to avoid stuck session errors (Cognito/Amplify issue)
+  await logoutUser();
+
   let result;
   let triedLogout = false;
-  while (true) {
+  const maxRetries = 2;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       // Call auth adapter login
       result = await auth.login(email, password);
@@ -55,6 +62,10 @@ export async function loginUser({
     }
   }
   
+  if (!result) {
+    throw new Error('Failed to login after maximum retries');
+  }
+  
   if (result.mfaRequired) {
     console.log('[User] loginUser success: MFA required');
     return { mfaRequired: true, mfaUser: result };
@@ -67,24 +78,13 @@ export async function loginUser({
   }
   
   // Refresh credentials in vault
-  const currentUser = await auth.getCurrentUser();
-  if (currentUser) {
-    const userSecretKey = await getUserSecretKey();
-    if (userSecretKey) {
-      await getAllItems(currentUser.uid, userSecretKey);
+  const userStore = useUserStore.getState();
+  let currentUser = null;
+  if (result.userAttributes?.sub) {
+    currentUser = await fetchUserProfile(result.userAttributes.sub);
+    if (currentUser) {
+      userStore.setUser(currentUser);
     }
-    
-    // Set user in store
-    const userStore = useUserStore.getState();
-    userStore.setUser({
-      uid: currentUser.uid,
-      email: currentUser.email || '',
-      created_time: new Date() as any, // Firebase Timestamp
-      phone_number: '',
-      salt: '',
-      display_name: currentUser.displayName || '',
-      photo_url: currentUser.photoURL || ''
-    });
   }
   
   console.log('[User] loginUser success: User fully authenticated');
@@ -134,13 +134,9 @@ export function getRememberedEmail(): string | null {
 
 // Check if user is authenticated
 export async function isUserAuthenticated(): Promise<boolean> {
-  const user = await auth.getCurrentUser();
+  const userStore = useUserStore.getState();
+  const user = userStore.user;
   return user !== null;
-}
-
-// Get current user
-export async function getCurrentUser() {
-  return await auth.getCurrentUser();
 }
 
 // Get user salt
@@ -161,4 +157,13 @@ export async function getUserSecretKey(): Promise<string | null> {
 // Delete user secret key from local storage
 export async function deleteUserSecretKey(): Promise<void> {
   await removeItem(USER_SECRET_KEY);
+}
+
+// Fetch the full user profile from Firestore
+export async function fetchUserProfile(uid: string): Promise<User | null> {
+  const userDoc = await getDoc(doc(db, 'users', uid));
+  if (userDoc.exists()) {
+    return userDoc.data() as User;
+  }
+  return null;
 }

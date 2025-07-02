@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { colors } from '@design/colors';
-import { layout, padding, radius, spacing } from '@design/layout';
+import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
+import { Button } from '../components/Buttons';
 
 interface EmailConfirmationPageProps {
   email: string;
@@ -53,20 +54,18 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
               />
             </View>
             <View style={styles.btnList}>
-              <Pressable
-                style={[styles.btn, styles.btnPrimary, styles.confirmBtn]}
+              <Button
+                text="Confirmer"
+                color={colors.primary}
+                size="medium"
                 onPress={handleSubmit}
-                accessibilityRole="button"
-              >
-                <Text style={styles.btnText}>Confirmer</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.btn, styles.btnSecondary, styles.resendBtn]}
+              />
+              <Button
+                text="Renvoyer le code"
+                color={colors.secondary}
+                size="medium"
                 onPress={onResend}
-                accessibilityRole="button"
-              >
-                <Text style={styles.btnText}>Renvoyer le code</Text>
-              </Pressable>
+              />
             </View>
           </View>
         </View>
@@ -107,7 +106,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   confirmationInput: {
-    backgroundColor: layout.primaryBackground,
+    backgroundColor: colors.bg,
     borderColor: colors.border,
     borderRadius: radius.md,
     borderWidth: 1,
@@ -144,7 +143,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   pageContainer: {
-    backgroundColor: layout.primaryBackground,
+    backgroundColor: colors.bg,
     flex: 1,
     padding: spacing.md,
   },

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { colors } from '@design/colors';
-import { layout, padding, radius, spacing } from '@design/layout';
+import { radius, spacing } from '@design/layout';
 
 export const SkeletonCard: React.FC = () => (
   <View style={styles.skeletonCard}>
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   },
   skeletonCard: {
     alignItems: 'center',
-    backgroundColor: layout.secondaryBackground,
+    backgroundColor: colors.bgAlt,
     borderColor: colors.border,
     borderRadius: radius.lg,
     borderWidth: 1,

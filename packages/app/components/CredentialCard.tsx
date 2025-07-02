@@ -7,7 +7,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { CredentialDecrypted } from '@app/core/types/types';
 import CopyButton from './CopyButton';
 import { colors } from '@design/colors';
-import { layout, radius, spacing } from '@design/layout';
+import { radius, spacing } from '@design/layout';
 
 // Minimal RN-compatible LazyCredentialIcon
 const LazyCredentialIcon: React.FC<{ title: string; url?: string }> = ({ title }) => (
@@ -85,8 +85,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgAlt,
     borderColor: colors.border,
     borderRadius: radius.md,
-    borderWidth: 1,
     borderStyle: 'solid',
+    borderWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: spacing.xs,

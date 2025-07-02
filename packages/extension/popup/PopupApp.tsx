@@ -7,37 +7,36 @@
 // - Route between pages (home, generator, settings, login)
 // - Render the main UI (navbar, helper bar, etc.)
 
-import { Amplify } from 'aws-amplify';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Text } from 'react-native';
-
-// Import components and screens from the shared app package
-import { HelperBar } from '@components/HelperBar';
-import Navbar from '@components/NavBar';
-import { GeneratorPage } from '@screens/GeneratorPage';
-import { HomePage } from '@screens/HomePage';
-import LoginPage from '@screens/LoginPage';
-import SettingsPage from '@screens/SettingsPage';
-import { AddCredentialPage } from '@screens/AddCredentialPage';
-import PopupLayout from '@components/PopupLayout';
-
-// Import config and services
-import { config } from '@extension/config/config';
-import { auth } from '@app/core/auth/auth.adapter';
+import { HomePage } from '@app/screens/HomePage';
+import LoginPage from '@app/screens/LoginPage';
+import { AddCredentialPage } from '@app/screens/AddCredentialPage';
+import SettingsPage from '@app/screens/SettingsPage';
+import { GeneratorPage } from '@app/screens/GeneratorPage';
+import { ToastProvider } from '@app/components/Toast';
+import { colors } from '@design/colors';
+import { useUserStore } from '@app/core/states/user';
 import { PageState } from '@app/core/types/types';
-import { ToastProvider } from '@components/Toast';
-
-Amplify.configure({ Auth: { Cognito: config.Cognito } });
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth as firebaseAuth } from '@app/core/auth/firebase';
+import { User as FirebaseUser } from 'firebase/auth';
+import { User as AppUser } from '@app/core/types/types';
+import NavBar from '@app/components/NavBar';
+import { HelperBar } from '@app/components/HelperBar';
+import { fetchUserProfile } from '@app/core/logic/user';
 
 export const PopupApp: React.FC = () => {
   console.log('PopupApp component rendering...');
 
-  // State for user, loading, error, and page info
-  const [user, setUser] = useState<any>(null);
+  // State for loading, error, and page info
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [pageState, setPageState] = useState<PageState | null>(null);
+
+  // Use global Zustand user store
+  const user = useUserStore((state) => state.user);
+  const setUser = useUserStore((state) => state.setUser);
 
   useEffect(() => {
     console.log('PopupApp useEffect running...');
@@ -59,30 +58,37 @@ export const PopupApp: React.FC = () => {
           if (chrome.runtime.lastError || !results || !results[0]?.result) return;
           const { url, domain, hasLoginForm } = results[0].result;
           setPageState({ url, domain, hasLoginForm });
-          // Optionally: fetch credentials here if needed
         },
       );
     });
 
-    // Check authentication state
-    const checkAuthState = async () => {
-      try {
-        console.log('Checking auth state...');
-        const currentUser = await auth.getCurrentUser();
-        console.log('Auth state checked:', currentUser);
-        setUser(currentUser);
-        setIsLoading(false);
-      } catch (err) {
-        console.error('Auth check error:', err);
-        setError(err instanceof Error ? err.message : 'Failed to check authentication');
-        setIsLoading(false);
+    // Listen for Firebase Auth state changes (robust persistence)
+    setIsLoading(true);
+    const unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        // Fetch full user profile from Firestore
+        const firestoreUser = await fetchUserProfile(firebaseUser.uid);
+        if (firestoreUser) {
+          setUser(firestoreUser);
+        } else {
+          // Fallback to Auth user if Firestore user is missing
+          const mappedUser: AppUser = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email || '',
+            created_time: new Date() as any,
+            salt: '',
+          };
+          setUser(mappedUser);
+        }
+      } else {
+        setUser(null);
       }
-    };
+      setIsLoading(false);
+    });
+    return () => unsubscribe();
+  }, [setUser]);
 
-    checkAuthState();
-  }, []);
-
-  console.log('Current render state:', { isLoading, error, user });
+  console.log('Current render state:', { isLoading, user });
 
   // Handler to inject a credential into the current tab
   const handleInjectCredential = (credentialId: string) => {
@@ -97,60 +103,59 @@ export const PopupApp: React.FC = () => {
     });
   };
 
-  // Render error state if any
-  if (error) {
-    console.log('Rendering error state...');
-    return (
-      <div className="container">
-        <div className="error-message">
-          <h2><Text>Error</Text></h2>
-          <p><Text>{error}</Text></p>
-        </div>
-      </div>
-    );
-  }
-
   // Render loading state
   if (isLoading) {
     console.log('Rendering loading state...');
     return (
-      <div className="container">
-        <div className="loading">
-          <Text>Loading...</Text>
-        </div>
-      </div>
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
     );
   }
 
   console.log('Rendering main content...');
   return (
     <ToastProvider>
-      <div className="container">
+      <View style={styles.container}>
         {!user ? (
           <Routes>
             <Route path="*" element={<LoginPage />} />
           </Routes>
         ) : (
-          <PopupLayout>
-            <Routes>
-              <Route path="/" element={<Navigate to="/home" replace />} />
-              <Route
-                path="/home"
-                element={
-                  <HomePage
-                    user={user}
-                    pageState={pageState}
-                    onInjectCredential={handleInjectCredential}
-                  />
-                }
-              />
-              <Route path="/generator" element={<GeneratorPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/add-credential" element={<AddCredentialPage />} />
-            </Routes>
-          </PopupLayout>
+          <>
+            <NavBar />
+            <ScrollView style={styles.contentArea} contentContainerStyle={{ flexGrow: 1 }}>
+              <Routes>
+                <Route path="/" element={<Navigate to="/home" replace />} />
+                <Route
+                  path="/home"
+                  element={
+                    <HomePage
+                      user={user}
+                      pageState={pageState}
+                      onInjectCredential={handleInjectCredential}
+                    />
+                  }
+                />
+                <Route path="/generator" element={<GeneratorPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/add-credential" element={<AddCredentialPage />} />
+              </Routes>
+            </ScrollView>
+            <HelperBar />
+          </>
         )}
-      </div>
+      </View>
     </ToastProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: colors.bg,
+    flex: 1,
+  },
+  contentArea: {
+    flex: 1,
+  },
+});

@@ -6,19 +6,19 @@
 // - Use the shared Icon component for button icons
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
-
+import { useNavigate } from 'react-router-dom';
 import { Icon } from './Icon';
 import { refreshItems } from '@app/core/logic/items';
-import { auth } from '@app/core/auth/auth.adapter';
 import { getUserSecretKey } from '@app/core/logic/user';
 import { colors } from '@design/colors';
-import { layout, padding, radius, spacing } from '@design/layout';
+import { layout, radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
+import { useUserStore } from '@app/core/states/user';
 
 export const HelperBar: React.FC = () => {
   const navigate = useNavigate();
+  const currentUser = useUserStore((state) => state.user);
 
   // Handler for the add credential button
   const handleAddCredential = () => {
@@ -33,7 +33,6 @@ export const HelperBar: React.FC = () => {
 
   // Handler for the refresh button (uses business logic)
   const handleRefresh = async () => {
-    const currentUser = await auth.getCurrentUser();
     if (currentUser) {
       const userSecretKey = await getUserSecretKey();
       if (userSecretKey) {
@@ -52,13 +51,13 @@ export const HelperBar: React.FC = () => {
     ]}>
       <View style={styles.helperBarLeft}>
         <Pressable
-          style={styles.helperBtn}
+          style={styles.helperBtnAdd}
           onPress={handleAddCredential}
           accessibilityRole="button"
           accessibilityLabel="Ajouter un identifiant"
         >
-          <Icon name="add" size={25} color={colors.primary} />
-          <Text style={styles.helperBtnText}>Ajouter</Text>
+          <Icon name="add" size={25} color={colors.white} />
+          <Text style={styles.helperBtnTextAdd}>Ajouter</Text>
         </Pressable>
       </View>
       <View style={styles.helperBarRight}>
@@ -108,6 +107,16 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginLeft: spacing.xl,
   },
+  helperBarWeb: {
+    bottom: 0,
+    boxShadow: '0 -2px 8px rgba(0,0,0,0.04)',
+    left: 0,
+    maxWidth: '100%',
+    position: 'fixed' as any,
+    right: 0,
+    width: '100%',
+    zIndex: 1000,
+  },
   helperBtn: {
     alignItems: 'center',
     backgroundColor: 'transparent',
@@ -119,6 +128,17 @@ const styles = StyleSheet.create({
     marginRight: spacing.md,
     width: 48,
   },
+  helperBtnAdd: {
+    alignItems: 'center',
+    backgroundColor: colors.secondary,
+    borderRadius: radius.md,
+    flexDirection: 'row',
+    gap: spacing.xs,
+    height: 40,
+    justifyContent: 'space-around',
+    marginRight: spacing.md,
+    padding: spacing.sm,
+  },
   helperBtnText: {
     color: colors.text,
     fontSize: typography.fontSize.xs * 0.75,
@@ -126,14 +146,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
-  helperBarWeb: {
-    position: 'static' as any,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1000,
-    width: '100%',
-    maxWidth: '100%',
-    boxShadow: '0 -2px 8px rgba(0,0,0,0.04)',
+  helperBtnTextAdd: {
+    color: colors.white,
+    fontSize: typography.fontSize.md,
+    marginRight: spacing.xs,
+    textAlign: 'center',
   },
 });

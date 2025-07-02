@@ -1,6 +1,6 @@
 // src/types.ts
 
-import { DocumentReference, Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 
 export interface HomePageProps {
   user: unknown;
@@ -72,10 +72,7 @@ export interface User {
   email: string;
   uid: string;
   created_time: Timestamp;
-  phone_number: string;
   salt: string;
-  display_name: string;
-  photo_url: string;
 }
 
 /** Subcollection "my_items" under each user */

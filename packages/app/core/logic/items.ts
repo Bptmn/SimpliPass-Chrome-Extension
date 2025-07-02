@@ -43,19 +43,14 @@
 */
 
 import { db } from '@app/core/database/db.adapter';
-import { getItem, setItem, removeItem } from '@app/core/database/localDB';
-import { decryptItem, decryptAllItems, encryptCredential, encryptBankCard, encryptSecureNote } from '@app/core/logic/cryptography';
+import { decryptAllItems, encryptCredential, encryptBankCard, encryptSecureNote } from '@app/core/logic/cryptography';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@app/core/types/types';
 import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@app/core/states';
 import { 
-  ItemEncrypted, 
-  CredentialDecrypted, 
-  BankCardDecrypted, 
-  SecureNoteDecrypted,
-  CredentialEncrypted,
-  BankCardEncrypted,
-  SecureNoteEncrypted
+  ItemEncrypted
 } from '@app/core/types/types';
 
+// Define DecryptedItem type locally
 type DecryptedItem = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted;
 
 /**
@@ -162,24 +157,24 @@ export async function getItemById(
     }
     
     // Decrypt the item
-    const decryptedItem = await decryptItem(userSecretKey, encryptedItem);
+    const decryptedItem = await decryptAllItems(userSecretKey, [encryptedItem]);
     
-    if (!decryptedItem) {
+    if (decryptedItem.length === 0) {
       console.error('[Items] Failed to decrypt item:', itemId);
       return null;
     }
     
     // Add to state for future use
-    if ('username' in decryptedItem) {
-      credentialsStore.addCredential(decryptedItem as CredentialDecrypted);
-    } else if ('cardNumber' in decryptedItem) {
-      bankCardsStore.addBankCard(decryptedItem as BankCardDecrypted);
+    if ('username' in decryptedItem[0]) {
+      credentialsStore.addCredential(decryptedItem[0] as CredentialDecrypted);
+    } else if ('cardNumber' in decryptedItem[0]) {
+      bankCardsStore.addBankCard(decryptedItem[0] as BankCardDecrypted);
     } else {
-      secureNotesStore.addSecureNote(decryptedItem as SecureNoteDecrypted);
+      secureNotesStore.addSecureNote(decryptedItem[0] as SecureNoteDecrypted);
     }
     
     console.log('[Items] Successfully loaded and cached item:', itemId);
-    return decryptedItem;
+    return decryptedItem[0];
     
   } catch (error) {
     console.error('[Items] Failed to get item:', itemId, error);

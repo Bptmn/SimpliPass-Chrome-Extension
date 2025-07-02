@@ -4,7 +4,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 import { Icon } from './Icon';
 import { colors } from '@design/colors';
-import { layout, padding, radius, spacing } from '@design/layout';
+import { layout, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 
 interface NavItem {

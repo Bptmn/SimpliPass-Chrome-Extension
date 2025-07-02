@@ -9,4 +9,5 @@ export { Input, InputPasswordGenerator } from './InputVariants';
 export { LazyCredentialIcon } from './LazyCredentialIcon';
 export { default as NavBar } from './NavBar';
 export { default as SkeletonCard } from './SkeletonCard';
-export { default as Toast } from './Toast'; 
+export { default as Toast } from './Toast';
+export { Button, ButtonOutline } from './Buttons'; 
