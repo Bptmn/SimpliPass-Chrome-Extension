@@ -34,6 +34,8 @@ export const Input: React.FC<InputProps> = ({
   <View style={styles.formSection}>
     <Text style={styles.inputLabel}>{label}</Text>
     <TextInput
+      placeholder={placeholder}
+      placeholderTextColor={colors.accent}
       style={[
         styles.input,
         error ? styles.inputError : null,
@@ -41,7 +43,6 @@ export const Input: React.FC<InputProps> = ({
       ]}
       value={value}
       onChangeText={onChange}
-      placeholder={placeholder}
       editable={!disabled}
       secureTextEntry={type === 'password'}
       accessibilityLabel={label}
@@ -89,13 +90,14 @@ export const InputPasswordGenerator: React.FC<InputPasswordGeneratorProps> = ({
       )}
     </View>
     <TextInput
+      placeholder={placeholder}
+      placeholderTextColor={colors.accent}
       style={[
         styles.input,
         error ? styles.inputError : null,
       ]}
       value={value}
       onChangeText={onChange}
-      placeholder={placeholder}
       accessibilityLabel={label}
     />
     {error ? <Text style={styles.inputErrorMessage}>{error}</Text> : null}
@@ -115,7 +117,6 @@ const styles = StyleSheet.create({
   },
   formSection: {
     flexDirection: 'column',
-    marginBottom: spacing.md,
     width: '100%',
   },
   generateBtn: {
@@ -159,7 +160,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontSize: typography.fontSize.sm,
     fontWeight: '500',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   passwordStrength: {
     alignItems: 'center',

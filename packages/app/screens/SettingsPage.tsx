@@ -128,39 +128,13 @@ const SettingsPage: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  btn: {
-    alignItems: 'center',
-    borderRadius: radius.lg,
-    justifyContent: 'center',
-    marginBottom: spacing.xs,
-    minHeight: 48,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
   btnList: {
     marginTop: spacing.sm,
-  },
-  btnPrimary: {
-    backgroundColor: colors.primary,
-  },
-  btnSecondary: {
-    backgroundColor: colors.secondary,
-  },
-  btnText: {
-    color: colors.white,
-    fontSize: typography.fontSize.md,
-    fontWeight: '600',
-  },
-  feedbackBtn: {
-    marginBottom: spacing.xs,
   },
   infoText: {
     color: colors.primary,
     fontSize: typography.fontSize.sm,
     fontWeight: '400',
-  },
-  logoutBtn: {
-    marginBottom: 0,
   },
   menuArrow: {
     // Color will be applied to the Icon component

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { CredentialDecrypted } from '@app/core/types/types';
 import { updateItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
@@ -9,9 +9,10 @@ import { ErrorBanner } from '../components/ErrorBanner';
 import { Toast, useToast } from '../components/Toast';
 import { Input } from '../components/InputVariants';
 import { colors } from '@design/colors';
-import { radius, spacing } from '@design/layout';
+import { spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
+import { HeaderTitle } from '../components/HeaderTitle';
 
 export const ModifyCredentialPage: React.FC = () => {
   const navigate = useNavigate();
@@ -83,12 +84,10 @@ export const ModifyCredentialPage: React.FC = () => {
       <Toast message={toast} />
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.pageContent}>
-          <View style={styles.pageHeader}>
-            <Pressable style={styles.backBtn} onPress={() => navigate('/')} accessibilityLabel="Retour">
-              <Text style={styles.backBtnText}>←</Text>
-            </Pressable>
-            <Text style={styles.detailsTitle}>Modifier l&apos;identifiant</Text>
-          </View>
+          <HeaderTitle 
+            title="Modifier l'identifiant" 
+            onBackPress={() => navigate('/')} 
+          />
           <View style={styles.formContainer}>
             <Input
               label="Nom de l'identifiant"
@@ -149,38 +148,8 @@ export const ModifyCredentialPage: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  backBtn: {
-    marginRight: spacing.sm,
-    padding: spacing.xs,
-  },
-  backBtnText: {
-    color: colors.primary,
-    fontSize: 28,
-  },
-  btn: {
-    alignItems: 'center',
-    borderRadius: radius.lg,
-    justifyContent: 'center',
-    minHeight: 48,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  btnDisabled: {
-    backgroundColor: colors.disabled,
-  },
-  btnPrimary: {
-    backgroundColor: colors.primary,
-  },
-  btnText: {
-    color: colors.white,
-    fontSize: typography.fontSize.md,
-    fontWeight: '600',
-  },
-  detailsTitle: {
-    color: colors.primary,
-    fontSize: typography.fontSize.lg,
-    fontWeight: '600',
-  },
+
+
   errorText: {
     color: colors.error,
     fontSize: typography.fontSize.md,
@@ -190,9 +159,7 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
   },
-  fullWidth: {
-    width: '100%',
-  },
+
   pageContainer: {
     backgroundColor: colors.bg,
     flex: 1,
@@ -201,11 +168,7 @@ const styles = StyleSheet.create({
   pageContent: {
     flex: 1,
   },
-  pageHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: spacing.lg,
-  },
+
   scrollView: {
     flex: 1,
   },

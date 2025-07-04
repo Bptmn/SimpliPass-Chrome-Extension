@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView } from 'react-native';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { colors } from '@design/colors';
 import { radius, spacing } from '@design/layout';
@@ -75,31 +75,8 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
 };
 
 const styles = StyleSheet.create({
-  btn: {
-    alignItems: 'center',
-    borderRadius: radius.lg,
-    justifyContent: 'center',
-    marginBottom: spacing.sm,
-    minHeight: 48,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
   btnList: {
     flexDirection: 'column',
-  },
-  btnPrimary: {
-    backgroundColor: colors.primary,
-  },
-  btnSecondary: {
-    backgroundColor: colors.secondary,
-  },
-  btnText: {
-    color: colors.white,
-    fontSize: typography.fontSize.md,
-    fontWeight: '600',
-  },
-  confirmBtn: {
-    marginBottom: spacing.sm,
   },
   confirmationForm: {
     maxWidth: 360,
@@ -152,9 +129,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  resendBtn: {
-    marginBottom: 0,
-  },
+
   scrollView: {
     flex: 1,
   },

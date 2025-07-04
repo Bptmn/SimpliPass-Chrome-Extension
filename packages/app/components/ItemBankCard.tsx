@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     height: 150,
     justifyContent: 'space-between',
+    marginBottom: spacing.md,
     maxHeight: 170,
     maxWidth: 320,
     padding: 12,
@@ -66,7 +67,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
-    width: 300,
   },
   cardNumber: {
     color: colors.white,

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { CredentialDetailsPage } from './CredentialDetailsPage';
 import { getAllItems } from '@app/core/logic/items';
-import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@app/core/states';
+import { useCredentialsStore, useBankCardsStore, useSecureNotesStore, useCategoryStore } from '@app/core/states';
 import {
   HomePageProps,
   CredentialDecrypted,
@@ -60,7 +60,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const debouncedFilter = useDebouncedValue(filter, 250);
 
   // Category state: 'credentials', 'bankCards', 'secureNotes'
-  const [category, setCategory] = useState<'credentials' | 'bankCards' | 'secureNotes'>('credentials');
+  const { currentCategory: category, setCurrentCategory: setCategory } = useCategoryStore();
 
   const navigate = useNavigate();
 
@@ -388,7 +388,8 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     height: 42,
     paddingHorizontal: spacing.lg,
-    paddingLeft: spacing.xl + spacing.sm,
+    paddingLeft: 40,
+    placeholderTextColor: colors.accent,
     width: '100%',
   },
   sectionTitle: {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { useUser } from '@hooks/useUser';
 import { passwordGenerator } from '@utils/passwordGenerator';
 import { addItem } from '@app/core/logic/items';
@@ -12,9 +12,9 @@ import Toast, { useToast } from '../components/Toast';
 import { generateItemKey } from '@utils/crypto';
 import { Input, InputPasswordGenerator } from '../components/InputVariants';
 import { colors } from '@design/colors';
-import { radius, spacing } from '@design/layout';
-import { typography } from '@design/typography';
+import { spacing } from '@design/layout';
 import { Button } from '../components/Buttons';
+import { HeaderTitle } from '../components/HeaderTitle';
 
 interface AddCredentialPageProps {
   link?: string;
@@ -87,12 +87,10 @@ export const AddCredentialPage: React.FC<AddCredentialPageProps> = ({ link = '',
       <Toast message={toast} />
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.pageContent}>
-          <View style={styles.pageHeader}>
-            <Pressable style={styles.backBtn} onPress={() => navigate('/')} accessibilityLabel="Retour">
-              <Text style={styles.backBtnText}>←</Text>
-            </Pressable>
-            <Text style={styles.detailsTitle}>Ajouter un identifiant</Text>
-          </View>
+          <HeaderTitle 
+            title="Ajouter un identifiant" 
+            onBackPress={() => navigate(-1)} 
+          />
           <View style={styles.formContainer}>
             <Input
               label="Nom de l'identifiant"
@@ -156,44 +154,12 @@ export const AddCredentialPage: React.FC<AddCredentialPageProps> = ({ link = '',
 };
 
 const styles = StyleSheet.create({
-  backBtn: {
-    marginRight: spacing.sm,
-    padding: spacing.xs,
-  },
-  backBtnText: {
-    color: colors.primary,
-    fontSize: 28,
-  },
-  btn: {
-    alignItems: 'center',
-    borderRadius: radius.lg,
-    justifyContent: 'center',
-    minHeight: 48,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  btnDisabled: {
-    backgroundColor: colors.disabled,
-  },
-  btnPrimary: {
-    backgroundColor: colors.primary,
-  },
-  btnText: {
-    color: colors.white,
-    fontSize: typography.fontSize.md,
-    fontWeight: '600',
-  },
-  detailsTitle: {
-    color: colors.primary,
-    fontSize: typography.fontSize.lg,
-    fontWeight: '600',
-  },
+
+
   formContainer: {
     flex: 1,
   },
-  fullWidth: {
-    width: '100%',
-  },
+
   pageContainer: {
     backgroundColor: colors.bg,
     flex: 1,
@@ -202,11 +168,7 @@ const styles = StyleSheet.create({
   pageContent: {
     flex: 1,
   },
-  pageHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: spacing.lg,
-  },
+
   scrollView: {
     flex: 1,
   },

@@ -51001,8 +51001,21 @@ var user_useUserStore = create(function (set) {
     }
   };
 });
+;// ./packages/app/core/states/category.ts
+
+var useCategoryStore = create(function (set) {
+  return {
+    currentCategory: 'credentials',
+    setCurrentCategory: function setCurrentCategory(category) {
+      return set({
+        currentCategory: category
+      });
+    }
+  };
+});
 ;// ./packages/app/core/states/index.ts
 // Export all states-related functionality
+
 
 
 

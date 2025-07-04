@@ -202,25 +202,7 @@ const LoginPage: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  btn: {
-    alignItems: 'center',
-    borderRadius: radius.lg,
-    justifyContent: 'center',
-    minHeight: 48,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  btnDisabled: {
-    backgroundColor: colors.disabled,
-  },
-  btnPrimary: {
-    backgroundColor: colors.primary,
-  },
-  btnText: {
-    color: colors.white,
-    fontSize: typography.fontSize.md,
-    fontWeight: '600',
-  },
+
   checkboxChecked: {
     backgroundColor: colors.secondary,
     borderColor: colors.secondary,
@@ -343,14 +325,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  spinner: {
-    borderColor: colors.white,
-    borderRadius: 10,
-    borderTopColor: 'transparent',
-    borderWidth: 2,
-    height: 20,
-    width: 20,
-  },
+
 });
 
 export default LoginPage;

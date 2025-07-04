@@ -12,6 +12,7 @@ import { colors } from '@design/colors';
 import { layout, padding, radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
+import CopyButton from '../components/CopyButton';
 
 interface CredentialDetailsPageProps {
   credential: CredentialDecrypted;
@@ -30,14 +31,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
 
-  const handleCopy = (value: string, label: string) => {
-    try {
-      navigator.clipboard.writeText(value);
-      showToast(`${label} copié !`);
-    } catch {
-      setError('Erreur lors de la copie.');
-    }
-  };
+
 
   const handleLaunch = (url: string) => {
     try {
@@ -103,14 +97,13 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
               <Text style={styles.fieldValue}>{credential.username}</Text>
             </View>
             {credential.username ? (
-              <Pressable
-                style={styles.copyBtn}
-                onPress={() => handleCopy(credential.username, "Nom d&apos;utilisateur")}
-                accessibilityLabel="Copier le titulaire"
+              <CopyButton
+                textToCopy={credential.username}
+                ariaLabel="Copier le nom d'utilisateur"
+                onClick={() => showToast("Nom d'utilisateur copié !")}
               >
-                <Icon name="copy" size={22} color={'white'} />
-                <Text style={styles.copyBtnText}>copier</Text>
-              </Pressable>
+                <Text>copier</Text>
+              </CopyButton>
             ) : null}
           </View>
           <View style={styles.divider} />
@@ -130,14 +123,13 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
               </View>
             </View>
             {credential.password ? (
-              <Pressable
-                style={styles.copyBtn}
-                onPress={() => handleCopy(credential.password, "Mot de passe")}
-                accessibilityLabel="Copier le mot de passe"
+              <CopyButton
+                textToCopy={credential.password}
+                ariaLabel="Copier le mot de passe"
+                onClick={() => showToast("Mot de passe copié !")}
               >
-                <Icon name="copy" size={22} color={'white'} />
-                <Text style={styles.copyBtnText}>copier</Text>
-              </Pressable>
+                <Text>copier</Text>
+              </CopyButton>
             ) : null}
           </View>
         </View>
@@ -166,14 +158,13 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
             <Text style={styles.fieldValue}>{credential.note}</Text>
           </View>
           {credential.note ? (
-            <Pressable
-              style={styles.copyBtn}
-              onPress={() => handleCopy(credential.note, "Note")}
-              accessibilityLabel="Copier la note"
+            <CopyButton
+              textToCopy={credential.note}
+              ariaLabel="Copier la note"
+              onClick={() => showToast("Note copiée !")}
             >
-              <Icon name="copy" size={22} color={'white'} />
-              <Text style={styles.copyBtnText}>copier</Text>
-            </Pressable>
+              <Text>copier</Text>
+            </CopyButton>
           ) : null}
         </View>
 
@@ -235,21 +226,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
 };
 
 const styles = StyleSheet.create({
-  actionBtn: {
-    alignItems: 'center',
-    borderRadius: radius.lg,
-    flex: 1,
-    justifyContent: 'center',
-    marginHorizontal: spacing.xs,
-    minHeight: 48,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  actionBtnText: {
-    color: colors.white,
-    fontSize: typography.fontSize.md,
-    fontWeight: '600',
-  },
+
   actionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -258,12 +235,17 @@ const styles = StyleSheet.create({
   },
 
   backBtn: {
-    marginRight: spacing.sm,
-    padding: spacing.xs,
+    alignItems: 'center',
+    height: 44,
+    justifyContent: 'center',
+    left: 0,
+    minWidth: 44,
+    padding: spacing.sm,
+    position: 'absolute',
+    top: 0,
+    zIndex: 1,
   },
-  btnDisabled: {
-    backgroundColor: colors.disabled,
-  },
+
   cardField: {
     alignItems: 'center',
     backgroundColor: colors.bgAlt,
@@ -285,21 +267,7 @@ const styles = StyleSheet.create({
     padding: padding.md,
     width: '100%',
   },
-  copyBtn: {
-    alignItems: 'center',
-    backgroundColor: colors.secondary,
-    borderRadius: radius.sm,
-    flexDirection: 'row',
-    height: 32,
-    justifyContent: 'center',
-    marginLeft: spacing.sm,
-    paddingHorizontal: spacing.sm,
-  },
-  copyBtnText: {
-    color: colors.white,
-    fontSize: 12,
-    marginLeft: 4,
-  },
+
   credentialFieldRow: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -307,18 +275,14 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
     width: '100%',
   },
-  deleteBtn: {
-    backgroundColor: colors.error,
-  },
+
   divider: {
     borderBottomColor: colors.border,
     borderBottomWidth: 1,
     marginVertical: spacing.xs,
     width: '100%',
   },
-  editBtn: {
-    backgroundColor: colors.accent,
-  },
+
   eyeBtn: {
     marginLeft: 8,
     padding: 2,
@@ -345,7 +309,9 @@ const styles = StyleSheet.create({
   headerRow: {
     alignItems: 'center',
     flexDirection: 'row',
+    height: 44,
     marginBottom: spacing.lg,
+    position: 'relative',
     width: '100%',
   },
   iconCenter: {

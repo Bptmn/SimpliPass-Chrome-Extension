@@ -20,6 +20,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@react-native-community/datetimepicker": "^8.4.2",
     "@stablelib/chacha20poly1305": "^2.0.1",
     "@stablelib/random": "^2.0.1",
     "@types/react": "^18.2.0",
@@ -31,6 +32,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^5.5.0",
     "react-native": "^0.72.17",
+    "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-svg": "^15.12.0",
     "react-native-web": "^0.19.13",
     "react-router-dom": "^7.6.2",

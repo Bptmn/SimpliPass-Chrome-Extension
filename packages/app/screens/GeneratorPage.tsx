@@ -173,22 +173,7 @@ export const GeneratorPage: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  btn: {
-    alignItems: 'center',
-    borderRadius: radius.lg,
-    justifyContent: 'center',
-    minHeight: 48,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  btnPrimary: {
-    backgroundColor: colors.primary,
-  },
-  btnText: {
-    color: colors.white,
-    fontSize: typography.fontSize.md,
-    fontWeight: '600',
-  },
+
 
   generatedPasswordCard: {
     backgroundColor: colors.bgAlt,
@@ -257,16 +242,7 @@ const styles = StyleSheet.create({
     minHeight: 20,
     padding: padding.sm,
   },
-  regenerateBtn: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    fontWeight: '600',
-    justifyContent: 'center',
-  },
-  regenerateIcon: {
-    fontSize: 20,
-    marginRight: spacing.xs,
-  },
+
   scrollView: {
     flex: 1,
   },

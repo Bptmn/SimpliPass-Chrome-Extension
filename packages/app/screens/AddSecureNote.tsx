@@ -11,6 +11,7 @@ import { useUser } from '@hooks/useUser';
 import { SecureNoteDecrypted } from '@app/core/types/types';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Button } from '../components/Buttons';
+import { HeaderTitle } from '../components/HeaderTitle';
 
 const NOTE_COLORS = ['#2bb6a3', '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a259e6'];
 
@@ -52,17 +53,10 @@ const AddSecureNote: React.FC = () => {
     <View style={styles.pageContainer}>
       {error && <ErrorBanner message={error} />}
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.pageHeader}>
-          <Pressable
-            style={styles.backBtn}
-            onPress={() => navigate(-1)}
-            accessibilityLabel="Retour"
-            testID="back-btn"
-          >
-            <Text style={styles.backBtnText}>←</Text>
-          </Pressable>
-          <Text style={styles.detailsTitle}>Ajouter une note</Text>
-        </View>
+        <HeaderTitle 
+          title="Ajouter une note" 
+          onBackPress={() => navigate(-1)} 
+        />
         <View style={styles.formContainer}>
           <Input
             label="Nom de la note sécurisée"
@@ -78,7 +72,7 @@ const AddSecureNote: React.FC = () => {
             {NOTE_COLORS.map((c) => (
               <Pressable
                 key={c}
-                style={[styles.colorCircle, { backgroundColor: c }, color === c && styles.colorCircleSelected]}
+                style={[styles.colorCircle, { backgroundColor: c }]}
                 onPress={() => setColor(c)}
                 accessibilityLabel={`Choisir la couleur ${c}`}
                 testID={`color-btn-${c}`}
@@ -87,6 +81,7 @@ const AddSecureNote: React.FC = () => {
               </Pressable>
             ))}
           </View>
+          <View>
           <Text style={styles.inputLabel}>Note</Text>
           <TextInput
             style={styles.textArea}
@@ -98,6 +93,7 @@ const AddSecureNote: React.FC = () => {
             accessibilityLabel="Note sécurisée"
             testID="note-textarea"
           />
+          </View>
           <Button
             text="Valider"
             color={colors.secondary}
@@ -114,34 +110,7 @@ const AddSecureNote: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  backBtn: {
-    marginRight: spacing.sm,
-    padding: spacing.xs,
-  },
-  backBtnText: {
-    color: colors.primary,
-    fontSize: 28,
-  },
-  btn: {
-    alignItems: 'center',
-    borderRadius: radius.lg,
-    justifyContent: 'center',
-    marginTop: spacing.lg,
-    minHeight: 48,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  btnDisabled: {
-    backgroundColor: colors.disabled,
-  },
-  btnPrimary: {
-    backgroundColor: colors.secondary,
-  },
-  btnText: {
-    color: colors.white,
-    fontSize: typography.fontSize.md,
-    fontWeight: '600',
-  },
+
   checkMark: {
     color: colors.white,
     fontSize: 18,
@@ -150,30 +119,18 @@ const styles = StyleSheet.create({
   },
   colorCircle: {
     alignItems: 'center',
-    borderColor: colors.bg,
     borderRadius: 20,
-    borderWidth: 2,
-    height: 40,
+    height: 35,
     justifyContent: 'center',
     marginRight: spacing.md,
-    width: 40,
-  },
-  colorCircleSelected: {
-    borderColor: colors.primary,
-    borderWidth: 3,
+    width: 35,
   },
   colorRow: {
     flexDirection: 'row',
     marginBottom: spacing.lg,
     marginTop: spacing.sm,
   },
-  detailsTitle: {
-    color: colors.primary,
-    flex: 1,
-    fontSize: typography.fontSize.lg,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
+
   formContainer: {
     flex: 1,
     gap: spacing.lg,
@@ -192,11 +149,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     padding: spacing.md,
   },
-  pageHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: spacing.lg,
-  },
+
   scrollContent: {
     flexGrow: 1,
     paddingBottom: spacing.xl,
@@ -207,7 +160,7 @@ const styles = StyleSheet.create({
   textArea: {
     backgroundColor: colors.bgAlt,
     borderColor: colors.border,
-    borderRadius: radius.xl,
+    borderRadius: radius.lg,
     borderWidth: 1,
     color: colors.text,
     fontSize: typography.fontSize.sm,
@@ -215,6 +168,7 @@ const styles = StyleSheet.create({
     minHeight: 120,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
+    placeholderTextColor: colors.accent,
     textAlignVertical: 'top',
     width: '100%',
   },

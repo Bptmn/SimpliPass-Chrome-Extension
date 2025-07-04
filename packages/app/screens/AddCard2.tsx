@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView, TextInput, Platform } from 'react-native';
 import { Input } from '../components/InputVariants';
 import { ItemBankCard } from '../components/ItemBankCard';
 import { colors } from '@design/colors';
-import { radius, spacing } from '@design/layout';
+import { spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';
 import { addItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
 import { useUser } from '@hooks/useUser';
 import { BankCardDecrypted } from '@app/core/types/types';
 import { Button } from '../components/Buttons';
+import { HeaderTitle } from '../components/HeaderTitle';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 const CARD_COLORS = ['#2bb6a3', '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a259e6'];
 
@@ -28,6 +30,7 @@ const AddCard2: React.FC = () => {
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
 
   const handleConfirm = async () => {
     if (!user) return;
@@ -65,6 +68,14 @@ const AddCard2: React.FC = () => {
     }
   };
 
+  const handleDateConfirm = (date: Date) => {
+    // Format as MM/YY
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yy = String(date.getFullYear()).slice(-2);
+    setExpirationDate(`${mm}/${yy}`);
+    setDatePickerVisible(false);
+  };
+
   // Card preview object
   const previewCard: BankCardDecrypted = {
     id: 'preview',
@@ -87,25 +98,25 @@ const AddCard2: React.FC = () => {
   return (
     <View style={styles.pageContainer}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.pageHeader}>
-          <Pressable style={styles.backBtn} onPress={() => navigate(-1)} accessibilityLabel="Retour">
-            <Text style={styles.backBtnText}>←</Text>
-          </Pressable>
-          <Text style={styles.detailsTitle}>Ajouter une carte bancaire</Text>
-        </View>
+        <HeaderTitle 
+          title="Ajouter une carte bancaire" 
+          onBackPress={() => navigate(-1)} 
+        />
         <ItemBankCard cred={previewCard} />
+        <View>
         <Text style={styles.inputLabel}>Choisissez la couleur de votre carte</Text>
         <View style={styles.colorRow}>
           {CARD_COLORS.map((c) => (
             <Pressable
               key={c}
-              style={[styles.colorCircle, { backgroundColor: c }, color === c && styles.colorCircleSelected]}
+              style={[styles.colorCircle, { backgroundColor: c }]}
               onPress={() => setColor(c)}
               accessibilityLabel={`Choisir la couleur ${c}`}
             >
               {color === c && <Text style={styles.checkMark}>✓</Text>}
             </Pressable>
           ))}
+        </View>
         </View>
         <Input
           label="Nom du titulaire"
@@ -126,24 +137,56 @@ const AddCard2: React.FC = () => {
           _required
         />
         <View style={styles.row2col}>
-          <Input
-            label="Date d'expiration"
-            _id="expirationDate"
-            type="text"
-            value={expirationDate}
-            onChange={setExpirationDate}
-            placeholder="Month/Year"
-            _required
-          />
-          <Input
-            label="CVV"
-            _id="cvv"
-            type="text"
-            value={cvv}
-            onChange={setCvv}
-            placeholder="Entrez un CVV..."
-            _required
-          />
+          <View style={styles.inputColumn}>
+            <Text style={styles.inputLabel}>Date d&apos;expiration</Text>
+            {Platform.OS === 'web' ? (
+              <input
+                type="month"
+                style={{ ...styles.input, height: 48, width: '100%' }}
+                value={expirationDate ? `20${expirationDate.split('/')[1]}-${expirationDate.split('/')[0]}` : ''}
+                onChange={e => {
+                  const [yyyy, mm] = e.target.value.split('-');
+                  setExpirationDate(`${mm}/${yyyy.slice(-2)}`);
+                }}
+                placeholder="MM/YY"
+              />
+            ) : (
+              <>
+                <Pressable
+                  style={styles.input}
+                  onPress={() => setDatePickerVisible(true)}
+                  accessibilityLabel="Sélectionner la date d'expiration"
+                >
+                  <Text style={{ color: expirationDate ? colors.text : colors.accent }}>
+                    {expirationDate || 'MM/YY'}
+                  </Text>
+                </Pressable>
+                <DateTimePickerModal
+                  isVisible={isDatePickerVisible}
+                  mode="date"
+                  display="spinner"
+                  onConfirm={handleDateConfirm}
+                  onCancel={() => setDatePickerVisible(false)}
+                  minimumDate={new Date(2000, 0, 1)}
+                  maximumDate={new Date(2100, 11, 31)}
+                />
+              </>
+            )}
+          </View>
+          <View style={styles.inputColumn}>
+            <Text style={styles.inputLabel}>Code secret (CVV)</Text>
+            <TextInput
+              style={styles.input}
+              value={cvv}
+              onChangeText={setCvv}
+              placeholder="123"
+              placeholderTextColor={colors.accent}
+              maxLength={4}
+              keyboardType="numeric"
+              secureTextEntry={true}
+              accessibilityLabel="Code secret CVV"
+            />
+          </View>
         </View>
         <Input
           label="Note (optionnel)"
@@ -167,34 +210,6 @@ const AddCard2: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  backBtn: {
-    marginRight: spacing.sm,
-    padding: spacing.xs,
-  },
-  backBtnText: {
-    color: colors.primary,
-    fontSize: 28,
-  },
-  btn: {
-    alignItems: 'center',
-    borderRadius: radius.lg,
-    justifyContent: 'center',
-    marginTop: spacing.lg,
-    minHeight: 48,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  btnDisabled: {
-    backgroundColor: colors.disabled,
-  },
-  btnPrimary: {
-    backgroundColor: colors.primary,
-  },
-  btnText: {
-    color: colors.white,
-    fontSize: typography.fontSize.md,
-    fontWeight: '600',
-  },
   checkMark: {
     color: colors.white,
     fontSize: 18,
@@ -203,29 +218,15 @@ const styles = StyleSheet.create({
   },
   colorCircle: {
     alignItems: 'center',
-    borderColor: colors.bg,
     borderRadius: 20,
-    borderWidth: 2,
-    height: 40,
+    height: 35,
     justifyContent: 'center',
     marginRight: spacing.md,
-    width: 40,
-  },
-  colorCircleSelected: {
-    borderColor: colors.primary,
-    borderWidth: 3,
+    width: 35,
   },
   colorRow: {
     flexDirection: 'row',
-    marginBottom: spacing.lg,
-    marginTop: spacing.sm,
-  },
-  detailsTitle: {
-    color: colors.primary,
-    flex: 1,
-    fontSize: typography.fontSize.lg,
-    fontWeight: '600',
-    textAlign: 'center',
+    marginTop: spacing.sm
   },
   errorText: {
     color: colors.error,
@@ -233,30 +234,41 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     textAlign: 'center',
   },
+  input: {
+    backgroundColor: colors.bgAlt,
+    borderColor: colors.border,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    color: colors.text,
+    fontSize: typography.fontSize.sm,
+    fontWeight: '500',
+    height: 48,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.md,
+    placeholderTextColor: colors.accent,
+    width: '100%',
+  },
+  inputColumn: {
+    flex: 1,
+  },
   inputLabel: {
     color: colors.primary,
-    fontSize: typography.fontSize.md,
+    fontSize: typography.fontSize.sm,
     fontWeight: '500',
-    marginBottom: spacing.xs,
-    marginLeft: spacing.sm,
-    marginTop: spacing.lg,
+    paddingBottom: spacing.xs,
   },
   pageContainer: {
     backgroundColor: colors.bg,
     flex: 1,
     padding: spacing.md,
   },
-  pageHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: spacing.lg,
-  },
   row2col: {
     flexDirection: 'row',
-    gap: spacing.md,
+    gap: spacing.xl,
   },
   scrollContent: {
     flexGrow: 1,
+    gap: spacing.md,
     paddingBottom: spacing.xl,
   },
   scrollView: {

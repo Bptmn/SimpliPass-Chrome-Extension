@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { radius, spacing } from '@design/layout';
+import { spacing } from '@design/layout';
 import { typography } from '@design/typography';
 
 export type ButtonSize = 'small' | 'medium' | 'big';
@@ -138,23 +138,23 @@ export const ButtonOutline: React.FC<ButtonProps> = ({
 const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
+    alignSelf: 'baseline',
     justifyContent: 'center',
     marginVertical: spacing.sm,
-    alignSelf: 'baseline',
-  },
-  buttonText: {
-    textAlign: 'center',
-    letterSpacing: 0.2,
   },
   buttonOutline: {
     alignItems: 'center',
+    alignSelf: 'baseline',
     backgroundColor: 'none',
     justifyContent: 'center',
-    alignSelf: 'baseline',
     marginVertical: spacing.sm,
   },
   buttonOutlineText: {
-    textAlign: 'center',
     letterSpacing: 0.2,
+    textAlign: 'center',
+  },
+  buttonText: {
+    letterSpacing: 0.2,
+    textAlign: 'center',
   },
 }); 

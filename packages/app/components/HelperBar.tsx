@@ -15,15 +15,31 @@ import { colors } from '@design/colors';
 import { layout, radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { useUserStore } from '@app/core/states/user';
+import { useCategoryStore } from '@app/core/states';
 
 export const HelperBar: React.FC = () => {
   const navigate = useNavigate();
   const currentUser = useUserStore((state) => state.user);
+  const { currentCategory } = useCategoryStore();
 
-  // Handler for the add credential button
-  const handleAddCredential = () => {
-    navigate('/add-credential');
+  // Handler for the add button, dynamic by category
+  const handleAdd = () => {
+    if (currentCategory === 'credentials') {
+      navigate('/add-credential');
+    } else if (currentCategory === 'bankCards') {
+      navigate('/add-card-1');
+    } else if (currentCategory === 'secureNotes') {
+      navigate('/add-securenote');
+    }
   };
+
+  // Dynamic button text
+  const addButtonText =
+    currentCategory === 'credentials'
+      ? 'Ajouter un identifiant'
+      : currentCategory === 'bankCards'
+      ? 'Ajouter une carte'
+      : 'Ajouter une note';
 
   // Handler for the FAQ button
   const handleFAQ = () => {
@@ -52,12 +68,12 @@ export const HelperBar: React.FC = () => {
       <View style={styles.helperBarLeft}>
         <Pressable
           style={styles.helperBtnAdd}
-          onPress={handleAddCredential}
+          onPress={handleAdd}
           accessibilityRole="button"
-          accessibilityLabel="Ajouter un identifiant"
+          accessibilityLabel={addButtonText}
         >
           <Icon name="add" size={25} color={colors.white} />
-          <Text style={styles.helperBtnTextAdd}>Ajouter</Text>
+          <Text style={styles.helperBtnTextAdd}>{addButtonText}</Text>
         </Pressable>
       </View>
       <View style={styles.helperBarRight}>
@@ -148,7 +164,7 @@ const styles = StyleSheet.create({
   },
   helperBtnTextAdd: {
     color: colors.white,
-    fontSize: typography.fontSize.md,
+    fontSize: typography.fontSize.sm,
     marginRight: spacing.xs,
     textAlign: 'center',
   },
