@@ -1,5 +1,4 @@
 const path = require('path');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   stories: [
@@ -9,6 +8,8 @@ module.exports = {
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
+    '@storybook/addon-viewport',
+    '@storybook/addon-measure',
   ],
   framework: {
     name: '@storybook/react-webpack5',
@@ -18,43 +19,21 @@ module.exports = {
     autodocs: 'tag',
   },
   webpackFinal: async (config) => {
-    // Add TypeScript and JSX loader
-    config.module.rules.push({
-      test: /\.(ts|tsx|js|jsx)$/,
-      exclude: /node_modules/,
-      use: [
-        {
-          loader: require.resolve('babel-loader'),
-          options: {
-            presets: [
-              ['@babel/preset-env', { targets: 'defaults' }],
-              '@babel/preset-react',
-              '@babel/preset-typescript',
-            ],
-            plugins: [
-              ['@babel/plugin-proposal-class-properties', { loose: true }],
-              ['@babel/plugin-proposal-private-methods', { loose: true }],
-              ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
-            ],
-          },
-        },
-      ],
-    });
-
     // Add React Native Web alias
     config.resolve.alias = {
       ...config.resolve.alias,
       'react-native$': 'react-native-web',
-      '@app': require('path').resolve(__dirname, '../packages/app'),
-      '@design': require('path').resolve(__dirname, '../packages/app/design'),
-      '@components': require('path').resolve(__dirname, '../packages/app/components'),
-      '@screens': require('path').resolve(__dirname, '../packages/app/screens'),
-      '@hooks': require('path').resolve(__dirname, '../packages/app/hooks'),
-      '@utils': require('path').resolve(__dirname, '../packages/app/utils'),
-      '@logic': require('path').resolve(__dirname, '../packages/app/logic'),
-      '@shared': require('path').resolve(__dirname, '../packages/shared'),
-      '@extension': require('path').resolve(__dirname, '../packages/extension'),
-      '@mobile': require('path').resolve(__dirname, '../packages/mobile'),
+      '@app': path.resolve(__dirname, '../packages/app'),
+      '@design': path.resolve(__dirname, '../packages/app/design'),
+      '@components': path.resolve(__dirname, '../packages/app/components'),
+      '@screens': path.resolve(__dirname, '../packages/app/screens'),
+      '@hooks': path.resolve(__dirname, '../packages/app/hooks'),
+      '@utils': path.resolve(__dirname, '../packages/app/utils'),
+      '@logic': path.resolve(__dirname, '../packages/app/core/logic'),
+      '@core': path.resolve(__dirname, '../packages/app/core'),
+      '@shared': path.resolve(__dirname, '../packages/shared'),
+      '@extension': path.resolve(__dirname, '../packages/extension'),
+      '@mobile': path.resolve(__dirname, '../packages/mobile'),
     };
     
     // Add web extensions
@@ -67,7 +46,31 @@ module.exports = {
       '.jsx',
       '.json',
     ];
-    
+
+    // Add babel-loader for TypeScript and JSX files
+    config.module.rules.push({
+      test: /\.(ts|tsx|js|jsx)$/,
+      exclude: /node_modules/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          configFile: path.resolve(__dirname, '../babel.config.js'),
+        },
+      },
+    });
+
+    // Ensure CSS files are handled properly
+    config.module.rules = config.module.rules.map(rule => {
+      if (rule.test && rule.test.toString().includes('css')) {
+        return {
+          ...rule,
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader'],
+        };
+      }
+      return rule;
+    });
+
     return config;
   },
   typescript: {

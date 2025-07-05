@@ -1,5 +1,5 @@
 import React from 'react';
-import { ItemSecureNote } from '../ItemSecureNote';
+import ItemSecureNote from '../ItemSecureNote';
 import { SecureNoteDecrypted } from '@app/core/types/types';
 
 export default {

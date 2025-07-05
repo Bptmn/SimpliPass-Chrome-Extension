@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { View, Text, Pressable, StyleSheet, ScrollView, TextInput, Platform } from 'react-native';
 import { Input } from '../components/InputVariants';
-import { ItemBankCard } from '../components/ItemBankCard';
+import ItemBankCard from '../components/ItemBankCard';
 import { colors } from '@design/colors';
-import { spacing, radius } from '@design/layout';
+import { spacing, radius, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { addItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
@@ -13,6 +13,7 @@ import { BankCardDecrypted } from '@app/core/types/types';
 import { Button } from '../components/Buttons';
 import { HeaderTitle } from '../components/HeaderTitle';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { ColorSelector } from '../components/ColorSelector';
 
 const CARD_COLORS = ['#2bb6a3', '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a259e6'];
 
@@ -31,6 +32,23 @@ const AddCard2: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+
+  // Helper for web: generate month and year options
+  const currentYear = new Date().getFullYear();
+  const monthOptions = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
+  const yearOptions = Array.from({ length: 21 }, (_, i) => String(currentYear + i));
+  const selectedMonth = expirationDate.split('/')[0] || '';
+  const selectedYear = expirationDate.split('/')[1] ? `20${expirationDate.split('/')[1]}` : '';
+
+  // Card number mask helper
+  function formatCardNumber(value: string) {
+    return value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
+  }
+  function handleCardNumberChange(val: string) {
+    // Only keep digits, max 16
+    const digits = val.replace(/\D/g, '').slice(0, 16);
+    setCardNumber(digits);
+  }
 
   const handleConfirm = async () => {
     if (!user) return;
@@ -59,7 +77,7 @@ const AddCard2: React.FC = () => {
         bankName: bankName || '',
         bankDomain: bankDomain || '',
       };
-      await addItem(user.uid, userSecretKey, newCard);
+      await addItem(user.uid, userSecretKey, newCard, 'bank_card');
       navigate('/');
     } catch (e: any) {
       setError(e.message || 'Erreur lors de la création de la carte.');
@@ -96,142 +114,136 @@ const AddCard2: React.FC = () => {
   };
 
   return (
-    <View style={styles.pageContainer}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <HeaderTitle 
-          title="Ajouter une carte bancaire" 
-          onBackPress={() => navigate(-1)} 
-        />
-        <ItemBankCard cred={previewCard} />
-        <View>
-        <Text style={styles.inputLabel}>Choisissez la couleur de votre carte</Text>
-        <View style={styles.colorRow}>
-          {CARD_COLORS.map((c) => (
-            <Pressable
-              key={c}
-              style={[styles.colorCircle, { backgroundColor: c }]}
-              onPress={() => setColor(c)}
-              accessibilityLabel={`Choisir la couleur ${c}`}
-            >
-              {color === c && <Text style={styles.checkMark}>✓</Text>}
-            </Pressable>
-          ))}
-        </View>
-        </View>
-        <Input
-          label="Nom du titulaire"
-          _id="owner"
-          type="text"
-          value={owner}
-          onChange={setOwner}
-          placeholder="Entrez un nom..."
-          _required
-        />
-        <Input
-          label="Numéro de carte"
-          _id="cardNumber"
-          type="text"
-          value={cardNumber}
-          onChange={setCardNumber}
-          placeholder="Entrez un numéro..."
-          _required
-        />
-        <View style={styles.row2col}>
-          <View style={styles.inputColumn}>
-            <Text style={styles.inputLabel}>Date d&apos;expiration</Text>
-            {Platform.OS === 'web' ? (
-              <input
-                type="month"
-                style={{ ...styles.input, height: 48, width: '100%' }}
-                value={expirationDate ? `20${expirationDate.split('/')[1]}-${expirationDate.split('/')[0]}` : ''}
-                onChange={e => {
-                  const [yyyy, mm] = e.target.value.split('-');
-                  setExpirationDate(`${mm}/${yyyy.slice(-2)}`);
-                }}
-                placeholder="MM/YY"
-              />
-            ) : (
-              <>
-                <Pressable
-                  style={styles.input}
-                  onPress={() => setDatePickerVisible(true)}
-                  accessibilityLabel="Sélectionner la date d'expiration"
-                >
-                  <Text style={{ color: expirationDate ? colors.text : colors.accent }}>
-                    {expirationDate || 'MM/YY'}
-                  </Text>
-                </Pressable>
-                <DateTimePickerModal
-                  isVisible={isDatePickerVisible}
-                  mode="date"
-                  display="spinner"
-                  onConfirm={handleDateConfirm}
-                  onCancel={() => setDatePickerVisible(false)}
-                  minimumDate={new Date(2000, 0, 1)}
-                  maximumDate={new Date(2100, 11, 31)}
-                />
-              </>
-            )}
-          </View>
-          <View style={styles.inputColumn}>
-            <Text style={styles.inputLabel}>Code secret (CVV)</Text>
-            <TextInput
-              style={styles.input}
-              value={cvv}
-              onChangeText={setCvv}
-              placeholder="123"
-              placeholderTextColor={colors.accent}
-              maxLength={4}
-              keyboardType="numeric"
-              secureTextEntry={true}
-              accessibilityLabel="Code secret CVV"
+    <View style={pageStyles.pageContainer}>
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
+        <View style={pageStyles.pageContent}>
+          <HeaderTitle 
+            title="Ajouter une carte" 
+            onBackPress={() => navigate(-1)} 
+          />
+          <ItemBankCard cred={previewCard} />
+          <ColorSelector
+            title="Choisissez la couleur de votre carte"
+            value={color}
+            onChange={setColor}
+          />
+          <View style={pageStyles.formContainer}>
+            <Input
+              label="Nom du titulaire"
+              _id="owner"
+              type="text"
+              value={owner}
+              onChange={setOwner}
+              placeholder="Entrez un nom..."
+              _required
             />
+            <Input
+              label="Numéro de carte"
+              _id="cardNumber"
+              type="text"
+              value={formatCardNumber(cardNumber)}
+              onChange={handleCardNumberChange}
+              placeholder="Entrez un numéro..."
+              _required
+            />
+            <View style={styles.row2col}>
+              <View style={styles.inputColumn}>
+                <Text style={styles.inputLabel}>Date d&apos;expiration</Text>
+                {Platform.OS === 'web' ? (
+                  <View style={{ flexDirection: 'row', gap: 8 }}>
+                    <select
+                      value={selectedMonth}
+                      onChange={e => {
+                        const mm = e.target.value;
+                        setExpirationDate(`${mm}/${selectedYear.slice(-2)}`);
+                      }}
+                      style={{ ...styles.input, width: 80, marginRight: 8 }}
+                    >
+                      <option value=""><Text>Mois</Text></option>
+                      {monthOptions.map(m => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                    <select
+                      value={selectedYear}
+                      onChange={e => {
+                        const yyyy = e.target.value;
+                        setExpirationDate(`${selectedMonth}/${yyyy.slice(-2)}`);
+                      }}
+                      style={{ ...styles.input, width: 100 }}
+                    >
+                      <option value=""><Text>Année</Text></option>
+                      {yearOptions.map(y => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
+                    </select>
+                  </View>
+                ) : (
+                  <>
+                    <Pressable
+                      style={styles.input}
+                      onPress={() => setDatePickerVisible(true)}
+                      accessibilityLabel="Sélectionner la date d'expiration"
+                    >
+                      <Text style={{ color: expirationDate ? colors.text : colors.accent }}>
+                        {expirationDate || 'MM/YY'}
+                      </Text>
+                    </Pressable>
+                    <DateTimePickerModal
+                      isVisible={isDatePickerVisible}
+                      mode="date"
+                      display="spinner"
+                      onConfirm={handleDateConfirm}
+                      onCancel={() => setDatePickerVisible(false)}
+                      minimumDate={new Date(2000, 0, 1)}
+                      maximumDate={new Date(2100, 11, 31)}
+                    />
+                  </>
+                )}
+              </View>
+              <View style={styles.inputColumn}>
+                <Text style={styles.inputLabel}>Code secret (CVV)</Text>
+                <TextInput
+                  style={styles.input}
+                  value={cvv}
+                  onChangeText={setCvv}
+                  placeholder="123"
+                  placeholderTextColor={colors.accent}
+                  maxLength={4}
+                  keyboardType="numeric"
+                  secureTextEntry={true}
+                  accessibilityLabel="Code secret CVV"
+                />
+              </View>
+            </View>
+            <Input
+              label="Note (optionnel)"
+              _id="note"
+              type="text"
+              value={note}
+              onChange={setNote}
+              placeholder="Entrez une note si vous le souhaitez..."
+            />
+            <Button
+              text="Valider"
+              color={colors.primary}
+              size="medium"
+              onPress={handleConfirm}
+              disabled={loading}
+            />
+            {error && <Text style={styles.errorText}>{error}</Text>}
           </View>
         </View>
-        <Input
-          label="Note (optionnel)"
-          _id="note"
-          type="text"
-          value={note}
-          onChange={setNote}
-          placeholder="Entrez une note si vous le souhaitez..."
-        />
-        <Button
-          text="Valider"
-          color={colors.primary}
-          size="medium"
-          onPress={handleConfirm}
-          disabled={loading}
-        />
-        {error && <Text style={styles.errorText}>{error}</Text>}
       </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  checkMark: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  colorCircle: {
-    alignItems: 'center',
-    borderRadius: 20,
-    height: 35,
-    justifyContent: 'center',
-    marginRight: spacing.md,
-    width: 35,
-  },
-  colorRow: {
-    flexDirection: 'row',
-    marginTop: spacing.sm
-  },
   errorText: {
     color: colors.error,
-    fontSize: typography.fontSize.md,
-    marginTop: spacing.lg,
+    fontSize: typography.fontSize.sm,
+    marginTop: spacing.sm,
     textAlign: 'center',
   },
   input: {
@@ -252,27 +264,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inputLabel: {
-    color: colors.primary,
+    color: colors.text,
     fontSize: typography.fontSize.sm,
-    fontWeight: '500',
+    fontWeight: typography.fontWeight.medium,
+    marginBottom: spacing.xs,
     paddingBottom: spacing.xs,
-  },
-  pageContainer: {
-    backgroundColor: colors.bg,
-    flex: 1,
-    padding: spacing.md,
   },
   row2col: {
     flexDirection: 'row',
     gap: spacing.xl,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    gap: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  scrollView: {
-    flex: 1,
   },
 });
 

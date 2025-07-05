@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { useUser } from '@hooks/useUser';
 import { passwordGenerator } from '@utils/passwordGenerator';
 import { addItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
 import { CredentialDecrypted } from '@app/core/types/types';
 import { ErrorBanner } from '../components/ErrorBanner';
-import { Icon } from '../components/Icon';
-import Toast, { useToast } from '../components/Toast';
+import { Toast, useToast } from '../components/Toast';
 import { generateItemKey } from '@utils/crypto';
 import { Input, InputPasswordGenerator } from '../components/InputVariants';
 import { colors } from '@design/colors';
-import { spacing } from '@design/layout';
+import { pageStyles } from '@design/layout';
 import { Button } from '../components/Buttons';
 import { HeaderTitle } from '../components/HeaderTitle';
 
@@ -39,10 +38,6 @@ export const AddCredentialPage: React.FC<AddCredentialPageProps> = ({ link = '',
     }
   }, [user?.email]);
 
-  const handleGeneratePassword = () => {
-    setPassword(passwordGenerator(true, true, true, true, 16));
-  };
-
   const handleSubmit = async () => {
     if (!user) {
       setError('Utilisateur non connecté');
@@ -68,7 +63,7 @@ export const AddCredentialPage: React.FC<AddCredentialPageProps> = ({ link = '',
         itemKey: generateItemKey(), // Generate a random itemKey
       };
 
-      await addItem(user.uid, userSecretKey, newCredential);
+      await addItem(user.uid, userSecretKey, newCredential, 'credential');
       showToast('Identifiant ajouté avec succès');
       setTimeout(() => {
         if (onSuccess) onSuccess();
@@ -82,16 +77,16 @@ export const AddCredentialPage: React.FC<AddCredentialPageProps> = ({ link = '',
   };
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
       <Toast message={toast} />
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={styles.pageContent}>
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
+        <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Ajouter un identifiant" 
             onBackPress={() => navigate(-1)} 
           />
-          <View style={styles.formContainer}>
+          <View style={pageStyles.formContainer}>
             <Input
               label="Nom de l'identifiant"
               _id="title"
@@ -116,12 +111,8 @@ export const AddCredentialPage: React.FC<AddCredentialPageProps> = ({ link = '',
               _id="password"
               value={password}
               onChange={setPassword}
-              onGenerate={handleGeneratePassword}
               placeholder="Entrez un mot de passe..."
               _required
-              passwordStrength="Sécurité forte"
-              Icon={Icon}
-              _onAdvancedOptions={() => {}}
             />
             <Input
               label="Lien"
@@ -152,24 +143,3 @@ export const AddCredentialPage: React.FC<AddCredentialPageProps> = ({ link = '',
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-
-
-  formContainer: {
-    flex: 1,
-  },
-
-  pageContainer: {
-    backgroundColor: colors.bg,
-    flex: 1,
-    padding: spacing.md,
-  },
-  pageContent: {
-    flex: 1,
-  },
-
-  scrollView: {
-    flex: 1,
-  },
-}); 

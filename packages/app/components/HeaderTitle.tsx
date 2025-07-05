@@ -3,11 +3,11 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { colors } from '@design/colors';
 import { spacing } from '@design/layout';
 import { typography } from '@design/typography';
+import { Icon } from './Icon';
 
 interface HeaderTitleProps {
   title: string;
   onBackPress: () => void;
-  backButtonText?: string;
   testID?: string;
   accessibilityLabel?: string;
 }
@@ -19,7 +19,6 @@ interface HeaderTitleProps {
 export const HeaderTitle: React.FC<HeaderTitleProps> = ({
   title,
   onBackPress,
-  backButtonText = '←',
   testID = 'header-title',
   accessibilityLabel,
 }) => {
@@ -31,7 +30,9 @@ export const HeaderTitle: React.FC<HeaderTitleProps> = ({
         accessibilityLabel={accessibilityLabel || 'Retour'}
         testID="back-btn"
       >
-        <Text style={styles.backButtonText}>{backButtonText}</Text>
+        <View style={{ transform: [{ scaleX: -1 }] }}>
+          <Icon name="arrowRight" size={28} color={colors.primary} />
+        </View>
       </Pressable>
       <Text style={styles.title}>{title}</Text>
     </View>
@@ -45,20 +46,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     left: 0,
     minWidth: 44,
-    padding: spacing.sm,
+    paddingRight: spacing.sm,
     position: 'absolute',
     top: 0,
     zIndex: 1,
-  },
-  backButtonText: {
-    color: colors.primary,
-    fontSize: 28,
   },
   headerContainer: {
     alignItems: 'center',
     flexDirection: 'row',
     height: 44,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.sm,
     position: 'relative',
     width: '100%',
   },

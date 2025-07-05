@@ -6,10 +6,11 @@ import { EmailConfirmationPage } from './EmailConfirmationPage';
 import { loginUser, confirmMfa } from '@app/core/logic/user';
 import { Input } from '../components/InputVariants';
 import { colors } from '@design/colors';
-import { layout, radius, spacing } from '@design/layout';
+import { layout, radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { useUserStore } from '@app/core/states/user';
 import { Button } from '../components/Buttons';
+import { InputPasswordGenerator } from '../components/InputVariants';
 
 const REMEMBER_EMAIL_KEY = 'simplipass_remembered_email';
 
@@ -19,7 +20,6 @@ const LoginPage: React.FC = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [rememberEmail, setRememberEmail] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [mfaStep, setMfaStep] = useState(false);
   const [_mfaUser, setMfaUser] = useState<unknown>(null);
@@ -110,7 +110,7 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={styles.pageContainer}>
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={pageStyles.pageContainer}>
         <View style={styles.pageContent}>
           {/* Logo */}
           <View style={styles.loginLogo}>
@@ -120,7 +120,7 @@ const LoginPage: React.FC = () => {
           </View>
           <View style={styles.loginForm}>
             <View style={styles.formSection}>
-              <Text style={styles.inputLabel}>Adresse email</Text>
+              <Text>Adresse email</Text>
               <View style={styles.inputWrapper}>
                 <Input
                   _id="login-email"
@@ -161,29 +161,19 @@ const LoginPage: React.FC = () => {
               </View>
             </View>
             <View style={styles.formSection}>
-              <Text style={styles.inputLabel}>Mot de passe maître</Text>
+              <Text>Mot de passe maître</Text>
               <View style={styles.inputWrapper}>
-                <Input
+                <InputPasswordGenerator
+                  label="Mot de passe maître"
                   _id="login-password"
-                  label=""
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Votre mot de passe maître.."
-                  _autoComplete="current-password"
                   value={password}
                   onChange={setPassword}
+                  placeholder="Votre mot de passe maître.."
+                  _autoComplete="current-password"
+                  _required
                   error={passwordError}
                   disabled={isLoading}
                 />
-                <Pressable
-                  style={styles.loginEyeBtn}
-                  onPress={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
-                  accessibilityLabel={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-                >
-                  <Text style={styles.eyeBtnText}>
-                    {showPassword ? '🙈' : '👁️'}
-                  </Text>
-                </Pressable>
               </View>
               {passwordError ? <Text style={styles.errorMessage}>{passwordError}</Text> : null}
             </View>
@@ -221,20 +211,10 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     marginTop: spacing.xs,
   },
-  eyeBtnText: {
-    color: colors.accent,
-    fontSize: 20,
-  },
   formSection: {
     alignItems: 'stretch',
     flexDirection: 'column',
     marginBottom: spacing.lg,
-  },
-  inputLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
-    fontWeight: '500',
-    marginBottom: spacing.xs,
   },
   inputWrapper: {
     alignItems: 'center',
@@ -281,17 +261,6 @@ const styles = StyleSheet.create({
     color: colors.primary,
     marginRight: 2,
   },
-  loginEyeBtn: {
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xs,
-    position: 'absolute',
-    right: spacing.sm,
-    top: 0,
-  },
   loginForm: {
     alignItems: 'stretch',
     flexDirection: 'column',
@@ -311,19 +280,9 @@ const styles = StyleSheet.create({
   loginSimpli: {
     color: colors.primary,
   },
-  pageContainer: {
-    alignItems: 'center',
-    backgroundColor: layout.primaryBackground,
-    flex: 1,
-    justifyContent: 'center',
-    padding: spacing.lg,
-  },
   pageContent: {
     maxWidth: 360,
     width: '100%',
-  },
-  scrollView: {
-    flex: 1,
   },
 
 });

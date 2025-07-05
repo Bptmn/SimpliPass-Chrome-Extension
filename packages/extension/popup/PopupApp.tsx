@@ -29,6 +29,7 @@ import { fetchUserProfile } from '@app/core/logic/user';
 import AddCard1 from '@app/screens/AddCard1';
 import AddCard2 from '@app/screens/AddCard2';
 import AddSecureNote from '@app/screens/AddSecureNote';
+import { ModifyCredentialPage } from '@app/screens/ModifyCredentialPage';
 
 export const PopupApp: React.FC = () => {
   console.log('PopupApp component rendering...');
@@ -146,6 +147,7 @@ export const PopupApp: React.FC = () => {
                 <Route path="/add-card-1" element={<AddCard1 />} />
                 <Route path="/add-card-2" element={<AddCard2 />} />
                 <Route path="/add-securenote" element={<AddSecureNote />} />
+                <Route path="/modify-credential" element={<ModifyCredentialPage />} />
               </Routes>
             </ScrollView>
             <HelperBar />

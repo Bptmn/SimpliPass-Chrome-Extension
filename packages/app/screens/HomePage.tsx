@@ -13,14 +13,16 @@ import { getUserSecretKey } from '@app/core/logic/user';
 import { CredentialCard } from '../components/CredentialCard';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
-import SkeletonCard from '../components/SkeletonCard';
+import { SkeletonCard } from '../components/SkeletonCard';
 import { useToast } from '../components/Toast';
 import { colors } from '@design/colors';
-import { radius, spacing } from '@design/layout';
+import { radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { useUserStore } from '@app/core/states/user';
-import { ItemBankCard } from '../components/ItemBankCard';
-import { ItemSecureNote } from '../components/ItemSecureNote';
+import ItemBankCard from '../components/ItemBankCard';
+import ItemSecureNote from '../components/ItemSecureNote';
+import { BankCardDetailsPage } from './BankCardDetailsPage';
+import { SecureNoteDetailsPage } from './SecureNoteDetailsPage';
 
 /**
  * Custom hook to debounce a value by a given delay.
@@ -54,6 +56,8 @@ export const HomePage: React.FC<HomePageProps> = ({
   // State for search filter, selected credential, error, and loading
   const [filter, setFilter] = useState('');
   const [selected, setSelected] = useState<CredentialDecrypted | null>(null);
+  const [selectedBankCard, setSelectedBankCard] = useState<any | null>(null);
+  const [selectedSecureNote, setSelectedSecureNote] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { showToast } = useToast();
@@ -127,11 +131,17 @@ export const HomePage: React.FC<HomePageProps> = ({
   if (selected) {
     return <CredentialDetailsPage credential={selected} onBack={() => setSelected(null)} />;
   }
+  if (selectedBankCard) {
+    return <BankCardDetailsPage card={selectedBankCard} onBack={() => setSelectedBankCard(null)} />;
+  }
+  if (selectedSecureNote) {
+    return <SecureNoteDetailsPage note={selectedSecureNote} onBack={() => setSelectedSecureNote(null)} />;
+  }
 
   // Show loading spinner only if loading and user is null
   if (loading && user === null) {
     return (
-      <View style={styles.pageContainer}>
+      <View style={pageStyles.pageContainer}>
         <Text style={styles.loadingSpinner}>Chargement du profil utilisateur...</Text>
       </View>
     );
@@ -139,7 +149,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   // Main render: search, suggestions, all credentials, error, toast
   return (
-    <View style={styles.pageContainer}>
+    <View style={pageStyles.pageContainer}>
       {/* Error banner if any error occurs */}
       {error && <ErrorBanner message={error} />}
       
@@ -198,9 +208,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                 {suggestions.map((item) => (
                   <CredentialCard
                     key={item.id}
-                    cred={item}
+                    credential={item}
                     onCopy={() => showToast('Mot de passe copié !')}
-                    onClick={() => handleCardClick(item)}
+                    onPress={() => handleCardClick(item)}
                   />
                 ))}
               </View>
@@ -236,18 +246,18 @@ export const HomePage: React.FC<HomePageProps> = ({
                     return (
                       <CredentialCard
                         key={item.id}
-                        cred={item}
+                        credential={item}
                         onCopy={() => showToast('Mot de passe copié !')}
-                        onClick={() => handleCardClick(item)}
+                        onPress={() => handleCardClick(item)}
                       />
                     );
                   } else {
                     return (
                       <CredentialCard
                         key={item.id}
-                        cred={item as any}
+                        credential={item as any}
                         onCopy={() => showToast('Contenu copié !')}
-                        onClick={() => handleOtherItemClick(item)}
+                        onPress={() => handleOtherItemClick(item)}
                       />
                     );
                   }
@@ -266,7 +276,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <Text style={styles.emptyState}>Aucune carte trouvée.</Text>
               ) : (
                 (getFilteredItems() as import('@app/core/types/types').BankCardDecrypted[]).map((item) => (
-                  <ItemBankCard key={item.id} cred={item} />
+                  <ItemBankCard key={item.id} cred={item} onPress={() => setSelectedBankCard(item)} />
                 ))
               )}
             </View>
@@ -282,7 +292,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <Text style={styles.emptyState}>Aucune note trouvée.</Text>
               ) : (
                 (getFilteredItems() as import('@app/core/types/types').SecureNoteDecrypted[]).map((item) => (
-                  <ItemSecureNote key={item.id} note={item} />
+                  <ItemSecureNote key={item.id} note={item} onPress={() => setSelectedSecureNote(item)} />
                 ))
               )}
             </View>
@@ -363,12 +373,6 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     margin: spacing.lg,
     textAlign: 'center',
-  },
-  pageContainer: {
-    backgroundColor: colors.bg,
-    flex: 1,
-    gap: spacing.md,
-    padding: spacing.md,
   },
   pageSection: {
     gap: spacing.md,

@@ -1,18 +1,17 @@
 import React from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable } from 'react-native';
 import { colors } from '@design/colors';
-import { radius, spacing } from '@design/layout';
-import { typography } from '@design/typography';
-import { IconKey } from '@utils/icon';
+import { formStyles } from '@design/form';
+import { Icon } from './Icon';
 
 // --- Input classique ---
-export interface InputProps {
+interface InputProps {
   label: string;
-  _id?: string;
+  _id: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  type?: string;
+  type?: 'text' | 'email' | 'password';
   _autoComplete?: string;
   _required?: boolean;
   error?: string;
@@ -31,15 +30,15 @@ export const Input: React.FC<InputProps> = ({
   error,
   disabled = false,
 }) => (
-  <View style={styles.formSection}>
-    <Text style={styles.inputLabel}>{label}</Text>
+  <View style={formStyles.formSection}>
+    <Text style={formStyles.formLabel}>{label}</Text>
     <TextInput
       placeholder={placeholder}
       placeholderTextColor={colors.accent}
       style={[
-        styles.input,
-        error ? styles.inputError : null,
-        disabled ? styles.inputDisabled : null,
+        formStyles.formInput,
+        error ? formStyles.formInputError : null,
+        disabled ? formStyles.formInputDisabled : null,
       ]}
       value={value}
       onChangeText={onChange}
@@ -47,23 +46,22 @@ export const Input: React.FC<InputProps> = ({
       secureTextEntry={type === 'password'}
       accessibilityLabel={label}
     />
-    {error ? <Text style={styles.inputErrorMessage}>{error}</Text> : null}
+    {error ? <Text style={formStyles.formError}>{error}</Text> : null}
   </View>
 );
 
 // --- InputPasswordGenerator ---
-export interface InputPasswordGeneratorProps {
+interface InputPasswordGeneratorProps {
   label: string;
-  _id?: string;
+  _id: string;
   value: string;
   onChange: (value: string) => void;
-  onGenerate: () => void;
   placeholder?: string;
+  _autoComplete?: string;
   _required?: boolean;
-  passwordStrength?: string;
-  _onAdvancedOptions?: () => void;
-  Icon?: React.ComponentType<{ name: IconKey; size?: number; color?: string }>;
   error?: string;
+  disabled?: boolean;
+  onGeneratePassword?: () => void;
 }
 
 export const InputPasswordGenerator: React.FC<InputPasswordGeneratorProps> = ({
@@ -71,110 +69,109 @@ export const InputPasswordGenerator: React.FC<InputPasswordGeneratorProps> = ({
   _id,
   value,
   onChange,
-  onGenerate,
-  placeholder = 'Entrez un mot de passe...',
+  placeholder,
+  _autoComplete,
   _required = false,
-  passwordStrength,
-  _onAdvancedOptions,
-  Icon,
   error,
+  disabled = false,
+  onGeneratePassword,
 }) => (
-  <View style={styles.formSection}>
-    <View style={styles.passwordStrengthContainer}>
-      <Text style={styles.inputLabel}>{label}</Text>
-      {passwordStrength && (
-        <View style={styles.passwordStrength}>
-          <Text style={styles.passwordStrengthText}>{passwordStrength} </Text>
-          {Icon && <Icon name="security" size={18} color={colors.secondary} />}
-        </View>
+  <View style={formStyles.formSection}>
+    <View style={formStyles.formPasswordStrength}>
+      <Text style={formStyles.formLabel}>{label}</Text>
+      {onGeneratePassword && (
+        <Pressable style={formStyles.formGenerateButton} onPress={onGeneratePassword}>
+          <Text style={formStyles.formGenerateButtonText}>Générer</Text>
+        </Pressable>
       )}
     </View>
     <TextInput
       placeholder={placeholder}
       placeholderTextColor={colors.accent}
       style={[
-        styles.input,
-        error ? styles.inputError : null,
+        formStyles.formInput,
+        error ? formStyles.formInputError : null,
+        disabled ? formStyles.formInputDisabled : null,
       ]}
       value={value}
       onChangeText={onChange}
+      editable={!disabled}
+      secureTextEntry={true}
       accessibilityLabel={label}
     />
-    {error ? <Text style={styles.inputErrorMessage}>{error}</Text> : null}
-    <View style={styles.flexEnd}>
-      <Pressable style={styles.generateBtn} onPress={onGenerate} accessibilityRole="button">
-        <Text style={styles.generateBtnText}>Générer un mot de passe</Text>
-      </Pressable>
-    </View>
+    {error ? <Text style={formStyles.formError}>{error}</Text> : null}
   </View>
 );
 
-const styles = StyleSheet.create({
-  flexEnd: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 4,
-  },
-  formSection: {
-    flexDirection: 'column',
-    width: '100%',
-  },
-  generateBtn: {
-    backgroundColor: colors.secondary,
-    borderRadius: radius.lg,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  generateBtnText: {
-    color: colors.white,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '600',
-  },
-  input: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    color: colors.text,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    height: 48,
-    marginBottom: 2,
-    paddingHorizontal: spacing.md,
-    width: '100%',
-  },
-  inputDisabled: {
-    backgroundColor: colors.disabled,
-    color: colors.textSecondary,
-  },
-  inputError: {
-    borderColor: colors.error,
-  },
-  inputErrorMessage: {
-    color: colors.error,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    marginTop: 2,
-  },
-  inputLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    marginBottom: 4,
-  },
-  passwordStrength: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  passwordStrengthContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 2,
-  },
-  passwordStrengthText: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-  },
-}); 
+interface InputPasswordStrengthProps {
+  label: string;
+  _id: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  _autoComplete?: string;
+  _required?: boolean;
+  error?: string;
+  disabled?: boolean;
+  strength?: 'weak' | 'average' | 'strong' | 'perfect';
+}
+
+export const InputPasswordStrength: React.FC<InputPasswordStrengthProps> = ({
+  label,
+  _id,
+  value,
+  onChange,
+  placeholder,
+  _autoComplete,
+  _required = false,
+  error,
+  disabled = false,
+  strength,
+}) => {
+  const getStrengthColor = () => {
+    switch (strength) {
+      case 'weak':
+        return '#e57373';
+      case 'average':
+        return '#ffb300';
+      case 'strong':
+        return colors.primary;
+      case 'perfect':
+        return colors.secondary;
+      default:
+        return colors.textSecondary;
+    }
+  };
+
+  return (
+    <View style={formStyles.formSection}>
+      <Text style={formStyles.formLabel}>{label}</Text>
+      <TextInput
+        placeholder={placeholder}
+        placeholderTextColor={colors.accent}
+        style={[
+          formStyles.formInput,
+          error ? formStyles.formInputError : null,
+          disabled ? formStyles.formInputDisabled : null,
+        ]}
+        value={value}
+        onChangeText={onChange}
+        editable={!disabled}
+        secureTextEntry={true}
+        accessibilityLabel={label}
+      />
+      {strength && (
+        <View style={formStyles.formValidation}>
+          <Icon name="security" size={16} color={getStrengthColor()} />
+          <Text style={[formStyles.formValidationText, { color: getStrengthColor() }]}>
+            {strength === 'weak' && 'Faible'}
+            {strength === 'average' && 'Moyen'}
+            {strength === 'strong' && 'Fort'}
+            {strength === 'perfect' && 'Parfait'}
+          </Text>
+        </View>
+      )}
+      {error ? <Text style={formStyles.formError}>{error}</Text> : null}
+    </View>
+  );
+}; 

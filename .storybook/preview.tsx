@@ -1,36 +1,64 @@
 import React from 'react';
 import { ToastProvider } from '../packages/app/components/Toast';
+import type { Preview } from "@storybook/react";
+import { INITIAL_VIEWPORTS } from "@storybook/addon-viewport";
+import './storybook.css';
 
-export const parameters = {
-  actions: { argTypesRegex: '^on[A-Z].*' },
-  controls: {
-    matchers: {
-      color: /(background|color)$/i,
-      date: /Date$/,
+const customViewports = {
+  chromeExtensionPopup: {
+    name: 'Chrome Extension Popup',
+    styles: {
+      width: '350px',
+      height: '550px',
     },
-  },
-  backgrounds: {
-    default: 'light',
-    values: [
-      {
-        name: 'light',
-        value: '#ffffff',
-      },
-      {
-        name: 'dark',
-        value: '#333333',
-      },
-    ],
+    type: 'mobile',
   },
 };
 
-// Global decorator to wrap stories in ToastProvider only
 export const decorators = [
   (Story) => (
     <ToastProvider>
-      <div style={{ padding: 20, backgroundColor: '#ffffff' }}>
         <Story />
-      </div>
     </ToastProvider>
   ),
-]; 
+];
+
+const preview: Preview = {
+  parameters: {
+    actions: { argTypesRegex: '^on[A-Z].*' },
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/,
+      },
+    },
+    backgrounds: {
+      default: 'light',
+      values: [
+        { name: 'light', value: '#ffffff' },
+        { name: 'dark', value: '#333333' },
+      ],
+    },
+    viewport: {
+      viewports: {
+        ...INITIAL_VIEWPORTS,
+        ...customViewports,
+      },
+      defaultViewport: 'chromeExtensionPopup',
+    },
+    // Enable CSS inspection tools
+    measure: {
+      enabled: true,
+    },
+    // Enable outline mode for better element inspection
+    outline: {
+      enabled: true,
+    },
+    // Enable grid overlay for layout inspection
+    grid: {
+      enabled: true,
+    },
+  },
+};
+
+export default preview; 

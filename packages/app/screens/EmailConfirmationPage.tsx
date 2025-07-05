@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView } from 'react-native';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { colors } from '@design/colors';
-import { radius, spacing } from '@design/layout';
+import { radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
 
@@ -30,10 +30,10 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
   };
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={styles.pageContent}>
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
+        <View style={pageStyles.pageContent}>
           <View style={styles.confirmationForm}>
             <View style={styles.formHeader}>
               <Text style={styles.confirmationTitle}>Confirmation par email</Text>
@@ -42,7 +42,7 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
               </Text>
             </View>
             <View style={styles.formSection}>
-              <Text style={styles.inputLabel}>Code de confirmation</Text>
+              <Text>Code de confirmation</Text>
               <TextInput
                 style={styles.confirmationInput}
                 placeholder="Entrez le code..."
@@ -112,25 +112,5 @@ const styles = StyleSheet.create({
   },
   formSection: {
     marginBottom: spacing.lg,
-  },
-  inputLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
-    fontWeight: '500',
-    marginBottom: spacing.xs,
-  },
-  pageContainer: {
-    backgroundColor: colors.bg,
-    flex: 1,
-    padding: spacing.md,
-  },
-  pageContent: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-
-  scrollView: {
-    flex: 1,
   },
 });

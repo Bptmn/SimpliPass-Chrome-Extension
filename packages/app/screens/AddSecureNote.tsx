@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { View, Text, Pressable, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView } from 'react-native';
 import { Input } from '../components/InputVariants';
 import { colors } from '@design/colors';
-import { radius, spacing } from '@design/layout';
+import { radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { addItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
@@ -12,6 +12,7 @@ import { SecureNoteDecrypted } from '@app/core/types/types';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Button } from '../components/Buttons';
 import { HeaderTitle } from '../components/HeaderTitle';
+import { ColorSelector } from '../components/ColorSelector';
 
 const NOTE_COLORS = ['#2bb6a3', '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a259e6'];
 
@@ -40,7 +41,7 @@ const AddSecureNote: React.FC = () => {
         color,
         itemKey: '',
       };
-      await addItem(user.uid, userSecretKey, newNote);
+      await addItem(user.uid, userSecretKey, newNote, 'secure_note');
       navigate('/');
     } catch (e: any) {
       setError(e.message || 'Erreur lors de la création de la note.');
@@ -50,9 +51,9 @@ const AddSecureNote: React.FC = () => {
   };
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
         <HeaderTitle 
           title="Ajouter une note" 
           onBackPress={() => navigate(-1)} 
@@ -67,20 +68,11 @@ const AddSecureNote: React.FC = () => {
             placeholder="Entrez un nom..."
             _required
           />
-          <Text style={styles.inputLabel}>Choisissez la couleur de votre note</Text>
-          <View style={styles.colorRow}>
-            {NOTE_COLORS.map((c) => (
-              <Pressable
-                key={c}
-                style={[styles.colorCircle, { backgroundColor: c }]}
-                onPress={() => setColor(c)}
-                accessibilityLabel={`Choisir la couleur ${c}`}
-                testID={`color-btn-${c}`}
-              >
-                {color === c && <Text style={styles.checkMark}>✓</Text>}
-              </Pressable>
-            ))}
-          </View>
+          <ColorSelector
+            title="Choisissez la couleur de votre note"
+            value={color}
+            onChange={setColor}
+          />
           <View>
           <Text style={styles.inputLabel}>Note</Text>
           <TextInput
@@ -110,52 +102,16 @@ const AddSecureNote: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-
-  checkMark: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  colorCircle: {
-    alignItems: 'center',
-    borderRadius: 20,
-    height: 35,
-    justifyContent: 'center',
-    marginRight: spacing.md,
-    width: 35,
-  },
-  colorRow: {
-    flexDirection: 'row',
-    marginBottom: spacing.lg,
-    marginTop: spacing.sm,
-  },
-
   formContainer: {
     flex: 1,
-    gap: spacing.lg,
-    marginTop: spacing.lg,
+    padding: spacing.lg,
   },
   inputLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
-    fontWeight: '500',
+    color: colors.text,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
     marginBottom: spacing.xs,
-    marginLeft: spacing.sm,
-  },
-  pageContainer: {
-    backgroundColor: colors.bg,
-    flex: 1,
-    justifyContent: 'flex-start',
-    padding: spacing.md,
-  },
-
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: spacing.xl,
-  },
-  scrollView: {
-    flex: 1,
+    paddingBottom: spacing.xs,
   },
   textArea: {
     backgroundColor: colors.bgAlt,

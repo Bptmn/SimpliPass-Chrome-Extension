@@ -5,7 +5,7 @@ import { checkPasswordStrength } from '@utils/checkPasswordStrength';
 import { passwordGenerator } from '@utils/passwordGenerator';
 
 import { colors } from '@design/colors';
-import { padding, radius, spacing } from '@design/layout';
+import { padding, radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import CopyButton from '../components/CopyButton';
 import { Button } from '../components/Buttons';
@@ -81,11 +81,11 @@ export const GeneratorPage: React.FC = () => {
   };
 
   return (
-    <View style={styles.pageContainer}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={styles.generatorContent}>
+    <View style={pageStyles.pageContainer}>
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
+        <View style={pageStyles.pageContent}>
           <View style={styles.generatorForm}>
-            <View style={styles.generatorItemSpacing}>
+            <View style={pageStyles.formContainer}>
               <Text style={styles.sectionLabel}>Mot de passe</Text>
               <View style={styles.generatedPasswordCard}>
                 <View style={styles.passwordDisplay}>
@@ -114,7 +114,7 @@ export const GeneratorPage: React.FC = () => {
             </View>
 
             {/* Password Length Slider */}
-            <View style={styles.generatorItemSpacing}>
+            <View>
               <Text style={styles.sectionLabel}>Longueur</Text>
               <PasswordLengthSlider
                 value={passwordLength}
@@ -124,7 +124,7 @@ export const GeneratorPage: React.FC = () => {
               />
             </View>
 
-            <View style={styles.generatorItemSpacing}>
+            <View>
               <Text style={styles.sectionLabel}>Options</Text>
               <View style={styles.optionsSection}>
                 <View style={styles.optionRow}>
@@ -173,8 +173,6 @@ export const GeneratorPage: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-
-
   generatedPasswordCard: {
     backgroundColor: colors.bgAlt,
     borderColor: colors.border,
@@ -184,15 +182,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     padding: padding.md,
   },
-  generatorContent: {
-    flex: 1,
-  },
   generatorForm: {
     flexDirection: 'column',
     marginBottom: spacing.md,
-  },
-  generatorItemSpacing: {
-    marginBottom: spacing.sm,
   },
   optionRow: {
     alignItems: 'center',
@@ -217,11 +209,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     padding: padding.md,
   },
-  pageContainer: {
-    backgroundColor: colors.bg,
-    flex: 1,
-    padding: spacing.md,
-  },
   pageSection: {
     marginBottom: spacing.md,
   },
@@ -241,10 +228,6 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     minHeight: 20,
     padding: padding.sm,
-  },
-
-  scrollView: {
-    flex: 1,
   },
   sectionLabel: {
     color: colors.accent,

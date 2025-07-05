@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { spacing } from '@design/layout';
 import { typography } from '@design/typography';
+import { textStyles } from '@design/text';
 
 export type ButtonSize = 'small' | 'medium' | 'big';
 
@@ -71,11 +72,9 @@ export const Button: React.FC<ButtonProps> = ({
     >
       <Text
         style={[
-          styles.buttonText,
+          textStyles.textButton,
           {
-            color: '#fff',
             fontSize: s.fontSize,
-            fontWeight: 'bold',
           },
           textStyle,
         ]}
@@ -120,11 +119,10 @@ export const ButtonOutline: React.FC<ButtonProps> = ({
     >
       <Text
         style={[
-          styles.buttonOutlineText,
+          textStyles.textButtonOutline,
           {
             color: color,
             fontSize: s.fontSize,
-            fontWeight: 'bold',
           },
           textStyle,
         ]}
@@ -148,13 +146,5 @@ const styles = StyleSheet.create({
     backgroundColor: 'none',
     justifyContent: 'center',
     marginVertical: spacing.sm,
-  },
-  buttonOutlineText: {
-    letterSpacing: 0.2,
-    textAlign: 'center',
-  },
-  buttonText: {
-    letterSpacing: 0.2,
-    textAlign: 'center',
   },
 }); 

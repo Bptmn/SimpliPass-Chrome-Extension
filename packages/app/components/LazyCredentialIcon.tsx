@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import { colors } from '@design/colors';
 import { radius } from '@design/layout';
-import { typography } from '@design/typography';
+import { cardStyles } from '@design/card';
 
 interface LazyCredentialIconProps {
   title: string;
@@ -37,15 +36,15 @@ const LazyCredentialIconComponent: React.FC<LazyCredentialIconProps> = ({ title,
 
   const placeholderLetter = title ? title[0].toUpperCase() : '?';
   const containerStyle = [
-    styles.credentialIcon,
-    isFaviconLoaded && styles.credentialIconNoBg,
+    cardStyles.iconContainer,
+    isFaviconLoaded && cardStyles.iconContainerNoBg,
     style
   ];
 
   return (
     <View style={containerStyle}>
       {(!showFavicon || !isFaviconLoaded) && (
-        <Text style={styles.credentialIconLetter}>{placeholderLetter}</Text>
+        <Text style={cardStyles.iconLetter}>{placeholderLetter}</Text>
       )}
       {showFavicon && faviconUrl && (
         <Image
@@ -69,28 +68,9 @@ export const LazyCredentialIcon = React.memo(LazyCredentialIconComponent);
 LazyCredentialIcon.displayName = 'LazyCredentialIcon';
 
 const styles = StyleSheet.create({
-  credentialIcon: {
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    height: 35,
-    justifyContent: 'center',
-    width: 35,
-  },
   credentialIconImg: {
     borderRadius: radius.md,
     height: 35,
     width: 35,
-  },
-  credentialIconLetter: {
-    color: colors.accent,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.bold,
-    textAlign: 'center',
-  },
-  credentialIconNoBg: {
-    backgroundColor: 'transparent',
   },
 });

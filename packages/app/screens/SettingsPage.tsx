@@ -10,7 +10,7 @@ import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
 import { Toast, useToast } from '../components/Toast';
 import { colors } from '@design/colors';
-import { layout, radius, spacing } from '@design/layout';
+import { layout, radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
 
@@ -77,10 +77,10 @@ const SettingsPage: React.FC = () => {
   );
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
       <Toast message={toast} />
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.pageContent}>
           <View style={styles.pageSection}>
             <View style={styles.profileCard}>
@@ -171,11 +171,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     padding: spacing.sm,
   },
-  pageContainer: {
-    backgroundColor: layout.primaryBackground,
-    flex: 1,
-    padding: spacing.md,
-  },
   pageContent: {
     // Removed flex: 1 to allow scrolling
   },
@@ -192,9 +187,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
-  },
-  scrollView: {
-    flex: 1,
   },
   sectionTitle: {
     color: colors.primary,

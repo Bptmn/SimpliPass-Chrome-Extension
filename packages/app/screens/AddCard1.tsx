@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Input } from '../components/InputVariants';
 import { colors } from '@design/colors';
-import { spacing } from '@design/layout';
+import { pageStyles } from '@design/layout';
 import { Button } from '../components/Buttons';
 import { HeaderTitle } from '../components/HeaderTitle';
 
@@ -18,12 +18,12 @@ const AddCard1: React.FC = () => {
   };
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={pageStyles.pageContainer}>
       <HeaderTitle 
-        title="Ajouter une carte bancaire" 
+        title="Ajouter une carte" 
         onBackPress={() => navigate(-1)} 
       />
-      <View style={styles.formContainer}>
+      <View style={pageStyles.formContainer}>
         <Input
           label="Nom de la carte"
           _id="card-title"
@@ -53,22 +53,5 @@ const AddCard1: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-
-
-  formContainer: {
-    flex: 1,
-    gap: spacing.lg,
-    marginTop: spacing.lg,
-  },
-  pageContainer: {
-    backgroundColor: colors.bg,
-    flex: 1,
-    justifyContent: 'flex-start',
-    padding: spacing.md,
-  },
-
-});
 
 export default AddCard1; 

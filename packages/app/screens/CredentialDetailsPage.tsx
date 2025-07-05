@@ -9,7 +9,7 @@ import { Icon } from '../components/Icon';
 import { LazyCredentialIcon } from '../components/LazyCredentialIcon';
 import { useToast } from '../components/Toast';
 import { colors } from '@design/colors';
-import { layout, padding, radius, spacing } from '@design/layout';
+import { padding, radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
 import CopyButton from '../components/CopyButton';
@@ -23,6 +23,27 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   credential,
   onBack,
 }) => {
+  // Helper function to format Firestore Timestamps or Date objects
+  const formatDateTime = (dateTime: any): string => {
+    if (!dateTime) return 'N/A';
+    
+    // Handle Firestore Timestamp objects
+    if (dateTime && typeof dateTime === 'object' && 'seconds' in dateTime) {
+      return new Date(dateTime.seconds * 1000).toLocaleString('fr-FR');
+    }
+    
+    // Handle JavaScript Date objects
+    if (dateTime instanceof Date) {
+      return dateTime.toLocaleString('fr-FR');
+    }
+    
+    // Handle string dates
+    if (typeof dateTime === 'string') {
+      return new Date(dateTime).toLocaleString('fr-FR');
+    }
+    
+    return 'N/A';
+  };
   const navigate = useNavigate();
   const user = useUser();
   const [showMeta, setShowMeta] = useState(false);
@@ -72,7 +93,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   };
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
       <View style={styles.pageContent}>
         {/* Header */}
@@ -212,10 +233,10 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
           {showMeta && (
             <View style={styles.metaRow}>
               <Text style={styles.metaText}>
-                Dernière utilisation : {credential.lastUseDateTime instanceof Date ? credential.lastUseDateTime.toLocaleString() : credential.lastUseDateTime}
+                Dernière utilisation : {formatDateTime(credential.lastUseDateTime)}
               </Text>
               <Text style={styles.metaText}>
-                Date de création : {credential.createdDateTime instanceof Date ? credential.createdDateTime.toLocaleString() : credential.createdDateTime}
+                Date de création : {formatDateTime(credential.createdDateTime)}
               </Text>
             </View>
           )}
@@ -225,10 +246,10 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-
+export const styles = StyleSheet.create({
   actionsRow: {
     flexDirection: 'row',
+    gap: spacing.md,
     justifyContent: 'space-around',
     marginBottom: spacing.md,
     width: '100%',
@@ -285,6 +306,7 @@ const styles = StyleSheet.create({
 
   eyeBtn: {
     marginLeft: 8,
+    marginRight: 8,
     padding: 2,
   },
   fieldLabel: {
@@ -300,7 +322,7 @@ const styles = StyleSheet.create({
   fieldValue: {
     color: colors.primary,
     fontSize: typography.fontSize.md,
-    fontWeight: '600',
+    fontWeight: '400',
   },
   headerContent: {
     alignItems: 'center',
@@ -309,7 +331,6 @@ const styles = StyleSheet.create({
   headerRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    height: 44,
     marginBottom: spacing.lg,
     position: 'relative',
     width: '100%',
@@ -328,7 +349,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: radius.md,
     marginBottom: spacing.sm,
-    padding: spacing.sm,
     width: '100%',
   },
   infoRowContent: {
@@ -354,18 +374,13 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     marginBottom: 2,
   },
-  pageContainer: {
-    backgroundColor: layout.primaryBackground,
-    flex: 1,
-    padding: spacing.md,
-  },
   pageContent: {
-    alignItems: 'center',
     flex: 1,
   },
   passwordRow: {
     alignItems: 'center',
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   title: {
     color: colors.primary,

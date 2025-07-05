@@ -8,7 +8,8 @@ import {
   BankCardEncrypted, 
   SecureNoteDecrypted,
   SecureNoteEncrypted,
-  ItemEncrypted
+  ItemEncrypted,
+  ItemType
 } from '@app/core/types/types';
 import { encryptData, decryptData } from '@utils/crypto';
 
@@ -25,8 +26,8 @@ export async function decryptItem(
     const itemKey = await decryptData(userSecretKey, itemToDecrypt.item_key_encrypted);
     const decryptedContent = await decryptData(itemKey, itemToDecrypt.content_encrypted);
     const contentJson = JSON.parse(decryptedContent);
-
-    switch (itemToDecrypt.item_type) {
+    const itemType = contentJson.itemType;
+    switch (itemType) {
       case 'credential':
         return {
           id: itemToDecrypt.id || '',
@@ -39,7 +40,6 @@ export async function decryptItem(
           url: contentJson.url || '',
           itemKey: itemKey,
         } as CredentialDecrypted;
-
       case 'bank_card':
         return {
           id: itemToDecrypt.id || '',
@@ -56,7 +56,6 @@ export async function decryptItem(
           bankName: contentJson.bankName || '',
           bankDomain: contentJson.bankDomain || '',
         } as BankCardDecrypted;
-
       case 'secure_note':
         return {
           id: itemToDecrypt.id || '',
@@ -67,9 +66,8 @@ export async function decryptItem(
           color: contentJson.color || '',
           itemKey: itemKey,
         } as SecureNoteDecrypted;
-
       default:
-        console.error('Unknown item type:', itemToDecrypt.item_type);
+        console.error('Unknown item type:', itemType);
         return null;
     }
   } catch (error) {
@@ -124,7 +122,8 @@ export async function decryptAllItems(
  */
 export async function encryptCredential(
   userSecretKey: string,
-  itemToEncrypt: CredentialDecrypted
+  itemToEncrypt: CredentialDecrypted,
+  itemType: ItemType
 ): Promise<CredentialEncrypted> {
   // Build the content dictionary
   const contentDict = {
@@ -133,6 +132,7 @@ export async function encryptCredential(
     password: itemToEncrypt.password,
     note: itemToEncrypt.note || '',
     url: itemToEncrypt.url || '',
+    itemType,
   };
   // Convert to JSON string
   const contentString = JSON.stringify(contentDict);
@@ -157,7 +157,8 @@ export async function encryptCredential(
  */
 export async function encryptBankCard(
   userSecretKey: string,
-  itemToEncrypt: BankCardDecrypted
+  itemToEncrypt: BankCardDecrypted,
+  itemType: ItemType
 ): Promise<BankCardEncrypted> {
   const contentDict = {
     title: itemToEncrypt.title,
@@ -169,6 +170,7 @@ export async function encryptBankCard(
     verificationNumber: itemToEncrypt.verificationNumber,
     bankName: itemToEncrypt.bankName,
     bankDomain: itemToEncrypt.bankDomain,
+    itemType,
   };
   const contentString = JSON.stringify(contentDict);
   const itemKey = itemToEncrypt.itemKey;
@@ -190,12 +192,14 @@ export async function encryptBankCard(
  */
 export async function encryptSecureNote(
   userSecretKey: string,
-  itemToEncrypt: SecureNoteDecrypted
+  itemToEncrypt: SecureNoteDecrypted,
+  itemType: ItemType
 ): Promise<SecureNoteEncrypted> {
   const contentDict = {
     title: itemToEncrypt.title,
     note: itemToEncrypt.note,
     color: itemToEncrypt.color,
+    itemType,
   };
   const contentString = JSON.stringify(contentDict);
   const itemKey = itemToEncrypt.itemKey;

@@ -1,0 +1,350 @@
+import { StyleSheet } from 'react-native';
+import { colors } from './colors';
+import { radius, spacing } from './layout';
+
+export const cardStyles = StyleSheet.create({
+  // Base card styles
+  bankCard: {
+    alignSelf: 'center',
+    borderRadius: 12,
+    height: 135,
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    width: 260,
+  },
+  bankCardBottom: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  bankCardExpiry: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: '400',
+  },
+  bankCardMiddle: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: spacing.md,
+  },
+  bankCardNumber: {
+    color: colors.white,
+    fontSize: 18,
+    fontWeight: '500',
+    letterSpacing: 2,
+  },
+  bankCardOwner: {
+    color: colors.white,
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '400',
+    marginRight: spacing.md,
+  },
+  bankCardTitle: {
+    color: colors.white,
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '600',
+    marginRight: spacing.md,
+  },
+  bankCardTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  card: {
+    backgroundColor: colors.bgAlt,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+  },
+  cardHover: {
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+  },
+  
+  // Color picker styles
+  checkMark: {
+    color: colors.white,
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  colorCircle: {
+    alignItems: 'center',
+    borderRadius: 20,
+    height: 35,
+    justifyContent: 'center',
+    marginRight: spacing.md,
+    width: 35,
+  },
+  colorRow: {
+    flexDirection: 'row',
+    marginBottom: spacing.lg,
+    marginTop: spacing.sm,
+  },
+  
+  // Credential card styles
+  credentialCard: {
+    alignItems: 'center',
+    backgroundColor: colors.bgAlt,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.xs,
+    padding: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    width: '100%',
+  },
+  credentialCardInfo: {
+    flexDirection: 'column',
+    gap: 2,
+    maxWidth: 200,
+    minWidth: 0,
+  },
+  credentialCardLeft: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+  },
+  credentialCardTitle: {
+    color: colors.primary,
+    flexShrink: 1,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  credentialCardUsername: {
+    color: colors.textSecondary,
+    flexShrink: 1,
+    fontSize: 12,
+  },
+  
+  // Generated password card styles
+  generatedPasswordCard: {
+    backgroundColor: colors.bgAlt,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    flexDirection: 'column',
+    marginBottom: spacing.sm,
+    padding: spacing.md,
+  },
+  
+  // Icon container styles
+  iconContainer: {
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderColor: colors.border,
+    borderRadius: 10,
+    borderWidth: 1,
+    height: 35,
+    justifyContent: 'center',
+    width: 35,
+  },
+  iconContainerNoBg: {
+    backgroundColor: 'transparent',
+  },
+  iconLetter: {
+    color: colors.accent,
+    fontSize: 16,
+    fontWeight: '600',
+    lineHeight: 35,
+    textAlign: 'center',
+    width: '100%',
+  },
+  
+  // Menu card styles
+  menuCard: {
+    backgroundColor: colors.bgAlt,
+    borderRadius: radius.md,
+    flexDirection: 'column',
+    marginBottom: spacing.sm,
+    padding: spacing.sm,
+  },
+  menuIcon: {
+    alignItems: 'center',
+    height: 24,
+    justifyContent: 'center',
+    marginRight: spacing.md,
+    width: 24,
+  },
+  menuItem: {
+    alignItems: 'center',
+    borderWidth: 0,
+    flexDirection: 'row',
+    height: 35,
+    justifyContent: 'flex-start',
+    marginBottom: spacing.sm,
+    outline: 'none',
+    position: 'relative',
+    textAlign: 'left',
+    width: '100%',
+  },
+  menuLabel: {
+    color: colors.primary,
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  
+  // Options section card styles
+  optionRow: {
+    alignItems: 'center',
+    color: colors.primary,
+    flexDirection: 'row',
+    fontSize: 14,
+    justifyContent: 'space-between',
+    marginBottom: spacing.sm,
+  },
+  optionText: {
+    color: colors.primary,
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  optionsSection: {
+    backgroundColor: colors.bgAlt,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    flexDirection: 'column',
+    marginBottom: spacing.sm,
+    padding: spacing.md,
+  },
+  
+  // Password display styles
+  passwordDisplay: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: spacing.sm,
+  },
+  passwordText: {
+    backgroundColor: colors.bg,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    color: colors.text,
+    flex: 1,
+    fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace',
+    fontSize: 16,
+    minHeight: 20,
+    padding: spacing.sm,
+  },
+  
+  // Profile card styles
+  profileCard: {
+    backgroundColor: colors.bgAlt,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    padding: spacing.sm,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+  },
+  profileCardUserDetails: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: spacing.sm,
+  },
+  profileCardUserEmail: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  profileCardUserIcon: {
+    alignItems: 'center',
+    backgroundColor: colors.bgAlt,
+    borderRadius: 25,
+    color: colors.primary,
+    fontSize: 24,
+    height: 50,
+    justifyContent: 'center',
+    marginRight: spacing.sm,
+    width: 50,
+  },
+  
+  // Secure note card styles
+  secureNoteCard: {
+    alignItems: 'center',
+    backgroundColor: colors.bgAlt,
+    borderRadius: 20,
+    flexDirection: 'row',
+    height: 60,
+    marginBottom: spacing.sm,
+    maxWidth: 500,
+    paddingLeft: spacing.md,
+    paddingRight: spacing.md,
+    width: '100%',
+  },
+  secureNoteColor: {
+    borderRadius: 25,
+    height: 22,
+    marginRight: 15,
+    width: 22,
+  },
+  secureNoteTitle: {
+    color: colors.primary,
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  
+  // Skeleton card styles
+  skeletonAvatar: {
+    backgroundColor: colors.disabled,
+    borderRadius: 10,
+    height: 35,
+    marginRight: spacing.sm,
+    width: 35,
+  },
+  skeletonCard: {
+    alignItems: 'center',
+    backgroundColor: colors.bgAlt,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    flexDirection: 'row',
+    marginBottom: spacing.xs,
+    padding: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+  },
+  skeletonInfo: {
+    flex: 1,
+    flexDirection: 'column',
+    marginBottom: spacing.xs,
+  },
+  skeletonTitle: {
+    backgroundColor: colors.disabled,
+    borderRadius: 6,
+    height: 12,
+    marginBottom: spacing.xs,
+    width: '60%',
+  },
+  skeletonUsername: {
+    backgroundColor: colors.disabled,
+    borderRadius: 6,
+    height: 12,
+    width: '40%',
+  },
+}); 

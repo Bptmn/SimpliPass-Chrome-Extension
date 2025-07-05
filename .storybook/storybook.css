@@ -1,0 +1,44 @@
+/* Storybook CSS Utilities */
+
+/* Remove Storybook preview padding and background */
+.sb-main-padded.sb-show-main {
+  padding: 0 !important;
+  background: none !important;
+}
+body.sb-main-padded.sb-show-main {
+  padding: 0 !important;
+  background: none !important;
+}
+body {
+  margin: 0 !important;
+}
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+}
+
+/* Chrome Extension Popup specific styles */
+.chrome-extension-popup {
+  width: 350px;
+  height: 550px;
+  overflow: hidden;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Measure tool enhancements */
+.measure-tool-active {
+  /* Enhance measure tool visibility */
+  outline: 2px solid #ff6b6b !important;
+  outline-offset: 2px;
+}
+
+/* Grid overlay for layout inspection */
+.grid-overlay {
+  background-image: 
+    linear-gradient(rgba(0, 123, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 123, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+} 

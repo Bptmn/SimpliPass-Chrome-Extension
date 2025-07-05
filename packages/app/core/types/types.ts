@@ -103,3 +103,5 @@ export interface deviceInformation {
   created_at: Date;
   last_authenticated_at: Date;
 }
+
+export type ItemType = 'credential' | 'bank_card' | 'secure_note';

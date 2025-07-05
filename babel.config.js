@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   presets: [
     ['@babel/preset-env', { targets: { node: 'current' } }],
@@ -13,16 +15,17 @@ module.exports = {
       {
         root: ['.'],
         alias: {
-          '@app': './packages/app',
-          '@design': './packages/app/design',
-          '@components': './packages/app/components',
-          '@screens': './packages/app/screens',
-          '@hooks': './packages/app/hooks',
-          '@utils': './packages/app/utils',
-          '@logic': './packages/app/logic',
-          '@shared': './packages/shared',
-          '@extension': './packages/extension',
-          '@mobile': './packages/mobile',
+          '@app': path.resolve(__dirname, './packages/app'),
+          '@design': path.resolve(__dirname, './packages/app/design'),
+          '@components': path.resolve(__dirname, './packages/app/components'),
+          '@screens': path.resolve(__dirname, './packages/app/screens'),
+          '@hooks': path.resolve(__dirname, './packages/app/hooks'),
+          '@utils': path.resolve(__dirname, './packages/app/utils'),
+          '@logic': path.resolve(__dirname, './packages/app/core/logic'),
+          '@core': path.resolve(__dirname, './packages/app/core'),
+          '@shared': path.resolve(__dirname, './packages/shared'),
+          '@extension': path.resolve(__dirname, './packages/extension'),
+          '@mobile': path.resolve(__dirname, './packages/mobile'),
         },
       },
     ],

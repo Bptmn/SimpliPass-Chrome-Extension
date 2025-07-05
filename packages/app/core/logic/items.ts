@@ -44,11 +44,12 @@
 
 import { db } from '@app/core/database/db.adapter';
 import { decryptAllItems, encryptCredential, encryptBankCard, encryptSecureNote } from '@app/core/logic/cryptography';
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@app/core/types/types';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted, ItemType } from '@app/core/types/types';
 import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@app/core/states';
 import { 
   ItemEncrypted
 } from '@app/core/types/types';
+import { generateItemKey } from '@app/utils/crypto';
 
 // Define DecryptedItem type locally
 type DecryptedItem = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted;
@@ -191,7 +192,8 @@ export async function getItemById(
 export async function addItem(
   userId: string,
   userSecretKey: string,
-  item: Omit<DecryptedItem, 'id'>
+  item: Omit<DecryptedItem, 'id' | 'itemKey'>,
+  itemType: ItemType
 ): Promise<string> {
   const credentialsStore = useCredentialsStore.getState();
   const bankCardsStore = useBankCardsStore.getState();
@@ -200,40 +202,35 @@ export async function addItem(
   try {
     let encryptedItem: ItemEncrypted;
     let newItem: DecryptedItem;
-    
-    // Encrypt based on item type
-    if ('username' in item) {
-      const credential = item as Omit<CredentialDecrypted, 'id'>;
-      encryptedItem = await encryptCredential(userSecretKey, { ...credential, id: '' });
-      newItem = { ...credential, id: '' } as CredentialDecrypted;
-    } else if ('cardNumber' in item) {
-      const bankCard = item as Omit<BankCardDecrypted, 'id'>;
-      encryptedItem = await encryptBankCard(userSecretKey, { ...bankCard, id: '' });
-      newItem = { ...bankCard, id: '' } as BankCardDecrypted;
+    // Generate a new itemKey for this item
+    const itemKey = generateItemKey();
+    // Add itemKey to the item
+    const itemWithKey: any = { ...item, itemKey };
+    // Encrypt based on itemType
+    if (itemType === 'credential') {
+      encryptedItem = await encryptCredential(userSecretKey, { ...itemWithKey, id: '' }, itemType);
+      newItem = { ...itemWithKey, id: '' } as CredentialDecrypted;
+    } else if (itemType === 'bank_card') {
+      encryptedItem = await encryptBankCard(userSecretKey, { ...itemWithKey, id: '' }, itemType);
+      newItem = { ...itemWithKey, id: '' } as BankCardDecrypted;
     } else {
-      const secureNote = item as Omit<SecureNoteDecrypted, 'id'>;
-      encryptedItem = await encryptSecureNote(userSecretKey, { ...secureNote, id: '' });
-      newItem = { ...secureNote, id: '' } as SecureNoteDecrypted;
+      encryptedItem = await encryptSecureNote(userSecretKey, { ...itemWithKey, id: '' }, itemType);
+      newItem = { ...itemWithKey, id: '' } as SecureNoteDecrypted;
     }
-    
     // Store in database
     const newId = await db.addDocument(`users/${userId}/my_items`, encryptedItem);
-    
     // Update the item with the new ID
     const itemWithId = { ...newItem, id: newId } as DecryptedItem;
-    
     // Add to state
-    if ('username' in itemWithId) {
+    if (itemType === 'credential') {
       credentialsStore.addCredential(itemWithId as CredentialDecrypted);
-    } else if ('cardNumber' in itemWithId) {
+    } else if (itemType === 'bank_card') {
       bankCardsStore.addBankCard(itemWithId as BankCardDecrypted);
     } else {
       secureNotesStore.addSecureNote(itemWithId as SecureNoteDecrypted);
     }
-    
     console.log('[Items] Successfully added item:', newId);
     return newId;
-    
   } catch (error) {
     console.error('[Items] Failed to add item:', error);
     throw error;
@@ -267,18 +264,24 @@ export async function updateItem(
       throw new Error(`Item not found: ${itemId}`);
     }
     
-    // Merge updates
-    const updatedItem = { ...currentItem, ...updates } as DecryptedItem;
+    // Use the existing itemKey
+    const itemKey = currentItem.itemKey;
+    const updatedItem = { ...currentItem, ...updates, itemKey } as DecryptedItem;
     
     // Encrypt the updated item
     let encryptedItem: ItemEncrypted;
     
     if ('username' in updatedItem) {
-      encryptedItem = await encryptCredential(userSecretKey, updatedItem as CredentialDecrypted);
+      encryptedItem = await encryptCredential(userSecretKey, updatedItem as CredentialDecrypted, 'credential');
     } else if ('cardNumber' in updatedItem) {
-      encryptedItem = await encryptBankCard(userSecretKey, updatedItem as BankCardDecrypted);
+      encryptedItem = await encryptBankCard(userSecretKey, updatedItem as BankCardDecrypted, 'bank_card');
     } else {
-      encryptedItem = await encryptSecureNote(userSecretKey, updatedItem as SecureNoteDecrypted);
+      encryptedItem = await encryptSecureNote(userSecretKey, updatedItem as SecureNoteDecrypted, 'secure_note');
+    }
+    
+    // Remove item_type from the top-level before storing
+    if ('item_type' in encryptedItem) {
+      delete (encryptedItem as any).item_type;
     }
     
     // Update in database

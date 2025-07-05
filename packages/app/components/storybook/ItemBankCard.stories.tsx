@@ -1,5 +1,5 @@
 import React from 'react';
-import { ItemBankCard } from '../ItemBankCard';
+import ItemBankCard from '../ItemBankCard';
 import { BankCardDecrypted } from '@app/core/types/types';
 
 export default {

@@ -9,10 +9,11 @@ import { ErrorBanner } from '../components/ErrorBanner';
 import { Toast, useToast } from '../components/Toast';
 import { Input } from '../components/InputVariants';
 import { colors } from '@design/colors';
-import { spacing } from '@design/layout';
+import { spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
 import { HeaderTitle } from '../components/HeaderTitle';
+import { InputEdit } from '../components/InputEdit';
 
 export const ModifyCredentialPage: React.FC = () => {
   const navigate = useNavigate();
@@ -72,58 +73,50 @@ export const ModifyCredentialPage: React.FC = () => {
 
   if (!credential) {
     return (
-      <View style={styles.pageContainer}>
+      <View style={pageStyles.pageContainer}>
         <Text style={styles.errorText}>Identifiant non trouvé</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
       <Toast message={toast} />
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={styles.pageContent}>
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
+        <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Modifier l'identifiant" 
             onBackPress={() => navigate('/')} 
           />
-          <View style={styles.formContainer}>
-            <Input
+          <View style={pageStyles.formContainer}>
+            <InputEdit
               label="Nom de l'identifiant"
-              _id="title"
-              type="text"
               value={title}
               onChange={setTitle}
               placeholder="[credentialsTitle]"
-              _required
+              onClear={() => setTitle('')}
             />
-            <Input
+            <InputEdit
               label="Email / Nom d'utilisateur"
-              _id="username"
-              type="email"
               value={username}
               onChange={setUsername}
               placeholder="[userEmail]"
-              _autoComplete="email"
-              _required
+              onClear={() => setUsername('')}
             />
-            <Input
+            <InputEdit
               label="Mot de passe"
-              _id="password"
-              type="password"
               value={password}
               onChange={setPassword}
               placeholder="Entrez un mot de passe..."
-              _required
+              onClear={() => setPassword('')}
             />
-            <Input
+            <InputEdit
               label="Lien"
-              _id="url"
-              type="text"
               value={url}
               onChange={setUrl}
               placeholder="[credentialUrl]"
+              onClear={() => setUrl('')}
             />
             <Input
               label="Note"
@@ -148,28 +141,10 @@ export const ModifyCredentialPage: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-
-
   errorText: {
     color: colors.error,
     fontSize: typography.fontSize.md,
     marginTop: spacing.xl,
     textAlign: 'center',
-  },
-  formContainer: {
-    flex: 1,
-  },
-
-  pageContainer: {
-    backgroundColor: colors.bg,
-    flex: 1,
-    padding: spacing.md,
-  },
-  pageContent: {
-    flex: 1,
-  },
-
-  scrollView: {
-    flex: 1,
   },
 }); 
