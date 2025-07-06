@@ -1,15 +1,20 @@
 import React from 'react';
 import { Pressable, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { spacing } from '@design/layout';
+import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { textStyles } from '@design/text';
 
-export type ButtonSize = 'small' | 'medium' | 'big';
+export type ButtonWidth = 'full' | 'fit';
+export type ButtonHeight = 'full' | 'fit';
+export type ButtonAlign = 'left' | 'center' | 'right';
 
 interface ButtonProps {
   text: string;
   color: string;
-  size?: ButtonSize;
+  width?: ButtonWidth;
+  height?: ButtonHeight;
+  align?: ButtonAlign;
+  outline?: boolean;
   onPress: () => void;
   style?: ViewStyle;
   textStyle?: TextStyle;
@@ -18,30 +23,25 @@ interface ButtonProps {
   disabled?: boolean;
 }
 
-const getButtonStyle = (size: ButtonSize) => {
-  switch (size) {
-    case 'small':
-      return {
-        height: 30,
-        paddingHorizontal: spacing.lg,
-        fontSize: typography.fontSize.sm,
-        borderRadius: 18,
-      };
-    case 'medium':
+const getAlignmentStyle = (align: ButtonAlign) => {
+  switch (align) {
+    case 'left':
+      return { alignSelf: 'flex-start' as const };
+    case 'right':
+      return { alignSelf: 'flex-end' as const };
+    case 'center':
     default:
-      return {
-        height: 42,
-        paddingHorizontal: spacing.xl,
-        fontSize: typography.fontSize.md,
-        borderRadius: 24,
-      };
+      return { alignSelf: 'center' as const };
   }
 };
 
 export const Button: React.FC<ButtonProps> = ({
   text,
   color,
-  size = 'medium',
+  width = 'full',
+  height = 'full',
+  align = 'center',
+  outline = false,
   onPress,
   style,
   textStyle,
@@ -49,19 +49,30 @@ export const Button: React.FC<ButtonProps> = ({
   accessibilityLabel,
   disabled = false,
 }) => {
-  const s = getButtonStyle(size);
+  const alignmentStyle = getAlignmentStyle(align);
+  
+  const buttonStyle = {
+    backgroundColor: outline ? 'transparent' : color,
+    borderColor: outline ? color : 'transparent',
+    borderWidth: outline ? 2 : 0,
+    borderRadius: radius.xl,
+    height: height === 'full' ? 40 : 32,
+    paddingHorizontal: spacing.lg,
+    width: width === 'full' ? '100%' : 'auto',
+    opacity: disabled ? 0.6 : 1,
+  };
+
+  const textStyleObj = {
+    color: outline ? color : '#FFFFFF',
+    fontSize: typography.fontSize.sm,
+  };
+
   return (
     <Pressable
       style={[
         styles.button,
-        {
-          backgroundColor: color,
-          borderRadius: s.borderRadius,
-          height: s.height,
-          paddingHorizontal: s.paddingHorizontal,
-          opacity: disabled ? 0.6 : 1,
-          width: '100%',
-        },
+        buttonStyle,
+        alignmentStyle,
         style,
       ]}  
       onPress={onPress}
@@ -72,58 +83,8 @@ export const Button: React.FC<ButtonProps> = ({
     >
       <Text
         style={[
-          textStyles.textButton,
-          {
-            fontSize: s.fontSize,
-          },
-          textStyle,
-        ]}
-      >
-        {text}
-      </Text>
-    </Pressable>
-  );
-};
-
-export const ButtonOutline: React.FC<ButtonProps> = ({
-  text,
-  color,
-  size = 'medium',
-  onPress,
-  style,
-  textStyle,
-  testID,
-  accessibilityLabel,
-  disabled = false,
-}) => {
-  const s = getButtonStyle(size);
-  return (
-    <Pressable
-      style={[
-        styles.buttonOutline,
-        {
-          borderColor: color,
-          borderWidth: 2,
-          borderRadius: s.borderRadius,
-          height: s.height,
-          paddingHorizontal: s.paddingHorizontal,
-          opacity: disabled ? 0.6 : 1,
-        },
-        style,
-      ]}
-      onPress={onPress}
-      disabled={disabled}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel || text}
-      testID={testID}
-    >
-      <Text
-        style={[
-          textStyles.textButtonOutline,
-          {
-            color: color,
-            fontSize: s.fontSize,
-          },
+          outline ? textStyles.textButtonOutline : textStyles.textButton,
+          textStyleObj,
           textStyle,
         ]}
       >
@@ -136,15 +97,7 @@ export const ButtonOutline: React.FC<ButtonProps> = ({
 const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
-    alignSelf: 'baseline',
     justifyContent: 'center',
-    marginVertical: spacing.sm,
-  },
-  buttonOutline: {
-    alignItems: 'center',
-    alignSelf: 'baseline',
-    backgroundColor: 'none',
-    justifyContent: 'center',
-    marginVertical: spacing.sm,
+    marginTop: spacing.xs,
   },
 }); 

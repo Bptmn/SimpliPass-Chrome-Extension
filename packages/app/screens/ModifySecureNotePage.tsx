@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { View, Text, StyleSheet, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SecureNoteDecrypted } from '@app/core/types/types';
 import { updateItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
@@ -11,7 +11,6 @@ import { InputEdit } from '../components/InputEdit';
 import { ColorSelector } from '../components/ColorSelector';
 import { colors } from '@design/colors';
 import { pageStyles } from '@design/layout';
-import { formStyles } from '@design/form';
 import { Button } from '../components/Buttons';
 import { HeaderTitle } from '../components/HeaderTitle';
 
@@ -54,9 +53,7 @@ export const ModifySecureNotePage: React.FC = () => {
       };
       await updateItem(user.uid, note.id, userSecretKey, updates);
       showToast('Note modifiée avec succès');
-      setTimeout(() => {
-        navigate('/');
-      }, 1200);
+      navigate('/');
     } catch (e: any) {
       setError(e.message || "Erreur lors de la modification de la note.");
     } finally {
@@ -94,18 +91,14 @@ export const ModifySecureNotePage: React.FC = () => {
             value={color}
             onChange={setColor}
           />
-          <View style={styles.cardInputLarge}>
-            <Text style={formStyles.formLabel}>Note</Text>
-            <TextInput
-              placeholder="[decryptedNote → note]"
-              placeholderTextColor={colors.accent}
-              style={formStyles.formTextArea}
-              value={noteText}
-              onChangeText={setNoteText}
-              multiline
-              accessibilityLabel="Note"
-            />
-          </View>
+          <InputEdit
+            label="Note"
+            value={noteText}
+            onChange={setNoteText}
+            placeholder="[decryptedNote → note]"
+            onClear={() => setNoteText('')}
+            isNote={true}
+          />
         </View>
       </ScrollView>
       <View style={styles.buttonContainer}>
@@ -125,14 +118,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     backgroundColor: 'transparent',
     padding: 18,
-  },
-  cardInputLarge: {
-    backgroundColor: colors.bgAlt,
-    borderRadius: 20,
-    marginBottom: 18,
-    marginTop: 18,
-    minHeight: 120,
-    padding: 12,
   },
   errorText: {
     color: colors.error,

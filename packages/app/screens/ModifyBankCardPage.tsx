@@ -1,49 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
 import { BankCardDecrypted } from '@app/core/types/types';
 import { updateItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
 import { useUser } from '@hooks/useUser';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Toast, useToast } from '../components/Toast';
-import { Input } from '../components/InputVariants';
 import { InputEdit } from '../components/InputEdit';
 import { colors } from '@design/colors';
-import { spacing, pageStyles } from '@design/layout';
+import { spacing, radius, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
 import { HeaderTitle } from '../components/HeaderTitle';
 import { ColorSelector } from '../components/ColorSelector';
 import ItemBankCard from '../components/ItemBankCard';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+
+const CARD_COLORS = ['#2bb6a3', '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a259e6'];
 
 export const ModifyBankCardPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useUser();
-  const card = location.state?.card as BankCardDecrypted;
+  const { cred } = location.state || {};
 
-  const [title, setTitle] = useState(card?.title || '');
-  const [owner, setOwner] = useState(card?.owner || '');
-  const [cardNumber, setCardNumber] = useState(card?.cardNumber || '');
-  const [expirationDate, setExpirationDate] = useState(card?.expirationDate ? card.expirationDate.toISOString().slice(0, 7) : '');
-  const [verificationNumber, setVerificationNumber] = useState(card?.verificationNumber || '');
-  const [note, setNote] = useState(card?.note || '');
-  const [bankName, setBankName] = useState(card?.bankName || '');
-  const [bankDomain, setBankDomain] = useState(card?.bankDomain || '');
-  const [color, setColor] = useState(card?.color || '');
-  const [error, setError] = useState<string | null>(null);
+  const [color, setColor] = useState(cred?.color || CARD_COLORS[1]);
+  const [owner, setOwner] = useState(cred?.owner || '');
+  const [cardNumber, setCardNumber] = useState(cred?.cardNumber || '');
+  const [expirationDate, setExpirationDate] = useState(cred?.expirationDate ? 
+    `${String(cred.expirationDate.getMonth() + 1).padStart(2, '0')}/${String(cred.expirationDate.getFullYear()).slice(-2)}` : '');
+  const [cvv, setCvv] = useState(cred?.verificationNumber || '');
+  const [note, setNote] = useState(cred?.note || '');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const { toast, showToast } = useToast();
 
+  // Helper for web: generate month and year options
+  const currentYear = new Date().getFullYear();
+  const monthOptions = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
+  const yearOptions = Array.from({ length: 21 }, (_, i) => String(currentYear + i));
+  const selectedMonth = expirationDate.split('/')[0] || '';
+  const selectedYear = expirationDate.split('/')[1] ? `20${expirationDate.split('/')[1]}` : '';
+
   useEffect(() => {
-    if (!card) {
+    if (!cred) {
       navigate('/');
     }
-  }, [card, navigate]);
+  }, [cred, navigate]);
+
+  const handleDateConfirm = (date: Date) => {
+    // Format as MM/YY
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yy = String(date.getFullYear()).slice(-2);
+    setExpirationDate(`${mm}/${yy}`);
+    setDatePickerVisible(false);
+  };
 
   const handleSubmit = async () => {
-    if (!card || !user) {
+    if (!cred || !user) {
       setError('Utilisateur non connecté ou carte introuvable');
       return;
     }
@@ -54,23 +70,25 @@ export const ModifyBankCardPage: React.FC = () => {
       if (!userSecretKey) {
         throw new Error('Clé de sécurité utilisateur introuvable');
       }
+      // Parse expiration date
+      let expDate = cred.expirationDate;
+      if (expirationDate.match(/^(0[1-9]|1[0-2])\/(\d{2})$/)) {
+        const [mm, yy] = expirationDate.split('/');
+        expDate = new Date(Number('20' + yy), Number(mm) - 1, 1);
+      }
       const updates: Partial<BankCardDecrypted> = {
-        title,
+        title: cred.title,
         owner,
         cardNumber,
-        expirationDate: expirationDate ? new Date(expirationDate) : card.expirationDate,
-        verificationNumber,
+        expirationDate: expDate,
+        verificationNumber: cvv,
         note,
-        bankName,
-        bankDomain,
         color,
         lastUseDateTime: new Date(),
       };
-      await updateItem(user.uid, card.id, userSecretKey, updates);
+      await updateItem(user.uid, cred.id, userSecretKey, updates);
       showToast('Carte modifiée avec succès');
-      setTimeout(() => {
-        navigate('/');
-      }, 1200);
+      navigate('/');
     } catch (e: any) {
       setError(e.message || "Erreur lors de la modification de la carte.");
     } finally {
@@ -78,7 +96,7 @@ export const ModifyBankCardPage: React.FC = () => {
     }
   };
 
-  if (!card) {
+  if (!cred) {
     return (
       <View style={pageStyles.pageContainer}>
         <Text style={styles.errorText}>Carte non trouvée</Text>
@@ -87,24 +105,20 @@ export const ModifyBankCardPage: React.FC = () => {
   }
 
   // Live preview object
-  let expDate = card.expirationDate;
-  if (expirationDate) {
-    const [yyyy, mm] = expirationDate.split('-');
-    if (yyyy && mm) {
-      expDate = new Date(Number(yyyy), Number(mm) - 1, 1);
-    }
+  let expDate = cred.expirationDate;
+  if (expirationDate.match(/^(0[1-9]|1[0-2])\/(\d{2})$/)) {
+    const [mm, yy] = expirationDate.split('/');
+    expDate = new Date(Number('20' + yy), Number(mm) - 1, 1);
   }
   const previewCard: BankCardDecrypted = {
-    ...card,
-    title,
+    ...cred,
+    title: cred.title,
     owner,
     cardNumber,
     expirationDate: expDate,
-    verificationNumber,
+    verificationNumber: cvv,
     note,
-    bankName,
-    bankDomain,
-    color: color || card.color,
+    color: color || cred.color,
   };
 
   return (
@@ -114,7 +128,7 @@ export const ModifyBankCardPage: React.FC = () => {
       <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
-            title="Modifier la carte bancaire" 
+            title="Modifier une carte" 
             onBackPress={() => navigate('/')} 
           />
           <ItemBankCard cred={previewCard} />
@@ -123,13 +137,6 @@ export const ModifyBankCardPage: React.FC = () => {
               title="Choisissez la couleur de votre carte"
               value={color}
               onChange={setColor}
-            />
-            <InputEdit
-              label="Nom de la carte"
-              value={title}
-              onChange={setTitle}
-              placeholder="[cardTitle]"
-              onClear={() => setTitle('')}
             />
             <InputEdit
               label="Titulaire"
@@ -145,38 +152,73 @@ export const ModifyBankCardPage: React.FC = () => {
               placeholder="[cardNumber]"
               onClear={() => setCardNumber('')}
             />
+            <View style={styles.row2col}>
+              <View style={styles.inputColumn}>
+                <Text style={styles.inputLabel}>Date d&apos;expiration</Text>
+                {Platform.OS === 'web' ? (
+                  <View style={{ flexDirection: 'row', gap: 2 }}>
+                    <select
+                      value={selectedMonth}
+                      onChange={e => {
+                        const mm = e.target.value;
+                        setExpirationDate(`${mm}/${selectedYear.slice(-2)}`);
+                      }}
+                      style={{ ...styles.input, width: 80, borderRadius: radius.md }}
+                    >
+                      <option value=""><Text>Mois</Text></option>
+                      {monthOptions.map(m => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                    <select
+                      value={selectedYear}
+                      onChange={e => {
+                        const yyyy = e.target.value;
+                        setExpirationDate(`${selectedMonth}/${yyyy.slice(-2)}`);
+                      }}
+                      style={{ ...styles.input, width: 100, borderRadius: radius.md }}
+                    >
+                      <option value=""><Text>Année</Text></option>
+                      {yearOptions.map(y => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
+                    </select>
+                  </View>
+                ) : (
+                  <>
+                    <Pressable
+                      style={styles.input}
+                      onPress={() => setDatePickerVisible(true)}
+                      accessibilityLabel="Sélectionner la date d'expiration"
+                    >
+                      <Text style={{ color: expirationDate ? colors.textBlack : colors.accent }}>
+                        {expirationDate || 'MM/YY'}
+                      </Text>
+                    </Pressable>
+                    <DateTimePickerModal
+                      isVisible={isDatePickerVisible}
+                      mode="date"
+                      display="spinner"
+                      onConfirm={handleDateConfirm}
+                      onCancel={() => setDatePickerVisible(false)}
+                      minimumDate={new Date(2000, 0, 1)}
+                      maximumDate={new Date(2100, 11, 31)}
+                    />
+                  </>
+                )}
+              </View>
+              <View style={styles.inputColumn}>
+                <InputEdit
+                  label="Code secret"
+                  value={cvv}
+                  onChange={val => setCvv(val.replace(/\D/g, ''))}
+                  placeholder="123"
+                  onClear={() => setCvv('')}
+                />
+              </View>
+            </View>
             <InputEdit
-              label="Date d'expiration"
-              value={expirationDate}
-              onChange={setExpirationDate}
-              placeholder="MM/YYYY"
-              onClear={() => setExpirationDate('')}
-            />
-            <InputEdit
-              label="CVV"
-              value={verificationNumber}
-              onChange={setVerificationNumber}
-              placeholder="[cvv]"
-              onClear={() => setVerificationNumber('')}
-            />
-            <InputEdit
-              label="Nom de la banque"
-              value={bankName}
-              onChange={setBankName}
-              placeholder="[bankName]"
-              onClear={() => setBankName('')}
-            />
-            <InputEdit
-              label="Domaine de la banque"
-              value={bankDomain}
-              onChange={setBankDomain}
-              placeholder="[bankDomain]"
-              onClear={() => setBankDomain('')}
-            />
-            <Input
               label="Note"
-              _id="note"
-              type="text"
               value={note}
               onChange={setNote}
               placeholder="Entrez une note..."
@@ -184,7 +226,8 @@ export const ModifyBankCardPage: React.FC = () => {
             <Button
               text="Modifier"
               color={colors.primary}
-              size="medium"
+              width="full"
+              height="full"
               onPress={handleSubmit}
               disabled={loading}
             />
@@ -201,5 +244,32 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     marginTop: spacing.xl,
     textAlign: 'center',
+  },
+  input: {
+    backgroundColor: colors.bgAlt,
+    borderColor: colors.border,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    color: colors.textBlack,
+    fontSize: typography.fontSize.sm,
+    fontWeight: '500',
+    height: 48,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.md,
+    placeholderTextColor: colors.accent,
+    width: '100%',
+  },
+  inputColumn: {
+    flex: 1,
+  },
+  inputLabel: {
+    color: colors.primary,
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.medium,
+    marginBottom: spacing.xs,
+  },
+  row2col: {
+    flexDirection: 'row',
+    gap: spacing.xl,
   },
 }); 

@@ -44,12 +44,14 @@
 
 import { db } from '@app/core/database/db.adapter';
 import { decryptAllItems, encryptCredential, encryptBankCard, encryptSecureNote } from '@app/core/logic/cryptography';
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted, ItemType } from '@app/core/types/types';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@app/core/types/types';
 import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@app/core/states';
 import { 
   ItemEncrypted
 } from '@app/core/types/types';
 import { generateItemKey } from '@app/utils/crypto';
+import { doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import { db as firebaseDb } from '@app/core/auth/firebase';
 
 // Define DecryptedItem type locally
 type DecryptedItem = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted;
@@ -148,14 +150,17 @@ export async function getItemById(
       return stateItem;
     }
     
-    // If not in state, fetch from database
+    // If not in state, fetch from database - use Firebase SDK directly
     console.log('[Items] Item not in cache, fetching from database:', itemId);
-    const encryptedItem = await db.getDocument<ItemEncrypted>(`users/${userId}/my_items/${itemId}`);
+    const docRef = doc(firebaseDb, 'users', userId, 'my_items', itemId);
+    const docSnap = await getDoc(docRef);
     
-    if (!encryptedItem) {
+    if (!docSnap.exists()) {
       console.log('[Items] Item not found in database:', itemId);
       return null;
     }
+    
+    const encryptedItem = { id: docSnap.id, ...docSnap.data() } as ItemEncrypted;
     
     // Decrypt the item
     const decryptedItem = await decryptAllItems(userSecretKey, [encryptedItem]);
@@ -192,8 +197,7 @@ export async function getItemById(
 export async function addItem(
   userId: string,
   userSecretKey: string,
-  item: Omit<DecryptedItem, 'id' | 'itemKey'>,
-  itemType: ItemType
+  item: Omit<DecryptedItem, 'id' | 'itemKey'>
 ): Promise<string> {
   const credentialsStore = useCredentialsStore.getState();
   const bankCardsStore = useBankCardsStore.getState();
@@ -206,29 +210,22 @@ export async function addItem(
     const itemKey = generateItemKey();
     // Add itemKey to the item
     const itemWithKey: any = { ...item, itemKey };
-    // Encrypt based on itemType
-    if (itemType === 'credential') {
-      encryptedItem = await encryptCredential(userSecretKey, { ...itemWithKey, id: '' }, itemType);
+    // Encrypt based on item shape
+    if ('username' in itemWithKey) {
+      encryptedItem = await encryptCredential(userSecretKey, { ...itemWithKey, id: '' });
       newItem = { ...itemWithKey, id: '' } as CredentialDecrypted;
-    } else if (itemType === 'bank_card') {
-      encryptedItem = await encryptBankCard(userSecretKey, { ...itemWithKey, id: '' }, itemType);
+      credentialsStore.addCredential(newItem as CredentialDecrypted);
+    } else if ('cardNumber' in itemWithKey) {
+      encryptedItem = await encryptBankCard(userSecretKey, { ...itemWithKey, id: '' });
       newItem = { ...itemWithKey, id: '' } as BankCardDecrypted;
+      bankCardsStore.addBankCard(newItem as BankCardDecrypted);
     } else {
-      encryptedItem = await encryptSecureNote(userSecretKey, { ...itemWithKey, id: '' }, itemType);
+      encryptedItem = await encryptSecureNote(userSecretKey, { ...itemWithKey, id: '' });
       newItem = { ...itemWithKey, id: '' } as SecureNoteDecrypted;
+      secureNotesStore.addSecureNote(newItem as SecureNoteDecrypted);
     }
     // Store in database
-    const newId = await db.addDocument(`users/${userId}/my_items`, encryptedItem);
-    // Update the item with the new ID
-    const itemWithId = { ...newItem, id: newId } as DecryptedItem;
-    // Add to state
-    if (itemType === 'credential') {
-      credentialsStore.addCredential(itemWithId as CredentialDecrypted);
-    } else if (itemType === 'bank_card') {
-      bankCardsStore.addBankCard(itemWithId as BankCardDecrypted);
-    } else {
-      secureNotesStore.addSecureNote(itemWithId as SecureNoteDecrypted);
-    }
+    const newId = await db.addDocumentWithId(`users/${userId}/my_items`, encryptedItem);
     console.log('[Items] Successfully added item:', newId);
     return newId;
   } catch (error) {
@@ -272,29 +269,19 @@ export async function updateItem(
     let encryptedItem: ItemEncrypted;
     
     if ('username' in updatedItem) {
-      encryptedItem = await encryptCredential(userSecretKey, updatedItem as CredentialDecrypted, 'credential');
-    } else if ('cardNumber' in updatedItem) {
-      encryptedItem = await encryptBankCard(userSecretKey, updatedItem as BankCardDecrypted, 'bank_card');
-    } else {
-      encryptedItem = await encryptSecureNote(userSecretKey, updatedItem as SecureNoteDecrypted, 'secure_note');
-    }
-    
-    // Remove item_type from the top-level before storing
-    if ('item_type' in encryptedItem) {
-      delete (encryptedItem as any).item_type;
-    }
-    
-    // Update in database
-    await db.updateDocument(`users/${userId}/my_items/${itemId}`, encryptedItem);
-    
-    // Update in state
-    if ('username' in updatedItem) {
+      encryptedItem = await encryptCredential(userSecretKey, updatedItem as CredentialDecrypted);
       credentialsStore.updateCredential(updatedItem as CredentialDecrypted);
     } else if ('cardNumber' in updatedItem) {
+      encryptedItem = await encryptBankCard(userSecretKey, updatedItem as BankCardDecrypted);
       bankCardsStore.updateBankCard(updatedItem as BankCardDecrypted);
     } else {
+      encryptedItem = await encryptSecureNote(userSecretKey, updatedItem as SecureNoteDecrypted);
       secureNotesStore.updateSecureNote(updatedItem as SecureNoteDecrypted);
     }
+    
+    // Update in database - pass path segments separately
+    const docRef = doc(firebaseDb, 'users', userId, 'my_items', itemId);
+    await updateDoc(docRef, encryptedItem as any);
     
     console.log('[Items] Successfully updated item:', itemId);
     
@@ -315,8 +302,9 @@ export async function deleteItem(userId: string, itemId: string): Promise<void> 
   const secureNotesStore = useSecureNotesStore.getState();
   
   try {
-    // Delete from database
-    await db.deleteDocument(`users/${userId}/my_items/${itemId}`);
+    // Delete from database - use Firebase SDK directly
+    const docRef = doc(firebaseDb, 'users', userId, 'my_items', itemId);
+    await deleteDoc(docRef);
     
     // Remove from state
     const credentialIndex = credentialsStore.credentials.findIndex((c: CredentialDecrypted) => c.id === itemId);

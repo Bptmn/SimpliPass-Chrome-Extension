@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { View, Text, Pressable, StyleSheet, ScrollView, TextInput, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView, Platform } from 'react-native';
 import { Input } from '../components/InputVariants';
 import ItemBankCard from '../components/ItemBankCard';
 import { colors } from '@design/colors';
@@ -77,7 +77,7 @@ const AddCard2: React.FC = () => {
         bankName: bankName || '',
         bankDomain: bankDomain || '',
       };
-      await addItem(user.uid, userSecretKey, newCard, 'bank_card');
+      await addItem(user.uid, userSecretKey, newCard);
       navigate('/');
     } catch (e: any) {
       setError(e.message || 'Erreur lors de la création de la carte.');
@@ -150,14 +150,14 @@ const AddCard2: React.FC = () => {
               <View style={styles.inputColumn}>
                 <Text style={styles.inputLabel}>Date d&apos;expiration</Text>
                 {Platform.OS === 'web' ? (
-                  <View style={{ flexDirection: 'row', gap: 8 }}>
+                  <View style={{ flexDirection: 'row', gap: 2 }}>
                     <select
                       value={selectedMonth}
                       onChange={e => {
                         const mm = e.target.value;
                         setExpirationDate(`${mm}/${selectedYear.slice(-2)}`);
                       }}
-                      style={{ ...styles.input, width: 80, marginRight: 8 }}
+                      style={{ ...styles.input, width: 80, borderRadius: radius.md }}
                     >
                       <option value=""><Text>Mois</Text></option>
                       {monthOptions.map(m => (
@@ -170,7 +170,7 @@ const AddCard2: React.FC = () => {
                         const yyyy = e.target.value;
                         setExpirationDate(`${selectedMonth}/${yyyy.slice(-2)}`);
                       }}
-                      style={{ ...styles.input, width: 100 }}
+                      style={{ ...styles.input, width: 100, borderRadius: radius.md }}
                     >
                       <option value=""><Text>Année</Text></option>
                       {yearOptions.map(y => (
@@ -185,7 +185,7 @@ const AddCard2: React.FC = () => {
                       onPress={() => setDatePickerVisible(true)}
                       accessibilityLabel="Sélectionner la date d'expiration"
                     >
-                      <Text style={{ color: expirationDate ? colors.text : colors.accent }}>
+                      <Text style={{ color: expirationDate ? colors.textSecondary : colors.accent }}>
                         {expirationDate || 'MM/YY'}
                       </Text>
                     </Pressable>
@@ -202,17 +202,14 @@ const AddCard2: React.FC = () => {
                 )}
               </View>
               <View style={styles.inputColumn}>
-                <Text style={styles.inputLabel}>Code secret (CVV)</Text>
-                <TextInput
-                  style={styles.input}
+                <Input
+                  label="Code secret"
+                  _id="cvv"
+                  type="text"
                   value={cvv}
-                  onChangeText={setCvv}
+                  onChange={val => setCvv(val.replace(/\D/g, ''))}
                   placeholder="123"
-                  placeholderTextColor={colors.accent}
-                  maxLength={4}
-                  keyboardType="numeric"
-                  secureTextEntry={true}
-                  accessibilityLabel="Code secret CVV"
+                  _required
                 />
               </View>
             </View>
@@ -227,7 +224,8 @@ const AddCard2: React.FC = () => {
             <Button
               text="Valider"
               color={colors.primary}
-              size="medium"
+              width="full"
+              height="full"
               onPress={handleConfirm}
               disabled={loading}
             />
@@ -251,7 +249,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: radius.xl,
     borderWidth: 1,
-    color: colors.text,
+    color: colors.textSecondary,
     fontSize: typography.fontSize.sm,
     fontWeight: '500',
     height: 48,
@@ -264,11 +262,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inputLabel: {
-    color: colors.text,
+    color: colors.primary,
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.medium,
     marginBottom: spacing.xs,
-    paddingBottom: spacing.xs,
   },
   row2col: {
     flexDirection: 'row',

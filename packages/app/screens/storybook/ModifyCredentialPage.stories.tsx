@@ -9,10 +9,10 @@ const mockCredential: CredentialDecrypted = {
   title: 'Compte Google',
   username: 'user@gmail.com',
   password: 'password123',
-  note: 'Note de test',
   url: 'https://google.com',
-  itemKey: 'mockItemKey',
-  id: 'mockId',
+  note: 'Note de test',
+  itemKey: 'mock-key',
+  id: 'mock-id',
 };
 
 export default {
@@ -21,9 +21,9 @@ export default {
 };
 
 export const Default = () => (
-  <MemoryRouter initialEntries={[{ pathname: '/modify', state: { credential: mockCredential } }]}> 
+  <MemoryRouter initialEntries={[{ pathname: '/modify-credential', state: { credential: mockCredential } }]}> 
     <Routes>
-      <Route path="/modify" element={<ModifyCredentialPage />} />
+      <Route path="/modify-credential" element={<ModifyCredentialPage />} />
     </Routes>
   </MemoryRouter>
 ); 

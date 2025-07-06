@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { View, Text, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Input } from '../components/InputVariants';
 import { colors } from '@design/colors';
-import { radius, spacing, pageStyles } from '@design/layout';
-import { typography } from '@design/typography';
+import { pageStyles } from '@design/layout';
 import { addItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
 import { useUser } from '@hooks/useUser';
@@ -58,7 +57,7 @@ const AddSecureNote: React.FC = () => {
           title="Ajouter une note" 
           onBackPress={() => navigate(-1)} 
         />
-        <View style={styles.formContainer}>
+        <View style={pageStyles.formContainer}>
           <Input
             label="Nom de la note sécurisée"
             _id="note-title"
@@ -73,19 +72,15 @@ const AddSecureNote: React.FC = () => {
             value={color}
             onChange={setColor}
           />
-          <View>
-          <Text style={styles.inputLabel}>Note</Text>
-          <TextInput
-            style={styles.textArea}
+          <Input
+            label="Note"
+            _id="note-content"
+            type="note"
             value={note}
-            onChangeText={setNote}
+            onChange={setNote}
             placeholder="Commencez votre note..."
-            multiline
-            numberOfLines={6}
-            accessibilityLabel="Note sécurisée"
-            testID="note-textarea"
+            _required
           />
-          </View>
           <Button
             text="Valider"
             color={colors.secondary}
@@ -100,34 +95,5 @@ const AddSecureNote: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  formContainer: {
-    flex: 1,
-    padding: spacing.lg,
-  },
-  inputLabel: {
-    color: colors.text,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    marginBottom: spacing.xs,
-    paddingBottom: spacing.xs,
-  },
-  textArea: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    color: colors.text,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    minHeight: 120,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    placeholderTextColor: colors.accent,
-    textAlignVertical: 'top',
-    width: '100%',
-  },
-});
 
 export default AddSecureNote; 

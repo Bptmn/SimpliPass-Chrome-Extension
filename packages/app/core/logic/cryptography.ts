@@ -8,8 +8,7 @@ import {
   BankCardEncrypted, 
   SecureNoteDecrypted,
   SecureNoteEncrypted,
-  ItemEncrypted,
-  ItemType
+  ItemEncrypted
 } from '@app/core/types/types';
 import { encryptData, decryptData } from '@utils/crypto';
 
@@ -122,8 +121,7 @@ export async function decryptAllItems(
  */
 export async function encryptCredential(
   userSecretKey: string,
-  itemToEncrypt: CredentialDecrypted,
-  itemType: ItemType
+  itemToEncrypt: CredentialDecrypted
 ): Promise<CredentialEncrypted> {
   // Build the content dictionary
   const contentDict = {
@@ -132,7 +130,7 @@ export async function encryptCredential(
     password: itemToEncrypt.password,
     note: itemToEncrypt.note || '',
     url: itemToEncrypt.url || '',
-    itemType,
+    itemType: 'credential',
   };
   // Convert to JSON string
   const contentString = JSON.stringify(contentDict);
@@ -157,8 +155,7 @@ export async function encryptCredential(
  */
 export async function encryptBankCard(
   userSecretKey: string,
-  itemToEncrypt: BankCardDecrypted,
-  itemType: ItemType
+  itemToEncrypt: BankCardDecrypted
 ): Promise<BankCardEncrypted> {
   const contentDict = {
     title: itemToEncrypt.title,
@@ -170,7 +167,7 @@ export async function encryptBankCard(
     verificationNumber: itemToEncrypt.verificationNumber,
     bankName: itemToEncrypt.bankName,
     bankDomain: itemToEncrypt.bankDomain,
-    itemType,
+    itemType: 'bank_card',
   };
   const contentString = JSON.stringify(contentDict);
   const itemKey = itemToEncrypt.itemKey;
@@ -192,14 +189,13 @@ export async function encryptBankCard(
  */
 export async function encryptSecureNote(
   userSecretKey: string,
-  itemToEncrypt: SecureNoteDecrypted,
-  itemType: ItemType
+  itemToEncrypt: SecureNoteDecrypted
 ): Promise<SecureNoteEncrypted> {
   const contentDict = {
     title: itemToEncrypt.title,
     note: itemToEncrypt.note,
     color: itemToEncrypt.color,
-    itemType,
+    itemType: 'secure_note',
   };
   const contentString = JSON.stringify(contentDict);
   const itemKey = itemToEncrypt.itemKey;

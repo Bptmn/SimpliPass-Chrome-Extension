@@ -13,6 +13,7 @@ import { padding, radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
 import CopyButton from '../components/CopyButton';
+import { MoreInfo } from '../components/MoreInfo';
 
 interface CredentialDetailsPageProps {
   credential: CredentialDecrypted;
@@ -23,30 +24,9 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   credential,
   onBack,
 }) => {
-  // Helper function to format Firestore Timestamps or Date objects
-  const formatDateTime = (dateTime: any): string => {
-    if (!dateTime) return 'N/A';
-    
-    // Handle Firestore Timestamp objects
-    if (dateTime && typeof dateTime === 'object' && 'seconds' in dateTime) {
-      return new Date(dateTime.seconds * 1000).toLocaleString('fr-FR');
-    }
-    
-    // Handle JavaScript Date objects
-    if (dateTime instanceof Date) {
-      return dateTime.toLocaleString('fr-FR');
-    }
-    
-    // Handle string dates
-    if (typeof dateTime === 'string') {
-      return new Date(dateTime).toLocaleString('fr-FR');
-    }
-    
-    return 'N/A';
-  };
+
   const navigate = useNavigate();
   const user = useUser();
-  const [showMeta, setShowMeta] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -194,7 +174,8 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
           <Button
             text="Modifier"
             color={colors.accent}
-            size="medium"
+            width="full"
+            height="full"
             onPress={handleEdit}
             disabled={loading}
             style={{ flex: 1, maxWidth: 180 }}
@@ -202,7 +183,8 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
           <Button
             text="Supprimer"
             color={colors.error}
-            size="medium"
+            width="full"
+            height="full"
             onPress={handleDelete}
             disabled={loading}
             style={{ flex: 1, maxWidth: 180 }}
@@ -210,37 +192,10 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
         </View>
 
         {/* Expandable meta info */}
-        <Pressable
-          style={styles.infoRow}
-          onPress={() => setShowMeta((v) => !v)}
-          accessibilityRole="button"
-          accessibilityLabel="Afficher plus d&apos;informations"
-          accessibilityState={{ expanded: showMeta }}
-        >
-          <View style={styles.infoRowContent}>
-            <View style={{ marginRight: 8 }}>
-              <Icon name="info" size={18} color={colors.primary} />
-            </View>
-            <Text style={styles.infoLabel}>Plus d&apos;informations</Text>
-            <View style={{ marginLeft: 'auto' }}>
-              <Icon
-                name={showMeta ? 'arrowDown' : 'arrowRight'}
-                size={18}
-                color={colors.primary}
-              />
-            </View>
-          </View>
-          {showMeta && (
-            <View style={styles.metaRow}>
-              <Text style={styles.metaText}>
-                Dernière utilisation : {formatDateTime(credential.lastUseDateTime)}
-              </Text>
-              <Text style={styles.metaText}>
-                Date de création : {formatDateTime(credential.createdDateTime)}
-              </Text>
-            </View>
-          )}
-        </Pressable>
+        <MoreInfo
+          lastUseDateTime={credential.lastUseDateTime}
+          createdDateTime={credential.createdDateTime}
+        />
       </View>
     </View>
   );
@@ -339,23 +294,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xs,
   },
-  infoLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    marginRight: 8,
-  },
-  infoRow: {
-    backgroundColor: 'transparent',
-    borderRadius: radius.md,
-    marginBottom: spacing.sm,
-    width: '100%',
-  },
-  infoRowContent: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
+
   launchBtn: {
     alignItems: 'center',
     backgroundColor: 'transparent',
@@ -365,15 +304,7 @@ export const styles = StyleSheet.create({
     marginLeft: spacing.sm,
     paddingHorizontal: spacing.sm,
   },
-  metaRow: {
-    marginTop: spacing.xs,
-    paddingLeft: 24,
-  },
-  metaText: {
-    color: colors.textSecondary,
-    fontSize: typography.fontSize.sm,
-    marginBottom: 2,
-  },
+
   pageContent: {
     flex: 1,
   },

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, ScrollView, Text, StyleSheet } from 'react-native';
 import { CredentialDecrypted } from '@app/core/types/types';
 import { updateItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
 import { useUser } from '@hooks/useUser';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Toast, useToast } from '../components/Toast';
-import { Input } from '../components/InputVariants';
 import { colors } from '@design/colors';
-import { spacing, pageStyles } from '@design/layout';
+import { pageStyles, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
 import { HeaderTitle } from '../components/HeaderTitle';
@@ -61,9 +60,7 @@ export const ModifyCredentialPage: React.FC = () => {
 
       await updateItem(user.uid, credential.id, userSecretKey, updates);
       showToast('Identifiant modifié avec succès');
-      setTimeout(() => {
-        navigate('/');
-      }, 1200);
+      navigate('/');
     } catch (e: any) {
       setError(e.message || 'Erreur lors de la modification de l&apos;identifiant.');
     } finally {
@@ -118,10 +115,8 @@ export const ModifyCredentialPage: React.FC = () => {
               placeholder="[credentialUrl]"
               onClear={() => setUrl('')}
             />
-            <Input
+            <InputEdit
               label="Note"
-              _id="note"
-              type="text"
               value={note}
               onChange={setNote}
               placeholder="Entrez une note..."
@@ -129,7 +124,8 @@ export const ModifyCredentialPage: React.FC = () => {
             <Button
               text="Modifier"
               color={colors.primary}
-              size="medium"
+              width="full"
+              height="full"
               onPress={handleSubmit}
               disabled={loading}
             />

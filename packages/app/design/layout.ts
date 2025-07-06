@@ -62,9 +62,10 @@ export const pageStyles = StyleSheet.create({
     gap: spacing.md,
   },
   pageContainer: {
-    backgroundColor: layout.primaryBackground || colors.bg,
+    backgroundColor: colors.bg,
     flex: 1,
-    padding: padding.lg,
+    gap: spacing.lg,
+    padding: spacing.lg,
   },
   pageContent: {
     flex: 1,

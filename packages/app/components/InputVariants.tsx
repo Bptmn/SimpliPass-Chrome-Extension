@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { colors } from '@design/colors';
 import { formStyles } from '@design/form';
+import { spacing } from '@design/layout';
 import { Icon } from './Icon';
 
 // --- Input classique ---
@@ -11,7 +12,7 @@ interface InputProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  type?: 'text' | 'email' | 'password';
+  type?: 'text' | 'email' | 'password' | 'note';
   _autoComplete?: string;
   _required?: boolean;
   error?: string;
@@ -29,26 +30,80 @@ export const Input: React.FC<InputProps> = ({
   _required = false,
   error,
   disabled = false,
-}) => (
-  <View style={formStyles.formSection}>
-    <Text style={formStyles.formLabel}>{label}</Text>
-    <TextInput
-      placeholder={placeholder}
-      placeholderTextColor={colors.accent}
-      style={[
-        formStyles.formInput,
-        error ? formStyles.formInputError : null,
-        disabled ? formStyles.formInputDisabled : null,
-      ]}
-      value={value}
-      onChangeText={onChange}
-      editable={!disabled}
-      secureTextEntry={type === 'password'}
-      accessibilityLabel={label}
-    />
-    {error ? <Text style={formStyles.formError}>{error}</Text> : null}
-  </View>
-);
+}) => {
+  const [inputHeight, setInputHeight] = useState(type === 'note' ? 96 : 48); // 3 lines minimum for notes
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleContentSizeChange = (event: { nativeEvent: { contentSize: { height: number } } }) => {
+    if (type === 'note') {
+      const { height } = event.nativeEvent.contentSize;
+      const minHeight = 96; // 3 lines minimum
+      const maxHeight = 300; // Maximum height to prevent excessive growth
+      setInputHeight(Math.max(minHeight, Math.min(height, maxHeight)));
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  return (
+    <View>
+      <Text style={formStyles.formLabel}>{label}</Text>
+      <View style={{ position: 'relative' }}>
+        <TextInput
+          placeholder={placeholder}
+          placeholderTextColor={colors.accent}
+          style={[
+            formStyles.formInput,
+            type === 'note' && {
+              height: inputHeight,
+              textAlignVertical: 'top',
+              paddingTop: spacing.sm,
+              borderRadius: 15,
+            },
+            type === 'password' && {
+              paddingRight: 50, // Space for the eye icon
+            },
+            error ? formStyles.formInputError : null,
+            disabled ? formStyles.formInputDisabled : null,
+          ]}
+          value={value}
+          onChangeText={onChange}
+          editable={!disabled}
+          secureTextEntry={type === 'password' && !showPassword}
+          multiline={type === 'note'}
+          numberOfLines={type === 'note' ? undefined : 1}
+          onContentSizeChange={type === 'note' ? handleContentSizeChange : undefined}
+          accessibilityLabel={label}
+        />
+        {type === 'password' && (
+          <Pressable
+            style={{
+              position: 'absolute',
+              right: spacing.sm,
+              top: '50%',
+              transform: [{ translateY: -12 }],
+              padding: spacing.xs,
+              zIndex: 1,
+            }}
+            onPress={togglePasswordVisibility}
+            disabled={disabled}
+            accessibilityLabel={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+            accessibilityRole="button"
+          >
+            <Icon 
+              name={showPassword ? 'visibilityOff' : 'visibility'} 
+              size={20} 
+              color={colors.textSecondary} 
+            />
+          </Pressable>
+        )}
+      </View>
+      {error ? <Text style={formStyles.formError}>{error}</Text> : null}
+    </View>
+  );
+};
 
 // --- InputPasswordGenerator ---
 interface InputPasswordGeneratorProps {
@@ -76,7 +131,7 @@ export const InputPasswordGenerator: React.FC<InputPasswordGeneratorProps> = ({
   disabled = false,
   onGeneratePassword,
 }) => (
-  <View style={formStyles.formSection}>
+  <View>
     <View style={formStyles.formPasswordStrength}>
       <Text style={formStyles.formLabel}>{label}</Text>
       {onGeneratePassword && (
@@ -144,7 +199,7 @@ export const InputPasswordStrength: React.FC<InputPasswordStrengthProps> = ({
   };
 
   return (
-    <View style={formStyles.formSection}>
+    <View>
       <Text style={formStyles.formLabel}>{label}</Text>
       <TextInput
         placeholder={placeholder}

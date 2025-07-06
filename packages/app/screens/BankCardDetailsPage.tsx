@@ -12,6 +12,7 @@ import { colors } from '@design/colors';
 import { pageStyles } from '@design/layout';
 import { Button } from '../components/Buttons';
 import CopyButton from '../components/CopyButton';
+import { MoreInfo } from '../components/MoreInfo';
 
 interface BankCardDetailsPageProps {
   card: BankCardDecrypted;
@@ -24,7 +25,6 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
 }) => {
   const navigate = useNavigate();
   const user = useUser();
-  const [showMeta, setShowMeta] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
@@ -46,9 +46,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
     try {
       await deleteItem(user.uid, card.id);
       showToast('Carte supprimée avec succès');
-      setTimeout(() => {
-        onBack();
-      }, 1200);
+      onBack();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la suppression.');
     } finally {
@@ -155,7 +153,8 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
           <Button
             text="Modifier"
             color={colors.accent}
-            size="medium"
+            width="full"
+            height="full"
             onPress={handleEdit}
             disabled={loading}
             style={{ flex: 1, maxWidth: 180 }}
@@ -163,44 +162,18 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
           <Button
             text="Supprimer"
             color={colors.error}
-            size="medium"
+            width="full"
+            height="full"
             onPress={handleDelete}
             disabled={loading}
             style={{ flex: 1, maxWidth: 180 }}
           />
         </View>
         {/* Expandable meta info */}
-        <Pressable
-          style={styles.infoRow}
-          onPress={() => setShowMeta((v) => !v)}
-          accessibilityRole="button"
-          accessibilityLabel="Afficher plus d&apos;informations"
-          accessibilityState={{ expanded: showMeta }}
-        >
-          <View style={styles.infoRowContent}>
-            <View style={{ marginRight: 8 }}>
-              <Icon name="info" size={18} color={colors.primary} />
-            </View>
-            <Text style={styles.infoLabel}>Plus d&apos;informations</Text>
-            <View style={{ marginLeft: 'auto' }}>
-              <Icon
-                name={showMeta ? 'arrowDown' : 'arrowRight'}
-                size={18}
-                color={colors.primary}
-              />
-            </View>
-          </View>
-          {showMeta && (
-            <View style={styles.metaRow}>
-              <Text style={styles.metaText}>
-                Dernière utilisation : {card.lastUseDateTime.toLocaleString('fr-FR')}
-              </Text>
-              <Text style={styles.metaText}>
-                Date de création : {card.createdDateTime.toLocaleString('fr-FR')}
-              </Text>
-            </View>
-          )}
-        </Pressable>
+        <MoreInfo
+          lastUseDateTime={card.lastUseDateTime}
+          createdDateTime={card.createdDateTime}
+        />
       </View>
     </View>
   );

@@ -4,7 +4,7 @@ import { colors } from '@design/colors';
 import { spacing } from '@design/layout';
 import { typography } from '@app/design/typography';
 
-const DEFAULT_COLORS = [colors.primary, '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a259e6'];
+const DEFAULT_COLORS = [colors.secondary, colors.primary, colors.accent, '#c44545', '#b6d43a', '#a259e6'];
 
 interface ColorSelectorProps {
   title: string;
@@ -25,7 +25,7 @@ export const ColorSelector: React.FC<ColorSelectorProps> = ({
     onChange?.(c);
   };
   return (
-    <View style={{ marginVertical: spacing.md }}>
+    <View>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.colorRow}>
         {colorsList.map((c) => (
@@ -53,9 +53,9 @@ const styles = StyleSheet.create({
   colorCircle: {
     alignItems: 'center',
     borderRadius: 20,
-    height: 40,
+    height: 35,
     justifyContent: 'center',
-    width: 40,
+    width: 35,
   },
   colorRow: {
     alignItems: 'center',

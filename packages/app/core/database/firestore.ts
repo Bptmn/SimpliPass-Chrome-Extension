@@ -10,7 +10,8 @@ import {
   DocumentData,
   QuerySnapshot,
   DocumentSnapshot,
-  DocumentReference
+  DocumentReference,
+  setDoc
 } from 'firebase/firestore';
 
 // Firebase is already initialized in @firebase.ts and exports the 'db' instance
@@ -70,4 +71,17 @@ export const deleteDocument = async (
 ): Promise<void> => {
   const docRef = doc(db, docPath);
   await deleteDoc(docRef);
+};
+
+/**
+ * Add a document to a collection with a generated ID and include the ID in the data
+ */
+export const addDocumentWithId = async <T extends DocumentData = DocumentData>(
+  collectionPath: string,
+  data: T
+): Promise<string> => {
+  const colRef = collection(db, collectionPath);
+  const docRef = doc(colRef); // generates a new doc ref with an ID
+  await setDoc(docRef, { ...data, id: docRef.id });
+  return docRef.id;
 };

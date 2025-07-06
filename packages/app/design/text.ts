@@ -12,17 +12,17 @@ export const textStyles = StyleSheet.create({
   },
   // Text variants
   textBody: {
-    color: colors.text,
+    color: colors.textBlack,
     fontSize: typography.fontSize.md,
     fontWeight: '400',
   },
   textBodyLarge: {
-    color: colors.text,
+    color: colors.textBlack,
     fontSize: typography.fontSize.lg,
     fontWeight: '400',
   },
   textBodySmall: {
-    color: colors.text,
+    color: colors.textBlack,
     fontSize: typography.fontSize.sm,
     fontWeight: '400',
   },
@@ -39,6 +39,12 @@ export const textStyles = StyleSheet.create({
     letterSpacing: 0.2,
     textAlign: 'center',
   },
+  textEmptyState: {
+    color: colors.textSecondary,
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.regular,
+    textAlign: 'center',
+  },
   textError: {
     color: colors.error,
     fontSize: typography.fontSize.sm,
@@ -52,11 +58,17 @@ export const textStyles = StyleSheet.create({
     marginTop: spacing.lg,
     textAlign: 'center',
   },
-  textEmptyState: {
+  textFieldLabel: {
     color: colors.textSecondary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: '500',
+    marginBottom: 2,
+  },
+  textFieldValue: {
+    color: colors.textBlack,
     fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.regular,
-    textAlign: 'center',
+    fontWeight: '500',
+    marginBottom: 2,
   },
   textLabel: {
     color: colors.primary,
@@ -64,64 +76,39 @@ export const textStyles = StyleSheet.create({
     fontWeight: '500',
     marginBottom: spacing.xs,
   },
-  textSecondarySmall: {
-    color: colors.textSecondary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.regular,
-  },
-  textSectionLabel: {
-    color: colors.accent,
-    fontSize: typography.fontSize.xs,
-    fontWeight: '500',
-    margin: 0,
-  },
-  textTitle: {
-    color: colors.primary,
-    fontSize: typography.fontSize.lg,
-    fontWeight: '600',
-    marginBottom: spacing.md,
-  },
-  
-  // Title styles
-  textTitleLarge: {
-    color: colors.primary,
-    fontSize: typography.fontSize.xl,
-    fontWeight: '700',
-    marginBottom: spacing.lg,
-  },
-  
-  // Loading text
   textLoading: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.md,
-    margin: spacing.lg,
-    textAlign: 'center',
-  },
-  
-  // Meta text (for timestamps, etc.)
-  textMeta: {
     color: colors.textSecondary,
-    fontSize: typography.fontSize.sm,
-    marginBottom: 2,
-  },
-  
-  // Field labels
-  textFieldLabel: {
-    color: colors.textSecondary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    marginBottom: 2,
-  },
-  
-  // Field values
-  textFieldValue: {
-    color: colors.primary,
     fontSize: typography.fontSize.md,
-    fontWeight: '600',
+    fontStyle: 'italic',
+    marginTop: spacing.lg,
   },
   textSecondary: {
     color: colors.textSecondary,
     fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.regular,
+  },
+  textSecondarySmall: {
+    color: colors.textSecondary,
+    fontSize: typography.fontSize.sm,
+  },
+  textSectionLabel: {
+    color: colors.textSecondary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: 'bold',
+    marginBottom: spacing.xs,
+    marginTop: spacing.lg,
+  },
+  textTitle: {
+    color: colors.textBlack,
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
+  },
+  textSmall: {
+    color: colors.textSecondary,
+    fontSize: typography.fontSize.sm,
+  },
+  textTitleLarge: {
+    color: colors.textBlack,
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
   },
 }); 

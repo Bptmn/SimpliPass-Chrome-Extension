@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { SecureNoteDecrypted } from '@app/core/types/types';
 import { deleteItem } from '@app/core/logic/items';
 import { useUser } from '@hooks/useUser';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
-import { LazyCredentialIcon } from '../components/LazyCredentialIcon';
 import { useToast } from '../components/Toast';
 import { colors } from '@design/colors';
-import { pageStyles } from '@design/layout';
+import { padding, radius, spacing, pageStyles } from '@design/layout';
+import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
 import CopyButton from '../components/CopyButton';
+import { MoreInfo } from '../components/MoreInfo';
 
 interface SecureNoteDetailsPageProps {
   note: SecureNoteDecrypted;
@@ -24,7 +25,6 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
 }) => {
   const navigate = useNavigate();
   const user = useUser();
-  const [showMeta, setShowMeta] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
@@ -46,9 +46,7 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
     try {
       await deleteItem(user.uid, note.id);
       showToast('Note supprimée avec succès');
-      setTimeout(() => {
-        onBack();
-      }, 1200);
+      onBack();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la suppression.');
     } finally {
@@ -69,7 +67,7 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
           </Pressable>
           <View style={styles.headerContent}>
             <View style={styles.iconCenter}>
-              <LazyCredentialIcon title={note.title} url={undefined} />
+              <View style={[styles.colorCircle, { backgroundColor: note.color }]} />
             </View>
             <Text style={styles.title}>{note.title}</Text>
           </View>
@@ -112,44 +110,95 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
           />
         </View>
         {/* Expandable meta info */}
-        <Pressable
-          style={styles.infoRow}
-          onPress={() => setShowMeta((v) => !v)}
-          accessibilityRole="button"
-          accessibilityLabel="Afficher plus d&apos;informations"
-          accessibilityState={{ expanded: showMeta }}
-        >
-          <View style={styles.infoRowContent}>
-            <View style={{ marginRight: 8 }}>
-              <Icon name="info" size={18} color={colors.primary} />
-            </View>
-            <Text style={styles.infoLabel}>Plus d&apos;informations</Text>
-            <View style={{ marginLeft: 'auto' }}>
-              <Icon
-                name={showMeta ? 'arrowDown' : 'arrowRight'}
-                size={18}
-                color={colors.primary}
-              />
-            </View>
-          </View>
-          {showMeta && (
-            <View style={styles.metaRow}>
-              <Text style={styles.metaText}>
-                Dernière utilisation : {note.lastUseDateTime.toLocaleString('fr-FR')}
-              </Text>
-              <Text style={styles.metaText}>
-                Date de création : {note.createdDateTime.toLocaleString('fr-FR')}
-              </Text>
-            </View>
-          )}
-        </Pressable>
+        <MoreInfo
+          lastUseDateTime={note.lastUseDateTime}
+          createdDateTime={note.createdDateTime}
+        />
       </View>
     </View>
   );
 };
 
-// Reuse styles from CredentialDetailsPage
-import { styles as credentialStyles } from './CredentialDetailsPage';
-const styles = credentialStyles;
+const styles = StyleSheet.create({
+  actionsRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    justifyContent: 'space-around',
+    marginBottom: spacing.md,
+    width: '100%',
+  },
+  backBtn: {
+    alignItems: 'center',
+    height: 44,
+    justifyContent: 'center',
+    left: 0,
+    minWidth: 44,
+    padding: spacing.sm,
+    position: 'absolute',
+    top: 0,
+    zIndex: 1,
+  },
+  cardGroup: {
+    backgroundColor: colors.bgAlt,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    marginBottom: spacing.md,
+    padding: padding.md,
+    width: '100%',
+  },
+  colorCircle: {
+    height: 35,
+    borderRadius: 17.5,
+    width: 35,
+  },
+  credentialFieldRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.xs,
+    width: '100%',
+  },
+  fieldLabel: {
+    color: colors.textSecondary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: '500',
+    marginBottom: 2,
+  },
+  fieldLeft: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  fieldValue: {
+    color: colors.primary,
+    fontSize: typography.fontSize.md,
+    fontWeight: '400',
+  },
+  headerContent: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  headerRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: spacing.lg,
+    position: 'relative',
+    width: '100%',
+  },
+  iconCenter: {
+    alignItems: 'center',
+    marginBottom: spacing.xs,
+  },
+  pageContent: {
+    flex: 1,
+  },
+  title: {
+    color: colors.primary,
+    fontSize: typography.fontSize.lg,
+    fontWeight: '700',
+    marginBottom: spacing.md,
+    textAlign: 'center',
+  },
+});
 
 export default SecureNoteDetailsPage; 

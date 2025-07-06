@@ -25,7 +25,7 @@ export default {
 };
 
 export const Default = () => (
-  <MemoryRouter initialEntries={[{ pathname: '/modify-bank-card', state: { card: mockCard } }]}> 
+  <MemoryRouter initialEntries={[{ pathname: '/modify-bank-card', state: { cred: mockCard } }]}> 
     <Routes>
       <Route path="/modify-bank-card" element={<ModifyBankCardPage />} />
     </Routes>

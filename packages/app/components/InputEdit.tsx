@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { colors } from '@design/colors';
 import { radius, spacing } from '@design/layout';
@@ -12,6 +12,7 @@ interface InputEditProps {
   placeholder?: string;
   onClear?: () => void;
   testID?: string;
+  isNote?: boolean;
 }
 
 export const InputEdit: React.FC<InputEditProps> = ({
@@ -21,13 +22,32 @@ export const InputEdit: React.FC<InputEditProps> = ({
   placeholder,
   onClear,
   testID,
+  isNote = false,
 }) => {
+  const [inputHeight, setInputHeight] = useState(isNote ? 72 : 48); // 3 lines minimum for notes
+
+  const handleContentSizeChange = (event: { nativeEvent: { contentSize: { height: number } } }) => {
+    if (isNote) {
+      const { height } = event.nativeEvent.contentSize;
+      const minHeight = 72; // 3 lines minimum
+      const maxHeight = 300; // Maximum height to prevent excessive growth
+      setInputHeight(Math.max(minHeight, Math.min(height, maxHeight)));
+    }
+  };
+
   return (
     <View style={styles.container} testID={testID}>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.inputRow}>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            isNote && {
+              height: inputHeight,
+              textAlignVertical: 'top',
+              paddingTop: spacing.sm,
+            },
+          ]}
           value={value}
           onChangeText={onChange}
           placeholder={placeholder}
@@ -35,6 +55,9 @@ export const InputEdit: React.FC<InputEditProps> = ({
           underlineColorAndroid="transparent"
           autoCorrect={false}
           autoCapitalize="none"
+          multiline={isNote}
+          numberOfLines={isNote ? undefined : 1}
+          onContentSizeChange={isNote ? handleContentSizeChange : undefined}
         />
         {!!value && (
           <Pressable onPress={onClear} style={styles.clearButton} accessibilityLabel="Effacer">
@@ -64,19 +87,15 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: radius.md+4,
     borderWidth: 1,
+    flex: 1,
     flexDirection: 'column',
     padding: spacing.sm,
-    width: '100%',
   },
   input: {
-    backgroundColor: colors.bg,
+    backgroundColor: colors.bgAlt,
     borderColor: colors.border,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    color: colors.text,
+    color: colors.primary,
     fontSize: typography.fontSize.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
     width: '100%',
   },
   inputRow: {
@@ -85,6 +104,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...textStyles.textSecondary,
+    fontSize: typography.fontSize.sm,
     marginBottom: 2,
   },
 }); 

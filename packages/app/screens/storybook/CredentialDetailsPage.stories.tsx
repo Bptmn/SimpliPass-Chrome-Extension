@@ -17,7 +17,7 @@ const mockCredential: CredentialDecrypted = {
   note: 'Personal account',
   url: 'facebook.com',
   itemKey: 'mockItemKey',
-  document_reference: null,
+  id: 'mock-id',
 };
 
 export const Default = () => (

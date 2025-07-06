@@ -25,7 +25,7 @@ export const HelperBar: React.FC = () => {
   // Handler for the add button, dynamic by category
   const handleAdd = () => {
     if (currentCategory === 'credentials') {
-      navigate('/add-credential');
+      navigate('/add-credential-1');
     } else if (currentCategory === 'bankCards') {
       navigate('/add-card-1');
     } else if (currentCategory === 'secureNotes') {
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   helperBtnText: {
-    color: colors.text,
+    color: colors.textBlack,
     fontSize: typography.fontSize.xs * 0.75,
     marginTop: spacing.xxs,
     textAlign: 'center',

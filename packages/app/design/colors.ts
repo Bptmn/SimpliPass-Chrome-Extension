@@ -11,7 +11,7 @@ export const colors = {
   bg: '#ffffff',
   bgAlt: '#f1f4f8',
   border: '#E0E3E7',
-  text: '#202124',
+  textBlack: '#202124',
   textSecondary: '#5f6368',
   disabled: '#bdbdbd',
   white: '#ffffff',

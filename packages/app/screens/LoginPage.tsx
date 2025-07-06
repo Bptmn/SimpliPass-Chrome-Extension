@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView, Image } from 'react-native';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { EmailConfirmationPage } from './EmailConfirmationPage';
 import { loginUser, confirmMfa } from '@app/core/logic/user';
@@ -10,7 +10,7 @@ import { layout, radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { useUserStore } from '@app/core/states/user';
 import { Button } from '../components/Buttons';
-import { InputPasswordGenerator } from '../components/InputVariants';
+import logo from '../../../assets/logo/logo_simplify_long.png';
 
 const REMEMBER_EMAIL_KEY = 'simplipass_remembered_email';
 
@@ -114,17 +114,14 @@ const LoginPage: React.FC = () => {
         <View style={styles.pageContent}>
           {/* Logo */}
           <View style={styles.loginLogo}>
-            <Text style={styles.loginDot}>.</Text>
-            <Text style={styles.loginSimpli}>Simpli</Text>
-            <Text style={styles.loginPass}>Pass</Text>
+            <Image source={logo} style={styles.loginLogoImage} />
           </View>
           <View style={styles.loginForm}>
             <View style={styles.formSection}>
-              <Text>Adresse email</Text>
-              <View style={styles.inputWrapper}>
+              <View style={{ position: 'relative' }}>
                 <Input
                   _id="login-email"
-                  label=""
+                  label="Adresse email"
                   type="email"
                   placeholder="Votre adresse email…"
                   _autoComplete="email"
@@ -143,7 +140,7 @@ const LoginPage: React.FC = () => {
                   </Pressable>
                 )}
               </View>
-              {emailError ? <Text style={styles.errorMessage}>{emailError}</Text> : null}
+
               <View style={styles.loginCheckboxRow}>
                 <Pressable
                   style={styles.loginCheckboxLabel}
@@ -161,26 +158,24 @@ const LoginPage: React.FC = () => {
               </View>
             </View>
             <View style={styles.formSection}>
-              <Text>Mot de passe maître</Text>
-              <View style={styles.inputWrapper}>
-                <InputPasswordGenerator
-                  label="Mot de passe maître"
-                  _id="login-password"
-                  value={password}
-                  onChange={setPassword}
-                  placeholder="Votre mot de passe maître.."
-                  _autoComplete="current-password"
-                  _required
-                  error={passwordError}
-                  disabled={isLoading}
-                />
-              </View>
-              {passwordError ? <Text style={styles.errorMessage}>{passwordError}</Text> : null}
+              <Input
+                _id="login-password"
+                label="Mot de passe maître"
+                type="password"
+                placeholder="Votre mot de passe maître.."
+                _autoComplete="current-password"
+                _required
+                value={password}
+                onChange={setPassword}
+                error={passwordError}
+                disabled={isLoading}
+              />
             </View>
             <Button
               text="Se connecter"
               color={colors.primary}
-              size="medium"
+              width="full"
+              height="full"
               onPress={handleLogin}
               disabled={isLoading}
             />
@@ -206,21 +201,13 @@ const styles = StyleSheet.create({
     color: colors.accent,
     fontSize: 22,
   },
-  errorMessage: {
-    color: colors.error,
-    fontSize: typography.fontSize.sm,
-    marginTop: spacing.xs,
-  },
+
   formSection: {
     alignItems: 'stretch',
     flexDirection: 'column',
     marginBottom: spacing.lg,
   },
-  inputWrapper: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    position: 'relative',
-  },
+
   loginCheckboxLabel: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -240,12 +227,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent',
     borderWidth: 0,
-    bottom: 0,
     justifyContent: 'center',
     paddingHorizontal: spacing.xs,
     position: 'absolute',
     right: spacing.sm,
-    top: 0,
+    top: '50%',
+    transform: [{ translateY: -10 }],
+    zIndex: 1,
   },
   loginCustomCheckbox: {
     alignItems: 'center',
@@ -256,10 +244,6 @@ const styles = StyleSheet.create({
     height: 14,
     justifyContent: 'center',
     width: 14,
-  },
-  loginDot: {
-    color: colors.primary,
-    marginRight: 2,
   },
   loginForm: {
     alignItems: 'stretch',
@@ -272,13 +256,11 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.xl,
     fontWeight: '700',
     justifyContent: 'center',
-    marginBottom: spacing.xl,
   },
-  loginPass: {
-    color: colors.secondary,
-  },
-  loginSimpli: {
-    color: colors.primary,
+  loginLogoImage: {
+    height: 70,
+    resizeMode: 'contain',
+    width: 240,
   },
   pageContent: {
     maxWidth: 360,

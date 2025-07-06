@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 
 import { checkPasswordStrength } from '@utils/checkPasswordStrength';
 import { passwordGenerator } from '@utils/passwordGenerator';
@@ -9,40 +9,9 @@ import { padding, radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import CopyButton from '../components/CopyButton';
 import { Button } from '../components/Buttons';
+import { Slider } from '../components/Slider';
 
-// Slider component for web and native
-type PasswordLengthSliderProps = {
-  value: number;
-  onChange: (v: number) => void;
-  min: number;
-  max: number;
-};
-const PasswordLengthSlider: React.FC<PasswordLengthSliderProps> = ({ value, onChange, min, max }) => {
-  if (Platform.OS === 'web') {
-    return (
-      <View style={styles.sliderRow}>
-        <Text style={styles.sliderLabel}>{min}</Text>
-        <input
-          type="range"
-          min={min}
-          max={max}
-          value={value}
-          onChange={e => onChange(Number(e.target.value))}
-          style={styles.slider}
-        />
-        <Text style={styles.sliderLabel}>{max}</Text>
-        <Text style={styles.sliderValue}>Longueur : [{value}]</Text>
-      </View>
-    );
-  }
-  // For native, fallback to a simple row (could use a native slider if available)
-  return (
-    <View style={styles.sliderRow}>
-      <Text style={styles.sliderLabel}>{min}</Text>
-      <Text style={styles.sliderValue}>Longueur : [{value}]</Text>
-    </View>
-  );
-};
+
 
 export const GeneratorPage: React.FC = () => {
   const [hasUppercase, setHasUppercase] = useState(true);
@@ -85,7 +54,7 @@ export const GeneratorPage: React.FC = () => {
       <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={pageStyles.pageContent}>
           <View style={styles.generatorForm}>
-            <View style={pageStyles.formContainer}>
+            <View style={styles.pageSection}>
               <Text style={styles.sectionLabel}>Mot de passe</Text>
               <View style={styles.generatedPasswordCard}>
                 <View style={styles.passwordDisplay}>
@@ -114,17 +83,17 @@ export const GeneratorPage: React.FC = () => {
             </View>
 
             {/* Password Length Slider */}
-            <View>
-              <Text style={styles.sectionLabel}>Longueur</Text>
-              <PasswordLengthSlider
+            <View style={styles.pageSection}>
+              <Slider
                 value={passwordLength}
-                onChange={setPasswordLength}
-                min={5}
+                onValueChange={setPasswordLength}
+                min={8}
                 max={25}
+                label="Longueur"
               />
             </View>
 
-            <View>
+            <View style={styles.pageSection}>
               <Text style={styles.sectionLabel}>Options</Text>
               <View style={styles.optionsSection}>
                 <View style={styles.optionRow}>
@@ -179,12 +148,11 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1,
     flexDirection: 'column',
-    marginBottom: spacing.sm,
     padding: padding.md,
   },
   generatorForm: {
     flexDirection: 'column',
-    marginBottom: spacing.md,
+    gap: spacing.lg,
   },
   optionRow: {
     alignItems: 'center',
@@ -210,7 +178,7 @@ const styles = StyleSheet.create({
     padding: padding.md,
   },
   pageSection: {
-    marginBottom: spacing.md,
+    gap: spacing.xs
   },
   passwordDisplay: {
     alignItems: 'center',
@@ -222,12 +190,13 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: radius.md,
     borderWidth: 1,
-    color: colors.text,
+    color: colors.primary,
     flex: 1,
     fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace',
     fontSize: typography.fontSize.md,
     minHeight: 20,
     padding: padding.sm,
+    marginRight: spacing.sm,
   },
   sectionLabel: {
     color: colors.accent,
@@ -235,38 +204,15 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     margin: 0,
   },
-  slider: {
-    accentColor: colors.primary,
-    borderRadius: 8,
-    flex: 1,
-    height: 4,
-    marginHorizontal: spacing.sm,
-    maxWidth: 200,
-    minWidth: 120,
-  },
-  sliderLabel: {
-    color: colors.textSecondary,
-    fontSize: typography.fontSize.sm,
-    marginRight: spacing.xs,
-  },
-  sliderRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  sliderValue: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '600',
-    marginLeft: spacing.md,
-  },
+
   strengthAverage: { color: '#ffb300' },
   strengthLabel: {
     alignItems: 'center',
     flexDirection: 'row',
     fontSize: typography.fontSize.sm,
     fontWeight: '500',
+    marginRight: spacing.xs,
+    padding: 0,
   },
   strengthPerfect: { color: colors.secondary },
   strengthStrong: { color: colors.primary },

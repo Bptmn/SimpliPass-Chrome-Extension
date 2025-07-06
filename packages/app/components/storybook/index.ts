@@ -10,4 +10,6 @@ export { default as LazyCredentialIconStories } from './LazyCredentialIcon.stori
 export { default as NavBarStories } from './NavBar.stories';
 export { default as SkeletonCardStories } from './SkeletonCard.stories';
 export { default as ToastStories } from './Toast.stories';
-export { default as ButtonsStories } from './Buttons.stories'; 
+export { default as ButtonsStories } from './Buttons.stories';
+export { default as MoreInfoStories } from './MoreInfo.stories';
+export { default as SliderStories } from './Slider.stories'; 

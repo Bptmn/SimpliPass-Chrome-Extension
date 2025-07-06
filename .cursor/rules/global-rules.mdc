@@ -131,6 +131,18 @@ cd packages/extension && npm run build
 - Mix responsibilities — no data access in UI or vice versa  
 - Break theme compatibility (must support dark/light)
 
+#### 📏 Spacing Rules (Vertical Layout)
+- Cursor **must never add `marginTop` or `marginBottom`** on containers, sections, or components
+- All vertical spacing must be handled exclusively via `gap`, using one of the following layout classes from `core/design/layout.ts`:
+  - `formContainer`
+  - `pageContainer`
+  - `pageContent`
+  - `scrollView`
+- These classes must be used to structure spacing between elements
+- Cursor must preserve this rule during all code updates and never override it with inline spacing or external overrides
+
+---
+
 ## 📦 Folder Expectations
 ```
 packages/

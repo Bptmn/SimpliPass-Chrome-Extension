@@ -31,7 +31,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "js": ["assets/content.js"],
       "run_at": "document_idle"
     }
   ],
@@ -40,7 +40,7 @@
       "resources": [
         "src/content/popovers/PopoverCredentialPicker.html",
         "src/content/popovers/PopoverCredentialPicker.css",
-        "src/content/popovers/PopoverCredentialPicker.js"
+        "assets/credentialPicker-DGVzlcZ6.js"
       ],
       "matches": ["<all_urls>"]
     }

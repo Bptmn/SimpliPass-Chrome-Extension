@@ -55,7 +55,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     height: 44,
-    marginBottom: spacing.sm,
     position: 'relative',
     width: '100%',
   },
