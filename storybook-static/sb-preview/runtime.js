@@ -6337,7 +6337,7 @@ var $i = /\s*\/\s*/, Yi = /* @__PURE__ */ n((r = {}) => (e, t) => {
       return d !== -1 || h !== -1 ? (d === -1 && (S !== -1 ? d = S : d = s.length), h === -1 && (S !== -1 ? h = S : h = s.length), d - h) : o ===
       "configure" ? 0 : l.localeCompare(p, r.locales ? r.locales : void 0, {
         numeric: !0,
-        sensitivity: "accent"
+        sensitivity: "tertiary"
       });
     }
     let u = s.indexOf(l);

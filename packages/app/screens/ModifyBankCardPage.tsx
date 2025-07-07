@@ -16,6 +16,7 @@ import { HeaderTitle } from '../components/HeaderTitle';
 import { ColorSelector } from '../components/ColorSelector';
 import ItemBankCard from '../components/ItemBankCard';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { textStyles } from '@app/design/text';
 
 const CARD_COLORS = ['#2bb6a3', '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a259e6'];
 
@@ -153,8 +154,8 @@ export const ModifyBankCardPage: React.FC = () => {
               onClear={() => setCardNumber('')}
             />
             <View style={styles.row2col}>
-              <View style={styles.inputColumn}>
-                <Text style={styles.inputLabel}>Date d&apos;expiration</Text>
+              <View style={styles.inputColumnDate}>
+                <Text style={styles.inputDateLabel}>Date d&apos;expiration</Text>
                 {Platform.OS === 'web' ? (
                   <View style={{ flexDirection: 'row', gap: 2 }}>
                     <select
@@ -163,7 +164,7 @@ export const ModifyBankCardPage: React.FC = () => {
                         const mm = e.target.value;
                         setExpirationDate(`${mm}/${selectedYear.slice(-2)}`);
                       }}
-                      style={{ ...styles.input, width: 80, borderRadius: radius.md }}
+                      style={styles.inputDate}
                     >
                       <option value=""><Text>Mois</Text></option>
                       {monthOptions.map(m => (
@@ -176,7 +177,7 @@ export const ModifyBankCardPage: React.FC = () => {
                         const yyyy = e.target.value;
                         setExpirationDate(`${selectedMonth}/${yyyy.slice(-2)}`);
                       }}
-                      style={{ ...styles.input, width: 100, borderRadius: radius.md }}
+                      style={styles.inputDate}
                     >
                       <option value=""><Text>Année</Text></option>
                       {yearOptions.map(y => (
@@ -191,7 +192,7 @@ export const ModifyBankCardPage: React.FC = () => {
                       onPress={() => setDatePickerVisible(true)}
                       accessibilityLabel="Sélectionner la date d'expiration"
                     >
-                      <Text style={{ color: expirationDate ? colors.textBlack : colors.accent }}>
+                      <Text style={{ color: expirationDate ? colors.blackText : colors.tertiary }}>
                         {expirationDate || 'MM/YY'}
                       </Text>
                     </Pressable>
@@ -246,21 +247,42 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.xl,
     borderWidth: 1,
-    color: colors.textBlack,
+    color: colors.blackText,
     fontSize: typography.fontSize.sm,
     fontWeight: '500',
     height: 48,
     justifyContent: 'center',
     paddingHorizontal: spacing.md,
-    placeholderTextColor: colors.accent,
+    placeholderTextColor: colors.tertiary,
     width: '100%',
+  },
+  inputDate: {
+    border: 'none',
+    backgroundColor: 'transparent',
+    color: colors.primary,
+    fontSize: typography.fontSize.md,
+  },
+  inputColumnDate: {
+    flex: 1,
+    flexDirection: 'column',
+    gap: spacing.xs,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
+    borderRadius: radius.md+4,
+    borderWidth: 1,
+    padding: spacing.sm,
   },
   inputColumn: {
     flex: 1,
+  },
+  inputDateLabel: {
+    ...textStyles.textTertiary,
+    fontSize: typography.fontSize.sm,
+    marginBottom: 2,
   },
   inputLabel: {
     color: colors.primary,

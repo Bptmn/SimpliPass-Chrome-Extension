@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colors } from './colors';
+import { getColors } from './colors';
 
 export const layout = {
   navbarHeight: 60,
@@ -56,23 +56,42 @@ export const spacing = {
 } as const;
 export type SpacingKey = keyof typeof spacing;
 
-export const pageStyles = StyleSheet.create({
-  formContainer: {
-    flex: 1,
-    gap: spacing.md,
-  },
-  pageContainer: {
-    backgroundColor: colors.bg,
-    flex: 1,
-    gap: spacing.lg,
-    padding: spacing.lg,
-  },
-  pageContent: {
-    flex: 1,
-    gap: spacing.lg,
-  },
-  scrollView: {
-    flex: 1,
-    gap: spacing.lg,
+export const getPageStyles = (mode: 'light' | 'dark') => {
+  const colors = getColors(mode);
+  return StyleSheet.create({
+    formContainer: {
+      flex: 1,
+      gap: spacing.md,
+    },
+    pageContainer: {
+      backgroundColor: colors.primaryBackground,
+      flex: 1,
+      gap: spacing.lg,
+      padding: spacing.lg,
+    },
+    pageContent: {
+      flex: 1,
+      gap: spacing.lg,
+    },
+    scrollView: {
+      flex: 1,
+      gap: spacing.lg,
+    },
+  });
+};
+
+// --- DYNAMIC pageStyles PROXY ---
+
+// This will be set by the ThemeProvider at runtime
+let currentPageStylesMode: 'light' | 'dark' = 'light';
+
+export const setPageStylesMode = (mode: 'light' | 'dark') => {
+  currentPageStylesMode = mode;
+};
+
+export const pageStyles = new Proxy({} as any, {
+  get(_, key: string) {
+    const styles = getPageStyles(currentPageStylesMode);
+    return styles[key as keyof ReturnType<typeof getPageStyles>];
   },
 });

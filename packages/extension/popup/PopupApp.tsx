@@ -188,13 +188,13 @@ const styles = StyleSheet.create({
     minHeight: 0,
   },
   container: {
-    backgroundColor: colors.bg,
+    backgroundColor: colors.primaryBackground,
     flex: 1,
     minHeight: 0,
     position: 'relative',
   },
   footer: {
-    backgroundColor: colors.bg, // fallback for transparency
+    backgroundColor: colors.primaryBackground, // fallback for transparency
     bottom: 0,
     height: HELPERBAR_HEIGHT,
     left: 0,

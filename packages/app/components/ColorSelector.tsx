@@ -4,7 +4,7 @@ import { colors } from '@design/colors';
 import { spacing } from '@design/layout';
 import { typography } from '@app/design/typography';
 
-const DEFAULT_COLORS = [colors.secondary, colors.primary, colors.accent, '#c44545', '#b6d43a', '#a259e6'];
+const DEFAULT_COLORS = [colors.secondary, colors.primary, colors.tertiary, '#c44545', '#b6d43a', '#a259e6'];
 
 interface ColorSelectorProps {
   title: string;
@@ -46,7 +46,7 @@ export const ColorSelector: React.FC<ColorSelectorProps> = ({
 
 const styles = StyleSheet.create({
   checkMark: {
-    color: colors.white,
+    color: colors.whiteText,
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.bold,
   },

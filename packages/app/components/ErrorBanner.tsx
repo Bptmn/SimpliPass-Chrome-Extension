@@ -19,7 +19,7 @@ export const ErrorBanner: React.FC<ErrorBannerProps> = ({ message }) => {
 
 const styles = StyleSheet.create({
   errorBanner: {
-    backgroundColor: colors.bg,
+    backgroundColor: colors.primaryBackground,
     borderColor: colors.error,
     borderRadius: radius.md,
     borderWidth: 1,

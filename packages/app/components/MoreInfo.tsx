@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     paddingLeft: 24,
   },
   metaText: {
-    color: colors.textSecondary,
+    color: colors.tertiary,
     fontSize: typography.fontSize.sm,
     marginBottom: 2,
   },

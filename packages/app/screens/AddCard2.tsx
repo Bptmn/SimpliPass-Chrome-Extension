@@ -14,6 +14,7 @@ import { Button } from '../components/Buttons';
 import { HeaderTitle } from '../components/HeaderTitle';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { ColorSelector } from '../components/ColorSelector';
+import { useToast } from '../components/Toast';
 
 const CARD_COLORS = ['#2bb6a3', '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a259e6'];
 
@@ -23,7 +24,7 @@ const AddCard2: React.FC = () => {
   const user = useUser();
   const { title, bankName, bankDomain } = location.state || {};
 
-  const [color, setColor] = useState(CARD_COLORS[1]);
+  const [selectedColor, setSelectedColor] = useState('#4f86a2');
   const [owner, setOwner] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [expirationDate, setExpirationDate] = useState(''); // MM/YY
@@ -69,7 +70,7 @@ const AddCard2: React.FC = () => {
         title: title || '',
         owner,
         note,
-        color,
+        color: selectedColor,
         itemKey: '',
         cardNumber,
         expirationDate: expDate,
@@ -100,7 +101,7 @@ const AddCard2: React.FC = () => {
     title: title || 'Titre',
     owner: owner || 'Owner',
     note: note || '',
-    color,
+    color: selectedColor,
     itemKey: '',
     cardNumber: cardNumber || '0000000000000000',
     expirationDate: expirationDate.match(/^(0[1-9]|1[0-2])\/(\d{2})$/)
@@ -124,8 +125,8 @@ const AddCard2: React.FC = () => {
           <ItemBankCard cred={previewCard} />
           <ColorSelector
             title="Choisissez la couleur de votre carte"
-            value={color}
-            onChange={setColor}
+            value={selectedColor}
+            onChange={setSelectedColor}
           />
           <View style={pageStyles.formContainer}>
             <Input
@@ -185,7 +186,7 @@ const AddCard2: React.FC = () => {
                       onPress={() => setDatePickerVisible(true)}
                       accessibilityLabel="Sélectionner la date d'expiration"
                     >
-                      <Text style={{ color: expirationDate ? colors.textSecondary : colors.accent }}>
+                      <Text style={{ color: expirationDate ? colors.secondary : colors.tertiary }}>
                         {expirationDate || 'MM/YY'}
                       </Text>
                     </Pressable>
@@ -245,17 +246,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.xl,
     borderWidth: 1,
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.sm,
     fontWeight: '500',
     height: 48,
     justifyContent: 'center',
     paddingHorizontal: spacing.md,
-    placeholderTextColor: colors.accent,
+    placeholderTextColor: colors.tertiary,
     width: '100%',
   },
   inputColumn: {

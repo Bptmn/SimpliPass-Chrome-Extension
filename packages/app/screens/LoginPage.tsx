@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   clearBtnText: {
-    color: colors.accent,
+    color: colors.tertiary,
     fontSize: 22,
   },
 

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { colors } from '@design/colors';
 import { radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
+import { CodeInput } from '../components/CodeInput';
 
 interface EmailConfirmationPageProps {
   email: string;
@@ -18,14 +19,14 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
   onResend,
 }) => {
   const [code, setCode] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   const handleSubmit = () => {
     if (!code.trim()) {
       setError('Veuillez entrer le code de confirmation.');
       return;
     }
-    setError(null);
+    setError('');
     onConfirm(code);
   };
 
@@ -42,29 +43,27 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
               </Text>
             </View>
             <View style={styles.formSection}>
-              <Text>Code de confirmation</Text>
-              <TextInput
-                style={styles.confirmationInput}
-                placeholder="Entrez le code..."
+              <Text style={styles.confirmationInputLabel}>Code de confirmation</Text>
+              <CodeInput
                 value={code}
-                onChangeText={setCode}
-                keyboardType="numeric"
-                maxLength={6}
-                accessibilityLabel="Code de confirmation"
+                onChange={setCode}
               />
             </View>
             <View style={styles.btnList}>
               <Button
                 text="Confirmer"
-                color={colors.primary}
-                size="medium"
+                color={colors.secondary}
+                width="full"
+                height="full"
                 onPress={handleSubmit}
               />
               <Button
                 text="Renvoyer le code"
-                color={colors.secondary}
-                size="medium"
+                color={colors.primary}
+                width="full"
+                height="fit"
                 onPress={onResend}
+                outline={true}
               />
             </View>
           </View>
@@ -77,26 +76,31 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
 const styles = StyleSheet.create({
   btnList: {
     flexDirection: 'column',
+    gap: spacing.sm,
   },
   confirmationForm: {
     maxWidth: 360,
     width: '100%',
   },
   confirmationInput: {
-    backgroundColor: colors.bg,
-    borderColor: colors.border,
+    backgroundColor: colors.primaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderWidth: 1,
-    color: colors.text,
+    color: colors.blackText,
     fontSize: typography.fontSize.md,
     height: 48,
-    letterSpacing: 8,
     paddingHorizontal: spacing.md,
     textAlign: 'center',
     width: '100%',
   },
+  confirmationInputLabel: {
+    color: colors.tertiary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
+  },
   confirmationSubtitle: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.sm,
     textAlign: 'center',
   },

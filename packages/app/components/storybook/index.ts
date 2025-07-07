@@ -12,4 +12,5 @@ export { default as SkeletonCardStories } from './SkeletonCard.stories';
 export { default as ToastStories } from './Toast.stories';
 export { default as ButtonsStories } from './Buttons.stories';
 export { default as MoreInfoStories } from './MoreInfo.stories';
-export { default as SliderStories } from './Slider.stories'; 
+export { default as SliderStories } from './Slider.stories';
+export * from './ModeSwitch.stories'; 

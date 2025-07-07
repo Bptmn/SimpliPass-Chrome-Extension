@@ -71,20 +71,20 @@ export const InputEdit: React.FC<InputEditProps> = ({
 
 const styles = StyleSheet.create({
   clearButton: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.sm,
     marginLeft: 8,
     padding: 4,
     paddingVertical: spacing.xs,
   },
   clearIcon: {
-    color: colors.accent,
+    color: colors.tertiary,
     fontSize: 20,
     lineHeight: 20,
   },
   container: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md+4,
     borderWidth: 1,
     flex: 1,
@@ -92,8 +92,8 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   input: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     color: colors.primary,
     fontSize: typography.fontSize.md,
     width: '100%',
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   label: {
-    ...textStyles.textSecondary,
+    ...textStyles.textTertiary,
     fontSize: typography.fontSize.sm,
     marginBottom: 2,
   },

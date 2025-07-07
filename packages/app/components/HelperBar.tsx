@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   helperBar: {
     alignItems: 'center',
     backgroundColor: layout.primaryBackground,
-    borderTopColor: colors.border,
+    borderTopColor: colors.borderColor,
     borderTopWidth: 1,
     flexDirection: 'row',
     height: layout.helperBarHeight,
@@ -156,14 +156,14 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   helperBtnText: {
-    color: colors.textBlack,
+    color: colors.blackText,
     fontSize: typography.fontSize.xs * 0.75,
     marginTop: spacing.xxs,
     textAlign: 'center',
     width: '100%',
   },
   helperBtnTextAdd: {
-    color: colors.white,
+    color: colors.whiteText,
     fontSize: typography.fontSize.sm,
     marginRight: spacing.xs,
     textAlign: 'center',

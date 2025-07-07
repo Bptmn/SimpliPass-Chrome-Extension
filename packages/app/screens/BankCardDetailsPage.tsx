@@ -152,7 +152,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
         <View style={styles.actionsRow}>
           <Button
             text="Modifier"
-            color={colors.accent}
+            color={colors.tertiary}
             width="full"
             height="full"
             onPress={handleEdit}

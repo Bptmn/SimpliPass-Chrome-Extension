@@ -33,9 +33,10 @@ const AddCredential1: React.FC = () => {
           <Button
             text="Suivant"
             color="#2AB2A3"
-            size="medium"
             onPress={handleNext}
             disabled={!title.trim()}
+            width="full"
+            height="full"
           />
         </View>
       </View>

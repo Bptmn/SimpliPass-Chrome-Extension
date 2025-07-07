@@ -53,7 +53,7 @@ export const Input: React.FC<InputProps> = ({
       <View style={{ position: 'relative' }}>
         <TextInput
           placeholder={placeholder}
-          placeholderTextColor={colors.accent}
+          placeholderTextColor={colors.tertiary}
           style={[
             formStyles.formInput,
             type === 'note' && {
@@ -95,7 +95,7 @@ export const Input: React.FC<InputProps> = ({
             <Icon 
               name={showPassword ? 'visibilityOff' : 'visibility'} 
               size={20} 
-              color={colors.textSecondary} 
+              color={colors.tertiary} 
             />
           </Pressable>
         )}
@@ -142,7 +142,7 @@ export const InputPasswordGenerator: React.FC<InputPasswordGeneratorProps> = ({
     </View>
     <TextInput
       placeholder={placeholder}
-      placeholderTextColor={colors.accent}
+      placeholderTextColor={colors.tertiary}
       style={[
         formStyles.formInput,
         error ? formStyles.formInputError : null,
@@ -194,7 +194,7 @@ export const InputPasswordStrength: React.FC<InputPasswordStrengthProps> = ({
       case 'perfect':
         return colors.secondary;
       default:
-        return colors.textSecondary;
+        return colors.secondary;
     }
   };
 
@@ -203,7 +203,7 @@ export const InputPasswordStrength: React.FC<InputPasswordStrengthProps> = ({
       <Text style={formStyles.formLabel}>{label}</Text>
       <TextInput
         placeholder={placeholder}
-        placeholderTextColor={colors.accent}
+        placeholderTextColor={colors.tertiary}
         style={[
           formStyles.formInput,
           error ? formStyles.formInputError : null,

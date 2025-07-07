@@ -1,20 +1,56 @@
-export const colors = {
+export const lightColors = {
   primary: '#4f86a2',
-  primaryDark: '#35708a',
   secondary: '#2eae97',
-  secondaryDark: '#21806e',
-  accent: '#74787a',
-  error: '#dc3545',
-  success: '#28a745',
-  warning: '#ffc107',
-  info: '#17a2b8',
-  bg: '#ffffff',
-  bgAlt: '#f1f4f8',
-  border: '#E0E3E7',
-  textBlack: '#202124',
-  textSecondary: '#5f6368',
+  tertiary: '#74787a',
+  alternate: '#bb445b',
+  borderColor: '#E0E3E7',
+  primaryBackground: '#ffffff',
+  secondaryBackground: '#f1f4f8',
+  whiteText: '#ffffff',
+  error: '#c4454d',
+  success: '#16857b',
+  warning: '#F3C344',
+  info: '#ffffff',
+  blackText: '#202124',
   disabled: '#bdbdbd',
   white: '#ffffff',
 } as const;
 
-export type ColorKey = keyof typeof colors; 
+export const darkColors = {
+  primary: '#68aed2',
+  secondary: '#23bda1',
+  tertiary: '#74787a',
+  alternate: '#dd516c',
+  borderColor: '#B25B5E65',
+  primaryBackground: '#282c30',
+  secondaryBackground: '#3c3f49',
+  whiteText: '#ffffff',
+  error: '#c4454d',
+  success: '#16857b',
+  warning: '#F3C344',
+  info: '#ffffff',
+  blackText: '#f1f4f8',
+  disabled: '#444950',
+  white: '#23272a',
+} as const;
+
+export type ColorKey = keyof typeof lightColors;
+
+export const getColors = (mode: 'light' | 'dark') =>
+  mode === 'dark' ? darkColors : lightColors;
+
+// --- DYNAMIC colors PROXY ---
+
+// This will be set by the ThemeProvider at runtime
+let currentMode: 'light' | 'dark' = 'light';
+
+export const setColorsMode = (mode: 'light' | 'dark') => {
+  currentMode = mode;
+};
+
+export const colors: Record<ColorKey, string> = new Proxy({} as any, {
+  get(_, key: string) {
+    const palette = currentMode === 'dark' ? darkColors : lightColors;
+    return palette[key as ColorKey];
+  },
+}); 

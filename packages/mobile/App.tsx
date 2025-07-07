@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { HomePage } from '@app/screens/HomePage';
 import { UserProvider } from '@app/hooks/useUser';
+import { ThemeProvider } from '@app/core/logic/theme';
 
 const mockUser = {
   uid: '1',
@@ -10,16 +11,17 @@ const mockUser = {
 
 export default function App() {
   return (
-    <UserProvider value={mockUser}>
-      <View style={styles.container}>
-        <HomePage 
-          user={mockUser} 
-          pageState={null} 
-          suggestions={[]} 
-          onInjectCredential={() => {}} 
-        />
-      </View>
-    </UserProvider>
+    <ThemeProvider>
+      <UserProvider value={mockUser}>
+        <View style={styles.container}>
+          <HomePage 
+            user={mockUser} 
+            pageState={null} 
+            onInjectCredential={() => {}} 
+          />
+        </View>
+      </UserProvider>
+    </ThemeProvider>
   );
 }
 

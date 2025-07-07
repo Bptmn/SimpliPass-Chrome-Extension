@@ -9,10 +9,13 @@ import { logoutUser } from '@app/core/logic/user';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
 import { Toast, useToast } from '../components/Toast';
-import { colors } from '@design/colors';
-import { layout, radius, spacing, pageStyles } from '@design/layout';
+import { pageStyles } from '@design/layout';
+import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
+import { ModeSwitch } from '../components/ModeSwitch';
+import { useNavigate } from 'react-router-dom';
+import { colors } from '@design/colors';
 
 const SettingsPage: React.FC = () => {
   const user = useUserStore((state) => state.user);
@@ -35,6 +38,7 @@ const SettingsPage: React.FC = () => {
     Promise.resolve({
       default: () => (
         <View style={styles.menuList}>
+          {/* Security row */}
           <Pressable style={styles.menuItem} accessibilityLabel="Sécurité">
             <View style={styles.menuIcon}>
               <Icon name="security" size={22} color={colors.secondary} />
@@ -44,6 +48,7 @@ const SettingsPage: React.FC = () => {
               <Icon name="arrowForward" size={15} color={colors.primary} />
             </View>
           </Pressable>
+          {/* Help row */}
           <Pressable style={styles.menuItem} accessibilityLabel="Aide">
             <View style={styles.menuIcon}>
               <Icon name="help" size={22} color={colors.secondary} />
@@ -53,6 +58,7 @@ const SettingsPage: React.FC = () => {
               <Icon name="arrowForward" size={15} color={colors.primary} />
             </View>
           </Pressable>
+          {/* Subscription row */}
           <Pressable style={styles.menuItem} accessibilityLabel="Mon abonnement">
             <View style={styles.menuIcon}>
               <Icon name="workspacePremium" size={22} color={colors.secondary} />
@@ -62,6 +68,7 @@ const SettingsPage: React.FC = () => {
               <Icon name="arrowForward" size={15} color={colors.primary} />
             </View>
           </Pressable>
+          {/* Languages row */}
           <Pressable style={styles.menuItem} accessibilityLabel="Languages">
             <View style={styles.menuIcon}>
               <Icon name="language" size={22} color={colors.secondary} />
@@ -90,6 +97,15 @@ const SettingsPage: React.FC = () => {
                 </View>
                 <Text style={styles.userEmail}>{user?.email || 'Non connecté'}</Text>
               </View>
+              <View style={styles.userDetails}>
+                <Text style={styles.userDetailsLabel}>Abonnement : </Text>
+                <Text style={styles.userEmail}>Basic</Text>
+              </View>
+            </View>
+          </View>
+          <View style={styles.pageSection}>
+            <View style={styles.modeSwitchWrapper}>
+              <ModeSwitch />
             </View>
           </View>
           <View style={styles.pageSection}>
@@ -97,27 +113,20 @@ const SettingsPage: React.FC = () => {
               <LazyMenu />
             </Suspense>
           </View>
-          <View style={styles.pageSection}>
-            <View style={styles.profileCard}>
-              <Text style={styles.sectionTitle}>Informations supplémentaires</Text>
-              <Text style={styles.infoText}>Cette section contient des informations supplémentaires pour tester le défilement.</Text>
-              <Text style={styles.infoText}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</Text>
-              <Text style={styles.infoText}>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</Text>
-              <Text style={styles.infoText}>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</Text>
-              <Text style={styles.infoText}>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
-            </View>
-          </View>
+          {/* Feedback and logout buttons */}
           <View style={styles.btnList}>
             <Button
               text="Donnez votre avis"
               color={colors.secondary}
-              size="medium"
+              width="full"
+              height="full"
               onPress={() => {}}
             />
             <Button
               text="Se déconnecter"
               color={colors.primary}
-              size="medium"
+              width="full"
+              height="full"
               onPress={handleLogout}
             />
           </View>
@@ -129,16 +138,15 @@ const SettingsPage: React.FC = () => {
 
 const styles = StyleSheet.create({
   btnList: {
+    gap: spacing.sm,
     marginTop: spacing.sm,
   },
   infoText: {
-    color: colors.primary,
+    color: '#4f86a2', // fallback, not theme aware
     fontSize: typography.fontSize.sm,
     fontWeight: '400',
   },
-  menuArrow: {
-    // Color will be applied to the Icon component
-  },
+  menuArrow: {},
   menuIcon: {
     alignItems: 'center',
     height: 24,
@@ -159,27 +167,26 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   menuLabel: {
-    color: colors.primary,
+    color: '#4f86a2', // fallback, not theme aware
     flex: 1,
     fontSize: typography.fontSize.sm,
     fontWeight: '400',
   },
   menuList: {
-    backgroundColor: layout.secondaryBackground,
+    backgroundColor: '#f1f4f8', // fallback, not theme aware
     borderRadius: radius.md,
     flexDirection: 'column',
-    marginBottom: spacing.sm,
     padding: spacing.sm,
   },
   pageContent: {
-    // Removed flex: 1 to allow scrolling
+    gap: spacing.md,
   },
-  pageSection: {
-    marginBottom: spacing.md,
-  },
+  pageSection: {},
   profileCard: {
-    backgroundColor: layout.secondaryBackground,
-    borderColor: colors.border,
+    flexDirection: 'column',
+    gap: spacing.sm,
+    backgroundColor: '#f1f4f8', // fallback, not theme aware
+    borderColor: '#E0E3E7', // fallback, not theme aware
     borderRadius: radius.md,
     borderWidth: 1,
     padding: spacing.sm,
@@ -189,7 +196,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   sectionTitle: {
-    color: colors.primary,
+    color: '#4f86a2', // fallback, not theme aware
     fontSize: typography.fontSize.md,
     fontWeight: '500',
     marginBottom: spacing.sm,
@@ -197,23 +204,29 @@ const styles = StyleSheet.create({
   userDetails: {
     alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: spacing.sm,
+  },
+  userDetailsLabel: {
+    color: '#2eae97', // fallback, not theme aware
+    fontSize: typography.fontSize.md,
+    fontWeight: '600',
   },
   userEmail: {
-    color: colors.primary,
+    color: '#4f86a2', // fallback, not theme aware
     fontSize: typography.fontSize.md,
     fontWeight: '500',
   },
   userIcon: {
     alignItems: 'center',
-    backgroundColor: layout.secondaryBackground,
+    backgroundColor: '#f1f4f8', // fallback, not theme aware
     borderRadius: 25,
-    color: colors.primary,
+    color: '#4f86a2', // fallback, not theme aware
     fontSize: 24,
-    height: 50,
     justifyContent: 'center',
     marginRight: spacing.sm,
-    width: 50,
+  },
+  modeSwitchWrapper: {
+    alignItems: 'center',
+    marginVertical: spacing.sm,
   },
 });
 

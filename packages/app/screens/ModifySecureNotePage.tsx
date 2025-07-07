@@ -105,7 +105,6 @@ export const ModifySecureNotePage: React.FC = () => {
         <Button
           text="Confirmer"
           color={colors.primary}
-          size="medium"
           onPress={handleSubmit}
           disabled={loading}
         />

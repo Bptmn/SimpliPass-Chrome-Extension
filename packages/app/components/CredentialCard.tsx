@@ -78,7 +78,7 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
 
 const styles = StyleSheet.create({
   errorBanner: {
-    backgroundColor: colors.bg,
+    backgroundColor: colors.primaryBackground,
     borderColor: colors.error,
     borderRadius: radius.md,
     borderWidth: 1,
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   errorText: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: 14,
   },
   errorTitle: {

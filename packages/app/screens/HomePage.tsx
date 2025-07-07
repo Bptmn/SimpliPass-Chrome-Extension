@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useNavigate } from 'react-router-dom';
+import { pageStyles } from '@design/layout';
+import { radius, spacing } from '@design/layout';
+import { typography } from '@design/typography';
+import { colors } from '@design/colors';
 
 import { CredentialDetailsPage } from './CredentialDetailsPage';
 import { getAllItems } from '@app/core/logic/items';
@@ -15,9 +19,6 @@ import { ErrorBanner } from '../components/ErrorBanner';
 import { Icon } from '../components/Icon';
 import { SkeletonCard } from '../components/SkeletonCard';
 import { useToast } from '../components/Toast';
-import { colors } from '@design/colors';
-import { radius, spacing, pageStyles } from '@design/layout';
-import { typography } from '@design/typography';
 import { useUserStore } from '@app/core/states/user';
 import ItemBankCard from '../components/ItemBankCard';
 import ItemSecureNote from '../components/ItemSecureNote';
@@ -170,7 +171,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* Category Row (Horizontal Scroll) */}
       <ScrollView
         horizontal
-        style={{flexGrow: 0, marginBottom: spacing.sm, marginTop: spacing.sm}}
+        style={{flexGrow: 0}}
         showsHorizontalScrollIndicator={true}
         contentContainerStyle={{flexDirection: 'row', alignItems: 'center', paddingVertical: 0, gap: 8 }}
       >
@@ -215,7 +216,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 ))}
               </View>
             ) : (
-              <Pressable style={styles.suggestionPlaceholder} onPress={() => navigate('/add-credential', { state: { link: _pageState?.url } })}
+              <Pressable style={styles.suggestionPlaceholder} onPress={() => navigate('/add-credential-2', { state: { link: _pageState?.url } })}
               accessibilityRole="button">
                 <View
                   style={styles.addSuggestionBtn}
@@ -306,7 +307,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 const styles = StyleSheet.create({
   addSuggestionBtn: {
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: colors.primaryBackground,
     borderColor: colors.primary,
     borderRadius: radius.md,
     borderWidth: 1,
@@ -326,12 +327,12 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     height: 40,
     justifyContent: 'space-around',
-    marginLeft: spacing.sm +2,
+    marginLeft: spacing.sm + 2,
   },
   categoryBtn: {
     alignItems: 'center',
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: 20,
     borderWidth: 1,
     display: 'flex',
@@ -358,7 +359,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   emptyState: {
-    color: colors.textSecondary,
+    color: colors.tertiary,
     fontSize: 13,
     fontStyle: 'italic',
     textAlign: 'center',
@@ -377,23 +378,22 @@ const styles = StyleSheet.create({
   pageSection: {
     gap: spacing.md,
   },
-
   searchBarIcon: {
     left: spacing.sm,
     position: 'absolute',
     zIndex: 1,
   },
   searchInput: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: 20,
     borderWidth: 1,
-    color: colors.text,
+    color: colors.primary,
     fontSize: typography.fontSize.sm,
     height: 42,
     paddingHorizontal: spacing.lg,
     paddingLeft: 40,
-    placeholderTextColor: colors.accent,
+    placeholderTextColor: colors.tertiary,
     width: '100%',
   },
   sectionTitle: {
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
   },
   stickySearchBar: {
     alignItems: 'center',
-    backgroundColor: colors.bg,
+    backgroundColor: colors.primaryBackground,
     flexDirection: 'row',
     position: 'relative',
     zIndex: 10,
@@ -416,3 +416,4 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
+

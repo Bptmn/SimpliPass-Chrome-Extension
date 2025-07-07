@@ -1,5 +1,6 @@
 import React from 'react';
 import { ToastProvider } from '../packages/app/components/Toast';
+import { ThemeProvider } from '../packages/app/core/logic/theme';
 import type { Preview } from "@storybook/react";
 import { INITIAL_VIEWPORTS } from "@storybook/addon-viewport";
 import './storybook.css';
@@ -17,9 +18,11 @@ const customViewports = {
 
 export const decorators = [
   (Story) => (
-    <ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
         <Story />
-    </ToastProvider>
+      </ToastProvider>
+    </ThemeProvider>
   ),
 ];
 
@@ -29,7 +32,7 @@ const preview: Preview = {
     controls: {
       matchers: {
         color: /(background|color)$/i,
-        date: /Date$/,
+        date: /Date$/i,
       },
     },
     backgrounds: {

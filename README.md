@@ -5,7 +5,7 @@
 This project uses a centralized design system for all UI components and styles. All colors, spacing, typography, and radii are defined as CSS variables in `src/styles/tokens.css`.
 
 ### Design Tokens
-- **Colors:** --color-primary, --color-secondary, --color-accent, --color-error, etc.
+- **Colors:** --color-primary, --color-secondary, --color-tertiary, --color-error, etc.
 - **Spacing:** --spacing-xs, --spacing-sm, --spacing-md, --spacing-lg, --spacing-xl
 - **Typography:** --font-size-xs, --font-size-md, --font-size-lg, --font-weight-medium, --font-weight-bold
 - **Radii:** --radius-xs, --radius-md, --radius-lg, --radius-pill
@@ -17,7 +17,7 @@ This project uses a centralized design system for all UI components and styles. 
 - `.empty-state` — For empty list messages
 - `.spinner` — For loading indicators
 - `.ripple-card`, `.btn.ripple` — For ripple effect on click
-- `.text-center`, `.text-accent`, `.text-secondary`, `.text-bold`, `.text-md`, `.text-lg`, `.text-xl` — For typography
+- `.text-center`, `.text-tertiary`, `.text-secondary`, `.text-bold`, `.text-md`, `.text-lg`, `.text-xl` — For typography
 
 ### How to Use
 - **Never use hardcoded colors, spacing, or font sizes.** Always use the tokens and utility classes.

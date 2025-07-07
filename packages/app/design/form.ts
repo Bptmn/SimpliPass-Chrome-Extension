@@ -23,8 +23,8 @@ export const formStyles = StyleSheet.create({
   },
   // Form field groups
   formFieldGroup: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderWidth: 1,
     marginBottom: spacing.md,
@@ -41,8 +41,8 @@ export const formStyles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   formInput: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.xl,
     borderWidth: 1,
     color: colors.primary,
@@ -55,7 +55,7 @@ export const formStyles = StyleSheet.create({
   },
   formInputDisabled: {
     backgroundColor: colors.disabled,
-    color: colors.textSecondary,
+    color: colors.secondary,
   },
   formInputError: {
     borderColor: colors.error,
@@ -77,10 +77,10 @@ export const formStyles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   formTextArea: {
-    minHeight: 96,
-    textAlignVertical: 'top',
-    paddingTop: spacing.sm,
     borderRadius: 15,
+    minHeight: 96,
+    paddingTop: spacing.sm,
+    textAlignVertical: 'top',
   },
   
   // Form buttons
@@ -130,7 +130,7 @@ export const formStyles = StyleSheet.create({
     paddingVertical: 8,
   },
   formGenerateButtonText: {
-    color: colors.white,
+    color: colors.whiteText,
     fontSize: typography.fontSize.sm,
     fontWeight: '600',
   },
@@ -148,8 +148,8 @@ export const formStyles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   formInputLarge: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.xl,
     borderWidth: 1,
     color: colors.primary,
@@ -162,7 +162,7 @@ export const formStyles = StyleSheet.create({
     width: '100%',
   },
   formHelp: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.sm,
     marginTop: spacing.xs,
   },

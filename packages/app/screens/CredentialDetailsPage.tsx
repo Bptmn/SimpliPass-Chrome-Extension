@@ -32,8 +32,6 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
 
-
-
   const handleLaunch = (url: string) => {
     try {
       const normalizedUrl = url.match(/^https?:\/\//i) ? url : `https://${url}`;
@@ -119,7 +117,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
                   onPress={() => setShowPassword((v) => !v)}
                   accessibilityLabel={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                 >
-                  <Icon name={showPassword ? 'visibilityOff' : 'visibility'} size={22} color={colors.accent} />
+                  <Icon name={showPassword ? 'visibilityOff' : 'visibility'} size={22} color={colors.tertiary} />
                 </Pressable>
               </View>
             </View>
@@ -173,7 +171,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
         <View style={styles.actionsRow}>
           <Button
             text="Modifier"
-            color={colors.accent}
+            color={colors.tertiary}
             width="full"
             height="full"
             onPress={handleEdit}
@@ -224,8 +222,8 @@ export const styles = StyleSheet.create({
 
   cardField: {
     alignItems: 'center',
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderWidth: 1,
     flexDirection: 'row',
@@ -235,8 +233,8 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   cardGroup: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderWidth: 1,
     marginBottom: spacing.md,
@@ -253,7 +251,7 @@ export const styles = StyleSheet.create({
   },
 
   divider: {
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.borderColor,
     borderBottomWidth: 1,
     marginVertical: spacing.xs,
     width: '100%',
@@ -265,7 +263,7 @@ export const styles = StyleSheet.create({
     padding: 2,
   },
   fieldLabel: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.sm,
     fontWeight: '500',
     marginBottom: 2,

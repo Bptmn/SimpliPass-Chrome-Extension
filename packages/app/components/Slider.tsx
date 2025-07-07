@@ -11,7 +11,7 @@ const SLIDER_CONFIG = {
   trackHeight: 4,
   borderRadius: 2,
   activeColor: colors.primary,
-  inactiveColor: colors.border,
+  inactiveColor: colors.secondary,
   thumbColor: colors.white,
   thumbBorderColor: colors.primary,
   thumbBorderWidth: 2,
@@ -57,7 +57,7 @@ export const Slider: React.FC<SliderProps> = ({
       <View style={styles.container} testID={testID}>
         {label && <Text style={styles.label}>{label} [{value}]</Text>}
         <View style={styles.sliderContainer}>
-          <Text style={styles.maxLabel}>{max}</Text>
+          <Text style={styles.maxLabel}>{min}</Text>
           <input
             type="range"
             min={min}
@@ -69,7 +69,7 @@ export const Slider: React.FC<SliderProps> = ({
             aria-label={accessibilityLabel || label || 'Slider'}
             data-testid={testID}
           />
-          <Text style={styles.minLabel}>{min}</Text>
+          <Text style={styles.minLabel}>{max}</Text>
         </View>
       </View>
     );
@@ -117,44 +117,60 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   label: {
-    color: colors.accent,
+    color: colors.tertiary,
     fontSize: typography.fontSize.xs,
     fontWeight: '500',
   },
   maxLabel: {
-    color: colors.textSecondary,
+    color: colors.primary,
     fontSize: typography.fontSize.sm,
     minWidth: 20,
     textAlign: 'center',
   },
   minLabel: {
-    color: colors.textSecondary,
+    color: colors.primary,
     fontSize: typography.fontSize.sm,
     minWidth: 20,
     textAlign: 'center',
   },
   nativeTrack: {
-    backgroundColor: 'transparent',
+    backgroundColor: colors.primary,
     height: 4,
     width: '100%',
   },
   sliderContainer: {
     alignItems: 'center',
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: spacing.sm,
     justifyContent: 'center',
-    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     width: '100%',
   },
   sliderLabel: {
-    color: colors.textBlack,
+    color: colors.blackText,
     fontSize: typography.fontSize.sm,
     fontWeight: '600',
     marginBottom: spacing.sm,
   },
   sliderValue: {
-    color: colors.textSecondary,
+    color: colors.primary,
     fontSize: typography.fontSize.xs,
     fontWeight: '500',
     marginTop: spacing.xs,
+  },
+  thumb: {
+    backgroundColor: SLIDER_CONFIG.thumbColor,
+    borderColor: SLIDER_CONFIG.thumbBorderColor,
+    borderRadius: SLIDER_CONFIG.thumbSize / 2,
+    borderWidth: SLIDER_CONFIG.thumbBorderWidth,
+    height: SLIDER_CONFIG.thumbSize,
+    position: 'absolute',
+    top: -(SLIDER_CONFIG.thumbSize - SLIDER_CONFIG.trackHeight) / 2,
+    width: SLIDER_CONFIG.thumbSize,
   },
   trackBackground: {
     backgroundColor: SLIDER_CONFIG.inactiveColor,
@@ -169,18 +185,9 @@ const styles = StyleSheet.create({
     height: '100%',
     position: 'absolute',
   },
-  thumb: {
-    backgroundColor: SLIDER_CONFIG.thumbColor,
-    borderColor: SLIDER_CONFIG.thumbBorderColor,
-    borderRadius: SLIDER_CONFIG.thumbSize / 2,
-    borderWidth: SLIDER_CONFIG.thumbBorderWidth,
-    height: SLIDER_CONFIG.thumbSize,
-    position: 'absolute',
-    top: -(SLIDER_CONFIG.thumbSize - SLIDER_CONFIG.trackHeight) / 2,
-    width: SLIDER_CONFIG.thumbSize,
-  },
   webSlider: {
-    accentColor: SLIDER_CONFIG.activeColor,
+    WebkitAppearance: 'none',
+    tertiaryColor: SLIDER_CONFIG.activeColor,
     backgroundColor: SLIDER_CONFIG.inactiveColor,
     borderRadius: SLIDER_CONFIG.borderRadius,
     flex: 1,

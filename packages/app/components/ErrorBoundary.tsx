@@ -56,7 +56,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
 const styles = StyleSheet.create({
   errorBoundary: {
-    backgroundColor: colors.bg,
+    backgroundColor: colors.primaryBackground,
     borderColor: colors.error,
     borderRadius: radius.md,
     borderWidth: 1,
@@ -68,12 +68,12 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   errorDetails: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.sm,
     marginTop: spacing.sm,
   },
   errorStack: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.sm,
     marginTop: spacing.sm,
   },

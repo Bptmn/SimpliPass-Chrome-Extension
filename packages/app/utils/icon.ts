@@ -25,6 +25,8 @@ import {
   MdVisibilityOff,
   MdCheckCircle,
   MdNotes,
+  MdWbSunny,
+  MdNightlightRound,
 } from 'react-icons/md';
 
 export const IconsMap = {
@@ -54,6 +56,8 @@ export const IconsMap = {
   visibilityOff: MdVisibilityOff,
   checkCircle: MdCheckCircle,
   note: MdNotes,
-  } as const;
+  sun: MdWbSunny,
+  moon: MdNightlightRound,
+} as const;
 
 export type IconKey = keyof typeof IconsMap;

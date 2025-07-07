@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   text: {
-    color: colors.white,
+    color: colors.whiteText,
     fontSize: typography.fontSize.xxs,
   },
 });

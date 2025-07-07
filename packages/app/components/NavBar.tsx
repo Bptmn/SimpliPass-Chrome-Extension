@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   navLabel: {
-    color: colors.accent,
+    color: colors.tertiary,
     fontFamily: typography.fontFamily.base,
     fontSize: typography.fontSize.xs,
     fontWeight: '500',
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   navbar: {
     alignItems: 'center',
     backgroundColor: layout.primaryBackground,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.borderColor,
     borderBottomWidth: 1,
     flexDirection: 'row',
     height: layout.navbarHeight,

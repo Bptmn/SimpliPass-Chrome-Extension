@@ -4,43 +4,43 @@ import { typography } from './typography';
 import { spacing } from './layout';
 
 export const textStyles = StyleSheet.create({
-  // Accent text
-  textAccent: {
-    color: colors.accent,
+  // tertiary text
+  textTertiary: {
+    color: colors.tertiary,
     fontSize: typography.fontSize.sm,
-    fontWeight: '400',
+    fontWeight: typography.fontWeight.regular,
   },
   // Text variants
   textBody: {
-    color: colors.textBlack,
+    color: colors.blackText,
     fontSize: typography.fontSize.md,
-    fontWeight: '400',
+    fontWeight: typography.fontWeight.regular,
   },
   textBodyLarge: {
-    color: colors.textBlack,
+    color: colors.blackText,
     fontSize: typography.fontSize.lg,
-    fontWeight: '400',
+    fontWeight: typography.fontWeight.regular,
   },
   textBodySmall: {
-    color: colors.textBlack,
+    color: colors.blackText,
     fontSize: typography.fontSize.sm,
-    fontWeight: '400',
+    fontWeight: typography.fontWeight.regular,
   },
   textButton: {
-    color: colors.white,
+    color: colors.whiteText,
     fontSize: typography.fontSize.md,
-    fontWeight: 'bold',
+    fontWeight: typography.fontWeight.bold,
     letterSpacing: 0.2,
     textAlign: 'center',
   },
   textButtonOutline: {
     fontSize: typography.fontSize.md,
-    fontWeight: 'bold',
+    fontWeight: typography.fontWeight.bold,
     letterSpacing: 0.2,
     textAlign: 'center',
   },
   textEmptyState: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.regular,
     textAlign: 'center',
@@ -48,66 +48,66 @@ export const textStyles = StyleSheet.create({
   textError: {
     color: colors.error,
     fontSize: typography.fontSize.sm,
-    fontWeight: '500',
+    fontWeight: typography.fontWeight.medium,
     marginTop: spacing.xs,
   },
   textErrorLarge: {
     color: colors.error,
     fontSize: typography.fontSize.md,
-    fontWeight: '500',
+    fontWeight: typography.fontWeight.medium,
     marginTop: spacing.lg,
     textAlign: 'center',
   },
   textFieldLabel: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.sm,
-    fontWeight: '500',
+    fontWeight: typography.fontWeight.medium,
     marginBottom: 2,
   },
   textFieldValue: {
-    color: colors.textBlack,
+    color: colors.blackText,
     fontSize: typography.fontSize.md,
-    fontWeight: '500',
+    fontWeight: typography.fontWeight.medium,
     marginBottom: 2,
   },
   textLabel: {
     color: colors.primary,
     fontSize: typography.fontSize.sm,
-    fontWeight: '500',
+    fontWeight: typography.fontWeight.medium,
     marginBottom: spacing.xs,
   },
   textLoading: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.md,
     fontStyle: 'italic',
     marginTop: spacing.lg,
   },
   textSecondary: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.md,
   },
   textSecondarySmall: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.sm,
   },
   textSectionLabel: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.sm,
-    fontWeight: 'bold',
+    fontWeight: typography.fontWeight.medium,
     marginBottom: spacing.xs,
     marginTop: spacing.lg,
   },
   textTitle: {
-    color: colors.textBlack,
+    color: colors.blackText,
     fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.bold,
   },
   textSmall: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     fontSize: typography.fontSize.sm,
   },
   textTitleLarge: {
-    color: colors.textBlack,
+    color: colors.blackText,
     fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.bold,
   },

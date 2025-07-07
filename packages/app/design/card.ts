@@ -22,7 +22,7 @@ export const cardStyles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   bankCardExpiry: {
-    color: colors.white,
+    color: colors.whiteText,
     fontSize: 16,
     fontWeight: '400',
   },
@@ -32,20 +32,20 @@ export const cardStyles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   bankCardNumber: {
-    color: colors.white,
+    color: colors.whiteText,
     fontSize: 18,
     fontWeight: '500',
     letterSpacing: 2,
   },
   bankCardOwner: {
-    color: colors.white,
+    color: colors.whiteText,
     flex: 1,
     fontSize: 16,
     fontWeight: '400',
     marginRight: spacing.md,
   },
   bankCardTitle: {
-    color: colors.white,
+    color: colors.whiteText,
     flex: 1,
     fontSize: 18,
     fontWeight: '600',
@@ -58,8 +58,8 @@ export const cardStyles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   card: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderWidth: 1,
     shadowColor: '#000',
@@ -74,7 +74,7 @@ export const cardStyles = StyleSheet.create({
   
   // Color picker styles
   checkMark: {
-    color: colors.white,
+    color: colors.whiteText,
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -96,8 +96,8 @@ export const cardStyles = StyleSheet.create({
   // Credential card styles
   credentialCard: {
     alignItems: 'center',
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderStyle: 'solid',
     borderWidth: 1,
@@ -129,15 +129,15 @@ export const cardStyles = StyleSheet.create({
     fontWeight: '600',
   },
   credentialCardUsername: {
-    color: colors.textSecondary,
+    color: colors.secondary,
     flexShrink: 1,
     fontSize: 12,
   },
   
   // Generated password card styles
   generatedPasswordCard: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderWidth: 1,
     flexDirection: 'column',
@@ -149,7 +149,7 @@ export const cardStyles = StyleSheet.create({
   iconContainer: {
     alignItems: 'center',
     backgroundColor: colors.white,
-    borderColor: colors.border,
+    borderColor: colors.borderColor,
     borderRadius: 10,
     borderWidth: 1,
     height: 35,
@@ -160,7 +160,7 @@ export const cardStyles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   iconLetter: {
-    color: colors.accent,
+    color: colors.tertiary,
     fontSize: 16,
     fontWeight: '600',
     lineHeight: 35,
@@ -170,7 +170,7 @@ export const cardStyles = StyleSheet.create({
   
   // Menu card styles
   menuCard: {
-    backgroundColor: colors.bgAlt,
+    backgroundColor: colors.secondaryBackground,
     borderRadius: radius.md,
     flexDirection: 'column',
     marginBottom: spacing.sm,
@@ -218,8 +218,8 @@ export const cardStyles = StyleSheet.create({
     fontWeight: '500',
   },
   optionsSection: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderWidth: 1,
     flexDirection: 'column',
@@ -234,11 +234,11 @@ export const cardStyles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   passwordText: {
-    backgroundColor: colors.bg,
-    borderColor: colors.border,
+    backgroundColor: colors.primaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderWidth: 1,
-    color: colors.textSecondary,
+    color: colors.secondary,
     flex: 1,
     fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace',
     fontSize: 16,
@@ -248,8 +248,8 @@ export const cardStyles = StyleSheet.create({
   
   // Profile card styles
   profileCard: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderWidth: 1,
     padding: spacing.sm,
@@ -270,7 +270,7 @@ export const cardStyles = StyleSheet.create({
   },
   profileCardUserIcon: {
     alignItems: 'center',
-    backgroundColor: colors.bgAlt,
+    backgroundColor: colors.secondaryBackground,
     borderRadius: 25,
     color: colors.primary,
     fontSize: 24,
@@ -283,7 +283,7 @@ export const cardStyles = StyleSheet.create({
   // Secure note card styles
   secureNoteCard: {
     alignItems: 'center',
-    backgroundColor: colors.bgAlt,
+    backgroundColor: colors.secondaryBackground,
     borderRadius: 20,
     flexDirection: 'row',
     height: 60,
@@ -316,8 +316,8 @@ export const cardStyles = StyleSheet.create({
   },
   skeletonCard: {
     alignItems: 'center',
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.lg,
     borderWidth: 1,
     flexDirection: 'row',

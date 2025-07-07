@@ -94,8 +94,9 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
         <View style={styles.actionsRow}>
           <Button
             text="Modifier"
-            color={colors.accent}
-            size="medium"
+            color={colors.tertiary}
+            width="full"
+            height="full"
             onPress={handleEdit}
             disabled={loading}
             style={{ flex: 1, maxWidth: 180 }}
@@ -103,7 +104,8 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
           <Button
             text="Supprimer"
             color={colors.error}
-            size="medium"
+            width="full"
+            height="full"
             onPress={handleDelete}
             disabled={loading}
             style={{ flex: 1, maxWidth: 180 }}
@@ -139,8 +141,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   cardGroup: {
-    backgroundColor: colors.bgAlt,
-    borderColor: colors.border,
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderWidth: 1,
     marginBottom: spacing.md,
@@ -148,8 +150,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   colorCircle: {
-    height: 35,
     borderRadius: 17.5,
+    height: 35,
     width: 35,
   },
   credentialFieldRow: {
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   fieldLabel: {
-    color: colors.textSecondary,
+    color: colors.tertiary,
     fontSize: typography.fontSize.sm,
     fontWeight: '500',
     marginBottom: 2,
