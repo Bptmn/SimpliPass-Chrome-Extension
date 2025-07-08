@@ -6,8 +6,9 @@ import './popup/popup.css';
 
 import { PopupApp } from './popup/PopupApp';
 import { ErrorBoundary } from '../app/components/ErrorBoundary';
-import { UserProvider } from '../app/hooks/useUser';
+import { UserProvider } from '../app/core/hooks/useUser';
 import { initStorage } from '../app/core/database/localDB';
+import { ThemeProvider } from '../app/core/logic/theme';
 
 const initializeApp = () => {
   console.log('Initializing Chrome extension app...');
@@ -26,10 +27,12 @@ const initializeApp = () => {
     console.log('Rendering app...');
     root.render(
       React.createElement(React.StrictMode, null,
-        React.createElement(ErrorBoundary, null,
-          React.createElement(MemoryRouter, null,
-            React.createElement(UserProvider, null,
-              React.createElement(PopupApp, null)
+        React.createElement(ThemeProvider, null,
+          React.createElement(ErrorBoundary, null,
+            React.createElement(MemoryRouter, null,
+              React.createElement(UserProvider, null,
+                React.createElement(PopupApp, null)
+              )
             )
           )
         )

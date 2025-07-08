@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { View } from 'react-native';
-import { Input } from '../components/InputVariants';
-import { Button } from '../components/Buttons';
-import { HeaderTitle } from '../components/HeaderTitle';
+import { Input } from '@components/InputFields';
+import { Button } from '@components/Buttons';
+import { HeaderTitle } from '@components/HeaderTitle';
 import { pageStyles } from '@design/layout';
 
 const AddCredential1: React.FC = () => {

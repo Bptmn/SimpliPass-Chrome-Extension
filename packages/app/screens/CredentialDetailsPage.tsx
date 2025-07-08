@@ -3,17 +3,18 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { CredentialDecrypted } from '@app/core/types/types';
 import { deleteItem } from '@app/core/logic/items';
-import { useUser } from '@hooks/useUser';
-import { ErrorBanner } from '../components/ErrorBanner';
-import { Icon } from '../components/Icon';
-import { LazyCredentialIcon } from '../components/LazyCredentialIcon';
-import { useToast } from '../components/Toast';
+import { useUser } from '@app/core/hooks/useUser';
+import { ErrorBanner } from '@components/ErrorBanner';
+import { Icon } from '@components/Icon';
+import { LazyCredentialIcon } from '@components/LazyCredentialIcon';
+import { useToast } from '@app/core/hooks/useToast';
 import { colors } from '@design/colors';
 import { padding, radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
-import { Button } from '../components/Buttons';
-import CopyButton from '../components/CopyButton';
-import { MoreInfo } from '../components/MoreInfo';
+import { Button } from '@components/Buttons';
+import CopyButton from '@components/CopyButton';
+import { MoreInfo } from '@components/MoreInfo';
+import DetailField from '@components/DetailField';
 
 interface CredentialDetailsPageProps {
   credential: CredentialDecrypted;
@@ -134,38 +135,21 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
         </View>
 
         {/* Link card */}
-        <View style={styles.cardField}>
-          <View style={styles.fieldLeft}>
-            <Text style={styles.fieldLabel}>Lien :</Text>
-            <Text style={styles.fieldValue}>{credential.url}</Text>
-          </View>
-          {credential.url ? (
-            <Pressable
-              style={styles.launchBtn}
-              onPress={() => handleLaunch(credential.url)}
-              accessibilityLabel="Ouvrir le lien dans un nouvel onglet"
-            >
-              <Icon name="launch" size={22} color={colors.secondary} />
-            </Pressable>
-          ) : null}
-        </View>
+        <DetailField
+          label="Lien :"
+          value={credential.url}
+          showLaunchButton={true}
+          onLaunch={() => handleLaunch(credential.url)}
+        />
 
         {/* Note card */}
-        <View style={styles.cardField}>
-          <View style={styles.fieldLeft}>
-            <Text style={styles.fieldLabel}>Note :</Text>
-            <Text style={styles.fieldValue}>{credential.note}</Text>
-          </View>
-          {credential.note ? (
-            <CopyButton
-              textToCopy={credential.note}
-              ariaLabel="Copier la note"
-              onClick={() => showToast("Note copiée !")}
-            >
-              <Text>copier</Text>
-            </CopyButton>
-          ) : null}
-        </View>
+        <DetailField
+          label="Note :"
+          value={credential.note}
+          showCopyButton={true}
+          onCopy={() => showToast("Note copiée !")}
+          ariaLabel="Copier la note"
+        />
 
         {/* Actions */}
         <View style={styles.actionsRow}>
@@ -204,7 +188,6 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.md,
     justifyContent: 'space-around',
-    marginBottom: spacing.md,
     width: '100%',
   },
 
@@ -220,24 +203,12 @@ export const styles = StyleSheet.create({
     zIndex: 1,
   },
 
-  cardField: {
-    alignItems: 'center',
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: spacing.md,
-    padding: padding.md,
-    width: '100%',
-  },
+
   cardGroup: {
     backgroundColor: colors.secondaryBackground,
     borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderWidth: 1,
-    marginBottom: spacing.md,
     padding: padding.md,
     width: '100%',
   },
@@ -246,7 +217,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: spacing.xs,
     width: '100%',
   },
 
@@ -258,15 +228,14 @@ export const styles = StyleSheet.create({
   },
 
   eyeBtn: {
-    marginLeft: 8,
-    marginRight: 8,
-    padding: 2,
+    marginLeft: spacing.sm,
+    marginRight: spacing.sm,
+    padding: spacing.xxs,
   },
   fieldLabel: {
-    color: colors.secondary,
+    color: colors.tertiary,
     fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    marginBottom: 2,
+    fontWeight: typography.fontWeight.medium,
   },
   fieldLeft: {
     flex: 1,
@@ -275,7 +244,7 @@ export const styles = StyleSheet.create({
   fieldValue: {
     color: colors.primary,
     fontSize: typography.fontSize.md,
-    fontWeight: '400',
+    fontWeight: typography.fontWeight.regular,
   },
   headerContent: {
     alignItems: 'center',
@@ -284,27 +253,18 @@ export const styles = StyleSheet.create({
   headerRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: spacing.lg,
     position: 'relative',
     width: '100%',
   },
   iconCenter: {
     alignItems: 'center',
-    marginBottom: spacing.xs,
   },
 
-  launchBtn: {
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-    borderRadius: radius.sm,
-    height: 32,
-    justifyContent: 'center',
-    marginLeft: spacing.sm,
-    paddingHorizontal: spacing.sm,
-  },
+
 
   pageContent: {
     flex: 1,
+    gap: spacing.md,
   },
   passwordRow: {
     alignItems: 'center',
@@ -314,8 +274,7 @@ export const styles = StyleSheet.create({
   title: {
     color: colors.primary,
     fontSize: typography.fontSize.lg,
-    fontWeight: '700',
-    marginBottom: spacing.md,
+    fontWeight: typography.fontWeight.bold,
     textAlign: 'center',
   },
 });

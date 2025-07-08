@@ -7,13 +7,34 @@
 // - Inject credentials into the login form when a credential is picked
 
 import { getRootDomain, getRegisteredDomain, matchesCredentialDomainOrTitle } from '@utils/domain';
-import { useCredentialInjection } from '@utils/valuesInjection';
 
 function sanitizeInput(input: unknown): string {
   // Simple sanitizer: strips script tags and trims whitespace
   return String(input)
     .replace(/<script.*?>.*?<\/script>/gi, '')
     .trim();
+}
+
+// Simple credential injection function
+function injectCredential(username: string, password: string): void {
+  const usernameFields = document.querySelectorAll('input[type="email"], input[autocomplete*="user" i], input[autocomplete*="email" i], input[name*="user" i], input[name*="email" i]');
+  const passwordFields = document.querySelectorAll('input[type="password"]');
+  
+  // Fill username field
+  if (usernameFields.length > 0) {
+    const usernameField = usernameFields[0] as HTMLInputElement;
+    usernameField.value = username;
+    usernameField.dispatchEvent(new Event('input', { bubbles: true }));
+    usernameField.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  
+  // Fill password field
+  if (passwordFields.length > 0) {
+    const passwordField = passwordFields[0] as HTMLInputElement;
+    passwordField.value = password;
+    passwordField.dispatchEvent(new Event('input', { bubbles: true }));
+    passwordField.dispatchEvent(new Event('change', { bubbles: true }));
+  }
 }
 
 const url: string = sanitizeInput(window.location.href);
@@ -133,7 +154,6 @@ window.addEventListener('message', (event) => {
       if (typeof width === 'number') pickerIframe.style.width = `${width}px`;
     } else if (type === 'PICK_CREDENTIAL' && credential) {
       // Inject the credential into the login form
-      const { injectCredential } = useCredentialInjection();
       injectCredential(credential.username, credential.password);
       removeInPagePicker();
     } else if (type === 'CLOSE_POPOVER') {
@@ -145,7 +165,6 @@ window.addEventListener('message', (event) => {
 chrome.runtime.onMessage.addListener((msg: any) => {
   if (msg && msg.type === 'INJECT_CREDENTIAL' && msg.username && msg.password) {
     // Always use the centralized injection utility
-    const { injectCredential } = useCredentialInjection();
     injectCredential(sanitizeInput(msg.username), sanitizeInput(msg.password));
     removeInPagePicker();
   }

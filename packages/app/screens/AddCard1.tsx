@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { View } from 'react-native';
-import { Input } from '../components/InputVariants';
+import { Input } from '@components/InputFields';
 import { pageStyles } from '@design/layout';
-import { Button } from '../components/Buttons';
-import { HeaderTitle } from '../components/HeaderTitle';
+import { Button } from '@components/Buttons';
+import { HeaderTitle } from '@components/HeaderTitle';
 import { colors } from '@design/colors';
 
 const AddCard1: React.FC = () => {
@@ -64,7 +64,7 @@ const AddCard1: React.FC = () => {
         />
         <Button
           text="Suivant"
-          color={colors.primary}
+          color={colors.secondary}
           width="full"
           height="full"
           onPress={handleNext}

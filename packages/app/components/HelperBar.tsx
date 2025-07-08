@@ -1,64 +1,24 @@
 // HelperBar.tsx
 // This component renders the bottom helper bar in the popup UI, providing quick access to add credentials, FAQ, and refresh actions.
 // Responsibilities:
-// - Render helper bar with action buttons
-// - Handle navigation and refresh logic
+// - Render helper bar with action buttons (presentational only)
 // - Use the shared Icon component for button icons
 
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
-import { useNavigate } from 'react-router-dom';
 import { Icon } from './Icon';
-import { refreshItems } from '@app/core/logic/items';
-import { getUserSecretKey } from '@app/core/logic/user';
 import { colors } from '@design/colors';
 import { layout, radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
-import { useUserStore } from '@app/core/states/user';
-import { useCategoryStore } from '@app/core/states';
+import { useHelperBar } from '@app/core/hooks';
 
 export const HelperBar: React.FC = () => {
-  const navigate = useNavigate();
-  const currentUser = useUserStore((state) => state.user);
-  const { currentCategory } = useCategoryStore();
-
-  // Handler for the add button, dynamic by category
-  const handleAdd = () => {
-    if (currentCategory === 'credentials') {
-      navigate('/add-credential-1');
-    } else if (currentCategory === 'bankCards') {
-      navigate('/add-card-1');
-    } else if (currentCategory === 'secureNotes') {
-      navigate('/add-securenote');
-    }
-  };
-
-  // Dynamic button text
-  const addButtonText =
-    currentCategory === 'credentials'
-      ? 'Ajouter un identifiant'
-      : currentCategory === 'bankCards'
-      ? 'Ajouter une carte'
-      : 'Ajouter une note';
-
-  // Handler for the FAQ button
-  const handleFAQ = () => {
-    // TODO: Implement FAQ navigation
-    console.log('FAQ clicked');
-  };
-
-  // Handler for the refresh button (uses business logic)
-  const handleRefresh = async () => {
-    if (currentUser) {
-      const userSecretKey = await getUserSecretKey();
-      if (userSecretKey) {
-        await refreshItems(currentUser.uid, userSecretKey);
-        window.location.reload();
-      }
-    } else {
-      console.log('No user logged in, cannot refresh cache');
-    }
-  };
+  const {
+    addButtonText,
+    handleAdd,
+    handleFAQ,
+    handleRefresh,
+  } = useHelperBar();
 
   return (
     <View style={[
@@ -71,6 +31,7 @@ export const HelperBar: React.FC = () => {
           onPress={handleAdd}
           accessibilityRole="button"
           accessibilityLabel={addButtonText}
+          testID="helper-add-button"
         >
           <Icon name="add" size={25} color={colors.white} />
           <Text style={styles.helperBtnTextAdd}>{addButtonText}</Text>
@@ -82,6 +43,7 @@ export const HelperBar: React.FC = () => {
           onPress={handleFAQ}
           accessibilityRole="button"
           accessibilityLabel="Aide"
+          testID="helper-faq-button"
         >
           <Icon name="help" size={25} color={colors.primary} />
           <Text style={styles.helperBtnText}>Aide</Text>
@@ -91,6 +53,7 @@ export const HelperBar: React.FC = () => {
           onPress={handleRefresh}
           accessibilityRole="button"
           accessibilityLabel="Actualiser les identifiants"
+          testID="helper-refresh-button"
         >
           <Icon name="refresh" size={25} color={colors.primary} />
           <Text style={styles.helperBtnText}>Actualiser</Text>
@@ -139,10 +102,10 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
     borderWidth: 0,
     flexDirection: 'column',
-    height: 40,
+    height: spacing.lg * 2,
     justifyContent: 'center',
     marginRight: spacing.md,
-    width: 48,
+    width: spacing.xl * 2,
   },
   helperBtnAdd: {
     alignItems: 'center',
@@ -150,14 +113,14 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     flexDirection: 'row',
     gap: spacing.xs,
-    height: 40,
+    height: spacing.lg * 2,
     justifyContent: 'space-around',
     marginRight: spacing.md,
     padding: spacing.sm,
   },
   helperBtnText: {
     color: colors.blackText,
-    fontSize: typography.fontSize.xs * 0.75,
+    fontSize: typography.fontSize.xxs,
     marginTop: spacing.xxs,
     textAlign: 'center',
     width: '100%',

@@ -10,7 +10,6 @@ import { useToast } from '../components/Toast';
 import CopyButton from '../components/CopyButton';
 import { Button } from '../components/Buttons';
 import { Slider } from '../components/Slider';
-import { HeaderTitle } from '../components/HeaderTitle';
 import { colors } from '@design/colors';
 
 export const GeneratorPage: React.FC = () => {
@@ -20,9 +19,7 @@ export const GeneratorPage: React.FC = () => {
   const [hasLowercase, setHasLowercase] = useState(true);
   const [length, setLength] = useState(16);
   const [password, setPassword] = useState('');
-  const [strength, setStrength] = useState<
-    'weak' | 'average' | 'strong' | 'perfect'
-  >('weak');
+  const [strength, setStrength] = useState<'weak' | 'average' | 'strong' | 'perfect'>('weak');
   const { showToast } = useToast();
 
   // Generate password and check strength on mount and whenever options change
@@ -50,105 +47,7 @@ export const GeneratorPage: React.FC = () => {
     setStrength(checkPasswordStrength(pwd));
   };
 
-  const getStyles = () => StyleSheet.create({
-    generatedPasswordCard: {
-      backgroundColor: colors.secondaryBackground,
-      borderColor: colors.borderColor,
-      borderRadius: radius.md,
-      borderWidth: 1,
-      flexDirection: 'column',
-      padding: padding.md,
-    },
-    generatorForm: {
-      flexDirection: 'column',
-      gap: spacing.lg,
-    },
-    optionRow: {
-      alignItems: 'center',
-      color: colors.primary,
-      flexDirection: 'row',
-      fontSize: typography.fontSize.sm,
-      justifyContent: 'space-between',
-    },
-    optionText: {
-      color: colors.primary,
-      flex: 1,
-      fontSize: typography.fontSize.sm,
-      fontWeight: '500',
-    },
-    optionsSection: {
-      backgroundColor: colors.secondaryBackground,
-      borderColor: colors.borderColor,
-      borderRadius: radius.md,
-      borderWidth: 1,
-      flexDirection: 'column',
-      gap: spacing.md,
-      marginBottom: spacing.sm,
-      padding: padding.md,
-    },
-    pageSection: {
-      gap: spacing.xs
-    },
-    passwordDisplay: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      marginBottom: spacing.sm,
-    },
-    passwordText: {
-      backgroundColor: colors.primaryBackground,
-      borderColor: colors.borderColor,
-      borderRadius: radius.md,
-      borderWidth: 1,
-      color: colors.primary,
-      flex: 1,
-      fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace',
-      fontSize: typography.fontSize.md,
-      marginRight: spacing.sm,
-      minHeight: 20,
-      padding: padding.sm,
-    },
-    sectionLabel: {
-      color: colors.tertiary,
-      fontSize: typography.fontSize.xs,
-      fontWeight: '500',
-      margin: 0,
-    },
-    strengthAverage: { color: '#ffb300' },
-    strengthLabel: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      fontSize: typography.fontSize.sm,
-      fontWeight: '500',
-      marginRight: spacing.xs,
-      padding: 0,
-    },
-    strengthPerfect: { color: colors.secondary },
-    strengthStrong: { color: colors.primary },
-    strengthWeak: { color: '#e57373' },
-    switch: {
-      backgroundColor: '#ccc',
-      borderRadius: 22,
-      height: 25,
-      position: 'relative',
-      width: 40,
-    },
-    switchActive: {
-      backgroundColor: colors.secondary,
-    },
-    switchSlider: {
-      backgroundColor: colors.primaryBackground,
-      borderRadius: radius.xl,
-      bottom: 1.5,
-      height: 22,
-      left: 1,
-      position: 'absolute',
-      width: 22,
-    },
-    switchSliderActive: {
-      transform: [{ translateX: 16 }],
-    },
-  });
-
+  
   const styles = getStyles();
 
   return (
@@ -241,3 +140,102 @@ export const GeneratorPage: React.FC = () => {
     </View>
   );
 };
+
+const getStyles = () => StyleSheet.create({
+  generatedPasswordCard: {
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    flexDirection: 'column',
+    padding: padding.md,
+  },
+  generatorForm: {
+    flexDirection: 'column',
+    gap: spacing.lg,
+  },
+  optionRow: {
+    alignItems: 'center',
+    color: colors.primary,
+    flexDirection: 'row',
+    fontSize: typography.fontSize.sm,
+    justifyContent: 'space-between',
+  },
+  optionText: {
+    color: colors.primary,
+    flex: 1,
+    fontSize: typography.fontSize.sm,
+    fontWeight: '500',
+  },
+  optionsSection: {
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    flexDirection: 'column',
+    gap: spacing.md,
+    marginBottom: spacing.sm,
+    padding: padding.md,
+  },
+  pageSection: {
+    gap: spacing.xs
+  },
+  passwordDisplay: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: spacing.sm,
+  },
+  passwordText: {
+    backgroundColor: colors.primaryBackground,
+    borderColor: colors.borderColor,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    color: colors.primary,
+    flex: 1,
+    fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace',
+    fontSize: typography.fontSize.md,
+    marginRight: spacing.sm,
+    minHeight: 20,
+    padding: padding.sm,
+  },
+  sectionLabel: {
+    color: colors.tertiary,
+    fontSize: typography.fontSize.xs,
+    fontWeight: '500',
+    margin: 0,
+  },
+  strengthAverage: { color: '#ffb300' },
+  strengthLabel: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    fontSize: typography.fontSize.sm,
+    fontWeight: '500',
+    marginRight: spacing.xs,
+    padding: 0,
+  },
+  strengthPerfect: { color: colors.secondary },
+  strengthStrong: { color: colors.primary },
+  strengthWeak: { color: '#e57373' },
+  switch: {
+    backgroundColor: '#ccc',
+    borderRadius: 22,
+    height: 25,
+    position: 'relative',
+    width: 40,
+  },
+  switchActive: {
+    backgroundColor: colors.secondary,
+  },
+  switchSlider: {
+    backgroundColor: colors.primaryBackground,
+    borderRadius: radius.xl,
+    bottom: 1.5,
+    height: 22,
+    left: 1,
+    position: 'absolute',
+    width: 22,
+  },
+  switchSliderActive: {
+    transform: [{ translateX: 16 }],
+  },
+});

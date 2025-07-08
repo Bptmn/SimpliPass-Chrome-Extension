@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { View, ScrollView } from 'react-native';
-import { Input } from '../components/InputVariants';
+import { Input } from '@components/InputFields';
 import { pageStyles } from '@design/layout';
 import { addItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
-import { useUser } from '@hooks/useUser';
+import { useUser } from '@app/core/hooks/useUser';
 import { SecureNoteDecrypted } from '@app/core/types/types';
-import { ErrorBanner } from '../components/ErrorBanner';
-import { Button } from '../components/Buttons';
-import { HeaderTitle } from '../components/HeaderTitle';
-import { ColorSelector } from '../components/ColorSelector';
-import { useToast } from '../components/Toast';
+import { ErrorBanner } from '@components/ErrorBanner';
+import { Button } from '@components/Buttons';
+import { HeaderTitle } from '@components/HeaderTitle';
+import { ColorSelector } from '@components/ColorSelector';
 import { colors } from '@design/colors';
 
 const AddSecureNote: React.FC = () => {
@@ -82,7 +81,7 @@ const AddSecureNote: React.FC = () => {
           />
           <Button
             text="Confirmer"
-            color={colors.primary}
+            color={colors.secondary}
             width="full"
             height="full"
             onPress={handleConfirm}

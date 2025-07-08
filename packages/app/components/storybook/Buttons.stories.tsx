@@ -5,16 +5,18 @@ import { colors } from '@design/colors';
 import { spacing } from '@design/layout';
 
 export default {
-  title: 'Components/Button',
+  title: 'Components/Buttons',
   component: Button,
+  parameters: {
+    layout: 'centered',
+  },
 };
 
 export const Primary = () => (
-  <View style={{ padding: spacing.lg, gap: spacing.md }}>
+  <View style={{ padding: spacing.lg }}>
     <Button
       text="Primary Button"
       color={colors.primary}
-      size="medium"
       width="full"
       height="full"
       align="center"
@@ -25,11 +27,10 @@ export const Primary = () => (
 );
 
 export const Secondary = () => (
-  <View style={{ padding: spacing.lg, gap: spacing.md }}>
+  <View style={{ padding: spacing.lg }}>
     <Button
       text="Secondary Button"
       color={colors.secondary}
-      size="medium"
       width="full"
       height="full"
       align="center"
@@ -40,11 +41,10 @@ export const Secondary = () => (
 );
 
 export const Outline = () => (
-  <View style={{ padding: spacing.lg, gap: spacing.md }}>
+  <View style={{ padding: spacing.lg }}>
     <Button
       text="Outline Button"
       color={colors.primary}
-      size="medium"
       width="full"
       height="full"
       align="center"
@@ -55,11 +55,10 @@ export const Outline = () => (
 );
 
 export const Small = () => (
-  <View style={{ padding: spacing.lg, gap: spacing.md }}>
+  <View style={{ padding: spacing.lg }}>
     <Button
       text="Small Button"
       color={colors.primary}
-      size="small"
       width="fit"
       height="fit"
       align="center"
@@ -69,42 +68,39 @@ export const Small = () => (
   </View>
 );
 
-export const FitWidth = () => (
-  <View style={{ padding: spacing.lg, gap: spacing.md }}>
+export const Medium = () => (
+  <View style={{ padding: spacing.lg }}>
     <Button
-      text="Fit Width"
+      text="Medium Button"
       color={colors.primary}
-      size="medium"
       width="fit"
       height="full"
       align="center"
       outline={false}
-      onPress={() => console.log('Fit width button pressed')}
+      onPress={() => console.log('Medium button pressed')}
     />
   </View>
 );
 
-export const FitHeight = () => (
-  <View style={{ padding: spacing.lg, gap: spacing.md }}>
+export const Large = () => (
+  <View style={{ padding: spacing.lg }}>
     <Button
-      text="Fit Height"
+      text="Large Button"
       color={colors.primary}
-      size="medium"
       width="full"
       height="fit"
       align="center"
       outline={false}
-      onPress={() => console.log('Fit height button pressed')}
+      onPress={() => console.log('Large button pressed')}
     />
   </View>
 );
 
 export const LeftAligned = () => (
-  <View style={{ padding: spacing.lg, gap: spacing.md }}>
+  <View style={{ padding: spacing.lg }}>
     <Button
       text="Left Aligned"
       color={colors.primary}
-      size="medium"
       width="fit"
       height="full"
       align="left"
@@ -115,11 +111,10 @@ export const LeftAligned = () => (
 );
 
 export const RightAligned = () => (
-  <View style={{ padding: spacing.lg, gap: spacing.md }}>
+  <View style={{ padding: spacing.lg }}>
     <Button
       text="Right Aligned"
       color={colors.primary}
-      size="medium"
       width="fit"
       height="full"
       align="right"
@@ -130,11 +125,10 @@ export const RightAligned = () => (
 );
 
 export const Disabled = () => (
-  <View style={{ padding: spacing.lg, gap: spacing.md }}>
+  <View style={{ padding: spacing.lg }}>
     <Button
       text="Disabled Button"
       color={colors.primary}
-      size="medium"
       width="full"
       height="full"
       align="center"
@@ -146,11 +140,10 @@ export const Disabled = () => (
 );
 
 export const DisabledOutline = () => (
-  <View style={{ padding: spacing.lg, gap: spacing.md }}>
+  <View style={{ padding: spacing.lg }}>
     <Button
       text="Disabled Outline"
       color={colors.primary}
-      size="medium"
       width="full"
       height="full"
       align="center"

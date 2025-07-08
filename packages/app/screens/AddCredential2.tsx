@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { View, ScrollView } from 'react-native';
-import { useUser } from '@hooks/useUser';
+import { useUser } from '@app/core/hooks/useUser';
 import { passwordGenerator } from '@utils/passwordGenerator';
 import { addItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
 import { CredentialDecrypted } from '@app/core/types/types';
-import { ErrorBanner } from '../components/ErrorBanner';
-import { Toast, useToast } from '../components/Toast';
+import { ErrorBanner } from '@components/ErrorBanner';
+import Toast from '@components/Toast';
+import { useToast } from '@app/core/hooks/useToast';
 import { generateItemKey } from '@utils/crypto';
-import { Input } from '../components/InputVariants';
+import { Input, InputPasswordStrength } from '@components/InputFields';
 import { colors } from '@design/colors';
 import { pageStyles } from '@design/layout';
-import { Button } from '../components/Buttons';
-import { HeaderTitle } from '../components/HeaderTitle';
+import { Button } from '@components/Buttons';
+import { HeaderTitle } from '@components/HeaderTitle';
+import { createPasswordGenerator } from '@app/core/logic/credentials';
+import { checkPasswordStrength } from '@utils/checkPasswordStrength';
 
 interface AddCredential2Props {
   title: string;
@@ -33,6 +36,9 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
   const [loading, setLoading] = useState(false);
   const { toast, showToast } = useToast();
 
+  // Calculate password strength
+  const passwordStrength = checkPasswordStrength(password);
+
   useEffect(() => {
     setTitle(initialTitle);
   }, [initialTitle]);
@@ -42,11 +48,6 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
       setUsername(user.email);
     }
   }, [user?.email]);
-
-  const handleGeneratePassword = () => {
-    const newPassword = passwordGenerator(true, true, true, true, 16);
-    setPassword(newPassword);
-  };
 
   const handleSubmit = async () => {
     if (!user) {
@@ -115,19 +116,19 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
               _required
             />
             <View>
-              <Input
+              <InputPasswordStrength
                 label="Mot de passe"
                 _id="password"
-                type="text"
                 value={password}
                 onChange={setPassword}
                 placeholder="Entrez un mot de passe..."
                 _required
+                strength={passwordStrength}
               />
               <Button
                 text="Générer un mot de passe"
                 color={colors.secondary}
-                onPress={handleGeneratePassword}
+                onPress={createPasswordGenerator(setPassword)}
                 align="right"
                 width="fit"
                 height="fit"
@@ -151,7 +152,7 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
             />
             <Button
               text="Ajouter"
-              color={colors.primary}
+              color={colors.secondary}
               onPress={handleSubmit}
               disabled={loading}
             />

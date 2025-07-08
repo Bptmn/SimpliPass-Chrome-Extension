@@ -60,8 +60,8 @@ const styles = StyleSheet.create({
   infoLabel: {
     color: colors.primary,
     fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    marginRight: 8,
+    fontWeight: typography.fontWeight.medium,
+    marginRight: spacing.sm,
   },
   infoRow: {
     backgroundColor: 'transparent',
@@ -76,11 +76,11 @@ const styles = StyleSheet.create({
   },
   metaRow: {
     marginTop: spacing.xs,
-    paddingLeft: 24,
+    paddingLeft: spacing.lg,
   },
   metaText: {
     color: colors.tertiary,
     fontSize: typography.fontSize.sm,
-    marginBottom: 2,
+    marginBottom: spacing.xxs,
   },
 }); 

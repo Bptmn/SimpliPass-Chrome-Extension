@@ -4,15 +4,16 @@ import { View, ScrollView, Text, StyleSheet } from 'react-native';
 import { CredentialDecrypted } from '@app/core/types/types';
 import { updateItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
-import { useUser } from '@hooks/useUser';
-import { ErrorBanner } from '../components/ErrorBanner';
-import { Toast, useToast } from '../components/Toast';
+import { useUser } from '@app/core/hooks/useUser';
+import { ErrorBanner } from '@components/ErrorBanner';
+import Toast from '@components/Toast';
+import { useToast } from '@app/core/hooks/useToast';
 import { colors } from '@design/colors';
 import { pageStyles, spacing } from '@design/layout';
 import { typography } from '@design/typography';
-import { Button } from '../components/Buttons';
-import { HeaderTitle } from '../components/HeaderTitle';
-import { InputEdit } from '../components/InputEdit';
+import { Button } from '@components/Buttons';
+import { HeaderTitle } from '@components/HeaderTitle';
+import { InputEdit } from '@components/InputEdit';
 
 export const ModifyCredentialPage: React.FC = () => {
   const navigate = useNavigate();
@@ -122,8 +123,8 @@ export const ModifyCredentialPage: React.FC = () => {
               placeholder="Entrez une note..."
             />
             <Button
-              text="Modifier"
-              color={colors.primary}
+              text="Confirmer"
+              color={colors.secondary}
               width="full"
               height="full"
               onPress={handleSubmit}
@@ -140,6 +141,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: colors.error,
     fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.medium,
     marginTop: spacing.xl,
     textAlign: 'center',
   },

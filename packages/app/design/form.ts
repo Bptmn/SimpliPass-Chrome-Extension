@@ -1,88 +1,9 @@
 import { StyleSheet } from 'react-native';
 import { colors } from './colors';
 import { typography } from './typography';
-import { radius, spacing } from './layout';
+import { radius, spacing, padding } from './layout';
 
 export const formStyles = StyleSheet.create({
-  // Form containers
-  formColumn: {
-    flex: 1,
-  },
-  formContainer: {
-    flex: 1,
-  },
-  formError: {
-    color: colors.error,
-    fontSize: typography.fontSize.sm,
-    marginTop: spacing.xs,
-  },
-  formErrorLarge: {
-    color: colors.error,
-    fontSize: typography.fontSize.md,
-    marginTop: spacing.sm,
-  },
-  // Form field groups
-  formFieldGroup: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    marginBottom: spacing.md,
-    padding: spacing.md,
-    width: '100%',
-  },
-  formFieldRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  formGroup: {
-    marginBottom: spacing.md,
-  },
-  formInput: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    height: 48,
-    marginBottom: 2,
-    paddingHorizontal: spacing.md,
-    width: '100%',
-  },
-  formInputDisabled: {
-    backgroundColor: colors.disabled,
-    color: colors.secondary,
-  },
-  formInputError: {
-    borderColor: colors.error,
-  },
-  formLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    marginBottom: spacing.xs,
-  },
-  formLabelRequired: {
-    color: colors.error,
-    fontSize: typography.fontSize.sm,
-    fontWeight: 'bold',
-    marginLeft: 4,
-  },
-  formFieldLeft: {
-    flex: 1,
-    marginRight: spacing.sm,
-  },
-  formTextArea: {
-    borderRadius: 15,
-    minHeight: 96,
-    paddingTop: spacing.sm,
-    textAlignVertical: 'top',
-  },
-  
   // Form buttons
   formButtonGroup: {
     flexDirection: 'row',
@@ -95,18 +16,61 @@ export const formStyles = StyleSheet.create({
   formButtonSecondary: {
     flex: 1,
   },
-  
-  // Form validation
-  formValidation: {
+  // Form containers
+  formColumn: {
+    flex: 1,
+  },
+  formContainer: {
+    flex: 1,
+    gap: spacing.md,
+    padding: padding.lg,
+  },
+  formErrorLarge: {
+    color: colors.error,
+    fontSize: typography.fontSize.md,
+    marginTop: spacing.sm,
+  },
+  formField: {
+    gap: spacing.xs,
+  },
+  formFieldGroup: {
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    marginBottom: spacing.md,
+    padding: spacing.md,
+    width: '100%',
+  },
+  formFieldLeft: {
+    flex: 1,
+  },
+  formFieldRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    marginTop: spacing.xs,
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
   },
-  formValidationText: {
-    color: colors.secondary,
+  formGroup: {
+    gap: spacing.sm,
+  },
+  // Form generate button
+  formGenerateButton: {
+    backgroundColor: colors.secondary,
+    borderRadius: radius.lg,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  formGenerateButtonText: {
+    color: colors.whiteText,
     fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    marginLeft: spacing.xs,
+    fontWeight: '600',
+  },
+  formLabelRequired: {
+    color: colors.error,
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.medium,
+    marginTop: spacing.xs,
   },
   
   // Form password strength
@@ -120,19 +84,6 @@ export const formStyles = StyleSheet.create({
     color: colors.secondary,
     fontSize: typography.fontSize.sm,
     fontWeight: '500',
-  },
-  
-  // Form generate button
-  formGenerateButton: {
-    backgroundColor: colors.secondary,
-    borderRadius: radius.lg,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  formGenerateButtonText: {
-    color: colors.whiteText,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '600',
   },
   
   // Form flex utilities
@@ -165,5 +116,15 @@ export const formStyles = StyleSheet.create({
     color: colors.secondary,
     fontSize: typography.fontSize.sm,
     marginTop: spacing.xs,
+  },
+  formRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  formTextArea: {
+    borderRadius: 15,
+    minHeight: 96,
+    paddingTop: spacing.sm,
+    textAlignVertical: 'top',
   },
 }); 

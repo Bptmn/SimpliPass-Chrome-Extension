@@ -3,16 +3,16 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { SecureNoteDecrypted } from '@app/core/types/types';
 import { deleteItem } from '@app/core/logic/items';
-import { useUser } from '@hooks/useUser';
-import { ErrorBanner } from '../components/ErrorBanner';
-import { Icon } from '../components/Icon';
-import { useToast } from '../components/Toast';
+import { useUser } from '@app/core/hooks/useUser';
+import { ErrorBanner } from '@components/ErrorBanner';
+import { Icon } from '@components/Icon';
+import { useToast } from '@app/core/hooks/useToast';
 import { colors } from '@design/colors';
-import { padding, radius, spacing, pageStyles } from '@design/layout';
+import { spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
-import { Button } from '../components/Buttons';
-import CopyButton from '../components/CopyButton';
-import { MoreInfo } from '../components/MoreInfo';
+import { Button } from '@components/Buttons';
+import { MoreInfo } from '@components/MoreInfo';
+import DetailField from '@components/DetailField';
 
 interface SecureNoteDetailsPageProps {
   note: SecureNoteDecrypted;
@@ -73,23 +73,13 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
           </View>
         </View>
         {/* Note content */}
-        <View style={styles.cardGroup}>
-          <View style={styles.credentialFieldRow}>
-            <View style={styles.fieldLeft}>
-              <Text style={styles.fieldLabel}>Note :</Text>
-              <Text style={styles.fieldValue}>{note.note}</Text>
-            </View>
-            {note.note ? (
-              <CopyButton
-                textToCopy={note.note}
-                ariaLabel="Copier la note"
-                onClick={() => showToast('Note copiée !')}
-              >
-                <Text>copier</Text>
-              </CopyButton>
-            ) : null}
-          </View>
-        </View>
+        <DetailField
+          label="Note :"
+          value={note.note}
+          showCopyButton={true}
+          onCopy={() => showToast('Note copiée !')}
+          ariaLabel="Copier la note"
+        />
         {/* Actions */}
         <View style={styles.actionsRow}>
           <Button
@@ -126,7 +116,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.md,
     justifyContent: 'space-around',
-    marginBottom: spacing.md,
     width: '100%',
   },
   backBtn: {
@@ -140,65 +129,33 @@ const styles = StyleSheet.create({
     top: 0,
     zIndex: 1,
   },
-  cardGroup: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    marginBottom: spacing.md,
-    padding: padding.md,
-    width: '100%',
-  },
   colorCircle: {
-    borderRadius: 17.5,
-    height: 35,
-    width: 35,
-  },
-  credentialFieldRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: spacing.xs,
-    width: '100%',
-  },
-  fieldLabel: {
-    color: colors.tertiary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    marginBottom: 2,
-  },
-  fieldLeft: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  fieldValue: {
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
-    fontWeight: '400',
+    borderRadius: spacing.lg * 2,
+    height: spacing.xxl,
+    width: spacing.xxl,
   },
   headerContent: {
     alignItems: 'center',
     flex: 1,
+    gap: spacing.sm,
   },
   headerRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: spacing.lg,
     position: 'relative',
     width: '100%',
   },
   iconCenter: {
     alignItems: 'center',
-    marginBottom: spacing.xs,
   },
   pageContent: {
     flex: 1,
+    gap: spacing.md,
   },
   title: {
     color: colors.primary,
     fontSize: typography.fontSize.lg,
-    fontWeight: '700',
-    marginBottom: spacing.md,
+    fontWeight: typography.fontWeight.bold,
     textAlign: 'center',
   },
 });

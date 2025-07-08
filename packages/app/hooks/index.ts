@@ -1,2 +1,2 @@
 // Re-export all hooks
-export { useUser } from './useUser'; 
+// Note: useUser is in core/hooks/useUser.tsx 

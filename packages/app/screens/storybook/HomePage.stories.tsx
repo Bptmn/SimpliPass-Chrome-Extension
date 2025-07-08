@@ -1,28 +1,35 @@
-import React, { useEffect } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import React from 'react';
 import { HomePage } from '../HomePage';
-import { UserProvider } from '../../hooks/useUser';
+import { UserProvider } from '../../core/hooks/useUser';
 import { useUserStore } from '../../core/states/user';
+import { Timestamp } from 'firebase/firestore';
+
+export default {
+  title: 'Screens/HomePage',
+  component: HomePage,
+  parameters: {
+    layout: 'fullscreen',
+  },
+};
 
 const mockUser = {
   uid: '1',
   email: 'user@example.com',
-};
-
-export default {
-  title: 'Pages/HomePage',
-  component: HomePage,
+  created_time: Timestamp.fromDate(new Date()),
+  salt: 'mock-salt'
 };
 
 export const Default = () => {
-  useEffect(() => {
-    useUserStore.getState().setUser(mockUser);
-  }, []);
+  // Set up the user store
+  useUserStore.getState().setUser(mockUser);
+  
   return (
-    <MemoryRouter>
-      <UserProvider value={mockUser}>
-        <HomePage user={mockUser} pageState={null} onInjectCredential={() => {}} />
-      </UserProvider>
-    </MemoryRouter>
+    <UserProvider value={mockUser}>
+      <HomePage 
+        user={mockUser} 
+        pageState={null} 
+        onInjectCredential={() => {}} 
+      />
+    </UserProvider>
   );
 }; 

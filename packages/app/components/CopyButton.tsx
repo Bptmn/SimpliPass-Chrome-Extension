@@ -48,10 +48,8 @@ const styles = StyleSheet.create({
     color: colors.white,
     cursor: 'pointer',
     display: 'flex',
-    height: 38,
     justifyContent: 'center',
     padding: spacing.xs,
-    width: 42,
   },
   container: {
     alignItems: 'center',

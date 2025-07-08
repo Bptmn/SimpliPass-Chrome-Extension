@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     color: colors.tertiary,
     fontFamily: typography.fontFamily.base,
     fontSize: typography.fontSize.xs,
-    fontWeight: '500',
+    fontWeight: typography.fontWeight.medium,
     marginTop: spacing.xxs,
   },
   navbar: {

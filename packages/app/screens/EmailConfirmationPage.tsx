@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { ErrorBanner } from '../components/ErrorBanner';
+import { ErrorBanner } from '@components/ErrorBanner';
 import { colors } from '@design/colors';
-import { radius, spacing, pageStyles } from '@design/layout';
+import { spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
-import { Button } from '../components/Buttons';
-import { CodeInput } from '../components/CodeInput';
+import { Button } from '@components/Buttons';
+import { CodeInput } from '@components/CodeInput';
 
 interface EmailConfirmationPageProps {
   email: string;
@@ -82,18 +82,7 @@ const styles = StyleSheet.create({
     maxWidth: 360,
     width: '100%',
   },
-  confirmationInput: {
-    backgroundColor: colors.primaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    color: colors.blackText,
-    fontSize: typography.fontSize.md,
-    height: 48,
-    paddingHorizontal: spacing.md,
-    textAlign: 'center',
-    width: '100%',
-  },
+
   confirmationInputLabel: {
     color: colors.tertiary,
     fontSize: typography.fontSize.sm,
@@ -107,7 +96,7 @@ const styles = StyleSheet.create({
   confirmationTitle: {
     color: colors.primary,
     fontSize: typography.fontSize.lg,
-    fontWeight: '600',
+    fontWeight: typography.fontWeight.medium,
     marginBottom: spacing.sm,
   },
   formHeader: {

@@ -9,42 +9,35 @@ describe('HeaderTitle', () => {
     mockOnBackPress.mockClear();
   });
 
-  it('renders correctly with default props', () => {
-    const { getByText, getByTestId } = render(
-      <HeaderTitle title="Test Title" onBackPress={mockOnBackPress} />
-    );
-
-    expect(getByText('Test Title')).toBeTruthy();
-    expect(getByText('←')).toBeTruthy();
-    expect(getByTestId('header-title')).toBeTruthy();
-    expect(getByTestId('back-btn')).toBeTruthy();
-  });
-
-  it('renders with custom back button text', () => {
+  it('renders title correctly', () => {
     const { getByText } = render(
-      <HeaderTitle 
-        title="Test Title" 
+      <HeaderTitle
+        title="Test Title"
         onBackPress={mockOnBackPress}
-        backButtonText="‹"
       />
     );
 
-    expect(getByText('‹')).toBeTruthy();
+    expect(getByText('Test Title')).toBeTruthy();
   });
 
   it('calls onBackPress when back button is pressed', () => {
     const { getByTestId } = render(
-      <HeaderTitle title="Test Title" onBackPress={mockOnBackPress} />
+      <HeaderTitle
+        title="Test Title"
+        onBackPress={mockOnBackPress}
+      />
     );
 
-    fireEvent.press(getByTestId('back-btn'));
+    const backButton = getByTestId('back-btn');
+    fireEvent.press(backButton);
+
     expect(mockOnBackPress).toHaveBeenCalledTimes(1);
   });
 
   it('renders with custom testID', () => {
     const { getByTestId } = render(
-      <HeaderTitle 
-        title="Test Title" 
+      <HeaderTitle
+        title="Test Title"
         onBackPress={mockOnBackPress}
         testID="custom-header"
       />

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext, createContext, ReactNode } from 'react';
+import React, { useState, useCallback, createContext, ReactNode, useContext } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '@design/colors';
 import { radius, spacing } from '@design/layout';
@@ -24,6 +24,15 @@ interface ToastContextType {
 }
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+// useToast hook
+export const useToast = () => {
+  const context = useContext(ToastContext);
+  if (!context) {
+    throw new Error('useToast must be used within a ToastProvider');
+  }
+  return context;
+};
+
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [toast, setToast] = useState('');
   const showToast = useCallback((msg: string) => {
@@ -38,12 +47,6 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   );
 };
 
-export function useToast() {
-  const ctx = useContext(ToastContext);
-  if (!ctx) throw new Error('useToast must be used within a ToastProvider');
-  return ctx;
-}
-
 const styles = StyleSheet.create({
   toast: {
     alignItems: 'center',
@@ -52,7 +55,7 @@ const styles = StyleSheet.create({
     borderColor: colors.secondary,
     borderRadius: radius.md,
     borderWidth: 1,
-    bottom: 32,
+    bottom: spacing.xl,
     color: colors.primary,
     flexDirection: 'row',
     fontSize: typography.fontSize.sm,
@@ -64,8 +67,8 @@ const styles = StyleSheet.create({
     maxWidth: 320,
     minWidth: 120,
     opacity: 0,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
     position: 'absolute',
     right: 0,
     shadowColor: '#000',
@@ -89,3 +92,5 @@ const styles = StyleSheet.create({
 });
 
 export default Toast;
+
+export { ToastContext };

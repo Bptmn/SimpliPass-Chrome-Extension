@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { colors } from '@design/colors';
 import { spacing } from '@design/layout';
-import { typography } from '@app/design/typography';
+import { typography } from '@design/typography';
 
 const DEFAULT_COLORS = [colors.secondary, colors.primary, colors.tertiary, '#c44545', '#b6d43a', '#a259e6'];
 
@@ -25,18 +25,21 @@ export const ColorSelector: React.FC<ColorSelectorProps> = ({
     onChange?.(c);
   };
   return (
-    <View>
+    <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.colorRow}>
-        {colorsList.map((c) => (
+        {colorsList.map((color) => (
           <Pressable
-            key={c}
-            style={[styles.colorCircle, { backgroundColor: c }]}
-            onPress={() => handleSelect(c)}
-            accessibilityLabel={`Choisir la couleur ${c}`}
-            testID={`color-btn-${c}`}
+            key={color}
+            style={[
+              styles.colorCircle,
+              { backgroundColor: color },
+            ]}
+            onPress={() => handleSelect(color)}
+            testID={`color-selector-${color}`}
+            accessibilityLabel={`Select color ${color}`}
           >
-            {selected === c && <Text style={styles.checkMark}>✓</Text>}
+            {selected === color && <Text style={styles.checkMark}>✓</Text>}
           </Pressable>
         ))}
       </View>
@@ -62,10 +65,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.sm,
   },
+  container: {
+    gap: spacing.sm,
+  },
+
   title: {
     color: colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: spacing.md,
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.medium,
   },
 }); 

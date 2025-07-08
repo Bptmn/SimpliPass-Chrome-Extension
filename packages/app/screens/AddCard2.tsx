@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { View, Text, Pressable, StyleSheet, ScrollView, Platform } from 'react-native';
-import { Input } from '../components/InputVariants';
-import ItemBankCard from '../components/ItemBankCard';
+import { Input } from '@components/InputFields';
+import ItemBankCard from '@components/ItemBankCard';
 import { colors } from '@design/colors';
 import { spacing, radius, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { addItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
-import { useUser } from '@hooks/useUser';
+import { useUser } from '@app/core/hooks/useUser';
 import { BankCardDecrypted } from '@app/core/types/types';
-import { Button } from '../components/Buttons';
-import { HeaderTitle } from '../components/HeaderTitle';
+import { Button } from '@components/Buttons';
+import { HeaderTitle } from '@components/HeaderTitle';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { ColorSelector } from '../components/ColorSelector';
-import { useToast } from '../components/Toast';
-
-const CARD_COLORS = ['#2bb6a3', '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a259e6'];
+import { ColorSelector } from '@components/ColorSelector';
+import { getMonthOptions, getYearOptions } from '@app/core/logic/cards';
 
 const AddCard2: React.FC = () => {
   const navigate = useNavigate();
@@ -35,21 +33,11 @@ const AddCard2: React.FC = () => {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
 
   // Helper for web: generate month and year options
-  const currentYear = new Date().getFullYear();
-  const monthOptions = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
-  const yearOptions = Array.from({ length: 21 }, (_, i) => String(currentYear + i));
+
+  const monthOptions = getMonthOptions();
+  const yearOptions = getYearOptions();
   const selectedMonth = expirationDate.split('/')[0] || '';
   const selectedYear = expirationDate.split('/')[1] ? `20${expirationDate.split('/')[1]}` : '';
-
-  // Card number mask helper
-  function formatCardNumber(value: string) {
-    return value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
-  }
-  function handleCardNumberChange(val: string) {
-    // Only keep digits, max 16
-    const digits = val.replace(/\D/g, '').slice(0, 16);
-    setCardNumber(digits);
-  }
 
   const handleConfirm = async () => {
     if (!user) return;
@@ -142,23 +130,23 @@ const AddCard2: React.FC = () => {
               label="Numéro de carte"
               _id="cardNumber"
               type="text"
-              value={formatCardNumber(cardNumber)}
-              onChange={handleCardNumberChange}
+              value={cardNumber}
+              onChange={setCardNumber}
               placeholder="Entrez un numéro..."
               _required
             />
             <View style={styles.row2col}>
-              <View style={styles.inputColumn}>
-                <Text style={styles.inputLabel}>Date d&apos;expiration</Text>
+              <View style={styles.inputDateColumn}>
+                <Text style={styles.inputDateLabel}>Date d&apos;expiration</Text>
                 {Platform.OS === 'web' ? (
-                  <View style={{ flexDirection: 'row', gap: 2 }}>
+                  <View style={styles.inputContainer}>
                     <select
                       value={selectedMonth}
                       onChange={e => {
                         const mm = e.target.value;
                         setExpirationDate(`${mm}/${selectedYear.slice(-2)}`);
                       }}
-                      style={{ ...styles.input, width: 80, borderRadius: radius.md }}
+                      style={styles.inputDateSelect}
                     >
                       <option value=""><Text>Mois</Text></option>
                       {monthOptions.map(m => (
@@ -171,7 +159,7 @@ const AddCard2: React.FC = () => {
                         const yyyy = e.target.value;
                         setExpirationDate(`${selectedMonth}/${yyyy.slice(-2)}`);
                       }}
-                      style={{ ...styles.input, width: 100, borderRadius: radius.md }}
+                      style={styles.inputDateSelect}
                     >
                       <option value=""><Text>Année</Text></option>
                       {yearOptions.map(y => (
@@ -182,11 +170,11 @@ const AddCard2: React.FC = () => {
                 ) : (
                   <>
                     <Pressable
-                      style={styles.input}
+                      style={styles.inputDate}
                       onPress={() => setDatePickerVisible(true)}
                       accessibilityLabel="Sélectionner la date d'expiration"
                     >
-                      <Text style={{ color: expirationDate ? colors.secondary : colors.tertiary }}>
+                      <Text style={{ color: expirationDate ? colors.primary : colors.tertiary }}>
                         {expirationDate || 'MM/YY'}
                       </Text>
                     </Pressable>
@@ -224,7 +212,7 @@ const AddCard2: React.FC = () => {
             />
             <Button
               text="Valider"
-              color={colors.primary}
+              color={colors.secondary}
               width="full"
               height="full"
               onPress={handleConfirm}
@@ -239,34 +227,49 @@ const AddCard2: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  errorText: {
-    color: colors.error,
+  inputDateLabel: {
+    color: colors.primary,
     fontSize: typography.fontSize.sm,
-    marginTop: spacing.sm,
-    textAlign: 'center',
+    fontWeight: typography.fontWeight.medium,
+    paddingBottom: spacing.xs,
   },
-  input: {
+  inputContainer: {
+    flexDirection: 'row',
+    gap: spacing.xs,
     backgroundColor: colors.secondaryBackground,
     borderColor: colors.borderColor,
     borderRadius: radius.xl,
     borderWidth: 1,
-    color: colors.secondary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    height: 48,
+    paddingHorizontal: spacing.sm,
+  },
+  inputDateSelect: {
+    color: colors.primary,
+    fontSize: typography.fontSize.sm, 
+    fontWeight: typography.fontWeight.medium,
+    height: 40,
     justifyContent: 'center',
     paddingHorizontal: spacing.md,
     placeholderTextColor: colors.tertiary,
     width: '100%',
+    border: 'none',
+    backgroundColor: 'transparent',
+  },
+  errorText: {
+    color: colors.error,
+    fontSize: typography.fontSize.sm,
+    textAlign: 'center',
+  },
+  inputDate: {
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+  },
+  inputDateColumn: {
+    flex: 1,
   },
   inputColumn: {
     flex: 1,
-  },
-  inputLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    marginBottom: spacing.xs,
   },
   row2col: {
     flexDirection: 'row',

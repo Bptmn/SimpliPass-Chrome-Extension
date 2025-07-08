@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform, Pressable } from 'react-native';
-import { colors } from '../design/colors';
-import { spacing, padding, radius } from '../design/layout';
-import { typography } from '../design/typography';
+import { colors } from '@design/colors';
+import { spacing, radius } from '@design/layout';
+import { typography } from '@design/typography';
 
 // Configuration commune pour le slider
 const SLIDER_CONFIG = {
@@ -119,23 +119,23 @@ const styles = StyleSheet.create({
   label: {
     color: colors.tertiary,
     fontSize: typography.fontSize.xs,
-    fontWeight: '500',
+    fontWeight: typography.fontWeight.medium,
   },
   maxLabel: {
     color: colors.primary,
     fontSize: typography.fontSize.sm,
-    minWidth: 20,
+    minWidth: spacing.lg * 2,
     textAlign: 'center',
   },
   minLabel: {
     color: colors.primary,
     fontSize: typography.fontSize.sm,
-    minWidth: 20,
+    minWidth: spacing.lg * 2,
     textAlign: 'center',
   },
   nativeTrack: {
     backgroundColor: colors.primary,
-    height: 4,
+    height: spacing.xs,
     width: '100%',
   },
   sliderContainer: {
@@ -150,18 +150,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     width: '100%',
   },
-  sliderLabel: {
-    color: colors.blackText,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '600',
-    marginBottom: spacing.sm,
-  },
-  sliderValue: {
-    color: colors.primary,
-    fontSize: typography.fontSize.xs,
-    fontWeight: '500',
-    marginTop: spacing.xs,
-  },
+
   thumb: {
     backgroundColor: SLIDER_CONFIG.thumbColor,
     borderColor: SLIDER_CONFIG.thumbBorderColor,
@@ -187,13 +176,12 @@ const styles = StyleSheet.create({
   },
   webSlider: {
     WebkitAppearance: 'none',
-    tertiaryColor: SLIDER_CONFIG.activeColor,
     backgroundColor: SLIDER_CONFIG.inactiveColor,
     borderRadius: SLIDER_CONFIG.borderRadius,
     flex: 1,
-    height: SLIDER_CONFIG.height,
+    height: spacing.xs,
     marginHorizontal: spacing.sm,
-    maxWidth: 200,
-    minWidth: 120,
+    width: '100%',
+    tertiaryColor: SLIDER_CONFIG.activeColor,
   },
 }); 

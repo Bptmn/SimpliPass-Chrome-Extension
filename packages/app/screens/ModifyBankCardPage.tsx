@@ -4,9 +4,10 @@ import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-n
 import { BankCardDecrypted } from '@app/core/types/types';
 import { updateItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
-import { useUser } from '@hooks/useUser';
+import { useUser } from '@app/core/hooks/useUser';
 import { ErrorBanner } from '../components/ErrorBanner';
-import { Toast, useToast } from '../components/Toast';
+import Toast from '../components/Toast';
+import { useToast } from '@app/core/hooks/useToast';
 import { InputEdit } from '../components/InputEdit';
 import { colors } from '@design/colors';
 import { spacing, radius, pageStyles } from '@design/layout';
@@ -17,6 +18,7 @@ import { ColorSelector } from '../components/ColorSelector';
 import ItemBankCard from '../components/ItemBankCard';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { textStyles } from '@app/design/text';
+import { getMonthOptions, getYearOptions } from '@app/core/logic/cards';
 
 const CARD_COLORS = ['#2bb6a3', '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a259e6'];
 
@@ -37,13 +39,6 @@ export const ModifyBankCardPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const { toast, showToast } = useToast();
-
-  // Helper for web: generate month and year options
-  const currentYear = new Date().getFullYear();
-  const monthOptions = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
-  const yearOptions = Array.from({ length: 21 }, (_, i) => String(currentYear + i));
-  const selectedMonth = expirationDate.split('/')[0] || '';
-  const selectedYear = expirationDate.split('/')[1] ? `20${expirationDate.split('/')[1]}` : '';
 
   useEffect(() => {
     if (!cred) {
@@ -159,28 +154,28 @@ export const ModifyBankCardPage: React.FC = () => {
                 {Platform.OS === 'web' ? (
                   <View style={{ flexDirection: 'row', gap: 2 }}>
                     <select
-                      value={selectedMonth}
+                      value={expirationDate.split('/')[0]}
                       onChange={e => {
                         const mm = e.target.value;
-                        setExpirationDate(`${mm}/${selectedYear.slice(-2)}`);
+                        setExpirationDate(`${mm}/${expirationDate.split('/')[1]}`);
                       }}
                       style={styles.inputDate}
                     >
                       <option value=""><Text>Mois</Text></option>
-                      {monthOptions.map(m => (
+                      {getMonthOptions().map(m => (
                         <option key={m} value={m}>{m}</option>
                       ))}
                     </select>
                     <select
-                      value={selectedYear}
+                      value={expirationDate.split('/')[1]}
                       onChange={e => {
                         const yyyy = e.target.value;
-                        setExpirationDate(`${selectedMonth}/${yyyy.slice(-2)}`);
+                        setExpirationDate(`${expirationDate.split('/')[0]}/${yyyy}`);
                       }}
                       style={styles.inputDate}
                     >
                       <option value=""><Text>Année</Text></option>
-                      {yearOptions.map(y => (
+                      {getYearOptions().map(y => (
                         <option key={y} value={y}>{y}</option>
                       ))}
                     </select>
@@ -225,8 +220,8 @@ export const ModifyBankCardPage: React.FC = () => {
               placeholder="Entrez une note..."
             />
             <Button
-              text="Modifier"
-              color={colors.primary}
+              text="Confirmer"
+              color={colors.secondary}
               width="full"
               height="full"
               onPress={handleSubmit}
@@ -253,42 +248,36 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     color: colors.blackText,
     fontSize: typography.fontSize.sm,
-    fontWeight: '500',
+    fontWeight: typography.fontWeight.medium,
     height: 48,
     justifyContent: 'center',
     paddingHorizontal: spacing.md,
     placeholderTextColor: colors.tertiary,
     width: '100%',
   },
-  inputDate: {
-    border: 'none',
-    backgroundColor: 'transparent',
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
+  inputColumn: {
+    flex: 1,
   },
   inputColumnDate: {
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
+    borderRadius: radius.md + 4,
+    borderWidth: 1,
     flex: 1,
     flexDirection: 'column',
     gap: spacing.xs,
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md+4,
-    borderWidth: 1,
     padding: spacing.sm,
   },
-  inputColumn: {
-    flex: 1,
+  inputDate: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: colors.primary,
+    fontSize: typography.fontSize.md,
   },
   inputDateLabel: {
     ...textStyles.textTertiary,
     fontSize: typography.fontSize.sm,
-    marginBottom: 2,
-  },
-  inputLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.xxs,
   },
   row2col: {
     flexDirection: 'row',

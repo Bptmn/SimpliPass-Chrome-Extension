@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
 import { colors } from '@design/colors';
 import { radius, spacing } from '@design/layout';
+import { typography } from '@design/typography';
 
 interface CodeInputProps {
   value: string;
@@ -65,21 +66,21 @@ export const CodeInput: React.FC<CodeInputProps> = ({ value, length = 6, onChang
 };
 
 const styles = StyleSheet.create({
+  box: {
+    backgroundColor: colors.primaryBackground,
+    borderColor: colors.borderColor,
+    borderRadius: radius.md,
+    borderWidth: 2,
+    color: colors.blackText,
+    fontSize: typography.fontSize.lg,
+    height: spacing.lg * 2,
+    textAlign: 'center',
+    width: spacing.lg * 2,
+  },
   container: {
     flexDirection: 'row',
     gap: spacing.sm,
     marginVertical: spacing.md,
     width: '80%',
-  },
-  box: {
-    backgroundColor: colors.primaryBackground,
-    borderColor: colors.borderColor,
-    borderWidth: 2,
-    borderRadius: radius.md,
-    width: 40,
-    height: 40,
-    fontSize: 24,
-    color: colors.blackText,
-    textAlign: 'center',
   },
 }); 

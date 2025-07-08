@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '@design/colors';
-import { radius } from '@design/layout';
+import { radius, spacing } from '@design/layout';
 import { textStyles } from '@design/text';
 
 interface ErrorBannerProps {
@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
     borderColor: colors.error,
     borderRadius: radius.md,
     borderWidth: 1,
-    margin: 20,
-    padding: 20,
+    margin: spacing.lg,
+    padding: spacing.lg,
     shadowColor: '#000',
     shadowOpacity: 0.04,
     shadowRadius: 8,

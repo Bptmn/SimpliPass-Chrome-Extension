@@ -3,16 +3,16 @@ import { View, Text, Pressable } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { BankCardDecrypted } from '@app/core/types/types';
 import { deleteItem } from '@app/core/logic/items';
-import { useUser } from '@hooks/useUser';
-import { ErrorBanner } from '../components/ErrorBanner';
-import { Icon } from '../components/Icon';
-import { LazyCredentialIcon } from '../components/LazyCredentialIcon';
-import { useToast } from '../components/Toast';
+import { useUser } from '@app/core/hooks/useUser';
+import { ErrorBanner } from '@components/ErrorBanner';
+import { Icon } from '@components/Icon';
+import { LazyCredentialIcon } from '@components/LazyCredentialIcon';
+import { useToast } from '@app/core/hooks/useToast';
 import { colors } from '@design/colors';
 import { pageStyles } from '@design/layout';
-import { Button } from '../components/Buttons';
-import CopyButton from '../components/CopyButton';
-import { MoreInfo } from '../components/MoreInfo';
+import { Button } from '@components/Buttons';
+import { DetailField } from '@components/DetailField';
+import { MoreInfo } from '@components/MoreInfo';
 
 interface BankCardDetailsPageProps {
   card: BankCardDecrypted;
@@ -78,76 +78,42 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
           </View>
         </View>
         {/* Owner */}
-        <View style={styles.cardField}>
-          <View style={styles.fieldLeft}>
-            <Text style={styles.fieldLabel}>Titulaire :</Text>
-            <Text style={styles.fieldValue}>{card.owner}</Text>
-          </View>
-          {card.owner ? (
-            <CopyButton
-              textToCopy={card.owner}
-              ariaLabel="Copier le titulaire"
-              onClick={() => showToast('Titulaire copié !')}
-            >
-              <Text>copier</Text>
-            </CopyButton>
-          ) : null}
-        </View>
+        <DetailField
+          label="Titulaire :"
+          value={card.owner}
+          showCopyButton={!!card.owner}
+          onCopy={() => showToast('Titulaire copié !')}
+          ariaLabel="Copier le titulaire"
+        />
         {/* Card Number */}
-        <View style={styles.cardField}>
-          <View style={styles.fieldLeft}>
-            <Text style={styles.fieldLabel}>Numéro de carte :</Text>
-            <Text style={styles.fieldValue}>{card.cardNumber}</Text>
-          </View>
-          {card.cardNumber ? (
-            <CopyButton
-              textToCopy={card.cardNumber}
-              ariaLabel="Copier le numéro de carte"
-              onClick={() => showToast('Numéro copié !')}
-            >
-              <Text>copier</Text>
-            </CopyButton>
-          ) : null}
-        </View>
+        <DetailField
+          label="Numéro de carte :"
+          value={card.cardNumber}
+          showCopyButton={!!card.cardNumber}
+          onCopy={() => showToast('Numéro copié !')}
+          ariaLabel="Copier le numéro de carte"
+        />
         {/* CVV */}
-        <View style={styles.cardField}>
-          <View style={styles.fieldLeft}>
-            <Text style={styles.fieldLabel}>CVV :</Text>
-            <Text style={styles.fieldValue}>{card.verificationNumber}</Text>
-          </View>
-          {card.verificationNumber ? (
-            <CopyButton
-              textToCopy={card.verificationNumber}
-              ariaLabel="Copier le CVV"
-              onClick={() => showToast('CVV copié !')}
-            >
-              <Text>copier</Text>
-            </CopyButton>
-          ) : null}
-        </View>
+        <DetailField
+          label="CVV :"
+          value={card.verificationNumber}
+          showCopyButton={!!card.verificationNumber}
+          onCopy={() => showToast('CVV copié !')}
+          ariaLabel="Copier le CVV"
+        />
         {/* Expiration Date */}
-        <View style={styles.cardField}>
-          <View style={styles.fieldLeft}>
-            <Text style={styles.fieldLabel}>Date d&apos;expiration :</Text>
-            <Text style={styles.fieldValue}>{formatDate(card.expirationDate)}</Text>
-          </View>
-        </View>
+        <DetailField
+          label="Date d'expiration :"
+          value={formatDate(card.expirationDate)}
+        />
         {/* Note */}
-        <View style={styles.cardField}>
-          <View style={styles.fieldLeft}>
-            <Text style={styles.fieldLabel}>Note :</Text>
-            <Text style={styles.fieldValue}>{card.note}</Text>
-          </View>
-          {card.note ? (
-            <CopyButton
-              textToCopy={card.note}
-              ariaLabel="Copier la note"
-              onClick={() => showToast('Note copiée !')}
-            >
-              <Text>copier</Text>
-            </CopyButton>
-          ) : null}
-        </View>
+        <DetailField
+          label="Note :"
+          value={card.note}
+          showCopyButton={!!card.note}
+          onCopy={() => showToast('Note copiée !')}
+          ariaLabel="Copier la note"
+        />
         {/* Actions */}
         <View style={styles.actionsRow}>
           <Button

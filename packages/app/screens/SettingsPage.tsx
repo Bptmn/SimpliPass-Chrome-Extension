@@ -6,16 +6,16 @@ import React, { useState, Suspense } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useUserStore } from '@app/core/states/user';
 import { logoutUser } from '@app/core/logic/user';
-import { ErrorBanner } from '../components/ErrorBanner';
-import { Icon } from '../components/Icon';
-import { Toast, useToast } from '../components/Toast';
+import { ErrorBanner } from '@components/ErrorBanner';
+import { Icon } from '@components/Icon';
+import { useToast } from '@app/core/hooks/useToast';
 import { pageStyles } from '@design/layout';
 import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
-import { Button } from '../components/Buttons';
-import { ModeSwitch } from '../components/ModeSwitch';
-import { useNavigate } from 'react-router-dom';
+import { Button } from '@components/Buttons';
+import { ModeSwitch } from '@components/ModeSwitch';
 import { colors } from '@design/colors';
+import { Toast } from '@components/Toast';
 
 const SettingsPage: React.FC = () => {
   const user = useUserStore((state) => state.user);
@@ -88,7 +88,7 @@ const SettingsPage: React.FC = () => {
       {error && <ErrorBanner message={error} />}
       <Toast message={toast} />
       <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={styles.pageContent}>
+        <View style={pageStyles.pageContent}>
           <View style={styles.pageSection}>
             <View style={styles.profileCard}>
               <View style={styles.userDetails}>
@@ -121,6 +121,8 @@ const SettingsPage: React.FC = () => {
               width="full"
               height="full"
               onPress={() => {}}
+              testID="feedback-btn"
+              accessibilityLabel="Donnez votre avis"
             />
             <Button
               text="Se déconnecter"
@@ -128,6 +130,8 @@ const SettingsPage: React.FC = () => {
               width="full"
               height="full"
               onPress={handleLogout}
+              testID="logout-btn"
+              accessibilityLabel="Se déconnecter"
             />
           </View>
         </View>
@@ -141,11 +145,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     marginTop: spacing.sm,
   },
-  infoText: {
-    color: '#4f86a2', // fallback, not theme aware
-    fontSize: typography.fontSize.sm,
-    fontWeight: '400',
-  },
+
   menuArrow: {},
   menuIcon: {
     alignItems: 'center',
@@ -160,73 +160,67 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 35,
     justifyContent: 'flex-start',
-    marginBottom: spacing.sm,
     outline: 'none',
     position: 'relative',
     textAlign: 'left',
     width: '100%',
   },
   menuLabel: {
-    color: '#4f86a2', // fallback, not theme aware
+    color: colors.primary,
     flex: 1,
     fontSize: typography.fontSize.sm,
-    fontWeight: '400',
+    fontWeight: typography.fontWeight.regular,
   },
   menuList: {
-    backgroundColor: '#f1f4f8', // fallback, not theme aware
+    backgroundColor: colors.secondaryBackground,
     borderRadius: radius.md,
     flexDirection: 'column',
     padding: spacing.sm,
+    gap: spacing.sm,
+    borderColor: colors.borderColor,
+    borderWidth: 1,
   },
-  pageContent: {
-    gap: spacing.md,
+  modeSwitchWrapper: {
+    alignItems: 'center',
+    marginVertical: spacing.sm,
   },
   pageSection: {},
   profileCard: {
-    flexDirection: 'column',
-    gap: spacing.sm,
-    backgroundColor: '#f1f4f8', // fallback, not theme aware
-    borderColor: '#E0E3E7', // fallback, not theme aware
+    backgroundColor: colors.secondaryBackground,
+    borderColor: colors.borderColor,
     borderRadius: radius.md,
     borderWidth: 1,
+    flexDirection: 'column',
+    gap: spacing.sm,
     padding: spacing.sm,
-    shadowColor: '#000',
+    shadowColor: colors.blackText,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
   },
-  sectionTitle: {
-    color: '#4f86a2', // fallback, not theme aware
-    fontSize: typography.fontSize.md,
-    fontWeight: '500',
-    marginBottom: spacing.sm,
-  },
+
   userDetails: {
     alignItems: 'center',
     flexDirection: 'row',
   },
   userDetailsLabel: {
-    color: '#2eae97', // fallback, not theme aware
+    color: colors.secondary,
     fontSize: typography.fontSize.md,
-    fontWeight: '600',
+    fontWeight: typography.fontWeight.medium,
   },
   userEmail: {
-    color: '#4f86a2', // fallback, not theme aware
+    color: colors.primary,
     fontSize: typography.fontSize.md,
-    fontWeight: '500',
+    fontWeight: typography.fontWeight.medium,
   },
   userIcon: {
     alignItems: 'center',
-    backgroundColor: '#f1f4f8', // fallback, not theme aware
+    backgroundColor: colors.secondaryBackground,
     borderRadius: 25,
-    color: '#4f86a2', // fallback, not theme aware
-    fontSize: 24,
+    color: colors.secondary,
+    fontSize: typography.fontSize.xl,
     justifyContent: 'center',
     marginRight: spacing.sm,
-  },
-  modeSwitchWrapper: {
-    alignItems: 'center',
-    marginVertical: spacing.sm,
   },
 });
 

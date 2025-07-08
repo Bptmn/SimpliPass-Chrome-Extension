@@ -10,6 +10,8 @@ import { radius } from '@design/layout';
 import { cardStyles } from '@design/card';
 import { LazyCredentialIcon } from './LazyCredentialIcon';
 import CopyButton from './CopyButton';
+import { spacing } from '@design/layout';
+import { typography } from '@design/typography';
 
 // Minimal RN-compatible ErrorBanner
 const ErrorBanner: React.FC<{ message: string }> = ({ message }) => (
@@ -82,20 +84,20 @@ const styles = StyleSheet.create({
     borderColor: colors.error,
     borderRadius: radius.md,
     borderWidth: 1,
-    margin: 20,
-    padding: 20,
+    margin: spacing.lg,
+    padding: spacing.lg,
     shadowColor: '#000',
     shadowOpacity: 0.04,
     shadowRadius: 8,
   },
   errorText: {
     color: colors.secondary,
-    fontSize: 14,
+    fontSize: typography.fontSize.sm,
   },
   errorTitle: {
     color: colors.error,
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 15,
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.medium,
+    marginBottom: spacing.md,
   },
 });

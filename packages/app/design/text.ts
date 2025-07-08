@@ -4,12 +4,6 @@ import { typography } from './typography';
 import { spacing } from './layout';
 
 export const textStyles = StyleSheet.create({
-  // tertiary text
-  textTertiary: {
-    color: colors.tertiary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.regular,
-  },
   // Text variants
   textBody: {
     color: colors.blackText,
@@ -28,16 +22,22 @@ export const textStyles = StyleSheet.create({
   },
   textButton: {
     color: colors.whiteText,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 0.2,
-    textAlign: 'center',
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
   },
   textButtonOutline: {
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
+  },
+  textCardTitle: {
+    color: colors.primary,
     fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.bold,
-    letterSpacing: 0.2,
-    textAlign: 'center',
+    fontWeight: typography.fontWeight.medium,
+  },
+  textCardUsername: {
+    color: colors.secondary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.regular,
   },
   textEmptyState: {
     color: colors.secondary,
@@ -48,8 +48,7 @@ export const textStyles = StyleSheet.create({
   textError: {
     color: colors.error,
     fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    marginTop: spacing.xs,
+    fontWeight: typography.fontWeight.regular,
   },
   textErrorLarge: {
     color: colors.error,
@@ -62,19 +61,32 @@ export const textStyles = StyleSheet.create({
     color: colors.secondary,
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.medium,
-    marginBottom: 2,
   },
   textFieldValue: {
-    color: colors.blackText,
+    color: colors.primary,
     fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
-    marginBottom: 2,
+    fontWeight: typography.fontWeight.regular,
+  },
+  textHeader: {
+    color: colors.primary,
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.bold,
+  },
+  textInput: {
+    color: colors.primary,
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.regular,
   },
   textLabel: {
-    color: colors.primary,
+    color: colors.secondary,
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.medium,
-    marginBottom: spacing.xs,
+  },
+  textLink: {
+    color: colors.secondary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
+    textDecorationLine: 'underline',
   },
   textLoading: {
     color: colors.secondary,
@@ -82,9 +94,15 @@ export const textStyles = StyleSheet.create({
     fontStyle: 'italic',
     marginTop: spacing.lg,
   },
+  textPrimary: {
+    color: colors.primary,
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.regular,
+  },
   textSecondary: {
     color: colors.secondary,
-    fontSize: typography.fontSize.md,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.regular,
   },
   textSecondarySmall: {
     color: colors.secondary,
@@ -97,14 +115,19 @@ export const textStyles = StyleSheet.create({
     marginBottom: spacing.xs,
     marginTop: spacing.lg,
   },
+  textSmall: {
+    color: colors.secondary,
+    fontSize: typography.fontSize.sm,
+  },
+  textTertiary: {
+    color: colors.tertiary,
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.medium,
+  },
   textTitle: {
     color: colors.blackText,
     fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.bold,
-  },
-  textSmall: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.sm,
   },
   textTitleLarge: {
     color: colors.blackText,

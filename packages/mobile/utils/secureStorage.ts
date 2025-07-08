@@ -80,7 +80,9 @@ export const removeSecureItem = async (
   const { service = DEFAULT_SERVICE } = _config;
   
   try {
-    await Keychain.resetInternetCredentials(service);
+    // Note: Keychain.resetInternetCredentials only takes service, not key
+    // This is a limitation - we can't delete specific keys, only all credentials for a service
+    await Keychain.resetInternetCredentials({ service });
   } catch {
     throw new Error('Failed to remove secure item');
   }

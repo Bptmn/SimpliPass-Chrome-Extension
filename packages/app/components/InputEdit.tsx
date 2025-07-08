@@ -73,19 +73,19 @@ const styles = StyleSheet.create({
   clearButton: {
     color: colors.secondary,
     fontSize: typography.fontSize.sm,
-    marginLeft: 8,
-    padding: 4,
+    marginLeft: spacing.sm,
+    padding: spacing.xs,
     paddingVertical: spacing.xs,
   },
   clearIcon: {
     color: colors.tertiary,
-    fontSize: 20,
-    lineHeight: 20,
+    fontSize: typography.fontSize.lg,
+    lineHeight: typography.fontSize.lg,
   },
   container: {
     backgroundColor: colors.secondaryBackground,
     borderColor: colors.borderColor,
-    borderRadius: radius.md+4,
+    borderRadius: radius.md + 4,
     borderWidth: 1,
     flex: 1,
     flexDirection: 'column',
@@ -103,8 +103,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   label: {
-    ...textStyles.textTertiary,
+    color: colors.tertiary,
     fontSize: typography.fontSize.sm,
-    marginBottom: 2,
+    marginBottom: spacing.xxs,
   },
 }); 

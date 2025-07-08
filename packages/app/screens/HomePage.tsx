@@ -1,42 +1,23 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
-import { useNavigate } from 'react-router-dom';
 import { pageStyles } from '@design/layout';
 import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { colors } from '@design/colors';
 
 import { CredentialDetailsPage } from './CredentialDetailsPage';
-import { getAllItems } from '@app/core/logic/items';
-import { useCredentialsStore, useBankCardsStore, useSecureNotesStore, useCategoryStore } from '@app/core/states';
 import {
   HomePageProps,
-  CredentialDecrypted,
 } from '@app/core/types/types';
-import { getUserSecretKey } from '@app/core/logic/user';
-import { CredentialCard } from '../components/CredentialCard';
-import { ErrorBanner } from '../components/ErrorBanner';
-import { Icon } from '../components/Icon';
-import { SkeletonCard } from '../components/SkeletonCard';
-import { useToast } from '../components/Toast';
-import { useUserStore } from '@app/core/states/user';
-import ItemBankCard from '../components/ItemBankCard';
-import ItemSecureNote from '../components/ItemSecureNote';
+import { CredentialCard } from '@components/CredentialCard';
+import { ErrorBanner } from '@components/ErrorBanner';
+import { Icon } from '@components/Icon';
+import { SkeletonCard } from '@components/SkeletonCard';
+import { useHomePage } from '@app/core/hooks';
+import ItemBankCard from '@components/ItemBankCard';
+import ItemSecureNote from '@components/ItemSecureNote';
 import { BankCardDetailsPage } from './BankCardDetailsPage';
 import { SecureNoteDetailsPage } from './SecureNoteDetailsPage';
-
-/**
- * Custom hook to debounce a value by a given delay.
- * Used for search input to avoid filtering on every keystroke.
- */
-function useDebouncedValue<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const handler = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-  return debounced;
-}
 
 /**
  * HomePage component displays the main vault UI:
@@ -49,84 +30,31 @@ export const HomePage: React.FC<HomePageProps> = ({
   pageState: _pageState,
   onInjectCredential: _onInjectCredential,
 }) => {
-  const user = useUserStore((state) => state.user);
-  const { credentials } = useCredentialsStore();
-  const { bankCards } = useBankCardsStore();
-  const { secureNotes } = useSecureNotesStore();
-  
-  // State for search filter, selected credential, error, and loading
-  const [filter, setFilter] = useState('');
-  const [selected, setSelected] = useState<CredentialDecrypted | null>(null);
-  const [selectedBankCard, setSelectedBankCard] = useState<any | null>(null);
-  const [selectedSecureNote, setSelectedSecureNote] = useState<any | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { showToast } = useToast();
-  const debouncedFilter = useDebouncedValue(filter, 250);
-
-  // Category state: 'credentials', 'bankCards', 'secureNotes'
-  const { currentCategory: category, setCurrentCategory: setCategory } = useCategoryStore();
-
-  const navigate = useNavigate();
+  const {
+    user,
+    category,
+    filter,
+    selected,
+    selectedBankCard,
+    selectedSecureNote,
+    error,
+    loading,
+    setFilter,
+    setCategory,
+    setSelected,
+    setSelectedBankCard,
+    setSelectedSecureNote,
+    getFilteredItems,
+    getSuggestions,
+    handleCardClick,
+    handleOtherItemClick,
+    handleCopyCredential,
+    handleCopyOther,
+    handleAddSuggestion,
+  } = useHomePage(_pageState || undefined);
 
   // Debug logging
-  console.log('[HomePage] Render', { user, loading, credentials, bankCards, secureNotes });
-
-  /**
-   * Load items when user changes
-   */
-  useEffect(() => {
-    if (!user) return;
-    setLoading(true);
-    (async () => {
-      try {
-        const userSecretKey = await getUserSecretKey();
-        if (userSecretKey) {
-          await getAllItems(user.uid, userSecretKey);
-        }
-      } catch {
-        setError('Erreur lors du chargement des identifiants.');
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [user]);
-
-  // Filter items by search input (debounced) based on category
-  const getFilteredItems = () => {
-    const items = category === 'credentials' ? credentials : 
-                  category === 'bankCards' ? bankCards : 
-                  secureNotes;
-    
-    return items.filter((item) =>
-      item.title?.toLowerCase().includes(debouncedFilter.toLowerCase()),
-    );
-  };
-
-  /**
-   * Handles click on a credential card:
-   * - Shows the detail page with the decrypted credential
-   */
-  const handleCardClick = (cred: CredentialDecrypted) => {
-    setSelected(cred);
-  };
-
-  /**
-   * Handles click on other item types (for now just logs)
-   */
-  const handleOtherItemClick = (item: any) => {
-    console.log('Item clicked:', item);
-    // TODO: Implement detail pages for bank cards and secure notes
-  };
-
-  // Suggestions logic
-  let suggestions: typeof credentials = [];
-  if (category === 'credentials' && _pageState?.url && credentials.length > 0) {
-    const domain = _pageState.url.replace(/^https?:\/\//, '').split('/')[0].toLowerCase();
-    suggestions = credentials.filter(
-      (cred) => cred.url && cred.url.toLowerCase().includes(domain)
-    ).slice(0, 3);
-  }
+  console.log('[HomePage] Render', { user, loading });
 
   // If a credential is selected, show the detail page
   if (selected) {
@@ -148,6 +76,9 @@ export const HomePage: React.FC<HomePageProps> = ({
     );
   }
 
+  const suggestions = getSuggestions();
+  const filteredItems = getFilteredItems();
+
   // Main render: search, suggestions, all credentials, error, toast
   return (
     <View style={pageStyles.pageContainer}>
@@ -165,6 +96,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           value={filter}
           onChangeText={setFilter}
           accessibilityLabel="Search credentials"
+          testID="home-search-input"
         />
       </View>
 
@@ -178,6 +110,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <Pressable
           style={[styles.categoryBtn, category === 'credentials' && styles.categoryBtnActive]}
           onPress={() => setCategory('credentials')}
+          testID="category-credentials"
         >
           <Icon name="password" size={20} color={colors.primary} />
           <Text style={[styles.categoryBtnText, category === 'credentials' && styles.categoryBtnTextActive]}>Identifiants</Text>
@@ -185,6 +118,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <Pressable
           style={[styles.categoryBtn, category === 'bankCards' && styles.categoryBtnActive]}
           onPress={() => setCategory('bankCards')}
+          testID="category-bank-cards"
         >
           <Icon name="creditCard" size={20} color={colors.primary} />
           <Text style={[styles.categoryBtnText, category === 'bankCards' && styles.categoryBtnTextActive]}>Cartes bancaire</Text>
@@ -192,6 +126,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <Pressable
           style={[styles.categoryBtn, category === 'secureNotes' && styles.categoryBtnActive]}
           onPress={() => setCategory('secureNotes')}
+          testID="category-secure-notes"
         >
           <Icon name="note" size={20} color={colors.primary} />
           <Text style={[styles.categoryBtnText, category === 'secureNotes' && styles.categoryBtnTextActive]}>Notes sécurisées</Text>
@@ -210,18 +145,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <CredentialCard
                     key={item.id}
                     credential={item}
-                    onCopy={() => showToast('Mot de passe copié !')}
+                    onCopy={handleCopyCredential}
                     onPress={() => handleCardClick(item)}
                   />
                 ))}
               </View>
             ) : (
-              <Pressable style={styles.suggestionPlaceholder} onPress={() => navigate('/add-credential-2', { state: { link: _pageState?.url } })}
-              accessibilityRole="button">
-                <View
-                  style={styles.addSuggestionBtn}
-                  
-                >
+              <Pressable 
+                style={styles.suggestionPlaceholder} 
+                onPress={handleAddSuggestion}
+                accessibilityRole="button"
+                testID="add-suggestion-button"
+              >
+                <View style={styles.addSuggestionBtn}>
                   <Icon name="add" size={25} color={colors.primary} />
                 </View>
                 <View style={styles.addSuggestionBtnTextContainer}>
@@ -239,16 +175,16 @@ export const HomePage: React.FC<HomePageProps> = ({
             <View style={styles.credentialList}>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
-              ) : getFilteredItems().length === 0 ? (
+              ) : filteredItems.length === 0 ? (
                 <Text style={styles.emptyState}>Aucun identifiant trouvé.</Text>
               ) : (
-                getFilteredItems().map((item) => {
+                filteredItems.map((item) => {
                   if ('username' in item) {
                     return (
                       <CredentialCard
                         key={item.id}
                         credential={item}
-                        onCopy={() => showToast('Mot de passe copié !')}
+                        onCopy={handleCopyCredential}
                         onPress={() => handleCardClick(item)}
                       />
                     );
@@ -257,7 +193,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       <CredentialCard
                         key={item.id}
                         credential={item as any}
-                        onCopy={() => showToast('Contenu copié !')}
+                        onCopy={handleCopyOther}
                         onPress={() => handleOtherItemClick(item)}
                       />
                     );
@@ -273,10 +209,10 @@ export const HomePage: React.FC<HomePageProps> = ({
             <View style={styles.credentialList}>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
-              ) : getFilteredItems().length === 0 ? (
+              ) : filteredItems.length === 0 ? (
                 <Text style={styles.emptyState}>Aucune carte trouvée.</Text>
               ) : (
-                (getFilteredItems() as import('@app/core/types/types').BankCardDecrypted[]).map((item) => (
+                (filteredItems as import('@app/core/types/types').BankCardDecrypted[]).map((item) => (
                   <ItemBankCard key={item.id} cred={item} onPress={() => setSelectedBankCard(item)} />
                 ))
               )}
@@ -289,10 +225,10 @@ export const HomePage: React.FC<HomePageProps> = ({
             <View style={styles.credentialList}>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
-              ) : getFilteredItems().length === 0 ? (
+              ) : filteredItems.length === 0 ? (
                 <Text style={styles.emptyState}>Aucune note trouvée.</Text>
               ) : (
-                (getFilteredItems() as import('@app/core/types/types').SecureNoteDecrypted[]).map((item) => (
+                (filteredItems as import('@app/core/types/types').SecureNoteDecrypted[]).map((item) => (
                   <ItemSecureNote key={item.id} note={item} onPress={() => setSelectedSecureNote(item)} />
                 ))
               )}
@@ -319,7 +255,7 @@ const styles = StyleSheet.create({
   addSuggestionBtnText: {
     color: colors.primary,
     fontSize: typography.fontSize.md,
-    fontWeight: '600',
+    fontWeight: typography.fontWeight.medium,
   },
   addSuggestionBtnTextContainer: {
     alignItems: 'flex-start',
@@ -327,13 +263,13 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     height: 40,
     justifyContent: 'space-around',
-    marginLeft: spacing.sm + 2,
+    marginLeft: spacing.sm + spacing.xxs,
   },
   categoryBtn: {
     alignItems: 'center',
     backgroundColor: colors.secondaryBackground,
     borderColor: colors.borderColor,
-    borderRadius: 20,
+    borderRadius: radius.xl,
     borderWidth: 1,
     display: 'flex',
     flexDirection: 'row',
@@ -349,7 +285,7 @@ const styles = StyleSheet.create({
   categoryBtnText: {
     color: colors.primary,
     fontSize: typography.fontSize.sm,
-    fontWeight: '600',
+    fontWeight: typography.fontWeight.medium,
   },
   categoryBtnTextActive: {
     color: colors.primary,
@@ -360,14 +296,13 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     color: colors.tertiary,
-    fontSize: 13,
+    fontSize: typography.fontSize.xs,
     fontStyle: 'italic',
     textAlign: 'center',
   },
   homeContent: {
     flexDirection: 'column',
     gap: spacing.lg,
-    marginBottom: spacing.sm,
   },
   loadingSpinner: {
     color: colors.secondary,
@@ -386,20 +321,20 @@ const styles = StyleSheet.create({
   searchInput: {
     backgroundColor: colors.secondaryBackground,
     borderColor: colors.borderColor,
-    borderRadius: 20,
+    borderRadius: radius.xl,
     borderWidth: 1,
     color: colors.primary,
     fontSize: typography.fontSize.sm,
     height: 42,
     paddingHorizontal: spacing.lg,
-    paddingLeft: 40,
+    paddingLeft: spacing.xl,
     placeholderTextColor: colors.tertiary,
     width: '100%',
   },
   sectionTitle: {
     color: colors.secondary,
     fontSize: typography.fontSize.md,
-    fontWeight: '600',
+    fontWeight: typography.fontWeight.medium,
   },
   stickySearchBar: {
     alignItems: 'center',
@@ -413,7 +348,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    marginLeft: 5,
+    marginLeft: spacing.xs,
   },
 });
 

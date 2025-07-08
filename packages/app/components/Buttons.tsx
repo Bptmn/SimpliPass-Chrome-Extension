@@ -3,6 +3,7 @@ import { Pressable, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native'
 import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { textStyles } from '@design/text';
+import { colors } from '@design/colors';
 
 export type ButtonWidth = 'full' | 'fit';
 export type ButtonHeight = 'full' | 'fit';
@@ -63,7 +64,7 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const textStyleObj = {
-    color: outline ? color : '#FFFFFF',
+    color: outline ? color : colors.whiteText,
     fontSize: typography.fontSize.sm,
   };
 
@@ -98,6 +99,5 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: spacing.xs,
   },
 }); 

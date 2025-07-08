@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
     flex: 1,
     fontSize: typography.fontSize.lg,
-    fontWeight: '600',
+    fontWeight: typography.fontWeight.medium,
     textAlign: 'center',
   },
 }); 

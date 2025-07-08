@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Input, InputPasswordGenerator, InputPasswordStrength } from '../InputVariants';
+import { Input, InputPasswordStrength } from '../InputFields';
 
 export default {
-  title: 'components/InputVariants',
+  title: 'components/InputFields',
 };
 
 // --- Input stories ---
@@ -91,40 +91,6 @@ export const InputPasswordWithError = () => {
       placeholder="Entrez votre mot de passe..."
       type="password"
       _autoComplete="current-password"
-      error="Mot de passe trop faible"
-    />
-  );
-};
-
-// --- InputPasswordGenerator stories ---
-export const PasswordGeneratorDefault = () => {
-  const [value, setValue] = useState('');
-  const handleGenerate = () => setValue('motdepasse123!');
-  return (
-    <InputPasswordGenerator
-      label="Mot de passe"
-      _id="password"
-      value={value}
-      onChange={setValue}
-      onGeneratePassword={handleGenerate}
-      placeholder="Entrez un mot de passe..."
-      _required
-    />
-  );
-};
-
-export const PasswordGeneratorWithError = () => {
-  const [value, setValue] = useState('');
-  const handleGenerate = () => setValue('motdepasse123!');
-  return (
-    <InputPasswordGenerator
-      label="Mot de passe"
-      _id="password-error"
-      value={value}
-      onChange={setValue}
-      onGeneratePassword={handleGenerate}
-      placeholder="Entrez un mot de passe..."
-      _required
       error="Mot de passe trop faible"
     />
   );

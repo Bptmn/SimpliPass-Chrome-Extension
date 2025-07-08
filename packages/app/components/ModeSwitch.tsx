@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useThemeMode } from '@app/core/logic/theme';
 import { colors, getColors } from '@design/colors';
+import { radius, spacing } from '@design/layout';
+import { typography } from '@design/typography';
 import { Icon } from './Icon';
 
 export const ModeSwitch: React.FC = () => {
@@ -9,7 +11,7 @@ export const ModeSwitch: React.FC = () => {
   const colors = getColors(mode);
 
   return (
-    <View style={[styles.container]}
+    <View style={styles.container}
       testID="mode-switch-container"
       accessibilityLabel="Mode Switch Container"
     >
@@ -46,57 +48,53 @@ export const ModeSwitch: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 18,
-    borderWidth: 1,
-    height: 60,
-    width: '90%',
-    padding: 6,
     backgroundColor: colors.secondaryBackground,
     borderColor: colors.borderColor,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    height: 50,
+    padding: spacing.xs,
+    width: '90%',
   },
   option: {
     alignItems: 'center',
-    borderRadius: 14,
+    borderRadius: radius.sm,
     borderWidth: 1,
     flex: 1,
     flexDirection: 'row',
-    gap: 4,
-    justifyContent: 'center',
-    marginHorizontal: 3,
+    gap: spacing.xs,
     height: '100%',
+    justifyContent: 'center',
+    marginHorizontal: spacing.xs,
   },
   optionActive: {
     backgroundColor: colors.white,
-    borderWidth: 1,
     borderColor: colors.borderColor,
+    borderWidth: 1,
   },
   optionInactive: {
     backgroundColor: 'transparent',
-    borderWidth: 0,
     borderColor: 'transparent',
+    borderWidth: 0,
   },
-  optionText: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginLeft: 4,
+
+  optionTextActiveDark: {
+    color: colors.primary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
+    marginLeft: spacing.xs,
   },
   optionTextActiveLight: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginLeft: 4,
     color: colors.secondary,
-  },
-  optionTextActiveDark: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginLeft: 4,
-    color: colors.primary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
+    marginLeft: spacing.xs,
   },
   optionTextInactive: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginLeft: 4,
     color: colors.tertiary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
+    marginLeft: spacing.xs,
   },
   row: {
     alignItems: 'center',

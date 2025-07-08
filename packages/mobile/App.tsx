@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { HomePage } from '@app/screens/HomePage';
-import { UserProvider } from '@app/hooks/useUser';
+import { UserProvider } from '@app/core/hooks/useUser';
 import { ThemeProvider } from '@app/core/logic/theme';
 
 const mockUser = {

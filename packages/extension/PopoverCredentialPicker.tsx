@@ -96,7 +96,21 @@ export const PopoverCredentialPicker: React.FC<PopoverCredentialPickerProps> = (
             }}
           >
             {/* Use the shared CredentialCard, but hide the copy button and use popover-specific onClick */}
-            <CredentialCard cred={{ ...cred, url: cred.url || '' }} hideCopyBtn={true} />
+            <CredentialCard 
+              credential={{ 
+                id: cred.id,
+                title: cred.title,
+                username: cred.username,
+                password: '', // Will be filled by the parent
+                url: cred.url || '',
+                note: '',
+                createdDateTime: new Date(),
+                lastUseDateTime: new Date(),
+                itemKey: ''
+              }} 
+              onPress={() => onPick(cred)}
+              hideCopyBtn={true} 
+            />
           </div>
         ))}
       </div>

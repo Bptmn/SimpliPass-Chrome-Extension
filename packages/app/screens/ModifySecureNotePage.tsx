@@ -4,15 +4,18 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SecureNoteDecrypted } from '@app/core/types/types';
 import { updateItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
-import { useUser } from '@hooks/useUser';
-import { ErrorBanner } from '../components/ErrorBanner';
-import { Toast, useToast } from '../components/Toast';
-import { InputEdit } from '../components/InputEdit';
-import { ColorSelector } from '../components/ColorSelector';
+import { useUser } from '@app/core/hooks/useUser';
+import { ErrorBanner } from '@components/ErrorBanner';
+import { Toast } from '@components/Toast';
+import { InputEdit } from '@components/InputEdit';
+import { ColorSelector } from '@components/ColorSelector';
 import { colors } from '@design/colors';
 import { pageStyles } from '@design/layout';
-import { Button } from '../components/Buttons';
-import { HeaderTitle } from '../components/HeaderTitle';
+import { Button } from '@components/Buttons';
+import { HeaderTitle } from '@components/HeaderTitle';
+import { typography } from '@design/typography';
+import { useToast } from '@app/core/hooks/useToast';
+import { spacing } from '@design/layout';
 
 export const ModifySecureNotePage: React.FC = () => {
   const navigate = useNavigate();
@@ -79,6 +82,7 @@ export const ModifySecureNotePage: React.FC = () => {
             title="Modifier une note" 
             onBackPress={() => navigate('/')} 
           />
+          <View style={pageStyles.formContainer}>
             <InputEdit
               label="Nom de la note"
               value={title}
@@ -86,29 +90,28 @@ export const ModifySecureNotePage: React.FC = () => {
               placeholder="[decryptedNote → title]"
               onClear={() => setTitle('')}
             />
-          <ColorSelector
-            title="Choisissez la couleur de votre note"
-            value={color}
-            onChange={setColor}
-          />
-          <InputEdit
-            label="Note"
-            value={noteText}
-            onChange={setNoteText}
-            placeholder="[decryptedNote → note]"
-            onClear={() => setNoteText('')}
-            isNote={true}
-          />
+            <ColorSelector
+              title="Choisissez la couleur de votre note"
+              value={color}
+              onChange={setColor}
+            />
+            <InputEdit
+              label="Note"
+              value={noteText}
+              onChange={setNoteText}
+              placeholder="[decryptedNote → note]"
+              onClear={() => setNoteText('')}
+              isNote={true}
+            />
+          </View>
         </View>
       </ScrollView>
-      <View style={styles.buttonContainer}>
         <Button
           text="Confirmer"
-          color={colors.primary}
+          color={colors.secondary}
           onPress={handleSubmit}
           disabled={loading}
         />
-      </View>
     </View>
   );
 };
@@ -116,12 +119,12 @@ export const ModifySecureNotePage: React.FC = () => {
 const styles = StyleSheet.create({
   buttonContainer: {
     backgroundColor: 'transparent',
-    padding: 18,
+    padding: spacing.lg,
   },
   errorText: {
     color: colors.error,
-    fontSize: 16,
-    marginTop: 24,
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.medium,
     textAlign: 'center',
   },
 }); 

@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   errorTitle: {
     color: colors.error,
     fontSize: typography.fontSize.lg,
-    fontWeight: '600',
+    fontWeight: typography.fontWeight.medium,
     marginBottom: spacing.md,
   },
 });

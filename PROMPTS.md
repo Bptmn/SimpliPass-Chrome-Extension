@@ -1,111 +1,130 @@
-🎯 GOAL: Reorganize the project into a modular monorepo structure to support both:
-1. A React Native Web Chrome Extension (`extension/`)
-2. A React Native mobile app (`mobile/`)
-3. A shared, central codebase for logic, components and design system (`app/`)
+# SimpliPass React Native Web Monorepo - Development Prompts
 
----
+## 🎯 Project Overview
+SimpliPass is a secure, cross-platform password manager built with React Native Web, designed for Chrome Extension and Mobile App deployment.
 
-📁 NEW FOLDER STRUCTURE (INSIDE /packages)
+## 📋 Development Steps
 
-packages/
-├── app/                # Shared cross-platform app logic
-│   ├── components/     # RN components (Card, Button, Input, etc.)
-│   ├── screens/        # Shared screens (Vault, Generator, Settings)
-│   ├── hooks/          # React hooks
-│   ├── logic/          # Non-UI logic (encryption, auth, etc.)
-│   ├── design/         # tokens/, textStyles, spacing, layout
-│   ├── utils/          # helpers (formatting, parsing...)
-│   └── index.ts        # Re-export app modules
-│
-├── extension/          # Chrome Extension front-end
-│   ├── public/         # popup.html, icons, manifest.json
-│   ├── popup/          # entrypoint for RN Web (uses app/)
-│   ├── background.ts   # background service worker
-│   ├── content.ts      # content script (optional)
-│   ├── messaging/      # message bridge and handlers
-│   └── index.ts        # ReactDOM.createRoot entry
-│
-├── mobile/             # React Native app (uses app/)
-│   ├── App.tsx         # RN App entrypoint
-│   ├── ios/
-│   ├── android/
-│   └── index.ts
-│
-├── shared/             # Optionally used for constants, types, etc.
-│   ├── types.ts
-│   └── constants.ts
-│
-├── .eslintrc.js        # Updated ESLint config for monorepo
-├── babel.config.js     # Handles aliases
-├── tsconfig.json       # Shared TS config
-├── package.json
-└── yarn.lock
+### ✅ Step 1: Project Structure & Architecture
+**Status: COMPLETE**
+- Established monorepo structure with clear package boundaries
+- Set up shared design system and tokens
+- Configured build tools and development environment
+- Implemented proper import paths and module resolution
 
----
+### ✅ Step 2: Core Infrastructure
+**Status: COMPLETE**
+- Implemented authentication layer with Firebase/Cognito
+- Set up encrypted database with Firestore
+- Created secure storage abstraction for web/mobile
+- Established state management with Zustand stores
+- Implemented cryptography utilities for data encryption
 
-✅ TASKS TO PERFORM:
+### ✅ Step 3: Design System & Styling Consistency
+**Status: COMPLETE**
+- Replaced all hardcoded styles with design tokens
+- Implemented consistent spacing using layout classes
+- Added proper theme support (light/dark mode)
+- Created reusable component library
+- Ensured accessibility compliance with testID and accessibilityLabel
+- Fixed all linter errors related to styling and imports
 
-1. 🧱 **Move files accordingly**
-   - Move all reusable components, screens, styles, logic into `app/`
-   - Move Chrome-only files (popup, manifest, service worker) into `extension/`
-   - If needed, prepare a dummy `mobile/` folder with basic RN setup
+### ✅ Step 4: Component & Logic Cohesion
+**Status: COMPLETE**
+- Extracted business logic from components into custom hooks
+- Created useHelperBar, useInputLogic, useLazyCredentialIcon hooks
+- Created useHomePage, useLoginPage, useGeneratorPage hooks
+- Made components presentational-only
+- Improved separation of concerns and reusability
+- Enhanced type safety and maintainability
+- Centralized hook exports in index file
 
-2. 🛠️ **Setup path aliases**
-   Update `tsconfig.json` and `babel.config.js`:
-```ts
-paths: {
-  "@app/*": ["packages/app/*"],
-  "@design/*": ["packages/app/design/*"],
-  "@components/*": ["packages/app/components/*"],
-  "@screens/*": ["packages/app/screens/*"],
-  "@hooks/*": ["packages/app/hooks/*"],
-  "@utils/*": ["packages/app/utils/*"]
-}
-🧹 Update all imports
+### ✅ Step 5: Testing & Storybook
+**Status: COMPLETE**
+- Created comprehensive unit tests for core logic functions:
+  - Cryptography logic (encryption/decryption)
+  - Password generator utility
+  - Password strength checker
+  - Card logic (formatting, date handling)
+  - HomePage filtering logic
+  - Credentials logic
+  - Custom hooks (useHelperBar)
+- Updated Storybook stories with proper documentation
+- Enhanced HelperBar stories with hook integration examples
+- Established testing patterns for business logic
+- Created test coverage for utility functions and hooks
 
-All components should import using aliases, e.g.
+## 🚀 Next Steps
 
-ts
-Copier
-Modifier
-import { Button } from '@components/Button';
-import { spacing } from '@design/tokens';
-🧪 Verify build works
+### 🔄 Step 6: Performance Optimization
+- Implement React.memo for expensive components
+- Add lazy loading for large lists
+- Optimize bundle size with code splitting
+- Implement virtual scrolling for credential lists
+- Add performance monitoring and metrics
 
-Ensure extension/ still builds (npm run build)
+### 🔄 Step 7: Advanced Features
+- Implement password breach checking
+- Add secure sharing functionality
+- Create password strength visualization
+- Implement auto-fill improvements
+- Add backup/restore functionality
 
-Add a placeholder mobile/App.tsx entrypoint using the same screens/components as extension
+### 🔄 Step 8: Mobile App Development
+- Set up React Native CLI configuration
+- Implement platform-specific features
+- Add biometric authentication
+- Create mobile-optimized UI components
+- Implement offline functionality
 
-🧪 Lint & Prettier
+### 🔄 Step 9: Chrome Extension Enhancement
+- Improve autofill accuracy
+- Add form detection algorithms
+- Implement secure password generation
+- Create extension popup improvements
+- Add keyboard shortcuts
 
-Run: npm run lint and npm run prettier
+### 🔄 Step 10: Security & Compliance
+- Implement audit logging
+- Add security headers
+- Create penetration testing
+- Implement GDPR compliance features
+- Add security monitoring
 
-Fix paths and aliases if needed
+## 📊 Current Status
+- **Core Infrastructure**: ✅ Complete
+- **Design System**: ✅ Complete  
+- **Component Architecture**: ✅ Complete
+- **Testing & Documentation**: ✅ Complete
+- **Performance**: 🔄 Pending
+- **Advanced Features**: 🔄 Pending
+- **Mobile App**: 🔄 Pending
+- **Security Hardening**: 🔄 Pending
 
-✅ Testing + Storybook
+## 🎯 Key Achievements
+1. **Monorepo Architecture**: Clean separation between app, core, extension, and shared packages
+2. **Design System**: Consistent styling with tokens and layout classes
+3. **Component Logic**: Business logic extracted to reusable hooks
+4. **Testing Coverage**: Comprehensive unit tests for core functions and hooks
+5. **Storybook Integration**: Enhanced stories with proper documentation
+6. **Type Safety**: Full TypeScript implementation with proper types
+7. **Accessibility**: All interactive components have proper accessibility props
+8. **Code Quality**: Linter compliance and consistent code style
 
-Move stories next to each component in app/components/*.stories.tsx
+## 🛠 Technical Stack
+- **Frontend**: React Native Web, TypeScript
+- **State Management**: Zustand
+- **Styling**: Design tokens, layout classes
+- **Testing**: Jest, React Testing Library
+- **Documentation**: Storybook
+- **Build Tools**: Vite, Metro
+- **Authentication**: Firebase/Cognito
+- **Database**: Firestore with encryption
+- **Cryptography**: Custom encryption utilities
 
-Storybook config should point to app/components/**/*
-
-🧩 FINAL CHECKLIST:
-
-✅ extension/ builds using shared code from app/
-
-✅ mobile/ builds and shows shared screens
-
-✅ All code now lives in packages/ structure
-
-✅ Central design system lives in app/design/
-
-✅ No hardcoded imports, uses path aliases only
-
-✅ Lint, Prettier, Storybook and Jest all run correctly
-
-Proceed to implement these changes. Once the structure is done, I’ll assist you in:
-
-Updating imports
-
-Adding a Metro config for React Native mobile
-
-Running extension & mobile side-by-side
+## 📈 Metrics
+- **Test Coverage**: Core logic functions and hooks tested
+- **Component Coverage**: All major components have stories
+- **Code Quality**: Linter compliance achieved
+- **Architecture**: Clean separation of concerns
+- **Documentation**: Enhanced with proper descriptions
