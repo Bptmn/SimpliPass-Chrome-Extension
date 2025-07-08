@@ -14,14 +14,18 @@ import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
 import { ModeSwitch } from '@components/ModeSwitch';
-import { colors } from '@design/colors';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { Toast } from '@components/Toast';
 
 const SettingsPage: React.FC = () => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
   const user = useUserStore((state) => state.user);
   console.log('[SettingsPage] user:', user);
   const [error, setError] = useState<string | null>(null);
   const { toast, showToast } = useToast();
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
 
   const handleLogout = async () => {
     try {
@@ -41,41 +45,41 @@ const SettingsPage: React.FC = () => {
           {/* Security row */}
           <Pressable style={styles.menuItem} accessibilityLabel="Sécurité">
             <View style={styles.menuIcon}>
-              <Icon name="security" size={22} color={colors.secondary} />
+              <Icon name="security" size={22} color={themeColors.secondary} />
             </View>
             <Text style={styles.menuLabel}>Sécurité</Text>
             <View style={styles.menuArrow}>
-              <Icon name="arrowForward" size={15} color={colors.primary} />
+              <Icon name="arrowForward" size={15} color={themeColors.primary} />
             </View>
           </Pressable>
           {/* Help row */}
           <Pressable style={styles.menuItem} accessibilityLabel="Aide">
             <View style={styles.menuIcon}>
-              <Icon name="help" size={22} color={colors.secondary} />
+              <Icon name="help" size={22} color={themeColors.secondary} />
             </View>
             <Text style={styles.menuLabel}>Aide</Text>
             <View style={styles.menuArrow}>
-              <Icon name="arrowForward" size={15} color={colors.primary} />
+              <Icon name="arrowForward" size={15} color={themeColors.primary} />
             </View>
           </Pressable>
           {/* Subscription row */}
           <Pressable style={styles.menuItem} accessibilityLabel="Mon abonnement">
             <View style={styles.menuIcon}>
-              <Icon name="workspacePremium" size={22} color={colors.secondary} />
+              <Icon name="workspacePremium" size={22} color={themeColors.secondary} />
             </View>
             <Text style={styles.menuLabel}>Mon abonnement</Text>
             <View style={styles.menuArrow}>
-              <Icon name="arrowForward" size={15} color={colors.primary} />
+              <Icon name="arrowForward" size={15} color={themeColors.primary} />
             </View>
           </Pressable>
           {/* Languages row */}
           <Pressable style={styles.menuItem} accessibilityLabel="Languages">
             <View style={styles.menuIcon}>
-              <Icon name="language" size={22} color={colors.secondary} />
+              <Icon name="language" size={22} color={themeColors.secondary} />
             </View>
             <Text style={styles.menuLabel}>Languages</Text>
             <View style={styles.menuArrow}>
-              <Icon name="arrowForward" size={15} color={colors.primary} />
+              <Icon name="arrowForward" size={15} color={themeColors.primary} />
             </View>
           </Pressable>
         </View>
@@ -93,7 +97,7 @@ const SettingsPage: React.FC = () => {
             <View style={styles.profileCard}>
               <View style={styles.userDetails}>
                 <View style={styles.userIcon}>
-                  <Icon name="person" size={25} color={colors.secondary} />
+                  <Icon name="person" size={25} color={themeColors.secondary} />
                 </View>
                 <Text style={styles.userEmail}>{user?.email || 'Non connecté'}</Text>
               </View>
@@ -117,7 +121,7 @@ const SettingsPage: React.FC = () => {
           <View style={styles.btnList}>
             <Button
               text="Donnez votre avis"
-              color={colors.secondary}
+              color={themeColors.secondary}
               width="full"
               height="full"
               onPress={() => {}}
@@ -126,7 +130,7 @@ const SettingsPage: React.FC = () => {
             />
             <Button
               text="Se déconnecter"
-              color={colors.primary}
+              color={themeColors.primary}
               width="full"
               height="full"
               onPress={handleLogout}
@@ -140,88 +144,92 @@ const SettingsPage: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  btnList: {
-    gap: spacing.sm,
-    marginTop: spacing.sm,
-  },
+const getStyles = (mode: 'light' | 'dark') => {
+  const themeColors = getColors(mode);
+  
+  return StyleSheet.create({
+    btnList: {
+      gap: spacing.sm,
+      marginTop: spacing.sm,
+    },
 
-  menuArrow: {},
-  menuIcon: {
-    alignItems: 'center',
-    height: 24,
-    justifyContent: 'center',
-    marginRight: spacing.md,
-    width: 24,
-  },
-  menuItem: {
-    alignItems: 'center',
-    borderWidth: 0,
-    flexDirection: 'row',
-    height: 35,
-    justifyContent: 'flex-start',
-    outline: 'none',
-    position: 'relative',
-    textAlign: 'left',
-    width: '100%',
-  },
-  menuLabel: {
-    color: colors.primary,
-    flex: 1,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.regular,
-  },
-  menuList: {
-    backgroundColor: colors.secondaryBackground,
-    borderRadius: radius.md,
-    flexDirection: 'column',
-    padding: spacing.sm,
-    gap: spacing.sm,
-    borderColor: colors.borderColor,
-    borderWidth: 1,
-  },
-  modeSwitchWrapper: {
-    alignItems: 'center',
-    marginVertical: spacing.sm,
-  },
-  pageSection: {},
-  profileCard: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    flexDirection: 'column',
-    gap: spacing.sm,
-    padding: spacing.sm,
-    shadowColor: colors.blackText,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-  },
+    menuArrow: {},
+    menuIcon: {
+      alignItems: 'center',
+      height: 24,
+      justifyContent: 'center',
+      marginRight: spacing.md,
+      width: 24,
+    },
+    menuItem: {
+      alignItems: 'center',
+      borderWidth: 0,
+      flexDirection: 'row',
+      height: 35,
+      justifyContent: 'flex-start',
+      outline: 'none',
+      position: 'relative',
+      textAlign: 'left',
+      width: '100%',
+    },
+    menuLabel: {
+      color: themeColors.primary,
+      flex: 1,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.regular,
+    },
+    menuList: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderRadius: radius.md,
+      flexDirection: 'column',
+      padding: spacing.sm,
+      gap: spacing.sm,
+      borderColor: themeColors.borderColor,
+      borderWidth: 1,
+    },
+    modeSwitchWrapper: {
+      alignItems: 'center',
+      marginVertical: spacing.sm,
+    },
+    pageSection: {},
+    profileCard: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      flexDirection: 'column',
+      gap: spacing.sm,
+      padding: spacing.sm,
+      shadowColor: themeColors.blackText,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.04,
+      shadowRadius: 8,
+    },
 
-  userDetails: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  userDetailsLabel: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
-  },
-  userEmail: {
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
-  },
-  userIcon: {
-    alignItems: 'center',
-    backgroundColor: colors.secondaryBackground,
-    borderRadius: 25,
-    color: colors.secondary,
-    fontSize: typography.fontSize.xl,
-    justifyContent: 'center',
-    marginRight: spacing.sm,
-  },
-});
+    userDetails: {
+      alignItems: 'center',
+      flexDirection: 'row',
+    },
+    userDetailsLabel: {
+      color: themeColors.secondary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+    },
+    userEmail: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+    },
+    userIcon: {
+      alignItems: 'center',
+      backgroundColor: themeColors.secondaryBackground,
+      borderRadius: 25,
+      color: themeColors.secondary,
+      fontSize: typography.fontSize.xl,
+      justifyContent: 'center',
+      marginRight: spacing.sm,
+    },
+  });
+};
 
 export default SettingsPage;

@@ -3,7 +3,8 @@ import { View, Text, Pressable, StyleSheet, ScrollView, Image } from 'react-nati
 import { ErrorBanner } from '@components/ErrorBanner';
 import { EmailConfirmationPage } from './EmailConfirmationPage';
 import { Input } from '@components/InputFields';
-import { colors } from '@design/colors';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { layout, radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
@@ -11,6 +12,9 @@ import { useLoginPage } from '@app/core/hooks';
 import logo from '../../../assets/logo/logo_simplify_long.png';
 
 const LoginPage: React.FC = () => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
   const {
     email,
     password,
@@ -97,7 +101,7 @@ const LoginPage: React.FC = () => {
           {/* Login Button */}
           <Button
             text={isLoading ? 'Connexion...' : 'Se connecter'}
-            color={colors.secondary}
+            color={themeColors.secondary}
             onPress={handleLogin}
             disabled={isLoading}
             testID="login-button"
@@ -108,57 +112,61 @@ const LoginPage: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  checkbox: {
-    backgroundColor: layout.primaryBackground,
-    borderColor: colors.primary,
-    borderRadius: radius.xs,
-    borderWidth: 2,
-    height: 15,
-    justifyContent: 'center',
-    width: 15,
-  },
-  checkboxChecked: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  checkboxContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  checkboxLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    marginLeft: spacing.xs,
-  },
-  checkboxIcon: {
-    color: colors.whiteText,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-  },
-  emailFormContainer: {
-    gap: spacing.sm,
-  },
-  formContainer: {
-    alignItems: 'stretch',
-    flexDirection: 'column',
-    gap: spacing.xl,
-  },
-  logo: {
-    height: spacing.xl * 3,
-    resizeMode: 'contain',
-    width: spacing.xl * 10,
-  },
-  logoContainer: {
-    alignItems: 'center',
-  },
-  title: {
-    color: colors.primary,
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.bold,
-    marginBottom: spacing.xl,
-  },
-});
+const getStyles = (mode: 'light' | 'dark') => {
+  const themeColors = getColors(mode);
+  
+  return StyleSheet.create({
+    checkbox: {
+      backgroundColor: layout.primaryBackground,
+      borderColor: themeColors.primary,
+      borderRadius: radius.xs,
+      borderWidth: 2,
+      height: 15,
+      justifyContent: 'center',
+      width: 15,
+    },
+    checkboxChecked: {
+      backgroundColor: themeColors.primary,
+      borderColor: themeColors.primary,
+    },
+    checkboxContainer: {
+      alignItems: 'center',
+      flexDirection: 'row',
+    },
+    checkboxLabel: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+      marginLeft: spacing.xs,
+    },
+    checkboxIcon: {
+      color: themeColors.whiteText,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+    },
+    emailFormContainer: {
+      gap: spacing.sm,
+    },
+    formContainer: {
+      alignItems: 'stretch',
+      flexDirection: 'column',
+      gap: spacing.xl,
+    },
+    logo: {
+      height: spacing.xl * 3,
+      resizeMode: 'contain',
+      width: spacing.xl * 10,
+    },
+    logoContainer: {
+      alignItems: 'center',
+    },
+    title: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.xl,
+      fontWeight: typography.fontWeight.bold,
+      marginBottom: spacing.xl,
+    },
+  });
+};
 
 export default LoginPage;

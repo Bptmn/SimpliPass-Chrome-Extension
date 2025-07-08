@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { colors } from '@design/colors';
+import { View, Text, Pressable } from 'react-native';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { padding, radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import CopyButton from '@components/CopyButton';
@@ -27,6 +28,48 @@ export const DetailField: React.FC<DetailFieldProps> = ({
   copyText = 'copier',
   ariaLabel,
 }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+
+  // Dynamic styles
+  const styles = {
+    cardField: {
+      alignItems: 'center' as const,
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      padding: padding.sm,
+      width: '100%',
+    },
+    fieldLabel: {
+      color: themeColors.tertiary,
+      fontSize: typography.fontSize.xs,
+      fontWeight: typography.fontWeight.regular,
+      marginBottom: spacing.xxs,
+    },
+    fieldLeft: {
+      flex: 1,
+      flexDirection: 'column' as const,
+    },
+    fieldValue: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.regular,
+    },
+    launchBtn: {
+      alignItems: 'center' as const,
+      backgroundColor: 'transparent',
+      borderRadius: radius.sm,
+      height: spacing.lg * 2,
+      justifyContent: 'center' as const,
+      marginLeft: spacing.sm,
+      paddingHorizontal: spacing.sm,
+    },
+  };
+
   return (
     <View style={styles.cardField}>
       <View style={styles.fieldLeft}>
@@ -48,49 +91,11 @@ export const DetailField: React.FC<DetailFieldProps> = ({
           onPress={onLaunch}
           accessibilityLabel="Ouvrir le lien dans un nouvel onglet"
         >
-          <Icon name="launch" size={22} color={colors.secondary} />
+          <Icon name="launch" size={22} color={themeColors.secondary} />
         </Pressable>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  cardField: {
-    alignItems: 'center',
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: padding.md,
-    width: '100%',
-  },
-  fieldLabel: {
-    color: colors.tertiary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    marginBottom: spacing.xxs,
-  },
-  fieldLeft: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  fieldValue: {
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.regular,
-  },
-  launchBtn: {
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-    borderRadius: radius.sm,
-    height: spacing.lg * 2,
-    justifyContent: 'center',
-    marginLeft: spacing.sm,
-    paddingHorizontal: spacing.sm,
-  },
-});
 
 export default DetailField; 

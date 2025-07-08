@@ -11,8 +11,9 @@ import Toast from '@components/Toast';
 import { useToast } from '@app/core/hooks/useToast';
 import { generateItemKey } from '@utils/crypto';
 import { Input, InputPasswordStrength } from '@components/InputFields';
-import { colors } from '@design/colors';
-import { pageStyles } from '@design/layout';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
+import { pageStyles, spacing } from '@design/layout';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
 import { createPasswordGenerator } from '@app/core/logic/credentials';
@@ -25,6 +26,8 @@ interface AddCredential2Props {
 }
 
 export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTitle, link = '', onSuccess }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
   const user = useUser();
   const navigate = useNavigate();
   const [title, setTitle] = useState(initialTitle);
@@ -127,11 +130,12 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
               />
               <Button
                 text="Générer un mot de passe"
-                color={colors.secondary}
+                color={themeColors.secondary}
                 onPress={createPasswordGenerator(setPassword)}
                 align="right"
                 width="fit"
                 height="fit"
+                style={{ marginTop: spacing.xs }}
               />
             </View>
             <Input
@@ -152,7 +156,7 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
             />
             <Button
               text="Ajouter"
-              color={colors.secondary}
+              color={themeColors.secondary}
               onPress={handleSubmit}
               disabled={loading}
             />

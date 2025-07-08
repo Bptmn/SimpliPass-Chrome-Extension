@@ -1,9 +1,10 @@
 import React from 'react';
-import { Pressable, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { Pressable, Text, ViewStyle, TextStyle } from 'react-native';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { textStyles } from '@design/text';
-import { colors } from '@design/colors';
 
 export type ButtonWidth = 'full' | 'fit';
 export type ButtonHeight = 'full' | 'fit';
@@ -50,6 +51,9 @@ export const Button: React.FC<ButtonProps> = ({
   accessibilityLabel,
   disabled = false,
 }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+  
   const alignmentStyle = getAlignmentStyle(align);
   
   const buttonStyle = {
@@ -64,8 +68,16 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const textStyleObj = {
-    color: outline ? color : colors.whiteText,
+    color: outline ? color : themeColors.whiteText,
     fontSize: typography.fontSize.sm,
+  };
+
+  // Dynamic styles
+  const styles = {
+    button: {
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+    },
   };
 
   return (
@@ -93,11 +105,4 @@ export const Button: React.FC<ButtonProps> = ({
       </Text>
     </Pressable>
   );
-};
-
-const styles = StyleSheet.create({
-  button: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-}); 
+}; 

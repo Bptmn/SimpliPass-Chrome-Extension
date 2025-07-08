@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
 import { BankCardDecrypted } from '@app/core/types/types';
+import { parseExpirationDate, formatExpirationDate } from '@app/utils';
 import { updateItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
 import { useUser } from '@app/core/hooks/useUser';
@@ -19,10 +20,16 @@ import ItemBankCard from '../components/ItemBankCard';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { textStyles } from '@app/design/text';
 import { getMonthOptions, getYearOptions } from '@app/core/logic/cards';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
+import { Icon } from '@components/Icon';
 
 const CARD_COLORS = ['#2bb6a3', '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a259e6'];
 
 export const ModifyBankCardPage: React.FC = () => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
   const location = useLocation();
   const user = useUser();
@@ -32,13 +39,19 @@ export const ModifyBankCardPage: React.FC = () => {
   const [owner, setOwner] = useState(cred?.owner || '');
   const [cardNumber, setCardNumber] = useState(cred?.cardNumber || '');
   const [expirationDate, setExpirationDate] = useState(cred?.expirationDate ? 
-    `${String(cred.expirationDate.getMonth() + 1).padStart(2, '0')}/${String(cred.expirationDate.getFullYear()).slice(-2)}` : '');
+    formatExpirationDate(cred.expirationDate) : '');
   const [cvv, setCvv] = useState(cred?.verificationNumber || '');
   const [note, setNote] = useState(cred?.note || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const { toast, showToast } = useToast();
+
+  // Helper for web: generate month and year options
+  const monthOptions = getMonthOptions();
+  const yearOptions = getYearOptions();
+  const selectedMonth = expirationDate.split('/')[0] || '';
+  const selectedYear = expirationDate.split('/')[1] ? `20${expirationDate.split('/')[1]}` : '';
 
   useEffect(() => {
     if (!cred) {
@@ -67,11 +80,7 @@ export const ModifyBankCardPage: React.FC = () => {
         throw new Error('Clé de sécurité utilisateur introuvable');
       }
       // Parse expiration date
-      let expDate = cred.expirationDate;
-      if (expirationDate.match(/^(0[1-9]|1[0-2])\/(\d{2})$/)) {
-        const [mm, yy] = expirationDate.split('/');
-        expDate = new Date(Number('20' + yy), Number(mm) - 1, 1);
-      }
+      const expDate = parseExpirationDate(expirationDate) || cred.expirationDate;
       const updates: Partial<BankCardDecrypted> = {
         title: cred.title,
         owner,
@@ -101,11 +110,7 @@ export const ModifyBankCardPage: React.FC = () => {
   }
 
   // Live preview object
-  let expDate = cred.expirationDate;
-  if (expirationDate.match(/^(0[1-9]|1[0-2])\/(\d{2})$/)) {
-    const [mm, yy] = expirationDate.split('/');
-    expDate = new Date(Number('20' + yy), Number(mm) - 1, 1);
-  }
+  const expDate = parseExpirationDate(expirationDate) || cred.expirationDate;
   const previewCard: BankCardDecrypted = {
     ...cred,
     title: cred.title,
@@ -149,45 +154,64 @@ export const ModifyBankCardPage: React.FC = () => {
               onClear={() => setCardNumber('')}
             />
             <View style={styles.row2col}>
-              <View style={styles.inputColumnDate}>
+              <View style={styles.inputDateColumn}>
                 <Text style={styles.inputDateLabel}>Date d&apos;expiration</Text>
                 {Platform.OS === 'web' ? (
-                  <View style={{ flexDirection: 'row', gap: 2 }}>
-                    <select
-                      value={expirationDate.split('/')[0]}
-                      onChange={e => {
-                        const mm = e.target.value;
-                        setExpirationDate(`${mm}/${expirationDate.split('/')[1]}`);
-                      }}
-                      style={styles.inputDate}
-                    >
-                      <option value=""><Text>Mois</Text></option>
-                      {getMonthOptions().map(m => (
-                        <option key={m} value={m}>{m}</option>
-                      ))}
-                    </select>
-                    <select
-                      value={expirationDate.split('/')[1]}
-                      onChange={e => {
-                        const yyyy = e.target.value;
-                        setExpirationDate(`${expirationDate.split('/')[0]}/${yyyy}`);
-                      }}
-                      style={styles.inputDate}
-                    >
-                      <option value=""><Text>Année</Text></option>
-                      {getYearOptions().map(y => (
-                        <option key={y} value={y}>{y}</option>
-                      ))}
-                    </select>
+                  <View style={styles.inputContainer}>
+                    <View style={styles.selectContainer}>
+                      <View style={styles.selectContent}>
+                        <Text style={selectedMonth ? styles.inputDateSelectText : styles.inputDatePlaceholder}>
+                          {selectedMonth || 'Mois'}
+                        </Text>
+                        <Icon name="arrowDown" size={16} color={themeColors.tertiary} />
+                      </View>
+                      <select
+                        value={selectedMonth}
+                        onChange={e => {
+                          const mm = e.target.value;
+                          setExpirationDate(`${mm}/${selectedYear.slice(-2)}`);
+                        }}
+                        style={styles.inputDateSelect}
+                      >
+                        <option value=""></option>
+                        {monthOptions.map(m => (
+                          <option key={m} value={m}>{m}</option>
+                        ))}
+                      </select>
+                    </View>
+                    {selectedMonth && selectedYear && (
+                      <Text style={styles.dateSeparator}>/</Text>
+                    )}
+                    <View style={styles.selectContainer}>
+                      <View style={styles.selectContent}>
+                        <Text style={selectedYear ? styles.inputDateSelectText : styles.inputDatePlaceholder}>
+                          {selectedYear ? selectedYear.slice(-2) : 'Année'}
+                        </Text>
+                        <Icon name="arrowDown" size={16} color={themeColors.tertiary} />
+                      </View>
+                      <select
+                        value={selectedYear}
+                        onChange={e => {
+                          const yyyy = e.target.value;
+                          setExpirationDate(`${selectedMonth}/${yyyy.slice(-2)}`);
+                        }}
+                        style={styles.inputDateSelect}
+                      >
+                        <option value=""></option>
+                        {yearOptions.map(y => (
+                          <option key={y} value={y}>{y}</option>
+                        ))}
+                      </select>
+                    </View>
                   </View>
                 ) : (
                   <>
                     <Pressable
-                      style={styles.input}
+                      style={styles.inputDate}
                       onPress={() => setDatePickerVisible(true)}
                       accessibilityLabel="Sélectionner la date d'expiration"
                     >
-                      <Text style={{ color: expirationDate ? colors.blackText : colors.tertiary }}>
+                      <Text style={{ color: expirationDate ? themeColors.blackText : themeColors.tertiary }}>
                         {expirationDate || 'MM/YY'}
                       </Text>
                     </Pressable>
@@ -221,7 +245,7 @@ export const ModifyBankCardPage: React.FC = () => {
             />
             <Button
               text="Confirmer"
-              color={colors.secondary}
+              color={themeColors.secondary}
               width="full"
               height="full"
               onPress={handleSubmit}
@@ -234,53 +258,97 @@ export const ModifyBankCardPage: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  errorText: {
-    color: colors.error,
-    fontSize: typography.fontSize.md,
-    marginTop: spacing.xl,
-    textAlign: 'center',
-  },
-  input: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    color: colors.blackText,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    height: 48,
-    justifyContent: 'center',
-    paddingHorizontal: spacing.md,
-    placeholderTextColor: colors.tertiary,
-    width: '100%',
-  },
-  inputColumn: {
-    flex: 1,
-  },
-  inputColumnDate: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md + 4,
-    borderWidth: 1,
-    flex: 1,
-    flexDirection: 'column',
-    gap: spacing.xs,
-    padding: spacing.sm,
-  },
-  inputDate: {
-    backgroundColor: 'transparent',
-    border: 'none',
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
-  },
-  inputDateLabel: {
-    ...textStyles.textTertiary,
-    fontSize: typography.fontSize.sm,
-    marginBottom: spacing.xxs,
-  },
-  row2col: {
-    flexDirection: 'row',
-    gap: spacing.xl,
-  },
-}); 
+const getStyles = (mode: 'light' | 'dark') => {
+  const themeColors = getColors(mode);
+  
+  return StyleSheet.create({
+    errorText: {
+      color: themeColors.error,
+      fontSize: typography.fontSize.md,
+      marginTop: spacing.xl,
+      textAlign: 'center',
+    },
+    inputContainer: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.xl,
+      borderWidth: 1,
+      flexDirection: 'row',
+      gap: spacing.xs,
+      paddingHorizontal: spacing.sm,
+    },
+    inputColumn: {
+      flex: 1,
+    },
+    inputDateColumn: {
+      flex: 1,
+    },
+    inputDate: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.xl,
+      borderWidth: 1,
+      color: themeColors.blackText,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+    },
+    inputDateLabel: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+      paddingBottom: spacing.xs,
+    },
+    inputDatePlaceholder: {
+      color: themeColors.tertiary,
+      fontSize: typography.fontSize.xs,
+      fontWeight: typography.fontWeight.regular,
+    },
+    inputDateSelect: {
+      backgroundColor: 'transparent',
+      border: 'none',
+      color: 'transparent',
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+      height: 40,
+      justifyContent: 'center',
+      left: 0,
+      paddingHorizontal: spacing.md,
+      placeholderTextColor: themeColors.tertiary,
+      position: 'absolute',
+      top: 0,
+      width: '100%',
+      zIndex: 1,
+    },
+    inputDateSelectText: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+    },
+    row2col: {
+      flexDirection: 'row',
+      gap: spacing.xl,
+    },
+    selectContainer: {
+      alignItems: 'flex-start',
+      flex: 1,
+      height: 40,
+      justifyContent: 'center',
+      position: 'relative',
+    },
+    selectContent: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: spacing.xs,
+      justifyContent: 'center',
+      width: '100%',
+    },
+    dateSeparator: {
+      alignSelf: 'center',
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+    },
+  });
+};
+
+export default ModifyBankCardPage; 

@@ -10,9 +10,13 @@ import { useToast } from '../components/Toast';
 import CopyButton from '../components/CopyButton';
 import { Button } from '../components/Buttons';
 import { Slider } from '../components/Slider';
-import { colors } from '@design/colors';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 
 export const GeneratorPage: React.FC = () => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
   const [hasUppercase, setHasUppercase] = useState(true);
   const [hasNumbers, setHasNumbers] = useState(true);
   const [hasSymbols, setHasSymbols] = useState(true);
@@ -46,9 +50,6 @@ export const GeneratorPage: React.FC = () => {
     setPassword(pwd);
     setStrength(checkPasswordStrength(pwd));
   };
-
-  
-  const styles = getStyles();
 
   return (
     <View style={pageStyles.pageContainer}>
@@ -130,7 +131,7 @@ export const GeneratorPage: React.FC = () => {
             <View style={styles.pageSection}>
               <Button
                 text="Générer à nouveau"
-                color={colors.primary}
+                color={themeColors.primary}
                 onPress={handleRegenerate}
               />
             </View>
@@ -141,101 +142,105 @@ export const GeneratorPage: React.FC = () => {
   );
 };
 
-const getStyles = () => StyleSheet.create({
-  generatedPasswordCard: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    flexDirection: 'column',
-    padding: padding.md,
-  },
-  generatorForm: {
-    flexDirection: 'column',
-    gap: spacing.lg,
-  },
-  optionRow: {
-    alignItems: 'center',
-    color: colors.primary,
-    flexDirection: 'row',
-    fontSize: typography.fontSize.sm,
-    justifyContent: 'space-between',
-  },
-  optionText: {
-    color: colors.primary,
-    flex: 1,
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-  },
-  optionsSection: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    flexDirection: 'column',
-    gap: spacing.md,
-    marginBottom: spacing.sm,
-    padding: padding.md,
-  },
-  pageSection: {
-    gap: spacing.xs
-  },
-  passwordDisplay: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: spacing.sm,
-  },
-  passwordText: {
-    backgroundColor: colors.primaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    color: colors.primary,
-    flex: 1,
-    fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace',
-    fontSize: typography.fontSize.md,
-    marginRight: spacing.sm,
-    minHeight: 20,
-    padding: padding.sm,
-  },
-  sectionLabel: {
-    color: colors.tertiary,
-    fontSize: typography.fontSize.xs,
-    fontWeight: '500',
-    margin: 0,
-  },
-  strengthAverage: { color: '#ffb300' },
-  strengthLabel: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    fontSize: typography.fontSize.sm,
-    fontWeight: '500',
-    marginRight: spacing.xs,
-    padding: 0,
-  },
-  strengthPerfect: { color: colors.secondary },
-  strengthStrong: { color: colors.primary },
-  strengthWeak: { color: '#e57373' },
-  switch: {
-    backgroundColor: '#ccc',
-    borderRadius: 22,
-    height: 25,
-    position: 'relative',
-    width: 40,
-  },
-  switchActive: {
-    backgroundColor: colors.secondary,
-  },
-  switchSlider: {
-    backgroundColor: colors.primaryBackground,
-    borderRadius: radius.xl,
-    bottom: 1.5,
-    height: 22,
-    left: 1,
-    position: 'absolute',
-    width: 22,
-  },
-  switchSliderActive: {
-    transform: [{ translateX: 16 }],
-  },
-});
+const getStyles = (mode: 'light' | 'dark') => {
+  const themeColors = getColors(mode);
+  
+  return StyleSheet.create({
+    generatedPasswordCard: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      flexDirection: 'column',
+      padding: padding.md,
+    },
+    generatorForm: {
+      flexDirection: 'column',
+      gap: spacing.lg,
+    },
+    optionRow: {
+      alignItems: 'center',
+      color: themeColors.primary,
+      flexDirection: 'row',
+      fontSize: typography.fontSize.sm,
+      justifyContent: 'space-between',
+    },
+    optionText: {
+      color: themeColors.primary,
+      flex: 1,
+      fontSize: typography.fontSize.sm,
+      fontWeight: '500',
+    },
+    optionsSection: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      flexDirection: 'column',
+      gap: spacing.md,
+      marginBottom: spacing.sm,
+      padding: padding.md,
+    },
+    pageSection: {
+      gap: spacing.xs
+    },
+    passwordDisplay: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      marginBottom: spacing.sm,
+    },
+    passwordText: {
+      backgroundColor: themeColors.primaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      color: themeColors.primary,
+      flex: 1,
+      fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace',
+      fontSize: typography.fontSize.md,
+      marginRight: spacing.sm,
+      minHeight: 20,
+      padding: padding.sm,
+    },
+    sectionLabel: {
+      color: themeColors.tertiary,
+      fontSize: typography.fontSize.xs,
+      fontWeight: '500',
+      margin: 0,
+    },
+    strengthAverage: { color: '#ffb300' },
+    strengthLabel: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      fontSize: typography.fontSize.sm,
+      fontWeight: '500',
+      marginRight: spacing.xs,
+      padding: 0,
+    },
+    strengthPerfect: { color: themeColors.secondary },
+    strengthStrong: { color: themeColors.primary },
+    strengthWeak: { color: '#e57373' },
+    switch: {
+      backgroundColor: '#ccc',
+      borderRadius: 22,
+      height: 25,
+      position: 'relative',
+      width: 40,
+    },
+    switchActive: {
+      backgroundColor: themeColors.secondary,
+    },
+    switchSlider: {
+      backgroundColor: themeColors.primaryBackground,
+      borderRadius: radius.xl,
+      bottom: 1.5,
+      height: 22,
+      left: 1,
+      position: 'absolute',
+      width: 22,
+    },
+    switchSliderActive: {
+      transform: [{ translateX: 16 }],
+    },
+  });
+};

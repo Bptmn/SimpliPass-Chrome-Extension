@@ -8,7 +8,8 @@ import { useUser } from '@app/core/hooks/useUser';
 import { ErrorBanner } from '@components/ErrorBanner';
 import Toast from '@components/Toast';
 import { useToast } from '@app/core/hooks/useToast';
-import { colors } from '@design/colors';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { pageStyles, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
@@ -16,6 +17,9 @@ import { HeaderTitle } from '@components/HeaderTitle';
 import { InputEdit } from '@components/InputEdit';
 
 export const ModifyCredentialPage: React.FC = () => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
   const location = useLocation();
   const user = useUser();
@@ -124,7 +128,7 @@ export const ModifyCredentialPage: React.FC = () => {
             />
             <Button
               text="Confirmer"
-              color={colors.secondary}
+              color={themeColors.secondary}
               width="full"
               height="full"
               onPress={handleSubmit}
@@ -137,12 +141,16 @@ export const ModifyCredentialPage: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  errorText: {
-    color: colors.error,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
-    marginTop: spacing.xl,
-    textAlign: 'center',
-  },
-}); 
+const getStyles = (mode: 'light' | 'dark') => {
+  const themeColors = getColors(mode);
+  
+  return StyleSheet.create({
+    errorText: {
+      color: themeColors.error,
+      fontSize: typography.fontSize.md,
+      fontWeight: typography.fontWeight.medium,
+      marginTop: spacing.xl,
+      textAlign: 'center',
+    },
+  });
+}; 

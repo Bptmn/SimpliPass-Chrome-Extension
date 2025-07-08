@@ -3,12 +3,12 @@ export const typography = {
     base: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   },
   fontSize: {
-    xxs: 10,
-    xs: 12,
-    sm: 14,
-    md: 16,
-    lg: 20,
-    xl: 24,
+    xxs: 11,
+    xs: 13,
+    sm: 15,
+    md: 17,
+    lg: 19,
+    xl: 21,
   },
   fontWeight: {
     regular: '400',

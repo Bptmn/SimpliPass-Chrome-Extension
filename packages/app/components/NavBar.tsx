@@ -1,9 +1,10 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 
 import { Icon } from './Icon';
-import { colors } from '@design/colors';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { layout, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 
@@ -13,27 +14,73 @@ interface NavItem {
   label: string;
 }
 
-const navItems: NavItem[] = [
-  {
-    path: '/home',
-    icon: <Icon name="home" size={25} color={colors.primary} />,
-    label: 'Accueil',
-  },
-  {
-    path: '/generator',
-    icon: <Icon name="loop" size={25} color={colors.primary} />,
-    label: 'Générateur',
-  },
-  {
-    path: '/settings',
-    icon: <Icon name="settings" size={25} color={colors.primary} />,
-    label: 'Paramètres',
-  },
-];
-
 const Navbar: React.FC = () => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const navItems: NavItem[] = [
+    {
+      path: '/home',
+      icon: <Icon name="home" size={25} color={themeColors.primary} />,
+      label: 'Accueil',
+    },
+    {
+      path: '/generator',
+      icon: <Icon name="loop" size={25} color={themeColors.primary} />,
+      label: 'Générateur',
+    },
+    {
+      path: '/settings',
+      icon: <Icon name="settings" size={25} color={themeColors.primary} />,
+      label: 'Paramètres',
+    },
+  ];
+
+  // Dynamic styles with useMemo
+  const styles = React.useMemo(() => ({
+    active: {
+      // Color will be applied to text elements
+    },
+    navContent: {
+      alignItems: 'center' as const,
+      flexDirection: 'column' as const,
+      marginBottom: spacing.xxs,
+    },
+    navItem: {
+      alignItems: 'center' as const,
+      backgroundColor: 'transparent',
+      borderWidth: 0,
+      flex: 1,
+      flexDirection: 'row' as const,
+      height: '100%',
+      justifyContent: 'center' as const,
+      padding: 0,
+    },
+    navLabel: {
+      color: themeColors.tertiary,
+      fontFamily: typography.fontFamily.base,
+      fontSize: typography.fontSize.xs,
+      fontWeight: typography.fontWeight.medium,
+      marginTop: spacing.xxs,
+    },
+    navbar: {
+      alignItems: 'center' as const,
+      backgroundColor: themeColors.primaryBackground,
+      borderBottomColor: themeColors.borderColor,
+      borderBottomWidth: 1,
+      flexDirection: 'row' as const,
+      height: layout.navbarHeight,
+      justifyContent: 'space-around' as const,
+      maxHeight: layout.navbarHeight,
+      minHeight: layout.navbarHeight,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.xs,
+      width: '100%',
+      zIndex: 1000,
+    },
+  }), [mode]);
 
   return (
     <View style={styles.navbar}>
@@ -52,7 +99,7 @@ const Navbar: React.FC = () => {
             {item.icon}
             <Text style={[
               styles.navLabel,
-              location.pathname === item.path ? { color: colors.primary } : null,
+              location.pathname === item.path ? { color: themeColors.primary } : null,
             ]}>
               {item.label}
             </Text>
@@ -62,48 +109,5 @@ const Navbar: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  active: {
-    // Color will be applied to text elements
-  },
-  navContent: {
-    alignItems: 'center',
-    flexDirection: 'column',
-    marginBottom: spacing.xxs,
-  },
-  navItem: {
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-    flex: 1,
-    flexDirection: 'row',
-    height: '100%',
-    justifyContent: 'center',
-    padding: 0,
-  },
-  navLabel: {
-    color: colors.tertiary,
-    fontFamily: typography.fontFamily.base,
-    fontSize: typography.fontSize.xs,
-    fontWeight: typography.fontWeight.medium,
-    marginTop: spacing.xxs,
-  },
-  navbar: {
-    alignItems: 'center',
-    backgroundColor: layout.primaryBackground,
-    borderBottomColor: colors.borderColor,
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    height: layout.navbarHeight,
-    justifyContent: 'space-around',
-    maxHeight: layout.navbarHeight,
-    minHeight: layout.navbarHeight,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    width: '100%',
-    zIndex: 1000,
-  },
-});
 
 export default Navbar;

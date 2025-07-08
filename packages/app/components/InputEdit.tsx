@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
-import { colors } from '@design/colors';
+import { View, Text, TextInput, Pressable } from 'react-native';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { radius, spacing } from '@design/layout';
-import { textStyles } from '@design/text';
 import { typography } from '@design/typography';
 
 interface InputEditProps {
@@ -24,6 +24,8 @@ export const InputEdit: React.FC<InputEditProps> = ({
   testID,
   isNote = false,
 }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
   const [inputHeight, setInputHeight] = useState(isNote ? 72 : 48); // 3 lines minimum for notes
 
   const handleContentSizeChange = (event: { nativeEvent: { contentSize: { height: number } } }) => {
@@ -33,6 +35,46 @@ export const InputEdit: React.FC<InputEditProps> = ({
       const maxHeight = 300; // Maximum height to prevent excessive growth
       setInputHeight(Math.max(minHeight, Math.min(height, maxHeight)));
     }
+  };
+
+  // Dynamic styles
+  const styles = {
+    clearButton: {
+      color: themeColors.secondary,
+      fontSize: typography.fontSize.sm,
+      marginLeft: spacing.sm,
+      paddingHorizontal: spacing.xs,
+    },
+    clearIcon: {
+      color: themeColors.tertiary,
+      fontSize: typography.fontSize.lg,
+      lineHeight: typography.fontSize.lg,
+    },
+    container: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.md + 4,
+      borderWidth: 1,
+      flex: 1,
+      flexDirection: 'column' as const,
+      padding: spacing.sm,
+    },
+    input: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      width: '100%',
+    },
+    inputRow: {
+      alignItems: 'center' as const,
+      flexDirection: 'row' as const,
+    },
+    label: {
+      color: themeColors.tertiary,
+      fontSize: typography.fontSize.xs,
+      marginBottom: spacing.xxs,
+    },
   };
 
   return (
@@ -51,7 +93,7 @@ export const InputEdit: React.FC<InputEditProps> = ({
           value={value}
           onChangeText={onChange}
           placeholder={placeholder}
-          placeholderTextColor={colors.primary}
+          placeholderTextColor={themeColors.primary}
           underlineColorAndroid="transparent"
           autoCorrect={false}
           autoCapitalize="none"
@@ -67,44 +109,4 @@ export const InputEdit: React.FC<InputEditProps> = ({
       </View>
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  clearButton: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.sm,
-    marginLeft: spacing.sm,
-    padding: spacing.xs,
-    paddingVertical: spacing.xs,
-  },
-  clearIcon: {
-    color: colors.tertiary,
-    fontSize: typography.fontSize.lg,
-    lineHeight: typography.fontSize.lg,
-  },
-  container: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md + 4,
-    borderWidth: 1,
-    flex: 1,
-    flexDirection: 'column',
-    padding: spacing.sm,
-  },
-  input: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
-    width: '100%',
-  },
-  inputRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  label: {
-    color: colors.tertiary,
-    fontSize: typography.fontSize.sm,
-    marginBottom: spacing.xxs,
-  },
-}); 
+}; 

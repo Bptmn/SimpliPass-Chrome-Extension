@@ -1,6 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { colors } from '@design/colors';
+import { View, Text } from 'react-native';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 
@@ -14,7 +15,23 @@ interface State {
   errorInfo: ErrorInfo | null;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+// Wrapper component to provide theme context to class component
+const ThemedErrorBoundary: React.FC<Props> = ({ children }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+
+  return (
+    <ErrorBoundaryInner themeColors={themeColors}>
+      {children}
+    </ErrorBoundaryInner>
+  );
+};
+
+interface ErrorBoundaryInnerProps extends Props {
+  themeColors: ReturnType<typeof getColors>;
+}
+
+class ErrorBoundaryInner extends Component<ErrorBoundaryInnerProps, State> {
   public state: State = {
     hasError: false,
     error: null,
@@ -35,6 +52,38 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public render() {
     if (this.state.hasError) {
+      // Dynamic styles
+      const styles = {
+        errorBoundary: {
+          backgroundColor: this.props.themeColors.primaryBackground,
+          borderColor: this.props.themeColors.error,
+          borderRadius: radius.md,
+          borderWidth: 1,
+          margin: spacing.lg,
+          padding: spacing.lg,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 8,
+        },
+        errorDetails: {
+          color: this.props.themeColors.secondary,
+          fontSize: typography.fontSize.sm,
+          marginTop: spacing.sm,
+        },
+        errorStack: {
+          color: this.props.themeColors.secondary,
+          fontSize: typography.fontSize.sm,
+          marginTop: spacing.sm,
+        },
+        errorTitle: {
+          color: this.props.themeColors.error,
+          fontSize: typography.fontSize.lg,
+          fontWeight: typography.fontWeight.medium,
+          marginBottom: spacing.md,
+        },
+      };
+
       return (
         <View style={styles.errorBoundary}>
           <Text style={styles.errorTitle}>Something went wrong</Text>
@@ -54,33 +103,4 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-const styles = StyleSheet.create({
-  errorBoundary: {
-    backgroundColor: colors.primaryBackground,
-    borderColor: colors.error,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    margin: spacing.lg,
-    padding: spacing.lg,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-  },
-  errorDetails: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.sm,
-    marginTop: spacing.sm,
-  },
-  errorStack: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.sm,
-    marginTop: spacing.sm,
-  },
-  errorTitle: {
-    color: colors.error,
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.medium,
-    marginBottom: spacing.md,
-  },
-});
+export { ThemedErrorBoundary as ErrorBoundary };

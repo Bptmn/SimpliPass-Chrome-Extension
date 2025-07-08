@@ -21,7 +21,7 @@ export const darkColors = {
   secondary: '#23bda1',
   tertiary: '#74787a',
   alternate: '#dd516c',
-  borderColor: '#B25B5E65',
+  borderColor: '#46494f',
   primaryBackground: '#282c30',
   secondaryBackground: '#3c3f49',
   whiteText: '#ffffff',

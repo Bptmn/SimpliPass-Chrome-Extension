@@ -10,6 +10,7 @@ import {
   SecureNoteEncrypted,
   ItemEncrypted
 } from '@app/core/types/types';
+import { ExpirationDate, createExpirationDate } from '@app/utils';
 import { encryptData, decryptData } from '@utils/crypto';
 
 type DecryptedItem = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted;
@@ -39,7 +40,25 @@ export async function decryptItem(
           url: contentJson.url || '',
           itemKey: itemKey,
         } as CredentialDecrypted;
-      case 'bank_card':
+      case 'bank_card': {
+        // Handle expiration date conversion from legacy Date format to new ExpirationDate format
+        let expirationDate: ExpirationDate;
+        if (contentJson.expirationDate) {
+          if (typeof contentJson.expirationDate === 'object' && contentJson.expirationDate.month && contentJson.expirationDate.year) {
+            // New format: { month, year }
+            expirationDate = createExpirationDate(contentJson.expirationDate.month, contentJson.expirationDate.year);
+          } else if (typeof contentJson.expirationDate === 'string') {
+            // Legacy format: ISO date string
+            const date = new Date(contentJson.expirationDate);
+            expirationDate = createExpirationDate(date.getMonth() + 1, date.getFullYear());
+          } else {
+            // Fallback
+            expirationDate = createExpirationDate(1, new Date().getFullYear() + 1);
+          }
+        } else {
+          expirationDate = createExpirationDate(1, new Date().getFullYear() + 1);
+        }
+        
         return {
           id: itemToDecrypt.id || '',
           createdDateTime: itemToDecrypt.created_at,
@@ -50,11 +69,12 @@ export async function decryptItem(
           color: contentJson.color || '',
           itemKey: itemKey,
           cardNumber: contentJson.cardNumber || '',
-          expirationDate: contentJson.expirationDate ? new Date(contentJson.expirationDate) : new Date(),
+          expirationDate,
           verificationNumber: contentJson.verificationNumber || '',
           bankName: contentJson.bankName || '',
           bankDomain: contentJson.bankDomain || '',
         } as BankCardDecrypted;
+      }
       case 'secure_note':
         return {
           id: itemToDecrypt.id || '',

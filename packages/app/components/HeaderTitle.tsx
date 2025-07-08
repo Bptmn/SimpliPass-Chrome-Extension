@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { colors } from '@design/colors';
+import { View, Text, Pressable } from 'react-native';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { Icon } from './Icon';
@@ -22,6 +23,38 @@ export const HeaderTitle: React.FC<HeaderTitleProps> = ({
   testID = 'header-title',
   accessibilityLabel,
 }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+
+  // Dynamic styles
+  const styles = {
+    backButton: {
+      alignItems: 'center' as const,
+      height: 44,
+      justifyContent: 'center' as const,
+      left: 0,
+      minWidth: 44,
+      paddingRight: spacing.sm,
+      position: 'absolute' as const,
+      top: 0,
+      zIndex: 1,
+    },
+    headerContainer: {
+      alignItems: 'center' as const,
+      flexDirection: 'row' as const,
+      height: 44,
+      position: 'relative' as const,
+      width: '100%',
+    },
+    title: {
+      color: themeColors.primary,
+      flex: 1,
+      fontSize: typography.fontSize.lg,
+      fontWeight: typography.fontWeight.medium,
+      textAlign: 'center' as const,
+    },
+  };
+
   return (
     <View style={styles.headerContainer} testID={testID}>
       <Pressable
@@ -31,38 +64,10 @@ export const HeaderTitle: React.FC<HeaderTitleProps> = ({
         testID="back-btn"
       >
         <View style={{ transform: [{ scaleX: -1 }] }}>
-          <Icon name="arrowRight" size={28} color={colors.primary} />
+          <Icon name="arrowRight" size={28} color={themeColors.primary} />
         </View>
       </Pressable>
       <Text style={styles.title}>{title}</Text>
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  backButton: {
-    alignItems: 'center',
-    height: 44,
-    justifyContent: 'center',
-    left: 0,
-    minWidth: 44,
-    paddingRight: spacing.sm,
-    position: 'absolute',
-    top: 0,
-    zIndex: 1,
-  },
-  headerContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    height: 44,
-    position: 'relative',
-    width: '100%',
-  },
-  title: {
-    color: colors.primary,
-    flex: 1,
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.medium,
-    textAlign: 'center',
-  },
-}); 
+}; 

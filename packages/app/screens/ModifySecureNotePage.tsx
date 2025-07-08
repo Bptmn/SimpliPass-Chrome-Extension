@@ -9,7 +9,8 @@ import { ErrorBanner } from '@components/ErrorBanner';
 import { Toast } from '@components/Toast';
 import { InputEdit } from '@components/InputEdit';
 import { ColorSelector } from '@components/ColorSelector';
-import { colors } from '@design/colors';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { pageStyles } from '@design/layout';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
@@ -18,6 +19,9 @@ import { useToast } from '@app/core/hooks/useToast';
 import { spacing } from '@design/layout';
 
 export const ModifySecureNotePage: React.FC = () => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
   const location = useLocation();
   const user = useUser();
@@ -108,7 +112,7 @@ export const ModifySecureNotePage: React.FC = () => {
       </ScrollView>
         <Button
           text="Confirmer"
-          color={colors.secondary}
+          color={themeColors.secondary}
           onPress={handleSubmit}
           disabled={loading}
         />
@@ -116,15 +120,19 @@ export const ModifySecureNotePage: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  buttonContainer: {
-    backgroundColor: 'transparent',
-    padding: spacing.lg,
-  },
-  errorText: {
-    color: colors.error,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
-    textAlign: 'center',
-  },
-}); 
+const getStyles = (mode: 'light' | 'dark') => {
+  const themeColors = getColors(mode);
+  
+  return StyleSheet.create({
+    buttonContainer: {
+      backgroundColor: 'transparent',
+      padding: spacing.lg,
+    },
+    errorText: {
+      color: themeColors.error,
+      fontSize: typography.fontSize.md,
+      fontWeight: typography.fontWeight.medium,
+      textAlign: 'center',
+    },
+  });
+}; 

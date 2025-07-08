@@ -1,11 +1,12 @@
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { HomePage } from '../HomePage';
 import { UserProvider } from '../../core/hooks/useUser';
 import { useUserStore } from '../../core/states/user';
 import { Timestamp } from 'firebase/firestore';
 
 export default {
-  title: 'Screens/HomePage',
+  title: 'Pages/HomePage',
   component: HomePage,
   parameters: {
     layout: 'fullscreen',
@@ -24,12 +25,14 @@ export const Default = () => {
   useUserStore.getState().setUser(mockUser);
   
   return (
-    <UserProvider value={mockUser}>
-      <HomePage 
-        user={mockUser} 
-        pageState={null} 
-        onInjectCredential={() => {}} 
-      />
-    </UserProvider>
+    <BrowserRouter>
+      <UserProvider value={mockUser}>
+        <HomePage 
+          user={mockUser} 
+          pageState={null} 
+          onInjectCredential={() => {}} 
+        />
+      </UserProvider>
+    </BrowserRouter>
   );
 }; 

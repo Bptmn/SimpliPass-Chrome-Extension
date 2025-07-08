@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
-import { colors } from '@design/colors';
+import { View, TextInput } from 'react-native';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 
@@ -11,6 +12,8 @@ interface CodeInputProps {
 }
 
 export const CodeInput: React.FC<CodeInputProps> = ({ value, length = 6, onChange }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
   const inputs = useRef<Array<TextInput | null>>([]);
 
   const handleChange = (text: string, idx: number) => {
@@ -42,6 +45,27 @@ export const CodeInput: React.FC<CodeInputProps> = ({ value, length = 6, onChang
     }
   };
 
+  // Dynamic styles
+  const styles = {
+    box: {
+      backgroundColor: themeColors.primaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.md,
+      borderWidth: 2,
+      color: themeColors.blackText,
+      fontSize: typography.fontSize.lg,
+      height: spacing.lg * 2,
+      textAlign: 'center' as const,
+      width: spacing.lg * 2,
+    },
+    container: {
+      flexDirection: 'row' as const,
+      gap: spacing.sm,
+      marginVertical: spacing.md,
+      width: '80%',
+    },
+  };
+
   return (
     <View style={styles.container}>
       {Array.from({ length }).map((_, idx) => (
@@ -63,24 +87,4 @@ export const CodeInput: React.FC<CodeInputProps> = ({ value, length = 6, onChang
       ))}
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  box: {
-    backgroundColor: colors.primaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md,
-    borderWidth: 2,
-    color: colors.blackText,
-    fontSize: typography.fontSize.lg,
-    height: spacing.lg * 2,
-    textAlign: 'center',
-    width: spacing.lg * 2,
-  },
-  container: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginVertical: spacing.md,
-    width: '80%',
-  },
-}); 
+}; 

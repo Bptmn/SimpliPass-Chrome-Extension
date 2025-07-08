@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ErrorBanner } from '@components/ErrorBanner';
-import { colors } from '@design/colors';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
@@ -18,6 +19,9 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
   onConfirm,
   onResend,
 }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
 
@@ -52,14 +56,14 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
             <View style={styles.btnList}>
               <Button
                 text="Confirmer"
-                color={colors.secondary}
+                color={themeColors.secondary}
                 width="full"
                 height="full"
                 onPress={handleSubmit}
               />
               <Button
                 text="Renvoyer le code"
-                color={colors.primary}
+                color={themeColors.primary}
                 width="full"
                 height="fit"
                 onPress={onResend}
@@ -73,37 +77,40 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  btnList: {
-    flexDirection: 'column',
-    gap: spacing.sm,
-  },
-  confirmationForm: {
-    maxWidth: 360,
-    width: '100%',
-  },
-
-  confirmationInputLabel: {
-    color: colors.tertiary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-  },
-  confirmationSubtitle: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.sm,
-    textAlign: 'center',
-  },
-  confirmationTitle: {
-    color: colors.primary,
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.medium,
-    marginBottom: spacing.sm,
-  },
-  formHeader: {
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  formSection: {
-    marginBottom: spacing.lg,
-  },
-});
+const getStyles = (mode: 'light' | 'dark') => {
+  const themeColors = getColors(mode);
+  
+  return StyleSheet.create({
+    btnList: {
+      flexDirection: 'column',
+      gap: spacing.sm,
+    },
+    confirmationForm: {
+      maxWidth: 360,
+      width: '100%',
+    },
+    confirmationInputLabel: {
+      color: themeColors.tertiary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+    },
+    confirmationSubtitle: {
+      color: themeColors.secondary,
+      fontSize: typography.fontSize.sm,
+      textAlign: 'center',
+    },
+    confirmationTitle: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.lg,
+      fontWeight: typography.fontWeight.medium,
+      marginBottom: spacing.sm,
+    },
+    formHeader: {
+      alignItems: 'center',
+      marginBottom: spacing.lg,
+    },
+    formSection: {
+      marginBottom: spacing.lg,
+    },
+  });
+};

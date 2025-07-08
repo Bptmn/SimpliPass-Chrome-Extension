@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, Alert } from 'react-native';
+import { View, Text, Pressable, Alert } from 'react-native';
 import { Icon } from './Icon';
-import { colors } from '@design/colors';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 
@@ -13,6 +14,9 @@ interface CopyButtonProps {
 }
 
 const CopyButton: React.FC<CopyButtonProps> = ({ textToCopy, ariaLabel = 'Copier', children, onClick }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(textToCopy);
@@ -22,6 +26,33 @@ const CopyButton: React.FC<CopyButtonProps> = ({ textToCopy, ariaLabel = 'Copier
     } catch {
       Alert.alert('Erreur lors de la copie');
     }
+  };
+
+  // Dynamic styles
+  const styles = {
+    button: {
+      alignItems: 'center' as const,
+      backgroundColor: themeColors.secondary,
+      borderRadius: radius.sm,
+      border: 'none' as const,
+      color: themeColors.white,
+      cursor: 'pointer' as const,
+      display: 'flex' as const,
+      justifyContent: 'center' as const,
+      padding: spacing.xs,
+    },
+    container: {
+      alignItems: 'center' as const,
+      display: 'flex' as const,
+      flexDirection: 'column' as const,
+      height: '100%',
+      justifyContent: 'space-evenly' as const,
+      width: '100%',
+    },
+    text: {
+      color: themeColors.whiteText,
+      fontSize: typography.fontSize.xxs,
+    },
   };
 
   return (
@@ -38,31 +69,5 @@ const CopyButton: React.FC<CopyButtonProps> = ({ textToCopy, ariaLabel = 'Copier
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    alignItems: 'center',
-    backgroundColor: colors.secondary,
-    borderRadius: radius.sm,
-    border: 'none',
-    color: colors.white,
-    cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'center',
-    padding: spacing.xs,
-  },
-  container: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    justifyContent: 'space-evenly',
-    width: '100%',
-  },
-  text: {
-    color: colors.whiteText,
-    fontSize: typography.fontSize.xxs,
-  },
-});
 
 export default CopyButton; 

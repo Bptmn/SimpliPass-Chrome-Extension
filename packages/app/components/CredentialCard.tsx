@@ -3,18 +3,19 @@
 // Used in both the popup and popover for credential display and interaction.
 
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { CredentialDecrypted } from '@app/core/types/types';
-import { colors } from '@design/colors';
+import { getColors } from '@design/colors';
 import { radius } from '@design/layout';
 import { cardStyles } from '@design/card';
 import { LazyCredentialIcon } from './LazyCredentialIcon';
 import CopyButton from './CopyButton';
 import { spacing } from '@design/layout';
 import { typography } from '@design/typography';
+import { useThemeMode } from '@app/core/logic/theme';
 
 // Minimal RN-compatible ErrorBanner
-const ErrorBanner: React.FC<{ message: string }> = ({ message }) => (
+const ErrorBanner: React.FC<{ message: string; styles: Record<string, object> }> = ({ message, styles }) => (
   <View style={styles.errorBanner}>
     <Text style={styles.errorTitle}>Erreur</Text>
     <Text style={styles.errorText}>{message}</Text>
@@ -37,6 +38,8 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
   onCopy,
 }) => {
   const [error, setError] = React.useState<string | null>(null);
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
 
   // Handles copying the password to clipboard
   const handleCopy = async () => {
@@ -49,11 +52,36 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
     }
   };
 
+  // Create dynamic styles based on current theme
+  const dynamicStyles = React.useMemo(() => ({
+    errorBanner: {
+      backgroundColor: themeColors.primaryBackground,
+      borderColor: themeColors.error,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      margin: spacing.lg,
+      padding: spacing.lg,
+      shadowColor: '#000',
+      shadowOpacity: 0.04,
+      shadowRadius: 8,
+    },
+    errorText: {
+      color: themeColors.secondary,
+      fontSize: typography.fontSize.sm,
+    },
+    errorTitle: {
+      color: themeColors.error,
+      fontSize: typography.fontSize.lg,
+      fontWeight: typography.fontWeight.medium,
+      marginBottom: spacing.md,
+    },
+  }), [themeColors]);
+
   return (
     <>
-      {error && <ErrorBanner message={error} />}
+      {error && <ErrorBanner message={error} styles={dynamicStyles} />}
       <Pressable
-        style={cardStyles.credentialCard}
+        style={[cardStyles.credentialCard, { backgroundColor: themeColors.secondaryBackground, borderColor: themeColors.borderColor }]}
         onPress={onPress}
         testID={testID}
         accessibilityRole="button"
@@ -62,10 +90,10 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
         <View style={cardStyles.credentialCardLeft}>
           <LazyCredentialIcon title={credential.title} url={credential.url} />
           <View style={cardStyles.credentialCardInfo}>
-            <Text style={cardStyles.credentialCardTitle} numberOfLines={1}>
+            <Text style={[cardStyles.credentialCardTitle, { color: themeColors.primary }]} numberOfLines={1}>
               {credential.title}
             </Text>
-            <Text style={cardStyles.credentialCardUsername} numberOfLines={1}>
+            <Text style={[cardStyles.credentialCardUsername, { color: themeColors.secondary }]} numberOfLines={1}>
               {credential.username}
             </Text>
           </View>
@@ -77,27 +105,3 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  errorBanner: {
-    backgroundColor: colors.primaryBackground,
-    borderColor: colors.error,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    margin: spacing.lg,
-    padding: spacing.lg,
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-  },
-  errorText: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.sm,
-  },
-  errorTitle: {
-    color: colors.error,
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.medium,
-    marginBottom: spacing.md,
-  },
-});

@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
-import { colors } from '@design/colors';
+import { View, Text, TextInput, Pressable } from 'react-native';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { spacing } from '@design/layout';
 import { radius } from '@design/layout';
 import { typography } from '@design/typography';
 import { Icon } from './Icon';
 import { useInputLogic } from '@app/core/hooks';
-
 
 // --- Input classique ---
 interface InputProps {
@@ -34,6 +34,9 @@ export const Input: React.FC<InputProps> = ({
   error,
   disabled = false,
 }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+  
   const {
     showPassword,
     inputHeight,
@@ -41,15 +44,67 @@ export const Input: React.FC<InputProps> = ({
     handleContentSizeChange,
   } = useInputLogic(type);
 
+  // Dynamic styles
+  const inputStyles = {
+    inputError: {
+      color: themeColors.error,
+      fontSize: typography.fontSize.sm,
+      marginBottom: spacing.xs,
+    },
+    inputField: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.xxl,
+      borderWidth: 1,
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.md,
+    },
+    inputFieldDisabled: {
+      backgroundColor: themeColors.disabled,
+      color: themeColors.tertiary,
+    },
+    inputFieldError: {
+    },
+    inputLabel: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+      paddingBottom: spacing.xs,
+    },
+    inputLabelRow: {
+      alignItems: 'center' as const,
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      paddingRight: spacing.md,
+    },
+    inputValidation: {
+      alignItems: 'center' as const,
+      flexDirection: 'row' as const,
+      paddingBottom: spacing.xs,
+    },
+    inputValidationText: {
+      color: themeColors.secondary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: '500' as const,
+      marginLeft: spacing.xs,
+    },
+    placeholderTextSize: {
+      fontSize: typography.fontSize.xs,
+    },
+  };
+
   return (
     <View>
       <Text style={inputStyles.inputLabel}>{label}</Text>
       <View style={{ position: 'relative' }}>
         <TextInput
           placeholder={placeholder}
-          placeholderTextColor={colors.tertiary}
+          placeholderTextColor={themeColors.tertiary}
           style={[
             inputStyles.inputField,
+            inputStyles.placeholderTextSize,
             type === 'note' && {
               height: inputHeight,
               textAlignVertical: 'top',
@@ -91,7 +146,7 @@ export const Input: React.FC<InputProps> = ({
             <Icon 
               name={showPassword ? 'visibilityOff' : 'visibility'} 
               size={20} 
-              color={colors.tertiary} 
+              color={themeColors.tertiary} 
             />
           </Pressable>
         )}
@@ -100,7 +155,6 @@ export const Input: React.FC<InputProps> = ({
     </View>
   );
 };
-
 
 interface InputPasswordStrengthProps {
   label: string;
@@ -127,18 +181,72 @@ export const InputPasswordStrength: React.FC<InputPasswordStrengthProps> = ({
   disabled = false,
   strength,
 }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+
   const getStrengthColor = () => {
     switch (strength) {
       case 'weak':
-        return colors.error;
+        return themeColors.error;
       case 'average':
-        return colors.warning;
+        return themeColors.warning;
       case 'strong':
       case 'perfect':
-        return colors.secondary;
+        return themeColors.secondary;
       default:
-        return colors.secondary;
+        return themeColors.secondary;
     }
+  };
+
+  // Dynamic styles
+  const inputStyles = {
+    inputError: {
+      color: themeColors.error,
+      fontSize: typography.fontSize.sm,
+      marginBottom: spacing.xs,
+    },
+    inputField: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.xxl,
+      borderWidth: 1,
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.md,
+    },
+    inputFieldDisabled: {
+      backgroundColor: themeColors.disabled,
+      color: themeColors.tertiary,
+    },
+    inputFieldError: {
+    },
+    inputLabel: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+      paddingBottom: spacing.xs,
+    },
+    inputLabelRow: {
+      alignItems: 'center' as const,
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      paddingRight: spacing.md,
+    },
+    inputValidation: {
+      alignItems: 'center' as const,
+      flexDirection: 'row' as const,
+      paddingBottom: spacing.xs,
+    },
+    inputValidationText: {
+      color: themeColors.secondary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: '500' as const,
+      marginLeft: spacing.xs,
+    },
+    placeholderTextSize: {
+      fontSize: typography.fontSize.xs,
+    },
   };
 
   return (
@@ -159,9 +267,10 @@ export const InputPasswordStrength: React.FC<InputPasswordStrengthProps> = ({
         </View>
         <TextInput
           placeholder={placeholder}
-          placeholderTextColor={colors.tertiary}
+          placeholderTextColor={themeColors.tertiary}
           style={[
             inputStyles.inputField,
+            inputStyles.placeholderTextSize,
             error ? inputStyles.inputFieldError : null,
             disabled ? inputStyles.inputFieldDisabled : null,
           ]}
@@ -174,53 +283,4 @@ export const InputPasswordStrength: React.FC<InputPasswordStrengthProps> = ({
         {error ? <Text style={inputStyles.inputError}>{error}</Text> : null}
     </View>
   );
-}; 
-
-
-// Input-specific styles
-const inputStyles = StyleSheet.create({
-    inputLabel: {
-        color: colors.primary,
-        fontSize: typography.fontSize.sm,
-        fontWeight: typography.fontWeight.medium,
-        paddingBottom: spacing.xs,
-        },
-        inputLabelRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingRight: spacing.md,
-        },
-      inputField: {
-        backgroundColor: colors.secondaryBackground,
-        borderColor: colors.borderColor,
-        borderRadius: radius.xxl,
-        borderWidth: 1,
-        color: colors.primary,
-        fontSize: typography.fontSize.sm,
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.md,
-      },
-    inputFieldDisabled: {
-      backgroundColor: colors.disabled,
-      color: colors.tertiary,
-    },
-    inputFieldError: {
-    },
-    inputError: {
-      color: colors.error,
-      fontSize: typography.fontSize.sm,
-      marginBottom: spacing.xs,
-    },
-    inputValidation: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      paddingBottom: spacing.xs,
-    },
-    inputValidationText: {
-      color: colors.secondary,
-      fontSize: typography.fontSize.sm,
-      fontWeight: '500',
-      marginLeft: spacing.xs,
-    },
-  });
+};

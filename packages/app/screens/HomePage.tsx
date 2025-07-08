@@ -3,7 +3,8 @@ import { View, Text, TextInput, Pressable, StyleSheet, ScrollView } from 'react-
 import { pageStyles } from '@design/layout';
 import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
-import { colors } from '@design/colors';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 
 import { CredentialDetailsPage } from './CredentialDetailsPage';
 import {
@@ -30,6 +31,9 @@ export const HomePage: React.FC<HomePageProps> = ({
   pageState: _pageState,
   onInjectCredential: _onInjectCredential,
 }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
   const {
     user,
     category,
@@ -67,15 +71,6 @@ export const HomePage: React.FC<HomePageProps> = ({
     return <SecureNoteDetailsPage note={selectedSecureNote} onBack={() => setSelectedSecureNote(null)} />;
   }
 
-  // Show loading spinner only if loading and user is null
-  if (loading && user === null) {
-    return (
-      <View style={pageStyles.pageContainer}>
-        <Text style={styles.loadingSpinner}>Chargement du profil utilisateur...</Text>
-      </View>
-    );
-  }
-
   const suggestions = getSuggestions();
   const filteredItems = getFilteredItems();
 
@@ -84,11 +79,11 @@ export const HomePage: React.FC<HomePageProps> = ({
     <View style={pageStyles.pageContainer}>
       {/* Error banner if any error occurs */}
       {error && <ErrorBanner message={error} />}
-      
+
       {/* Sticky Search Bar */}
       <View style={styles.stickySearchBar}>
         <View style={styles.searchBarIcon}>
-          <Icon name="search" size={25} color={colors.secondary} />
+          <Icon name="search" size={22} color={themeColors.secondary} />
         </View>
         <TextInput
           style={styles.searchInput}
@@ -103,16 +98,16 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* Category Row (Horizontal Scroll) */}
       <ScrollView
         horizontal
-        style={{flexGrow: 0}}
+        style={{ flexGrow: 0 }}
         showsHorizontalScrollIndicator={true}
-        contentContainerStyle={{flexDirection: 'row', alignItems: 'center', paddingVertical: 0, gap: 8 }}
+        contentContainerStyle={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 0, gap: 8 }}
       >
         <Pressable
           style={[styles.categoryBtn, category === 'credentials' && styles.categoryBtnActive]}
           onPress={() => setCategory('credentials')}
           testID="category-credentials"
         >
-          <Icon name="password" size={20} color={colors.primary} />
+          <Icon name="password" size={20} color={themeColors.primary} />
           <Text style={[styles.categoryBtnText, category === 'credentials' && styles.categoryBtnTextActive]}>Identifiants</Text>
         </Pressable>
         <Pressable
@@ -120,7 +115,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           onPress={() => setCategory('bankCards')}
           testID="category-bank-cards"
         >
-          <Icon name="creditCard" size={20} color={colors.primary} />
+          <Icon name="creditCard" size={20} color={themeColors.primary} />
           <Text style={[styles.categoryBtnText, category === 'bankCards' && styles.categoryBtnTextActive]}>Cartes bancaire</Text>
         </Pressable>
         <Pressable
@@ -128,7 +123,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           onPress={() => setCategory('secureNotes')}
           testID="category-secure-notes"
         >
-          <Icon name="note" size={20} color={colors.primary} />
+          <Icon name="note" size={20} color={themeColors.primary} />
           <Text style={[styles.categoryBtnText, category === 'secureNotes' && styles.categoryBtnTextActive]}>Notes sécurisées</Text>
         </Pressable>
       </ScrollView>
@@ -151,14 +146,14 @@ export const HomePage: React.FC<HomePageProps> = ({
                 ))}
               </View>
             ) : (
-              <Pressable 
-                style={styles.suggestionPlaceholder} 
+              <Pressable
+                style={styles.suggestionPlaceholder}
                 onPress={handleAddSuggestion}
                 accessibilityRole="button"
                 testID="add-suggestion-button"
               >
                 <View style={styles.addSuggestionBtn}>
-                  <Icon name="add" size={25} color={colors.primary} />
+                  <Icon name="add" size={25} color={themeColors.primary} />
                 </View>
                 <View style={styles.addSuggestionBtnTextContainer}>
                   <Text style={styles.addSuggestionBtnText}>Ajouter un identifiant</Text>
@@ -240,115 +235,119 @@ export const HomePage: React.FC<HomePageProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  addSuggestionBtn: {
-    alignItems: 'center',
-    backgroundColor: colors.primaryBackground,
-    borderColor: colors.primary,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    display: 'flex',
-    height: 40,
-    justifyContent: 'center',
-    width: 40,
-  },
-  addSuggestionBtnText: {
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
-  },
-  addSuggestionBtnTextContainer: {
-    alignItems: 'flex-start',
-    display: 'flex',
-    flexDirection: 'column',
-    height: 40,
-    justifyContent: 'space-around',
-    marginLeft: spacing.sm + spacing.xxs,
-  },
-  categoryBtn: {
-    alignItems: 'center',
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    display: 'flex',
-    flexDirection: 'row',
-    gap: spacing.xs,
-    justifyContent: 'space-around',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  categoryBtnActive: {
-    borderColor: colors.secondary,
-    borderWidth: 2,
-  },
-  categoryBtnText: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-  },
-  categoryBtnTextActive: {
-    color: colors.primary,
-  },
-  credentialList: {
-    flexDirection: 'column',
-    width: '100%',
-  },
-  emptyState: {
-    color: colors.tertiary,
-    fontSize: typography.fontSize.xs,
-    fontStyle: 'italic',
-    textAlign: 'center',
-  },
-  homeContent: {
-    flexDirection: 'column',
-    gap: spacing.lg,
-  },
-  loadingSpinner: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.md,
-    margin: spacing.lg,
-    textAlign: 'center',
-  },
-  pageSection: {
-    gap: spacing.md,
-  },
-  searchBarIcon: {
-    left: spacing.sm,
-    position: 'absolute',
-    zIndex: 1,
-  },
-  searchInput: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    height: 42,
-    paddingHorizontal: spacing.lg,
-    paddingLeft: spacing.xl,
-    placeholderTextColor: colors.tertiary,
-    width: '100%',
-  },
-  sectionTitle: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
-  },
-  stickySearchBar: {
-    alignItems: 'center',
-    backgroundColor: colors.primaryBackground,
-    flexDirection: 'row',
-    position: 'relative',
-    zIndex: 10,
-  },
-  suggestionPlaceholder: {
-    alignItems: 'flex-start',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    marginLeft: spacing.xs,
-  },
-});
+const getStyles = (mode: 'light' | 'dark') => {
+  const themeColors = getColors(mode);
+  
+  return StyleSheet.create({
+    addSuggestionBtn: {
+      alignItems: 'center',
+      backgroundColor: themeColors.primaryBackground,
+      borderColor: themeColors.primary,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      display: 'flex',
+      height: 40,
+      justifyContent: 'center',
+      width: 40,
+    },
+    addSuggestionBtnText: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.md,
+      fontWeight: typography.fontWeight.medium,
+    },
+    addSuggestionBtnTextContainer: {
+      alignItems: 'flex-start',
+      display: 'flex',
+      flexDirection: 'column',
+      height: 40,
+      justifyContent: 'space-around',
+      marginLeft: spacing.sm + spacing.xxs,
+    },
+    categoryBtn: {
+      alignItems: 'center',
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.xl,
+      borderWidth: 1,
+      display: 'flex',
+      flexDirection: 'row',
+      gap: spacing.xs,
+      justifyContent: 'space-around',
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+    },
+    categoryBtnActive: {
+      borderColor: themeColors.secondary,
+      borderWidth: 2,
+    },
+    categoryBtnText: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+    },
+    categoryBtnTextActive: {
+      color: themeColors.primary,
+    },
+    credentialList: {
+      flexDirection: 'column',
+      width: '100%',
+    },
+    emptyState: {
+      color: themeColors.tertiary,
+      fontSize: typography.fontSize.xs,
+      fontStyle: 'italic',
+      textAlign: 'center',
+    },
+    homeContent: {
+      flexDirection: 'column',
+      gap: spacing.lg,
+    },
+    loadingSpinner: {
+      color: themeColors.secondary,
+      fontSize: typography.fontSize.md,
+      margin: spacing.lg,
+      textAlign: 'center',
+    },
+    pageSection: {
+      gap: spacing.md,
+    },
+    searchBarIcon: {
+      left: spacing.sm,
+      position: 'absolute',
+      zIndex: 1,
+    },
+    searchInput: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.xl,
+      borderWidth: 1,
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      height: 42,
+      paddingHorizontal: spacing.lg,
+      paddingLeft: spacing.xxl,
+      placeholderTextColor: themeColors.tertiary,
+      width: '100%',
+    },
+    sectionTitle: {
+      color: themeColors.secondary,
+      fontSize: typography.fontSize.md,
+      fontWeight: typography.fontWeight.medium,
+    },
+    stickySearchBar: {
+      alignItems: 'center',
+      backgroundColor: themeColors.primaryBackground,
+      flexDirection: 'row',
+      position: 'relative',
+      zIndex: 10,
+    },
+    suggestionPlaceholder: {
+      alignItems: 'flex-start',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      marginLeft: spacing.xs,
+    },
+  });
+};
 

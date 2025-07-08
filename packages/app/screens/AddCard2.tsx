@@ -3,13 +3,16 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { View, Text, Pressable, StyleSheet, ScrollView, Platform } from 'react-native';
 import { Input } from '@components/InputFields';
 import ItemBankCard from '@components/ItemBankCard';
-import { colors } from '@design/colors';
+import { Icon } from '@components/Icon';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { spacing, radius, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { addItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
 import { useUser } from '@app/core/hooks/useUser';
 import { BankCardDecrypted } from '@app/core/types/types';
+import { createExpirationDate, parseExpirationDate } from '@app/utils';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -17,6 +20,9 @@ import { ColorSelector } from '@components/ColorSelector';
 import { getMonthOptions, getYearOptions } from '@app/core/logic/cards';
 
 const AddCard2: React.FC = () => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
   const location = useLocation();
   const user = useUser();
@@ -46,12 +52,10 @@ const AddCard2: React.FC = () => {
     try {
       const userSecretKey = await getUserSecretKey();
       if (!userSecretKey) throw new Error('Clé de sécurité utilisateur introuvable');
+      
       // Parse expiration date
-      let expDate = new Date();
-      if (expirationDate.match(/^(0[1-9]|1[0-2])\/(\d{2})$/)) {
-        const [mm, yy] = expirationDate.split('/');
-        expDate = new Date(Number('20' + yy), Number(mm) - 1, 1);
-      }
+      const expDate = parseExpirationDate(expirationDate) || createExpirationDate(1, new Date().getFullYear() + 1);
+      
       const newCard: Omit<BankCardDecrypted, 'id'> = {
         createdDateTime: new Date(),
         lastUseDateTime: new Date(),
@@ -92,9 +96,7 @@ const AddCard2: React.FC = () => {
     color: selectedColor,
     itemKey: '',
     cardNumber: cardNumber || '0000000000000000',
-    expirationDate: expirationDate.match(/^(0[1-9]|1[0-2])\/(\d{2})$/)
-      ? new Date(Number('20' + expirationDate.split('/')[1]), Number(expirationDate.split('/')[0]) - 1, 1)
-      : new Date(),
+    expirationDate: parseExpirationDate(expirationDate) || createExpirationDate(1, new Date().getFullYear() + 1),
     verificationNumber: cvv || '',
     bankName: bankName || '',
     bankDomain: bankDomain || '',
@@ -140,32 +142,51 @@ const AddCard2: React.FC = () => {
                 <Text style={styles.inputDateLabel}>Date d&apos;expiration</Text>
                 {Platform.OS === 'web' ? (
                   <View style={styles.inputContainer}>
-                    <select
-                      value={selectedMonth}
-                      onChange={e => {
-                        const mm = e.target.value;
-                        setExpirationDate(`${mm}/${selectedYear.slice(-2)}`);
-                      }}
-                      style={styles.inputDateSelect}
-                    >
-                      <option value=""><Text>Mois</Text></option>
-                      {monthOptions.map(m => (
-                        <option key={m} value={m}>{m}</option>
-                      ))}
-                    </select>
-                    <select
-                      value={selectedYear}
-                      onChange={e => {
-                        const yyyy = e.target.value;
-                        setExpirationDate(`${selectedMonth}/${yyyy.slice(-2)}`);
-                      }}
-                      style={styles.inputDateSelect}
-                    >
-                      <option value=""><Text>Année</Text></option>
-                      {yearOptions.map(y => (
-                        <option key={y} value={y}>{y}</option>
-                      ))}
-                    </select>
+                    <View style={styles.selectContainer}>
+                      <View style={styles.selectContent}>
+                        <Text style={selectedMonth ? styles.inputDateSelectText : styles.inputDatePlaceholder}>
+                          {selectedMonth || 'Mois'}
+                        </Text>
+                        <Icon name="arrowDown" size={16} color={themeColors.tertiary} />
+                      </View>
+                      <select
+                        value={selectedMonth}
+                        onChange={e => {
+                          const mm = e.target.value;
+                          setExpirationDate(`${mm}/${selectedYear.slice(-2)}`);
+                        }}
+                        style={styles.inputDateSelect}
+                      >
+                        <option value=""></option>
+                        {monthOptions.map(m => (
+                          <option key={m} value={m}>{m}</option>
+                        ))}
+                      </select>
+                    </View>
+                    {selectedMonth && selectedYear && (
+                      <Text style={styles.dateSeparator}>/</Text>
+                    )}
+                    <View style={styles.selectContainer}>
+                      <View style={styles.selectContent}>
+                        <Text style={selectedYear ? styles.inputDateSelectText : styles.inputDatePlaceholder}>
+                          {selectedYear ? selectedYear.slice(-2) : 'Année'}
+                        </Text>
+                        <Icon name="arrowDown" size={16} color={themeColors.tertiary} />
+                      </View>
+                      <select
+                        value={selectedYear}
+                        onChange={e => {
+                          const yyyy = e.target.value;
+                          setExpirationDate(`${selectedMonth}/${yyyy.slice(-2)}`);
+                        }}
+                        style={styles.inputDateSelect}
+                      >
+                        <option value=""></option>
+                        {yearOptions.map(y => (
+                          <option key={y} value={y}>{y}</option>
+                        ))}
+                      </select>
+                    </View>
                   </View>
                 ) : (
                   <>
@@ -174,7 +195,7 @@ const AddCard2: React.FC = () => {
                       onPress={() => setDatePickerVisible(true)}
                       accessibilityLabel="Sélectionner la date d'expiration"
                     >
-                      <Text style={{ color: expirationDate ? colors.primary : colors.tertiary }}>
+                      <Text style={{ color: expirationDate ? themeColors.primary : themeColors.tertiary }}>
                         {expirationDate || 'MM/YY'}
                       </Text>
                     </Pressable>
@@ -212,7 +233,7 @@ const AddCard2: React.FC = () => {
             />
             <Button
               text="Valider"
-              color={colors.secondary}
+              color={themeColors.secondary}
               width="full"
               height="full"
               onPress={handleConfirm}
@@ -226,55 +247,93 @@ const AddCard2: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  inputDateLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    paddingBottom: spacing.xs,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    paddingHorizontal: spacing.sm,
-  },
-  inputDateSelect: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm, 
-    fontWeight: typography.fontWeight.medium,
-    height: 40,
-    justifyContent: 'center',
-    paddingHorizontal: spacing.md,
-    placeholderTextColor: colors.tertiary,
-    width: '100%',
-    border: 'none',
-    backgroundColor: 'transparent',
-  },
-  errorText: {
-    color: colors.error,
-    fontSize: typography.fontSize.sm,
-    textAlign: 'center',
-  },
-  inputDate: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-  },
-  inputDateColumn: {
-    flex: 1,
-  },
-  inputColumn: {
-    flex: 1,
-  },
-  row2col: {
-    flexDirection: 'row',
-    gap: spacing.xl,
-  },
-});
+const getStyles = (mode: 'light' | 'dark') => {
+  const themeColors = getColors(mode);
+  
+  return StyleSheet.create({
+    errorText: {
+      color: themeColors.error,
+      fontSize: typography.fontSize.sm,
+      textAlign: 'center',
+    },
+    inputContainer: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.xl,
+      borderWidth: 1,
+      flexDirection: 'row',
+      gap: spacing.xs,
+      paddingHorizontal: spacing.sm,
+    },
+    inputColumn: {
+      flex: 1,
+    },
+    inputDate: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.xl,
+      borderWidth: 1,
+    },
+    inputDateColumn: {
+      flex: 1,
+    },
+    inputDateLabel: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+      paddingBottom: spacing.xs,
+    },
+    inputDatePlaceholder: {
+      color: themeColors.tertiary,
+      fontSize: typography.fontSize.xs,
+      fontWeight: typography.fontWeight.regular,
+    },
+    inputDateSelect: {
+      backgroundColor: 'transparent',
+      border: 'none',
+      color: 'transparent',
+      fontSize: typography.fontSize.sm, 
+      fontWeight: typography.fontWeight.medium,
+      height: 40,
+      justifyContent: 'center',
+      left: 0,
+      paddingHorizontal: spacing.md,
+      placeholderTextColor: themeColors.tertiary,
+      position: 'absolute',
+      top: 0,
+      width: '100%',
+      zIndex: 1,
+    },
+    inputDateSelectText: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+    },
+    row2col: {
+      flexDirection: 'row',
+      gap: spacing.xl,
+    },
+    selectContainer: {
+      alignItems: 'flex-start',
+      flex: 1,
+      height: 40,
+      justifyContent: 'center',
+      position: 'relative',
+    },
+    selectContent: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: spacing.xs,
+      width: '100%',
+      justifyContent: 'center',
+    },
+    dateSeparator: {
+      alignSelf: 'center',
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+    },
+  });
+};
 
 export default AddCard2; 

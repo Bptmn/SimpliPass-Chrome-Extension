@@ -11,9 +11,12 @@ import { ErrorBanner } from '@components/ErrorBanner';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
 import { ColorSelector } from '@components/ColorSelector';
-import { colors } from '@design/colors';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 
 const AddSecureNote: React.FC = () => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
   const navigate = useNavigate();
   const user = useUser();
   const [title, setTitle] = useState('');
@@ -81,7 +84,7 @@ const AddSecureNote: React.FC = () => {
           />
           <Button
             text="Confirmer"
-            color={colors.secondary}
+            color={themeColors.secondary}
             width="full"
             height="full"
             onPress={handleConfirm}

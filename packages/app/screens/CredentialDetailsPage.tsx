@@ -8,7 +8,8 @@ import { ErrorBanner } from '@components/ErrorBanner';
 import { Icon } from '@components/Icon';
 import { LazyCredentialIcon } from '@components/LazyCredentialIcon';
 import { useToast } from '@app/core/hooks/useToast';
-import { colors } from '@design/colors';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 import { padding, radius, spacing, pageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
@@ -25,13 +26,15 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   credential,
   onBack,
 }) => {
-
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
   const navigate = useNavigate();
   const user = useUser();
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
 
   const handleLaunch = (url: string) => {
     try {
@@ -79,7 +82,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
         <View style={styles.headerRow}>
           <Pressable style={styles.backBtn} onPress={onBack} accessibilityLabel="Retour">
             <View style={{ transform: [{ scaleX: -1 }] }}>
-              <Icon name="arrowRight" size={28} color={colors.primary} />
+              <Icon name="arrowRight" size={28} color={themeColors.primary} />
             </View>
           </Pressable>
           <View style={styles.headerContent}>
@@ -118,7 +121,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
                   onPress={() => setShowPassword((v) => !v)}
                   accessibilityLabel={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                 >
-                  <Icon name={showPassword ? 'visibilityOff' : 'visibility'} size={22} color={colors.tertiary} />
+                  <Icon name={showPassword ? 'visibilityOff' : 'visibility'} size={22} color={themeColors.tertiary} />
                 </Pressable>
               </View>
             </View>
@@ -155,7 +158,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
         <View style={styles.actionsRow}>
           <Button
             text="Modifier"
-            color={colors.tertiary}
+            color={themeColors.tertiary}
             width="full"
             height="full"
             onPress={handleEdit}
@@ -164,7 +167,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
           />
           <Button
             text="Supprimer"
-            color={colors.error}
+            color={themeColors.error}
             width="full"
             height="full"
             onPress={handleDelete}
@@ -183,98 +186,103 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   );
 };
 
-export const styles = StyleSheet.create({
-  actionsRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    justifyContent: 'space-around',
-    width: '100%',
-  },
+const getStyles = (mode: 'light' | 'dark') => {
+  const themeColors = getColors(mode);
+  
+  return StyleSheet.create({
+    actionsRow: {
+      flexDirection: 'row',
+      gap: spacing.md,
+      justifyContent: 'space-around',
+      width: '100%',
+    },
 
-  backBtn: {
-    alignItems: 'center',
-    height: 44,
-    justifyContent: 'center',
-    left: 0,
-    minWidth: 44,
-    padding: spacing.sm,
-    position: 'absolute',
-    top: 0,
-    zIndex: 1,
-  },
+    backBtn: {
+      alignItems: 'center',
+      height: 44,
+      justifyContent: 'center',
+      left: 0,
+      minWidth: 44,
+      padding: spacing.sm,
+      position: 'absolute',
+      top: 0,
+      zIndex: 1,
+    },
+
+    cardGroup: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      padding: padding.sm,
+      width: '100%',
+    },
+
+    credentialFieldRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+    },
+
+    divider: {
+      borderBottomColor: themeColors.borderColor,
+      borderBottomWidth: 1,
+      marginVertical: spacing.xs,
+      width: '100%',
+    },
+
+    eyeBtn: {
+      marginLeft: spacing.sm,
+      marginRight: spacing.sm,
+    },
+    fieldLabel: {
+      color: themeColors.tertiary,
+      fontSize: typography.fontSize.xs,
+      fontWeight: typography.fontWeight.regular,
+      marginBottom: spacing.xxs,
+    },
+    fieldLeft: {
+      flex: 1,
+      flexDirection: 'column',
+    },
+    fieldValue: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.regular,
+    },
+    headerContent: {
+      alignItems: 'center',
+      flex: 1,
+      gap: spacing.sm,
+      marginTop: spacing.md,
+    },
+    headerRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      position: 'relative',
+      width: '100%',
+    },
+    iconCenter: {
+      alignItems: 'center',
+    },
 
 
-  cardGroup: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    padding: padding.md,
-    width: '100%',
-  },
 
-  credentialFieldRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-
-  divider: {
-    borderBottomColor: colors.borderColor,
-    borderBottomWidth: 1,
-    marginVertical: spacing.xs,
-    width: '100%',
-  },
-
-  eyeBtn: {
-    marginLeft: spacing.sm,
-    marginRight: spacing.sm,
-    padding: spacing.xxs,
-  },
-  fieldLabel: {
-    color: colors.tertiary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-  },
-  fieldLeft: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  fieldValue: {
-    color: colors.primary,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.regular,
-  },
-  headerContent: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  headerRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    position: 'relative',
-    width: '100%',
-  },
-  iconCenter: {
-    alignItems: 'center',
-  },
-
-
-
-  pageContent: {
-    flex: 1,
-    gap: spacing.md,
-  },
-  passwordRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  title: {
-    color: colors.primary,
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.bold,
-    textAlign: 'center',
-  },
-});
+    pageContent: {
+      flex: 1,
+      gap: spacing.md,
+    },
+    passwordRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    title: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.lg,
+      fontWeight: typography.fontWeight.bold,
+      textAlign: 'center',
+    },
+  });
+};

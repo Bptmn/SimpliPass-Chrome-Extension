@@ -1,14 +1,71 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useThemeMode } from '@app/core/logic/theme';
-import { colors, getColors } from '@design/colors';
+import { getColors } from '@design/colors';
 import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { Icon } from './Icon';
 
 export const ModeSwitch: React.FC = () => {
   const { mode, setMode } = useThemeMode();
-  const colors = getColors(mode);
+  const themeColors = getColors(mode);
+
+  // Dynamic styles
+  const styles = {
+    container: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      height: 50,
+      padding: spacing.xs,
+      width: '90%',
+    },
+    option: {
+      alignItems: 'center' as const,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      flex: 1,
+      flexDirection: 'row' as const,
+      gap: spacing.xs,
+      height: '100%',
+      justifyContent: 'center' as const,
+    },
+    optionActive: {
+      backgroundColor: themeColors.white,
+      borderColor: themeColors.borderColor,
+      borderWidth: 1,
+    },
+    optionInactive: {
+      backgroundColor: 'transparent',
+      borderColor: 'transparent',
+      borderWidth: 0,
+    },
+    optionTextActiveDark: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+      marginLeft: spacing.xs,
+    },
+    optionTextActiveLight: {
+      color: themeColors.secondary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+      marginLeft: spacing.xs,
+    },
+    optionTextInactive: {
+      color: themeColors.tertiary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+      marginLeft: spacing.xs,
+    },
+    row: {
+      alignItems: 'center' as const,
+      flexDirection: 'row' as const,
+      flex: 1,
+      justifyContent: 'space-between' as const,
+    },
+  };
 
   return (
     <View style={styles.container}
@@ -25,7 +82,7 @@ export const ModeSwitch: React.FC = () => {
           testID="light-mode-button"
           accessibilityLabel="Switch to light mode"
         >
-          <Icon name="sun" size={20} color={mode === 'light' ? colors.secondary : colors.tertiary} />
+          <Icon name="sun" size={20} color={mode === 'light' ? themeColors.secondary : themeColors.tertiary} />
           <Text style={mode === 'light' ? styles.optionTextActiveLight : styles.optionTextInactive}>Mode clair</Text>
         </Pressable>
         
@@ -38,70 +95,12 @@ export const ModeSwitch: React.FC = () => {
           testID="dark-mode-button"
           accessibilityLabel="Switch to dark mode"
         >
-          <Icon name="moon" size={20} color={mode === 'dark' ? colors.primary : colors.tertiary} />
+          <Icon name="moon" size={20} color={mode === 'dark' ? themeColors.primary : themeColors.tertiary} />
           <Text style={mode === 'dark' ? styles.optionTextActiveDark : styles.optionTextInactive}>Mode sombre</Text>
         </Pressable>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.secondaryBackground,
-    borderColor: colors.borderColor,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    height: 50,
-    padding: spacing.xs,
-    width: '90%',
-  },
-  option: {
-    alignItems: 'center',
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    flex: 1,
-    flexDirection: 'row',
-    gap: spacing.xs,
-    height: '100%',
-    justifyContent: 'center',
-    marginHorizontal: spacing.xs,
-  },
-  optionActive: {
-    backgroundColor: colors.white,
-    borderColor: colors.borderColor,
-    borderWidth: 1,
-  },
-  optionInactive: {
-    backgroundColor: 'transparent',
-    borderColor: 'transparent',
-    borderWidth: 0,
-  },
-
-  optionTextActiveDark: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    marginLeft: spacing.xs,
-  },
-  optionTextActiveLight: {
-    color: colors.secondary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    marginLeft: spacing.xs,
-  },
-  optionTextInactive: {
-    color: colors.tertiary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    marginLeft: spacing.xs,
-  },
-  row: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-});
 
 export default ModeSwitch; 

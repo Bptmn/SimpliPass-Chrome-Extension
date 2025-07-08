@@ -2,14 +2,18 @@ import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { BankCardDecrypted } from '@app/core/types/types';
+import { ExpirationDate, formatExpirationDate } from '@app/utils';
 import { deleteItem } from '@app/core/logic/items';
 import { useUser } from '@app/core/hooks/useUser';
 import { ErrorBanner } from '@components/ErrorBanner';
 import { Icon } from '@components/Icon';
 import { LazyCredentialIcon } from '@components/LazyCredentialIcon';
 import { useToast } from '@app/core/hooks/useToast';
-import { colors } from '@design/colors';
-import { pageStyles } from '@design/layout';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
+import { pageStyles, spacing } from '@design/layout';
+import { typography } from '@design/typography';
+import { StyleSheet } from 'react-native';
 import { Button } from '@components/Buttons';
 import { DetailField } from '@components/DetailField';
 import { MoreInfo } from '@components/MoreInfo';
@@ -23,6 +27,9 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   card,
   onBack,
 }) => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
   const user = useUser();
   const [error, setError] = useState<string | null>(null);
@@ -54,9 +61,9 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
     }
   };
 
-  const formatDate = (date: Date) => {
-    if (!date) return '';
-    return date.toLocaleDateString('fr-FR', { month: '2-digit', year: '2-digit' });
+  const formatDate = (expDate: ExpirationDate) => {
+    if (!expDate) return '';
+    return formatExpirationDate(expDate);
   };
 
   return (
@@ -67,7 +74,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
         <View style={styles.headerRow}>
           <Pressable style={styles.backBtn} onPress={onBack} accessibilityLabel="Retour">
             <View style={{ transform: [{ scaleX: -1 }] }}>
-              <Icon name="arrowRight" size={28} color={colors.primary} />
+              <Icon name="arrowRight" size={28} color={themeColors.primary} />
             </View>
           </Pressable>
           <View style={styles.headerContent}>
@@ -118,7 +125,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
         <View style={styles.actionsRow}>
           <Button
             text="Modifier"
-            color={colors.tertiary}
+            color={themeColors.tertiary}
             width="full"
             height="full"
             onPress={handleEdit}
@@ -127,7 +134,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
           />
           <Button
             text="Supprimer"
-            color={colors.error}
+            color={themeColors.error}
             width="full"
             height="full"
             onPress={handleDelete}
@@ -145,8 +152,53 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   );
 };
 
-// Reuse styles from CredentialDetailsPage
-import { styles as credentialStyles } from './CredentialDetailsPage';
-const styles = credentialStyles;
+// Create styles for this component
+const getStyles = (mode: 'light' | 'dark') => {
+  const themeColors = getColors(mode);
+  
+  return StyleSheet.create({
+    actionsRow: {
+      flexDirection: 'row',
+      gap: spacing.md,
+      justifyContent: 'space-around',
+      width: '100%',
+    },
+    backBtn: {
+      alignItems: 'center',
+      height: 44,
+      justifyContent: 'center',
+      left: 0,
+      minWidth: 44,
+      padding: spacing.sm,
+      position: 'absolute',
+      top: 0,
+      zIndex: 1,
+    },
+    headerContent: {
+      alignItems: 'center',
+      flex: 1,
+      gap: spacing.sm,
+    },
+    headerRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      position: 'relative',
+      width: '100%',
+    },
+    iconCenter: {
+      alignItems: 'center',
+    },
+    pageContent: {
+      flex: 1,
+      gap: spacing.md,
+    },
+    title: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.lg,
+      fontWeight: typography.fontWeight.bold,
+      textAlign: 'center',
+    },
+  });
+};
 
 export default BankCardDetailsPage; 

@@ -5,9 +5,12 @@ import { Input } from '@components/InputFields';
 import { pageStyles } from '@design/layout';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
-import { colors } from '@design/colors';
+import { useThemeMode } from '@app/core/logic/theme';
+import { getColors } from '@design/colors';
 
 const AddCard1: React.FC = () => {
+  const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [cardNumber, setCardNumber] = useState('');
@@ -64,7 +67,7 @@ const AddCard1: React.FC = () => {
         />
         <Button
           text="Suivant"
-          color={colors.secondary}
+          color={themeColors.secondary}
           width="full"
           height="full"
           onPress={handleNext}

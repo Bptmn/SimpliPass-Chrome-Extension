@@ -14,7 +14,6 @@ export interface PageState {
   hasLoginForm: boolean;
 }
 
-
 // Represents a decrypted credential item
 export interface CredentialDecrypted {
   createdDateTime: Date;
@@ -37,7 +36,7 @@ export interface BankCardDecrypted {
   color: string;
   itemKey: string;
   cardNumber: string;
-  expirationDate: Date;
+  expirationDate: import('@app/utils').ExpirationDate;
   verificationNumber: string;
   bankName: string;
   bankDomain: string;

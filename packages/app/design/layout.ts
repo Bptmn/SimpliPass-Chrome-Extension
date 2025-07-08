@@ -30,8 +30,8 @@ export const padding = {
   xs: 4,
   sm: 8,
   md: 12,
-  lg: 20,
-  xl: 30,
+  lg: 18,
+  xl: 24,
   xxl: 40,
   pill: 999,
 } as const;
@@ -52,7 +52,7 @@ export const spacing = {
   md: 12,
   lg: 18,
   xl: 24,
-  xxl: 30,
+  xxl: 35,
 } as const;
 export type SpacingKey = keyof typeof spacing;
 
