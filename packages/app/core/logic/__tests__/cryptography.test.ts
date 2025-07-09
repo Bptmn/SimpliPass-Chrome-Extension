@@ -12,7 +12,7 @@ import {
 
 // Mock the crypto utilities
 jest.mock('@utils/crypto', () => ({
-  encryptData: jest.fn(async (data: any, key: string) => {
+  encryptData: jest.fn(async (data: unknown, key: string) => {
     // Return a mock encrypted string that can be decrypted
     return `encrypted_${key}_${JSON.stringify(data)}`;
   }),
@@ -52,7 +52,7 @@ describe('Cryptography Logic', () => {
     bankDomain: 'testbank.com',
     owner: 'John Doe',
     cardNumber: '1234567890123456',
-    expirationDate: new Date('2025-12-31'),
+    expirationDate: { month: 12, year: 2025 },
     verificationNumber: '123',
     note: 'Test card note',
     color: '#ff0000',
@@ -154,7 +154,7 @@ describe('Cryptography Logic', () => {
         item_key_encrypted: 'invalid_key_data',
         created_at: new Date(),
         last_used_at: new Date(),
-        item_type: 'invalid' as any,
+        item_type: 'invalid' as 'credential' | 'bank_card' | 'secure_note',
       };
       
       const result = await decryptItem(mockSecretKey, invalidItem);

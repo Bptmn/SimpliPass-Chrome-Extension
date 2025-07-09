@@ -11,7 +11,7 @@ import { LazyCredentialIcon } from '@components/LazyCredentialIcon';
 import { useToast } from '@app/core/hooks/useToast';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { getPageStyles, spacing, radius, padding } from '@design/layout';
+import { getPageStyles, spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';
 import { StyleSheet } from 'react-native';
 import { Button } from '@components/Buttons';
@@ -35,6 +35,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   const user = useUser();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { showToast } = useToast();
 
   const handleEdit = () => {
@@ -46,11 +47,14 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
       setError('Utilisateur non connecté');
       return;
     }
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette carte ?')) {
-      return;
-    }
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!user) return;
     setLoading(true);
     setError(null);
+    setShowDeleteConfirm(false);
     try {
       await deleteItem(user.uid, card.id);
       showToast('Carte supprimée avec succès');
@@ -70,6 +74,32 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   return (
     <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
+      {showDeleteConfirm && (
+        <View style={styles.confirmOverlay}>
+          <View style={styles.confirmDialog}>
+            <Text style={styles.confirmTitle}>Confirmation</Text>
+            <Text style={styles.confirmMessage}>Êtes-vous sûr de vouloir supprimer cette carte ?</Text>
+            <View style={styles.confirmButtons}>
+              <Button
+                text="Annuler"
+                color={themeColors.secondary}
+                width="full"
+                height="full"
+                onPress={() => setShowDeleteConfirm(false)}
+                style={{ flex: 1 }}
+              />
+              <Button
+                text="Supprimer"
+                color={themeColors.error}
+                width="full"
+                height="full"
+                onPress={confirmDelete}
+                style={{ flex: 1 }}
+              />
+            </View>
+          </View>
+        </View>
+      )}
       <View style={pageStyles.pageContent}>
         {/* Header */}
         <View style={styles.headerRow}>
@@ -174,6 +204,43 @@ const getStyles = (mode: 'light' | 'dark') => {
       position: 'absolute',
       top: 0,
       zIndex: 1,
+    },
+    confirmButtons: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+      marginTop: spacing.md,
+    },
+    confirmDialog: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: themeColors.borderColor,
+      padding: spacing.lg,
+      width: '80%',
+      maxWidth: 400,
+    },
+    confirmMessage: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.md,
+      marginTop: spacing.sm,
+      textAlign: 'center',
+    },
+    confirmOverlay: {
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      bottom: 0,
+      justifyContent: 'center',
+      left: 0,
+      position: 'absolute',
+      right: 0,
+      top: 0,
+      zIndex: 1000,
+    },
+    confirmTitle: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.lg,
+      fontWeight: typography.fontWeight.bold,
+      textAlign: 'center',
     },
     headerContent: {
       alignItems: 'center',

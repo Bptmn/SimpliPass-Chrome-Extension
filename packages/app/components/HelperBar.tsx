@@ -5,12 +5,10 @@
 // - Use the shared Icon component for button icons
 
 import React from 'react';
-import { View, Text, Pressable, Platform } from 'react-native';
+import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
 import { Icon } from './Icon';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { layout, radius, spacing } from '@design/layout';
-import { typography } from '@design/typography';
 import { useHelperBar } from '@app/core/hooks';
 
 export const HelperBar: React.FC = () => {
@@ -25,72 +23,82 @@ export const HelperBar: React.FC = () => {
   } = useHelperBar();
 
   // Dynamic styles with useMemo
-  const styles = React.useMemo(() => ({
-    helperBar: {
-      alignItems: 'center' as const,
-      backgroundColor: themeColors.primaryBackground,
-      borderTopColor: themeColors.borderColor,
-      borderTopWidth: 1,
-      flexDirection: 'row' as const,
-      height: layout.helperBarHeight,
-      justifyContent: 'center' as const,
-      paddingHorizontal: spacing.sm,
-      width: '100%',
-    },
-    helperBarLeft: {
-      flex: 1,
-      flexDirection: 'row' as const,
-      justifyContent: 'flex-start' as const,
-    },
-    helperBarRight: {
-      flex: 1,
-      flexDirection: 'row' as const,
-      justifyContent: 'flex-end' as const,
-      gap: spacing.sm,
-    },
-    helperBarWeb: {
-      bottom: 0,
-      boxShadow: '0 -2px 8px rgba(0,0,0,0.04)',
-      left: 0,
-      maxWidth: '100%',
-      position: 'fixed' as any,
-      right: 0,
-      width: '100%',
-      zIndex: 1000,
-    },
-    helperBtn: {
-      alignItems: 'center' as const,
-      backgroundColor: 'transparent',
-      borderRadius: radius.sm,
-      borderWidth: 0,
-      flexDirection: 'column' as const,
-      height: spacing.lg * 2,
-      justifyContent: 'center' as const,
-      width: 55,
-    },
-    helperBtnAdd: {
-      alignItems: 'center' as const,
-      backgroundColor: themeColors.secondary,
-      borderRadius: radius.md,
-      flexDirection: 'row' as const,
-      gap: spacing.xs,
-      height: spacing.lg * 2,
-      justifyContent: 'space-around' as const,
-      padding: spacing.sm,
-    },
-    helperBtnText: {
-      color: themeColors.blackText,
-      fontSize: typography.fontSize.xxs,
-      marginTop: spacing.xxs,
-      textAlign: 'center' as const,
-      width: '100%',
-    },
-    helperBtnTextAdd: {
-      color: themeColors.whiteText,
-      fontSize: typography.fontSize.xs +1,
-      textAlign: 'center' as const,
-    },
-  }), [mode]);
+  const styles = React.useMemo(
+    () =>
+      StyleSheet.create({
+        helperBar: {
+          alignItems: 'center',
+          backgroundColor: themeColors.primaryBackground,
+          borderTopColor: themeColors.borderColor,
+          borderTopWidth: 1,
+          flexDirection: 'row',
+          height: 48,
+          justifyContent: 'center',
+          paddingHorizontal: 8,
+          width: '100%',
+        },
+        helperBarLeft: {
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+        },
+        helperBarRight: {
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          gap: 8,
+        },
+        helperBarWeb: {
+          bottom: 0,
+          boxShadow: '0 -2px 8px rgba(0,0,0,0.04)',
+          left: 0,
+          maxWidth: '100%',
+          position: 'absolute',
+          right: 0,
+          width: '100%',
+          zIndex: 1000,
+        },
+        helperBtn: {
+          alignItems: 'center',
+          backgroundColor: 'transparent',
+          borderRadius: 8,
+          borderWidth: 0,
+          flexDirection: 'column',
+          height: 64,
+          justifyContent: 'center',
+          width: 55,
+        },
+        helperBtnAdd: {
+          alignItems: 'center',
+          backgroundColor: themeColors.secondary,
+          borderRadius: 12,
+          flexDirection: 'row',
+          gap: 4,
+          height: 64,
+          justifyContent: 'space-around',
+          padding: 8,
+        },
+        helperBtnText: {
+          color: themeColors.blackText,
+          fontSize: 10,
+          marginTop: 2,
+          textAlign: 'center',
+          width: '100%',
+        },
+        helperBtnTextAdd: {
+          color: themeColors.whiteText,
+          fontSize: 13,
+          textAlign: 'center',
+        },
+        close: {
+          color: themeColors.whiteText,
+          backgroundColor: themeColors.secondary,
+          borderRadius: 16,
+          padding: 4,
+          marginLeft: 8,
+        },
+      }),
+    [themeColors.primaryBackground, themeColors.borderColor, themeColors.blackText, themeColors.whiteText, themeColors.secondary]
+  );
 
   return (
     <View style={[

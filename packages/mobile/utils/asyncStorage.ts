@@ -207,10 +207,10 @@ export const getStorageSize = async (
   try {
     const allKeys = await AsyncStorage.getAllKeys();
     let totalSize = 0;
-    for (const key of allKeys.filter((key: string) => key.startsWith(prefix)) as string[]) {
-      const value = await AsyncStorage.getItem(key);
+    for (const storageKey of allKeys.filter((key: string) => key.startsWith(prefix)) as string[]) {
+      const value = await AsyncStorage.getItem(storageKey);
       if (value) {
-        totalSize += key.length + value.length;
+        totalSize += storageKey.length + value.length;
       }
     }
     

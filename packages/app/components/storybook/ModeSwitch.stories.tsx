@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { ModeSwitch } from '../ModeSwitch';
-import { ThemeProvider } from '@app/core/logic/theme';
+import { LightThemeProvider, DarkThemeProvider } from './ThemeProviders';
 
 export default {
   title: 'Components/ModeSwitch',
@@ -9,17 +9,17 @@ export default {
 };
 
 export const Default = () => (
-  <ThemeProvider>
+  <LightThemeProvider>
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: 120 }}>
       <ModeSwitch />
     </View>
-  </ThemeProvider>
+  </LightThemeProvider>
 );
 
 export const DefaultDark = () => (
-  <ThemeProvider>
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: 120, backgroundColor: '#282c30' }}>
+  <DarkThemeProvider>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: 120 }}>
       <ModeSwitch />
     </View>
-  </ThemeProvider>
+  </DarkThemeProvider>
 ); 

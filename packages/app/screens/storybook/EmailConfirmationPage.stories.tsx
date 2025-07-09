@@ -1,7 +1,7 @@
 import React from 'react';
 import { EmailConfirmationPage } from '../EmailConfirmationPage';
 import { MemoryRouter } from 'react-router-dom';
-import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
+import { LightScreenThemeProvider, DarkScreenThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 export default {
   title: 'Pages/EmailConfirmationPage',
@@ -9,7 +9,7 @@ export default {
 };
 
 export const Default = () => (
-  <LightThemeProvider>
+  <LightScreenThemeProvider>
     <MemoryRouter>
       <EmailConfirmationPage
         email="user@example.com"
@@ -17,11 +17,11 @@ export const Default = () => (
         onResend={() => {}}
       />
     </MemoryRouter>
-  </LightThemeProvider>
+  </LightScreenThemeProvider>
 );
 
 export const Dark = () => (
-  <DarkThemeProvider>
+  <DarkScreenThemeProvider>
     <MemoryRouter>
       <EmailConfirmationPage
         email="user@example.com"
@@ -29,5 +29,5 @@ export const Dark = () => (
         onResend={() => {}}
       />
     </MemoryRouter>
-  </DarkThemeProvider>
+  </DarkScreenThemeProvider>
 ); 

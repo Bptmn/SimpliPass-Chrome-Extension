@@ -62,7 +62,7 @@ export const Slider: React.FC<SliderProps> = ({
       gap: spacing.xs,
     },
     label: {
-      color: themeColors.tertiary,
+      color: themeColors.tertiaryText,
       fontSize: typography.fontSize.xs,
       fontWeight: typography.fontWeight.medium,
     },

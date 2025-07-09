@@ -46,9 +46,9 @@ export async function loginUser({
       // Call auth adapter login
       result = await auth.login(email, password);
       break; // Success, exit loop
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (
-        err?.message &&
+        err instanceof Error &&
         err.message.toLowerCase().includes('already a signed in user') &&
         !triedLogout
       ) {
@@ -57,7 +57,7 @@ export async function loginUser({
         triedLogout = true;
         continue; // Retry login
       } else {
-        throw err;
+        throw new Error(err instanceof Error ? err.message : 'Erreur inconnue lors de la récupération de l\'utilisateur.');
       }
     }
   }

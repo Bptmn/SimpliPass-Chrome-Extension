@@ -1,122 +1,80 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
+import type { Meta, StoryFn } from '@storybook/react';
 import { InputEdit } from '../InputEdit';
-import { ThemeProvider } from '@app/core/logic/theme';
-import { spacing } from '@design/layout';
+import { LightThemeProvider, DarkThemeProvider } from './ThemeProviders';
 
-export default {
+const meta: Meta<typeof InputEdit> = {
   title: 'Components/InputEdit',
   component: InputEdit,
-  argTypes: {
-    label: { control: 'text' },
-    placeholder: { control: 'text' },
-    value: { control: 'text' },
-    isNote: { control: 'boolean' },
+  parameters: {
+    layout: 'centered',
   },
+  tags: ['autodocs'],
 };
 
-const InputEditWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ padding: spacing.lg }}>
-      {children}
-    </View>
-  </ThemeProvider>
-);
+export default meta;
 
-const DarkInputEditWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ padding: spacing.lg, backgroundColor: '#282c30', minHeight: 200 }}>
-      {children}
-    </View>
-  </ThemeProvider>
-);
-
-export const Default = (args: any) => {
-  const [value, setValue] = useState(args.value || '');
+export const Default: StoryFn<typeof InputEdit> = (args) => {
   return (
-    <InputEditWrapper>
-      <InputEdit
-        label={args.label || 'InputTitle'}
-        placeholder={args.placeholder || '[inputInitialValue]'}
-        value={value}
-        onChange={setValue}
-        onClear={() => setValue('')}
-        isNote={args.isNote}
-      />
-    </InputEditWrapper>
+    <LightThemeProvider>
+      <InputEdit {...args} />
+    </LightThemeProvider>
   );
 };
 
 Default.args = {
-  label: 'InputTitle',
-  placeholder: '[inputInitialValue]',
-  value: '[inputInitialValue]',
-  isNote: false,
+  label: 'Label',
+  value: '',
+  onChange: (value: string) => console.log('Value changed:', value),
+  placeholder: 'Placeholder',
+  onClear: () => console.log('Clear clicked'),
 };
 
-export const DefaultDark = (args: any) => {
-  const [value, setValue] = useState(args.value || '');
+export const DefaultDark: StoryFn<typeof InputEdit> = (args) => {
   return (
-    <DarkInputEditWrapper>
-      <InputEdit
-        label={args.label || 'InputTitle'}
-        placeholder={args.placeholder || '[inputInitialValue]'}
-        value={value}
-        onChange={setValue}
-        onClear={() => setValue('')}
-        isNote={args.isNote}
-      />
-    </DarkInputEditWrapper>
+    <DarkThemeProvider>
+      <InputEdit {...args} />
+    </DarkThemeProvider>
   );
 };
 
 DefaultDark.args = {
-  label: 'InputTitle',
-  placeholder: '[inputInitialValue]',
-  value: '[inputInitialValue]',
-  isNote: false,
+  label: 'Label',
+  value: '',
+  onChange: (value: string) => console.log('Value changed:', value),
+  placeholder: 'Placeholder',
+  onClear: () => console.log('Clear clicked'),
 };
 
-export const NoteInput = (args: any) => {
-  const [value, setValue] = useState(args.value || '');
+export const NoteInput: StoryFn<typeof InputEdit> = (args) => {
   return (
-    <InputEditWrapper>
-      <InputEdit
-        label={args.label || 'Note'}
-        placeholder={args.placeholder || 'Enter your note here...'}
-        value={value}
-        onChange={setValue}
-        onClear={() => setValue('')}
-        isNote={true}
-      />
-    </InputEditWrapper>
+    <LightThemeProvider>
+      <InputEdit {...args} />
+    </LightThemeProvider>
   );
 };
 
 NoteInput.args = {
   label: 'Note',
-  placeholder: 'Enter your note here...',
-  value: 'This is a multi-line note\nwith line breaks\nand it can grow as needed.',
+  value: '',
+  onChange: (value: string) => console.log('Value changed:', value),
+  placeholder: 'Entrez votre note...',
+  onClear: () => console.log('Clear clicked'),
+  isNote: true,
 };
 
-export const NoteInputDark = (args: any) => {
-  const [value, setValue] = useState(args.value || '');
+export const NoteInputDark: StoryFn<typeof InputEdit> = (args) => {
   return (
-    <DarkInputEditWrapper>
-      <InputEdit
-        label={args.label || 'Note'}
-        placeholder={args.placeholder || 'Enter your note here...'}
-        value={value}
-        onChange={setValue}
-        onClear={() => setValue('')}
-        isNote={true}
-      />
-    </DarkInputEditWrapper>
+    <DarkThemeProvider>
+      <InputEdit {...args} />
+    </DarkThemeProvider>
   );
 };
 
 NoteInputDark.args = {
   label: 'Note',
-  placeholder: 'Enter your note here...',
-  value: 'This is a multi-line note\nwith line breaks\nand it can grow as needed.',
+  value: '',
+  onChange: (value: string) => console.log('Value changed:', value),
+  placeholder: 'Entrez votre note...',
+  onClear: () => console.log('Clear clicked'),
+  isNote: true,
 }; 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { LazyCredentialIcon } from '../LazyCredentialIcon';
-import { ThemeProvider } from '@app/core/logic/theme';
+import { LightThemeProvider, DarkThemeProvider } from './ThemeProviders';
 import { spacing } from '@design/layout';
 
 export default {
@@ -10,19 +10,19 @@ export default {
 };
 
 const IconWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
+  <LightThemeProvider>
     <View style={{ flexDirection: 'row', gap: spacing.lg, padding: spacing.lg }}>
       {children}
     </View>
-  </ThemeProvider>
+  </LightThemeProvider>
 );
 
 const DarkIconWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ flexDirection: 'row', gap: spacing.lg, padding: spacing.lg, backgroundColor: '#282c30', minHeight: 100 }}>
+  <DarkThemeProvider>
+    <View style={{ flexDirection: 'row', gap: spacing.lg, padding: spacing.lg }}>
       {children}
     </View>
-  </ThemeProvider>
+  </DarkThemeProvider>
 );
 
 export const Default = () => (

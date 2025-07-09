@@ -51,8 +51,11 @@ export const formStyles = StyleSheet.create({
     gap: spacing.sm,
     marginBottom: spacing.sm,
   },
-  formGroup: {
-    gap: spacing.sm,
+  // Form flex utilities
+  formFlexEnd: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 4,
   },
   // Form generate button
   formGenerateButton: {
@@ -66,13 +69,21 @@ export const formStyles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     fontWeight: '600',
   },
+  formGroup: {
+    gap: spacing.sm,
+  },
   formLabelRequired: {
     color: colors.error,
     fontSize: typography.fontSize.xs,
     fontWeight: typography.fontWeight.medium,
     marginTop: spacing.xs,
   },
-  
+  formLabelLarge: {
+    color: colors.blackText,
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.bold,
+    marginBottom: spacing.sm,
+  },
   // Form password strength
   formPasswordStrength: {
     alignItems: 'center',
@@ -84,19 +95,6 @@ export const formStyles = StyleSheet.create({
     color: colors.secondary,
     fontSize: typography.fontSize.sm,
     fontWeight: '500',
-  },
-  
-  // Form flex utilities
-  formFlexEnd: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 4,
-  },
-  formLabelLarge: {
-    color: colors.primary,
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.medium,
-    marginBottom: spacing.sm,
   },
   formInputLarge: {
     backgroundColor: colors.secondaryBackground,

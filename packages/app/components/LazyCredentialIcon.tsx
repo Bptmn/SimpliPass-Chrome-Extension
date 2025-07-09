@@ -1,17 +1,19 @@
 import React from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, StyleProp, ViewStyle } from 'react-native';
 import { getCardStyles } from '@design/card';
+import { getColors } from '@design/colors';
 import { useLazyCredentialIcon } from '@app/core/hooks';
 import { useThemeMode } from '@app/core/logic/theme';
 
 interface LazyCredentialIconProps {
   title: string;
   url: string;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 }
 
 const LazyCredentialIconComponent: React.FC<LazyCredentialIconProps> = ({ title, url, style }) => {
   const { mode } = useThemeMode();
+  const themeColors = getColors(mode);
   const cardStyles = getCardStyles(mode);
   const {
     faviconUrl,
@@ -23,7 +25,11 @@ const LazyCredentialIconComponent: React.FC<LazyCredentialIconProps> = ({ title,
   } = useLazyCredentialIcon(url, title);
 
   const containerStyle = [
-    cardStyles.iconContainer,
+    {
+      ...cardStyles.iconContainer,
+      backgroundColor: themeColors.white,
+      borderColor: themeColors.borderColor,
+    },
     isFaviconLoaded && cardStyles.iconContainerNoBg,
     style
   ];
@@ -31,7 +37,7 @@ const LazyCredentialIconComponent: React.FC<LazyCredentialIconProps> = ({ title,
   return (
     <View style={containerStyle}>
       {(!showFavicon || !isFaviconLoaded) && (
-        <Text style={cardStyles.iconLetter}>{placeholderLetter}</Text>
+        <Text style={[cardStyles.iconLetter, { color: themeColors.tertiary }]}>{placeholderLetter}</Text>
       )}
       {showFavicon && faviconUrl && (
         <Image
@@ -52,4 +58,4 @@ const LazyCredentialIconComponent: React.FC<LazyCredentialIconProps> = ({ title,
   );
 };
 
-export const LazyCredentialIcon = React.memo(LazyCredentialIconComponent);
+export const LazyCredentialIcon = LazyCredentialIconComponent;

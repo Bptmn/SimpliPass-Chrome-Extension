@@ -93,8 +93,8 @@ export const ModifyBankCardPage: React.FC = () => {
       await updateItem(user.uid, cred.id, userSecretKey, updates);
       showToast('Carte modifiée avec succès');
       navigate('/');
-    } catch (e: any) {
-      setError(e.message || "Erreur lors de la modification de la carte.");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Erreur lors de la modification de la carte.');
     } finally {
       setLoading(false);
     }
@@ -153,6 +153,7 @@ export const ModifyBankCardPage: React.FC = () => {
               onClear={() => setCardNumber('')}
             />
             <View style={styles.row2col}>
+              {/* Date d'expiration */}
               <View style={styles.inputDateColumn}>
                 <Text style={styles.inputDateLabel}>Date d&apos;expiration</Text>
                 {Platform.OS === 'web' ? (
@@ -172,7 +173,7 @@ export const ModifyBankCardPage: React.FC = () => {
                         }}
                         style={styles.inputDateSelect}
                       >
-                        <option value=""></option>
+                        <option value="" />
                         {monthOptions.map(m => (
                           <option key={m} value={m}>{m}</option>
                         ))}
@@ -196,7 +197,7 @@ export const ModifyBankCardPage: React.FC = () => {
                         }}
                         style={styles.inputDateSelect}
                       >
-                        <option value=""></option>
+                        <option value="" />
                         {yearOptions.map(y => (
                           <option key={y} value={y}>{y}</option>
                         ))}
@@ -226,6 +227,8 @@ export const ModifyBankCardPage: React.FC = () => {
                   </>
                 )}
               </View>
+
+              {/* CVV */}
               <View style={styles.inputColumn}>
                 <InputEdit
                   label="Code secret"
@@ -277,10 +280,6 @@ const getStyles = (mode: 'light' | 'dark') => {
       flex: 1,
     },
     inputContainer: {
-      backgroundColor: themeColors.secondaryBackground,
-      borderColor: themeColors.borderColor,
-      borderRadius: radius.xl,
-      borderWidth: 1,
       flexDirection: 'row',
       gap: spacing.xs,
       paddingHorizontal: spacing.sm,
@@ -296,11 +295,16 @@ const getStyles = (mode: 'light' | 'dark') => {
     },
     inputDateColumn: {
       flex: 1,
+      borderWidth: 1,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.md + 4,
+      padding: spacing.sm,
+      backgroundColor: themeColors.secondaryBackground,
     },
     inputDateLabel: {
-      color: themeColors.primary,
-      fontSize: typography.fontSize.sm,
-      fontWeight: typography.fontWeight.medium,
+      color: themeColors.tertiaryText,
+      fontSize: typography.fontSize.xs,
+      fontWeight: typography.fontWeight.regular,
       paddingBottom: spacing.xs,
     },
     inputDatePlaceholder: {
@@ -327,7 +331,7 @@ const getStyles = (mode: 'light' | 'dark') => {
     inputDateSelectText: {
       color: themeColors.primary,
       fontSize: typography.fontSize.sm,
-      fontWeight: typography.fontWeight.medium,
+      fontWeight: typography.fontWeight.regular,
     },
     row2col: {
       flexDirection: 'row',
@@ -336,7 +340,6 @@ const getStyles = (mode: 'light' | 'dark') => {
     selectContainer: {
       alignItems: 'flex-start',
       flex: 1,
-      height: 40,
       justifyContent: 'center',
       position: 'relative',
     },

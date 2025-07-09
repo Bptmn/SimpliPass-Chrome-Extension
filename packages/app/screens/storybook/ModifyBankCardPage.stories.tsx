@@ -2,7 +2,7 @@ import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ModifyBankCardPage } from '../ModifyBankCardPage';
 import { BankCardDecrypted } from '@app/core/types/types';
-import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
+import { LightScreenThemeProvider, DarkScreenThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 const mockCard: BankCardDecrypted = {
   id: 'card1',
@@ -26,21 +26,21 @@ export default {
 };
 
 export const Default = () => (
-  <LightThemeProvider>
+  <LightScreenThemeProvider>
     <MemoryRouter initialEntries={[{ pathname: '/modify-bank-card', state: { cred: mockCard } }]}> 
       <Routes>
         <Route path="/modify-bank-card" element={<ModifyBankCardPage />} />
       </Routes>
     </MemoryRouter>
-  </LightThemeProvider>
+  </LightScreenThemeProvider>
 );
 
 export const Dark = () => (
-  <DarkThemeProvider>
+  <DarkScreenThemeProvider>
     <MemoryRouter initialEntries={[{ pathname: '/modify-bank-card', state: { cred: mockCard } }]}> 
       <Routes>
         <Route path="/modify-bank-card" element={<ModifyBankCardPage />} />
       </Routes>
     </MemoryRouter>
-  </DarkThemeProvider>
+  </DarkScreenThemeProvider>
 ); 

@@ -5,7 +5,7 @@ import { getUserSecretKey } from '@app/core/logic/user';
 import { useCredentialsStore, useBankCardsStore, useSecureNotesStore, useCategoryStore } from '@app/core/states';
 import { useUserStore } from '@app/core/states/user';
 import { useToast } from '@app/core/hooks';
-import { CredentialDecrypted } from '@app/core/types/types';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@app/core/types/types';
 
 /**
  * Hook for HomePage component business logic
@@ -23,8 +23,8 @@ export const useHomePage = (pageState?: { url?: string }) => {
   // State management
   const [filter, setFilter] = useState('');
   const [selected, setSelected] = useState<CredentialDecrypted | null>(null);
-  const [selectedBankCard, setSelectedBankCard] = useState<any | null>(null);
-  const [selectedSecureNote, setSelectedSecureNote] = useState<any | null>(null);
+  const [selectedBankCard, setSelectedBankCard] = useState<BankCardDecrypted | null>(null);
+  const [selectedSecureNote, setSelectedSecureNote] = useState<SecureNoteDecrypted | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -63,10 +63,14 @@ export const useHomePage = (pageState?: { url?: string }) => {
   }, []);
 
   // Handle click on other item types
-  const handleOtherItemClick = useCallback((item: any) => {
-    console.log('Item clicked:', item);
-    // TODO: Implement detail pages for bank cards and secure notes
-  }, []);
+  const handleOtherItemClick = useCallback((item: unknown) => {
+    if (item && typeof item === 'object' && 'id' in item && 'username' in item && 'password' in item) {
+      setSelected(item as CredentialDecrypted);
+    } else {
+      // TODO: handle other item types or log a warning
+      console.warn('handleOtherItemClick: item is not a CredentialDecrypted', item);
+    }
+  }, [setSelected]);
 
   // Generate suggestions based on current URL
   const getSuggestions = useCallback(() => {

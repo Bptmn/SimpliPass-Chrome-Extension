@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
-import { getPageStyles, spacing, radius, padding } from '@design/layout';
+import { getPageStyles, spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
@@ -18,6 +18,7 @@ import ItemBankCard from '@components/ItemBankCard';
 import ItemSecureNote from '@components/ItemSecureNote';
 import { BankCardDetailsPage } from './BankCardDetailsPage';
 import { SecureNoteDetailsPage } from './SecureNoteDetailsPage';
+import { CredentialDecrypted } from '@app/core/types/types';
 
 /**
  * HomePage component displays the main vault UI:
@@ -187,7 +188,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     return (
                       <CredentialCard
                         key={item.id}
-                        credential={item as any}
+                        credential={item as unknown as CredentialDecrypted}
                         onCopy={handleCopyOther}
                         onPress={() => handleOtherItemClick(item)}
                       />

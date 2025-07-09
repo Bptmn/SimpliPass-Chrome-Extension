@@ -37,7 +37,7 @@ export async function deriveKey(masterPassword: string, saltBase64Url: string): 
   const derivedKey = bytesToBase64(new Uint8Array(derivedBits))
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
-    .replace(/=+$/, '');
+    .replace(/[=]+$/, '');
   return derivedKey;
 }
 
@@ -69,5 +69,5 @@ export function generateItemKey(): string {
   // Standard base64
   const base64 = btoa(String.fromCharCode(...key));
   // Convert to base64url
-  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/[=]+$/, '');
 }

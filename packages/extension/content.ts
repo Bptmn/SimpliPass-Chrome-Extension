@@ -45,7 +45,7 @@ chrome.runtime.sendMessage({ type: 'PAGE_INFO', url, domain, hasLoginForm });
 
 let pickerIframe: HTMLIFrameElement | null = null;
 
-function showPopoverCredentialPicker(field: HTMLElement, credentials: any[]): void {
+function showPopoverCredentialPicker(field: HTMLElement, credentials: Array<{ username?: string; password?: string; title?: string; url?: string }>): void {
   removeInPagePicker();
   if (!credentials.length) return;
   pickerIframe = document.createElement('iframe');
@@ -162,7 +162,7 @@ window.addEventListener('message', (event) => {
   }
 });
 
-chrome.runtime.onMessage.addListener((msg: any) => {
+chrome.runtime.onMessage.addListener((msg: { type: string; username?: string; password?: string }) => {
   if (msg && msg.type === 'INJECT_CREDENTIAL' && msg.username && msg.password) {
     // Always use the centralized injection utility
     injectCredential(sanitizeInput(msg.username), sanitizeInput(msg.password));

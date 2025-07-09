@@ -25,7 +25,7 @@ export const getCollection = async <T extends DocumentData = DocumentData>(
 ): Promise<T[]> => {
   const colRef = collection(db, collectionPath);
   const snapshot: QuerySnapshot = await getDocs(colRef);
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as unknown as T));
+  return snapshot.docs.map(docSnapshot => ({ id: docSnapshot.id, ...docSnapshot.data() } as unknown as T));
 };
 
 /**
@@ -60,7 +60,7 @@ export const updateDocument = async <T extends DocumentData = DocumentData>(
   data: Partial<T>
 ): Promise<void> => {
   const docRef: DocumentReference<DocumentData> = doc(db, docPath);
-  await updateDoc(docRef as any, data as any);
+  await updateDoc(docRef, data as DocumentData);
 };
 
 /**

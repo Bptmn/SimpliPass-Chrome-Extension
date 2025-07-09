@@ -13,7 +13,7 @@ import { generateItemKey } from '@utils/crypto';
 import { Input, InputPasswordStrength } from '@components/InputFields';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { getPageStyles, spacing, radius, padding } from '@design/layout';
+import { getPageStyles, spacing } from '@design/layout';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
 import { createPasswordGenerator } from '@app/core/logic/credentials';

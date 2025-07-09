@@ -45,7 +45,7 @@ export const DetailField: React.FC<DetailFieldProps> = ({
       width: '100%',
     },
     fieldLabel: {
-      color: themeColors.tertiary,
+      color: themeColors.tertiaryText,
       fontSize: typography.fontSize.xs,
       fontWeight: typography.fontWeight.regular,
       marginBottom: spacing.xxs,

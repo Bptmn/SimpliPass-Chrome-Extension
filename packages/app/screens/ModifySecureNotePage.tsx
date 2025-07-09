@@ -11,7 +11,7 @@ import { InputEdit } from '@components/InputEdit';
 import { ColorSelector } from '@components/ColorSelector';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { getPageStyles, spacing, radius, padding } from '@design/layout';
+import { getPageStyles } from '@design/layout';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
 import { typography } from '@design/typography';
@@ -61,8 +61,8 @@ export const ModifySecureNotePage: React.FC = () => {
       await updateItem(user.uid, note.id, userSecretKey, updates);
       showToast('Note modifiée avec succès');
       navigate('/');
-    } catch (e: any) {
-      setError(e.message || "Erreur lors de la modification de la note.");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Erreur lors de la modification de la note.');
     } finally {
       setLoading(false);
     }
@@ -124,10 +124,6 @@ const getStyles = (mode: 'light' | 'dark') => {
   const themeColors = getColors(mode);
   
   return StyleSheet.create({
-    buttonContainer: {
-      backgroundColor: 'transparent',
-      padding: spacing.lg,
-    },
     errorText: {
       color: themeColors.error,
       fontSize: typography.fontSize.md,

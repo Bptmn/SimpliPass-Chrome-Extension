@@ -2,7 +2,7 @@ import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ModifyCredentialPage } from '../ModifyCredentialPage';
 import { CredentialDecrypted } from '@app/core/types/types';
-import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
+import { LightScreenThemeProvider, DarkScreenThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 const mockCredential: CredentialDecrypted = {
   createdDateTime: new Date(),
@@ -22,21 +22,21 @@ export default {
 };
 
 export const Default = () => (
-  <LightThemeProvider>
+  <LightScreenThemeProvider>
     <MemoryRouter initialEntries={[{ pathname: '/modify-credential', state: { credential: mockCredential } }]}> 
       <Routes>
         <Route path="/modify-credential" element={<ModifyCredentialPage />} />
       </Routes>
     </MemoryRouter>
-  </LightThemeProvider>
+  </LightScreenThemeProvider>
 );
 
 export const Dark = () => (
-  <DarkThemeProvider>
+  <DarkScreenThemeProvider>
     <MemoryRouter initialEntries={[{ pathname: '/modify-credential', state: { credential: mockCredential } }]}> 
       <Routes>
         <Route path="/modify-credential" element={<ModifyCredentialPage />} />
       </Routes>
     </MemoryRouter>
-  </DarkThemeProvider>
+  </DarkScreenThemeProvider>
 ); 

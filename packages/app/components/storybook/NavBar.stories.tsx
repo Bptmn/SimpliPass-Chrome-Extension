@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import NavBar from '../NavBar';
 import { MemoryRouter } from 'react-router-dom';
-import { ThemeProvider } from '@app/core/logic/theme';
+import { LightThemeProvider, DarkThemeProvider } from './ThemeProviders';
 
 export default {
   title: 'Components/NavBar',
@@ -17,17 +17,17 @@ export default {
 };
 
 export const Default = () => (
-  <ThemeProvider>
+  <LightThemeProvider>
     <View style={{ padding: 20 }}>
       <NavBar />
     </View>
-  </ThemeProvider>
+  </LightThemeProvider>
 );
 
 export const DefaultDark = () => (
-  <ThemeProvider>
-    <View style={{ padding: 20, backgroundColor: '#282c30', minHeight: 100 }}>
+  <DarkThemeProvider>
+    <View style={{ padding: 20 }}>
       <NavBar />
     </View>
-  </ThemeProvider>
+  </DarkThemeProvider>
 ); 

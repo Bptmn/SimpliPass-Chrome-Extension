@@ -18,16 +18,26 @@ export interface AuthAdapter {
 export const auth: AuthAdapter = {
   login: async (email, password): Promise<AuthResult> => {
     const result = await cognito.loginWithCognito(email, password);
-    if ((result as any).mfaRequired) return result as AuthResult;
-    const token = (result as any).firebaseToken;
-    await firebase.signInWithFirebaseToken(token);
+    if (result && typeof result === 'object' && 'mfaRequired' in result) {
+      return result as AuthResult;
+    }
+    const token = result && typeof result === 'object' && 'firebaseToken' in result 
+      ? (result as { firebaseToken: string }).firebaseToken 
+      : undefined;
+    if (token) {
+      await firebase.signInWithFirebaseToken(token);
+    }
     return result as AuthResult;
   },
 
   confirmMfa: async (code): Promise<AuthResult> => {
     const result = await cognito.confirmMfaWithCognito(code);
-    const token = (result as any).firebaseToken;
-    await firebase.signInWithFirebaseToken(token);
+    const token = result && typeof result === 'object' && 'firebaseToken' in result 
+      ? (result as { firebaseToken: string }).firebaseToken 
+      : undefined;
+    if (token) {
+      await firebase.signInWithFirebaseToken(token);
+    }
     return result as AuthResult;
   },
 

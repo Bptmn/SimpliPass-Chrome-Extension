@@ -33,6 +33,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { showToast } = useToast();
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
@@ -55,13 +56,14 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
       setError('Utilisateur non connecté');
       return;
     }
+    setShowDeleteConfirm(true);
+  };
 
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet identifiant ?')) {
-      return;
-    }
-
+  const confirmDelete = async () => {
+    if (!user) return;
     setLoading(true);
     setError(null);
+    setShowDeleteConfirm(false);
     try {
       await deleteItem(user.uid, credential.id);
       showToast('Identifiant supprimé avec succès');
@@ -78,6 +80,32 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   return (
     <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
+      {showDeleteConfirm && (
+        <View style={styles.confirmOverlay}>
+          <View style={styles.confirmDialog}>
+            <Text style={styles.confirmTitle}>Confirmation</Text>
+            <Text style={styles.confirmMessage}>Êtes-vous sûr de vouloir supprimer cet identifiant ?</Text>
+            <View style={styles.confirmButtons}>
+              <Button
+                text="Annuler"
+                color={themeColors.secondary}
+                width="full"
+                height="full"
+                onPress={() => setShowDeleteConfirm(false)}
+                style={{ flex: 1 }}
+              />
+              <Button
+                text="Supprimer"
+                color={themeColors.error}
+                width="full"
+                height="full"
+                onPress={confirmDelete}
+                style={{ flex: 1 }}
+              />
+            </View>
+          </View>
+        </View>
+      )}
       <View style={pageStyles.pageContent}>
         {/* Header */}
         <View style={styles.headerRow}>
@@ -210,6 +238,44 @@ const getStyles = (mode: 'light' | 'dark') => {
       zIndex: 1,
     },
 
+    confirmButtons: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+      marginTop: spacing.md,
+    },
+    confirmDialog: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: themeColors.borderColor,
+      padding: spacing.lg,
+      width: '80%',
+      maxWidth: 400,
+    },
+    confirmMessage: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.md,
+      marginTop: spacing.sm,
+      textAlign: 'center',
+    },
+    confirmOverlay: {
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      bottom: 0,
+      justifyContent: 'center',
+      left: 0,
+      position: 'absolute',
+      right: 0,
+      top: 0,
+      zIndex: 1000,
+    },
+    confirmTitle: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.lg,
+      fontWeight: typography.fontWeight.bold,
+      textAlign: 'center',
+    },
+
     cardGroup: {
       backgroundColor: themeColors.secondaryBackground,
       borderColor: themeColors.borderColor,
@@ -238,7 +304,7 @@ const getStyles = (mode: 'light' | 'dark') => {
       marginRight: spacing.sm,
     },
     fieldLabel: {
-      color: themeColors.tertiary,
+      color: themeColors.tertiaryText,
       fontSize: typography.fontSize.xs,
       fontWeight: typography.fontWeight.regular,
       marginBottom: spacing.xxs,

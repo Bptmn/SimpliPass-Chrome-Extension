@@ -1,12 +1,10 @@
 import { StyleSheet } from 'react-native';
-import { colors, lightColors, darkColors, ColorKey } from './colors';
+import { getColors } from './colors';
 import { radius, spacing } from './layout';
 
-const getColor = (colorKey: ColorKey, mode: 'light' | 'dark') => {
-  return mode === 'dark' ? darkColors[colorKey] : lightColors[colorKey];
-};
-
 export function getCardStyles(mode: 'light' | 'dark') {
+  const colors = getColors(mode);
+  
   return StyleSheet.create({
     bankCard: {
       alignSelf: 'center',
@@ -26,7 +24,7 @@ export function getCardStyles(mode: 'light' | 'dark') {
       justifyContent: 'space-between',
     },
     bankCardExpiry: {
-      color: getColor('whiteText', mode),
+      color: colors.whiteText,
       fontSize: 16,
       fontWeight: '400',
     },
@@ -36,20 +34,20 @@ export function getCardStyles(mode: 'light' | 'dark') {
       marginBottom: spacing.md,
     },
     bankCardNumber: {
-      color: getColor('whiteText', mode),
+      color: colors.whiteText,
       fontSize: 18,
       fontWeight: '500',
       letterSpacing: 2,
     },
     bankCardOwner: {
-      color: getColor('whiteText', mode),
+      color: colors.whiteText,
       flex: 1,
       fontSize: 16,
       fontWeight: '400',
       marginRight: spacing.md,
     },
     bankCardTitle: {
-      color: getColor('whiteText', mode),
+      color: colors.whiteText,
       flex: 1,
       fontSize: 18,
       fontWeight: '600',
@@ -62,8 +60,8 @@ export function getCardStyles(mode: 'light' | 'dark') {
       marginBottom: spacing.md,
     },
     card: {
-      backgroundColor: getColor('secondaryBackground', mode),
-      borderColor: getColor('borderColor', mode),
+      backgroundColor: colors.secondaryBackground,
+      borderColor: colors.borderColor,
       borderRadius: radius.md,
       borderWidth: 1,
       shadowColor: '#000',
@@ -76,7 +74,7 @@ export function getCardStyles(mode: 'light' | 'dark') {
       shadowRadius: 12,
     },
     checkMark: {
-      color: getColor('whiteText', mode),
+      color: colors.whiteText,
       fontSize: 18,
       fontWeight: 'bold',
       textAlign: 'center',
@@ -96,8 +94,8 @@ export function getCardStyles(mode: 'light' | 'dark') {
     },
     credentialCard: {
       alignItems: 'center',
-      backgroundColor: getColor('secondaryBackground', mode),
-      borderColor: getColor('borderColor', mode),
+      backgroundColor: colors.secondaryBackground,
+      borderColor: colors.borderColor,
       borderRadius: radius.md,
       borderStyle: 'solid',
       borderWidth: 1,
@@ -123,19 +121,19 @@ export function getCardStyles(mode: 'light' | 'dark') {
       gap: 12,
     },
     credentialCardTitle: {
-      color: getColor('primary', mode),
+      color: colors.primary,
       flexShrink: 1,
       fontSize: 15,
       fontWeight: '600',
     },
     credentialCardUsername: {
-      color: getColor('secondary', mode),
+      color: colors.secondary,
       flexShrink: 1,
       fontSize: 12,
     },
     generatedPasswordCard: {
-      backgroundColor: getColor('secondaryBackground', mode),
-      borderColor: getColor('borderColor', mode),
+      backgroundColor: colors.secondaryBackground,
+      borderColor: colors.borderColor,
       borderRadius: radius.md,
       borderWidth: 1,
       flexDirection: 'column',
@@ -144,8 +142,8 @@ export function getCardStyles(mode: 'light' | 'dark') {
     },
     iconContainer: {
       alignItems: 'center',
-      backgroundColor: getColor('white', mode),
-      borderColor: getColor('borderColor', mode),
+      backgroundColor: colors.white,
+      borderColor: colors.borderColor,
       borderRadius: 10,
       borderWidth: 1,
       height: 35,
@@ -156,7 +154,7 @@ export function getCardStyles(mode: 'light' | 'dark') {
       backgroundColor: 'transparent',
     },
     iconLetter: {
-      color: getColor('tertiary', mode),
+      color: colors.tertiary,
       fontSize: 16,
       fontWeight: '600',
       lineHeight: 35,
@@ -164,7 +162,7 @@ export function getCardStyles(mode: 'light' | 'dark') {
       width: '100%',
     },
     menuCard: {
-      backgroundColor: getColor('secondaryBackground', mode),
+      backgroundColor: colors.secondaryBackground,
       borderRadius: radius.md,
       flexDirection: 'column',
       marginBottom: spacing.sm,
@@ -190,28 +188,28 @@ export function getCardStyles(mode: 'light' | 'dark') {
       width: '100%',
     },
     menuLabel: {
-      color: getColor('primary', mode),
+      color: colors.primary,
       flex: 1,
       fontSize: 14,
       fontWeight: '400',
     },
     optionRow: {
       alignItems: 'center',
-      color: getColor('primary', mode),
+      color: colors.primary,
       flexDirection: 'row',
       fontSize: 14,
       justifyContent: 'space-between',
       marginBottom: spacing.sm,
     },
     optionText: {
-      color: getColor('primary', mode),
+      color: colors.primary,
       flex: 1,
       fontSize: 14,
       fontWeight: '500',
     },
     optionsSection: {
-      backgroundColor: getColor('secondaryBackground', mode),
-      borderColor: getColor('borderColor', mode),
+      backgroundColor: colors.secondaryBackground,
+      borderColor: colors.borderColor,
       borderRadius: radius.md,
       borderWidth: 1,
       flexDirection: 'column',
@@ -224,11 +222,11 @@ export function getCardStyles(mode: 'light' | 'dark') {
       marginBottom: spacing.sm,
     },
     passwordText: {
-      backgroundColor: getColor('primaryBackground', mode),
-      borderColor: getColor('borderColor', mode),
+      backgroundColor: colors.primaryBackground,
+      borderColor: colors.borderColor,
       borderRadius: radius.md,
       borderWidth: 1,
-      color: getColor('secondary', mode),
+      color: colors.secondary,
       flex: 1,
       fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace',
       fontSize: 16,
@@ -236,8 +234,8 @@ export function getCardStyles(mode: 'light' | 'dark') {
       padding: spacing.sm,
     },
     profileCard: {
-      backgroundColor: getColor('secondaryBackground', mode),
-      borderColor: getColor('borderColor', mode),
+      backgroundColor: colors.secondaryBackground,
+      borderColor: colors.borderColor,
       borderRadius: radius.md,
       borderWidth: 1,
       padding: spacing.sm,
@@ -252,15 +250,15 @@ export function getCardStyles(mode: 'light' | 'dark') {
       marginBottom: spacing.sm,
     },
     profileCardUserEmail: {
-      color: getColor('primary', mode),
+      color: colors.primary,
       fontSize: 16,
       fontWeight: '500',
     },
     profileCardUserIcon: {
       alignItems: 'center',
-      backgroundColor: getColor('secondaryBackground', mode),
+      backgroundColor: colors.secondaryBackground,
       borderRadius: 25,
-      color: getColor('primary', mode),
+      color: colors.primary,
       fontSize: 24,
       height: 50,
       justifyContent: 'center',
@@ -269,7 +267,8 @@ export function getCardStyles(mode: 'light' | 'dark') {
     },
     secureNoteCard: {
       alignItems: 'center',
-      backgroundColor: getColor('secondaryBackground', mode),
+      backgroundColor: colors.secondaryBackground,
+      borderColor: colors.borderColor,
       borderRadius: 20,
       flexDirection: 'row',
       height: 60,
@@ -286,13 +285,13 @@ export function getCardStyles(mode: 'light' | 'dark') {
       width: 22,
     },
     secureNoteTitle: {
-      color: getColor('primary', mode),
+      color: colors.primary,
       flex: 1,
       fontSize: 16,
       fontWeight: '600',
     },
     skeletonAvatar: {
-      backgroundColor: getColor('disabled', mode),
+      backgroundColor: colors.disabled,
       borderRadius: 10,
       height: 35,
       marginRight: spacing.sm,
@@ -300,8 +299,8 @@ export function getCardStyles(mode: 'light' | 'dark') {
     },
     skeletonCard: {
       alignItems: 'center',
-      backgroundColor: getColor('secondaryBackground', mode),
-      borderColor: getColor('borderColor', mode),
+      backgroundColor: colors.secondaryBackground,
+      borderColor: colors.borderColor,
       borderRadius: radius.lg,
       borderWidth: 1,
       flexDirection: 'row',
@@ -318,14 +317,14 @@ export function getCardStyles(mode: 'light' | 'dark') {
       marginBottom: spacing.xs,
     },
     skeletonTitle: {
-      backgroundColor: getColor('disabled', mode),
+      backgroundColor: colors.disabled,
       borderRadius: 6,
       height: 12,
       marginBottom: spacing.xs,
       width: '60%',
     },
     skeletonUsername: {
-      backgroundColor: getColor('disabled', mode),
+      backgroundColor: colors.disabled,
       borderRadius: 6,
       height: 12,
       width: '40%',

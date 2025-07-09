@@ -9,7 +9,7 @@ import { Icon } from '@components/Icon';
 import { useToast } from '@app/core/hooks/useToast';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { getPageStyles, spacing, radius, padding } from '@design/layout';
+import { getPageStyles, spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
 import { MoreInfo } from '@components/MoreInfo';
@@ -30,6 +30,7 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
   const user = useUser();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { showToast } = useToast();
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
@@ -43,11 +44,14 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
       setError('Utilisateur non connecté');
       return;
     }
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) {
-      return;
-    }
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!user) return;
     setLoading(true);
     setError(null);
+    setShowDeleteConfirm(false);
     try {
       await deleteItem(user.uid, note.id);
       showToast('Note supprimée avec succès');
@@ -62,6 +66,32 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
   return (
     <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
+      {showDeleteConfirm && (
+        <View style={styles.confirmOverlay}>
+          <View style={styles.confirmDialog}>
+            <Text style={styles.confirmTitle}>Confirmation</Text>
+            <Text style={styles.confirmMessage}>Êtes-vous sûr de vouloir supprimer cette note ?</Text>
+            <View style={styles.confirmButtons}>
+              <Button
+                text="Annuler"
+                color={themeColors.secondary}
+                width="full"
+                height="full"
+                onPress={() => setShowDeleteConfirm(false)}
+                style={{ flex: 1 }}
+              />
+              <Button
+                text="Supprimer"
+                color={themeColors.error}
+                width="full"
+                height="full"
+                onPress={confirmDelete}
+                style={{ flex: 1 }}
+              />
+            </View>
+          </View>
+        </View>
+      )}
       <View style={pageStyles.pageContent}>
         {/* Header */}
         <View style={styles.headerRow}>
@@ -141,6 +171,43 @@ const getStyles = (mode: 'light' | 'dark') => {
       borderRadius: spacing.lg * 2,
       height: spacing.xxl,
       width: spacing.xxl,
+    },
+    confirmButtons: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+      marginTop: spacing.md,
+    },
+    confirmDialog: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: themeColors.borderColor,
+      padding: spacing.lg,
+      width: '80%',
+      maxWidth: 400,
+    },
+    confirmMessage: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.md,
+      marginTop: spacing.sm,
+      textAlign: 'center',
+    },
+    confirmOverlay: {
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      bottom: 0,
+      justifyContent: 'center',
+      left: 0,
+      position: 'absolute',
+      right: 0,
+      top: 0,
+      zIndex: 1000,
+    },
+    confirmTitle: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.lg,
+      fontWeight: typography.fontWeight.bold,
+      textAlign: 'center',
     },
     headerContent: {
       alignItems: 'center',

@@ -75,8 +75,8 @@ export const useLoginPage = () => {
         setUser(currentUser);
         navigate('/home');
       }
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Authentication failed.');
+    } catch (loginError: unknown) {
+      setError(loginError instanceof Error ? loginError.message : 'Erreur lors de la connexion.');
       setIsLoading(false);
     }
   }, [email, password, rememberEmail, navigate, setUser]);
@@ -88,8 +88,8 @@ export const useLoginPage = () => {
     try {
       await confirmMfa({ code, password });
       navigate('/home');
-    } catch (error: any) {
-      setError(error.message || 'Code invalide ou expiré.');
+    } catch (mfaError: unknown) {
+      setError(mfaError instanceof Error ? mfaError.message : 'Code invalide ou expiré.');
       setIsLoading(false);
     }
   }, [mfaUser, password, navigate]);

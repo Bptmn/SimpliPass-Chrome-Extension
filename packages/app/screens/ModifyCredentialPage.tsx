@@ -10,7 +10,7 @@ import Toast from '@components/Toast';
 import { useToast } from '@app/core/hooks/useToast';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { getPageStyles, spacing, radius, padding } from '@design/layout';
+import { getPageStyles, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
@@ -67,8 +67,8 @@ export const ModifyCredentialPage: React.FC = () => {
       await updateItem(user.uid, credential.id, userSecretKey, updates);
       showToast('Identifiant modifié avec succès');
       navigate('/');
-    } catch (e: any) {
-      setError(e.message || 'Erreur lors de la modification de l&apos;identifiant.');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Erreur lors de la modification de l\'identifiant.');
     } finally {
       setLoading(false);
     }

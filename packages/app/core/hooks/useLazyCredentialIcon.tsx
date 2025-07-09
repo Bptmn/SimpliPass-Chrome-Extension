@@ -10,8 +10,8 @@ export const useLazyCredentialIcon = (url: string, title: string) => {
   const [showFavicon, setShowFavicon] = useState(false);
 
   // Parse domain and generate favicon URL
-  const parseDomainAndSetFavicon = useCallback((url: string) => {
-    if (!url || url.trim() === '') {
+  const parseDomainAndSetFavicon = useCallback((inputUrl: string) => {
+    if (!inputUrl || inputUrl.trim() === '') {
       setFaviconUrl(null);
       setIsFaviconLoaded(false);
       setShowFavicon(false);
@@ -19,13 +19,13 @@ export const useLazyCredentialIcon = (url: string, title: string) => {
     }
 
     try {
-      let domain = url;
+      let domain = inputUrl;
       if (!/^https?:\/\//.test(domain)) {
         domain = 'https://' + domain;
       }
       const { hostname } = new URL(domain);
-      const faviconUrl = `https://www.google.com/s2/favicons?domain=${hostname}&sz=48`;
-      setFaviconUrl(faviconUrl);
+      const generatedFaviconUrl = `https://www.google.com/s2/favicons?domain=${hostname}&sz=48`;
+      setFaviconUrl(generatedFaviconUrl);
       setShowFavicon(true);
     } catch {
       setFaviconUrl(null);

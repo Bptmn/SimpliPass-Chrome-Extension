@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { Input } from '@components/InputFields';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
-import { getPageStyles, spacing, radius, padding } from '@design/layout';
+import { getPageStyles } from '@design/layout';
 import { useThemeMode } from '@app/core/logic/theme';
 
 const AddCredential1: React.FC = () => {

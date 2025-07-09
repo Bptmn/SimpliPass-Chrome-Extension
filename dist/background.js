@@ -1,4 +1,4 @@
-import { a as getUserSecretKey } from "./assets/user-BSozyNRa.js";
+import { a as getUserSecretKey } from "./assets/user-DC34GCd8.js";
 import "./assets/localDB-2Qyp27Y-.js";
 const pageState = {};
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

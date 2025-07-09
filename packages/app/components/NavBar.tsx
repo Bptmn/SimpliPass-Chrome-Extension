@@ -1,12 +1,10 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 import { Icon } from './Icon';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { layout, spacing } from '@design/layout';
-import { typography } from '@design/typography';
 
 interface NavItem {
   path: string;
@@ -39,48 +37,55 @@ const Navbar: React.FC = () => {
   ];
 
   // Dynamic styles with useMemo
-  const styles = React.useMemo(() => ({
-    active: {
-      // Color will be applied to text elements
-    },
-    navContent: {
-      alignItems: 'center' as const,
-      flexDirection: 'column' as const,
-      marginBottom: spacing.xxs,
-    },
-    navItem: {
-      alignItems: 'center' as const,
-      backgroundColor: 'transparent',
-      borderWidth: 0,
-      flex: 1,
-      flexDirection: 'row' as const,
-      height: '100%',
-      justifyContent: 'center' as const,
-      padding: 0,
-    },
-    navLabel: {
-      color: themeColors.tertiary,
-      fontFamily: typography.fontFamily.base,
-      fontSize: typography.fontSize.xs,
-      fontWeight: typography.fontWeight.medium,
-      marginTop: spacing.xxs,
-    },
-    navbar: {
-      alignItems: 'center' as const,
-      backgroundColor: themeColors.primaryBackground,
-      borderBottomColor: themeColors.borderColor,
-      borderBottomWidth: 1,
-      flexDirection: 'row' as const,
-      height: layout.navbarHeight,
-      justifyContent: 'space-around' as const,
-      maxHeight: layout.navbarHeight,
-      minHeight: layout.navbarHeight,
-      paddingHorizontal: spacing.md,
-      paddingVertical: spacing.xs,
-      width: '100%',
-      zIndex: 1000,
-    },
-  }), [mode]);
+  const styles = React.useMemo(
+    () =>
+      StyleSheet.create({
+        navbar: {
+          alignItems: 'center',
+          backgroundColor: themeColors.primaryBackground,
+          borderBottomColor: themeColors.borderColor,
+          borderBottomWidth: 1,
+          flexDirection: 'row',
+          height: 56,
+          justifyContent: 'space-around',
+          maxHeight: 56,
+          minHeight: 56,
+          paddingHorizontal: 16,
+          paddingVertical: 4,
+          width: '100%',
+          zIndex: 1000,
+        },
+        navItem: {
+          alignItems: 'center',
+          backgroundColor: 'transparent',
+          borderWidth: 0,
+          flex: 1,
+          flexDirection: 'row',
+          height: '100%',
+          justifyContent: 'center',
+          padding: 0,
+        },
+        active: {},
+        navContent: {
+          alignItems: 'center',
+          flexDirection: 'column',
+          marginBottom: 2,
+        },
+        navLabel: {
+          color: themeColors.tertiary,
+          fontFamily: 'System',
+          fontSize: 12,
+          fontWeight: '500',
+          marginTop: 2,
+        },
+        title: {
+          color: themeColors.tertiary,
+          fontSize: 18,
+          fontWeight: 'bold',
+        },
+      }),
+    [themeColors.primaryBackground, themeColors.borderColor, themeColors.tertiary]
+  );
 
   return (
     <View style={styles.navbar}>

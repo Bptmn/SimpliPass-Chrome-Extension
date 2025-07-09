@@ -1,6 +1,6 @@
 import React from 'react';
 import { GeneratorPage } from '../GeneratorPage';
-import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
+import { LightScreenThemeProvider, DarkScreenThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 export default {
   title: 'Pages/GeneratorPage',
@@ -8,13 +8,13 @@ export default {
 };
 
 export const Default = () => (
-  <LightThemeProvider>
+  <LightScreenThemeProvider>
     <GeneratorPage />
-  </LightThemeProvider>
+  </LightScreenThemeProvider>
 );
 
 export const Dark = () => (
-  <DarkThemeProvider>
+  <DarkScreenThemeProvider>
     <GeneratorPage />
-  </DarkThemeProvider>
+  </DarkScreenThemeProvider>
 ); 

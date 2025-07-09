@@ -64,7 +64,7 @@ export const WithCustomBackAction = () => (
       title="Titre avec action personnalisée" 
       onBackPress={() => {
         console.log('Custom back action');
-        alert('Action personnalisée exécutée');
+        console.log('Action personnalisée exécutée');
       }} 
     />
   </LightThemeProvider>
@@ -76,7 +76,7 @@ export const WithCustomBackActionDark = () => (
       title="Titre avec action personnalisée" 
       onBackPress={() => {
         console.log('Custom back action');
-        alert('Action personnalisée exécutée');
+        console.log('Action personnalisée exécutée');
       }} 
     />
   </DarkThemeProvider>

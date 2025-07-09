@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import ItemSecureNote from '../ItemSecureNote';
 import { SecureNoteDecrypted } from '@app/core/types/types';
-import { ThemeProvider } from '@app/core/logic/theme';
+import { LightThemeProvider, DarkThemeProvider } from './ThemeProviders';
 import { spacing } from '@design/layout';
 
 export default {
@@ -21,19 +21,19 @@ const mockNote: SecureNoteDecrypted = {
 };
 
 const NoteWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
+  <LightThemeProvider>
     <View style={{ padding: spacing.lg }}>
       {children}
     </View>
-  </ThemeProvider>
+  </LightThemeProvider>
 );
 
 const DarkNoteWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ padding: spacing.lg, backgroundColor: '#282c30', minHeight: 200 }}>
+  <DarkThemeProvider>
+    <View style={{ padding: spacing.lg }}>
       {children}
     </View>
-  </ThemeProvider>
+  </DarkThemeProvider>
 );
 
 export const Default = () => (

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ErrorBanner } from '@components/ErrorBanner';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { getPageStyles, spacing, radius, padding } from '@design/layout';
+import { getPageStyles, spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
 import { CodeInput } from '@components/CodeInput';

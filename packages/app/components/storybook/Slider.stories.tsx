@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Slider } from '../Slider';
-import { ThemeProvider } from '@app/core/logic/theme';
+import { LightThemeProvider, DarkThemeProvider } from './ThemeProviders';
 
 export default {
   title: 'Components/Slider',
@@ -9,19 +9,19 @@ export default {
 };
 
 const SliderWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
+  <LightThemeProvider>
     <View style={{ gap: 16, width: 400, padding: 24, flexDirection: 'column' }}>
       {children}
     </View>
-  </ThemeProvider>
+  </LightThemeProvider>
 );
 
 const DarkSliderWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ gap: 16, width: 400, padding: 24, flexDirection: 'column', backgroundColor: '#282c30', minHeight: 200 }}>
+  <DarkThemeProvider>
+    <View style={{ gap: 16, width: 400, padding: 24, flexDirection: 'column' }}>
       {children}
     </View>
-  </ThemeProvider>
+  </DarkThemeProvider>
 );
 
 export const AllSliders = () => {

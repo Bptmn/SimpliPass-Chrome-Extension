@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { SkeletonCard } from '../SkeletonCard';
-import { ThemeProvider } from '@app/core/logic/theme';
+import { LightThemeProvider, DarkThemeProvider } from './ThemeProviders';
 
 export default {
   title: 'Components/SkeletonCard',
@@ -9,17 +9,17 @@ export default {
 };
 
 export const Default = () => (
-  <ThemeProvider>
+  <LightThemeProvider>
     <View style={{ padding: 20 }}>
       <SkeletonCard />
     </View>
-  </ThemeProvider>
+  </LightThemeProvider>
 );
 
 export const DefaultDark = () => (
-  <ThemeProvider>
-    <View style={{ padding: 20, backgroundColor: '#282c30', minHeight: 100 }}>
+  <DarkThemeProvider>
+    <View style={{ padding: 20 }}>
       <SkeletonCard />
     </View>
-  </ThemeProvider>
+  </DarkThemeProvider>
 ); 

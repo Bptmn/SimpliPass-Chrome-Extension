@@ -5,7 +5,7 @@ import { EmailConfirmationPage } from './EmailConfirmationPage';
 import { Input } from '@components/InputFields';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { getPageStyles } from '@design/layout';
+import { getPageStyles, spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
 import { useLoginPage } from '@app/core/hooks';
@@ -14,7 +14,8 @@ import logo from '../../../assets/logo/logo_simplify_long.png';
 const LoginPage: React.FC = () => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const styles = React.useMemo(() => getPageStyles(mode), [mode]);
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
   const {
     email,
     password,
@@ -48,15 +49,15 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <ScrollView style={styles.pageContainer}>
-      <View style={styles.pageContent}>
+    <ScrollView style={pageStyles.pageContainer}>
+      <View style={pageStyles.pageContent}>
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image source={logo} style={styles.logo} />
         </View>
 
         {/* Login Form */}
-        <View style={styles.formContainer}>
+        <View style={pageStyles.formContainer}>
           <View style={styles.emailFormContainer}>
           <Input
             label="Email"
@@ -117,12 +118,13 @@ const getStyles = (mode: 'light' | 'dark') => {
   
   return StyleSheet.create({
     checkbox: {
-      backgroundColor: layout.primaryBackground,
+      backgroundColor: 'transparent',
       borderColor: themeColors.primary,
       borderRadius: radius.xs,
       borderWidth: 2,
       height: 15,
       justifyContent: 'center',
+      alignItems: 'center',
       width: 15,
     },
     checkboxChecked: {
@@ -147,11 +149,6 @@ const getStyles = (mode: 'light' | 'dark') => {
     emailFormContainer: {
       gap: spacing.sm,
     },
-    formContainer: {
-      alignItems: 'stretch',
-      flexDirection: 'column',
-      gap: spacing.xl,
-    },
     logo: {
       height: spacing.xl * 3,
       resizeMode: 'contain',
@@ -159,12 +156,6 @@ const getStyles = (mode: 'light' | 'dark') => {
     },
     logoContainer: {
       alignItems: 'center',
-    },
-    title: {
-      color: themeColors.primary,
-      fontSize: typography.fontSize.xl,
-      fontWeight: typography.fontWeight.bold,
-      marginBottom: spacing.xl,
     },
   });
 };

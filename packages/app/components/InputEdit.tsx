@@ -55,7 +55,6 @@ export const InputEdit: React.FC<InputEditProps> = ({
       borderColor: themeColors.borderColor,
       borderRadius: radius.md + 4,
       borderWidth: 1,
-      flex: 1,
       flexDirection: 'column' as const,
       padding: spacing.sm,
     },
@@ -71,7 +70,7 @@ export const InputEdit: React.FC<InputEditProps> = ({
       flexDirection: 'row' as const,
     },
     label: {
-      color: themeColors.tertiary,
+      color: themeColors.tertiaryText,
       fontSize: typography.fontSize.xs,
       marginBottom: spacing.xxs,
     },

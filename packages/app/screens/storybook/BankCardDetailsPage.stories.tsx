@@ -2,7 +2,7 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { BankCardDetailsPage } from '../BankCardDetailsPage';
 import { BankCardDecrypted } from '@app/core/types/types';
-import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
+import { LightScreenThemeProvider, DarkScreenThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 export default {
   title: 'Pages/BankCardDetailsPage',
@@ -26,17 +26,17 @@ const mockCard: BankCardDecrypted = {
 };
 
 export const Default = () => (
-  <LightThemeProvider>
+  <LightScreenThemeProvider>
     <MemoryRouter>
       <BankCardDetailsPage card={mockCard} onBack={() => {}} />
     </MemoryRouter>
-  </LightThemeProvider>
+  </LightScreenThemeProvider>
 );
 
 export const Dark = () => (
-  <DarkThemeProvider>
+  <DarkScreenThemeProvider>
     <MemoryRouter>
       <BankCardDetailsPage card={mockCard} onBack={() => {}} />
     </MemoryRouter>
-  </DarkThemeProvider>
+  </DarkScreenThemeProvider>
 ); 

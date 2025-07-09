@@ -1,7 +1,7 @@
 import React from 'react';
 import AddCredential1 from '../AddCredential1';
 import { MemoryRouter } from 'react-router-dom';
-import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
+import { LightScreenThemeProvider, DarkScreenThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 export default {
   title: 'Pages/AddCredential1',
@@ -16,13 +16,13 @@ export default {
 };
 
 export const Default = () => (
-  <LightThemeProvider>
+  <LightScreenThemeProvider>
     <AddCredential1 />
-  </LightThemeProvider>
+  </LightScreenThemeProvider>
 );
 
 export const Dark = () => (
-  <DarkThemeProvider>
+  <DarkScreenThemeProvider>
     <AddCredential1 />
-  </DarkThemeProvider>
+  </DarkScreenThemeProvider>
 ); 

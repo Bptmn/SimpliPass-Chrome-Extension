@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import ItemBankCard from '../ItemBankCard';
 import { BankCardDecrypted } from '@app/core/types/types';
-import { ThemeProvider } from '@app/core/logic/theme';
+import { LightThemeProvider, DarkThemeProvider } from './ThemeProviders';
 import { spacing } from '@design/layout';
 
 export default {
@@ -27,19 +27,19 @@ const mockCard: BankCardDecrypted = {
 };
 
 const CardWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
+  <LightThemeProvider>
     <View style={{ padding: spacing.lg }}>
       {children}
     </View>
-  </ThemeProvider>
+  </LightThemeProvider>
 );
 
 const DarkCardWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ padding: spacing.lg, backgroundColor: '#282c30', minHeight: 200 }}>
+  <DarkThemeProvider>
+    <View style={{ padding: spacing.lg }}>
       {children}
     </View>
-  </ThemeProvider>
+  </DarkThemeProvider>
 );
 
 export const Default = () => (

@@ -44,8 +44,8 @@ const AddSecureNote: React.FC = () => {
       };
       await addItem(user.uid, userSecretKey, newNote);
       navigate('/');
-    } catch (e: any) {
-      setError(e.message || 'Erreur lors de la création de la note.');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Erreur lors de la création de la note.');
     } finally {
       setLoading(false);
     }

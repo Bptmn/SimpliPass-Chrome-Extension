@@ -1,63 +1,36 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
+import type { Meta, StoryFn } from '@storybook/react';
 import { ColorSelector } from '../ColorSelector';
-import { ThemeProvider } from '@app/core/logic/theme';
-import { spacing } from '@design/layout';
+import { LightThemeProvider, DarkThemeProvider } from './ThemeProviders';
 
-export default {
+const meta: Meta<typeof ColorSelector> = {
   title: 'Components/ColorSelector',
   component: ColorSelector,
-  argTypes: {
-    title: { control: 'text' },
+  parameters: {
+    layout: 'centered',
   },
+  tags: ['autodocs'],
 };
 
-const ColorSelectorWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ padding: spacing.lg }}>
-      {children}
-    </View>
-  </ThemeProvider>
-);
+export default meta;
 
-const DarkColorSelectorWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ padding: spacing.lg, backgroundColor: '#282c30', minHeight: 200 }}>
-      {children}
-    </View>
-  </ThemeProvider>
-);
-
-export const Default = (args: any) => {
-  const [color, setColor] = useState<string | undefined>(undefined);
+export const Default: StoryFn<typeof ColorSelector> = (args) => {
   return (
-    <ColorSelectorWrapper>
-      <ColorSelector
-        title={args.title || 'Choisissez la couleur de votre note'}
-        value={color}
-        onChange={setColor}
-      />
-    </ColorSelectorWrapper>
+    <LightThemeProvider>
+      <ColorSelector {...args} />
+    </LightThemeProvider>
   );
 };
 
 Default.args = {
-  title: 'Choisissez la couleur de votre note',
+  title: 'Choisissez une couleur',
+  value: '#4f86a2',
+  onChange: (color: string) => console.log('Color changed:', color),
 };
 
-export const DefaultDark = (args: any) => {
-  const [color, setColor] = useState<string | undefined>(undefined);
+export const DefaultDark: StoryFn<typeof ColorSelector> = (args) => {
   return (
-    <DarkColorSelectorWrapper>
-      <ColorSelector
-        title={args.title || 'Choisissez la couleur de votre note'}
-        value={color}
-        onChange={setColor}
-      />
-    </DarkColorSelectorWrapper>
+    <DarkThemeProvider>
+      <ColorSelector {...args} />
+    </DarkThemeProvider>
   );
-};
-
-DefaultDark.args = {
-  title: 'Choisissez la couleur de votre note',
 }; 

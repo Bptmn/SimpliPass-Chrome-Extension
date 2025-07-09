@@ -9,13 +9,59 @@ import { logoutUser } from '@app/core/logic/user';
 import { ErrorBanner } from '@components/ErrorBanner';
 import { Icon } from '@components/Icon';
 import { useToast } from '@app/core/hooks/useToast';
-import { getPageStyles, spacing, radius, padding } from '@design/layout';
+import { getPageStyles, spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
 import { ModeSwitch } from '@components/ModeSwitch';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
 import { Toast } from '@components/Toast';
+
+// MenuList component to avoid defining components during render
+const MenuList: React.FC<{ themeColors: any; styles: any }> = ({ themeColors, styles }) => (
+  <View style={styles.menuList}>
+    {/* Security row */}
+    <Pressable style={styles.menuItem} accessibilityLabel="Sécurité">
+      <View style={styles.menuIcon}>
+        <Icon name="security" size={22} color={themeColors.secondary} />
+      </View>
+      <Text style={styles.menuLabel}>Sécurité</Text>
+      <View style={styles.menuArrow}>
+        <Icon name="arrowForward" size={15} color={themeColors.primary} />
+      </View>
+    </Pressable>
+    {/* Help row */}
+    <Pressable style={styles.menuItem} accessibilityLabel="Aide">
+      <View style={styles.menuIcon}>
+        <Icon name="help" size={22} color={themeColors.secondary} />
+      </View>
+      <Text style={styles.menuLabel}>Aide</Text>
+      <View style={styles.menuArrow}>
+        <Icon name="arrowForward" size={15} color={themeColors.primary} />
+      </View>
+    </Pressable>
+    {/* Subscription row */}
+    <Pressable style={styles.menuItem} accessibilityLabel="Mon abonnement">
+      <View style={styles.menuIcon}>
+        <Icon name="workspacePremium" size={22} color={themeColors.secondary} />
+      </View>
+      <Text style={styles.menuLabel}>Mon abonnement</Text>
+      <View style={styles.menuArrow}>
+        <Icon name="arrowForward" size={15} color={themeColors.primary} />
+      </View>
+    </Pressable>
+    {/* Languages row */}
+    <Pressable style={styles.menuItem} accessibilityLabel="Languages">
+      <View style={styles.menuIcon}>
+        <Icon name="language" size={22} color={themeColors.secondary} />
+      </View>
+      <Text style={styles.menuLabel}>Languages</Text>
+      <View style={styles.menuArrow}>
+        <Icon name="arrowForward" size={15} color={themeColors.primary} />
+      </View>
+    </Pressable>
+  </View>
+);
 
 const SettingsPage: React.FC = () => {
   const { mode } = useThemeMode();
@@ -38,53 +84,12 @@ const SettingsPage: React.FC = () => {
   };
 
   // Lazy load non-critical sections (simulate for demo)
-  const LazyMenu = React.lazy(() =>
-    Promise.resolve({
-      default: () => (
-        <View style={styles.menuList}>
-          {/* Security row */}
-          <Pressable style={styles.menuItem} accessibilityLabel="Sécurité">
-            <View style={styles.menuIcon}>
-              <Icon name="security" size={22} color={themeColors.secondary} />
-            </View>
-            <Text style={styles.menuLabel}>Sécurité</Text>
-            <View style={styles.menuArrow}>
-              <Icon name="arrowForward" size={15} color={themeColors.primary} />
-            </View>
-          </Pressable>
-          {/* Help row */}
-          <Pressable style={styles.menuItem} accessibilityLabel="Aide">
-            <View style={styles.menuIcon}>
-              <Icon name="help" size={22} color={themeColors.secondary} />
-            </View>
-            <Text style={styles.menuLabel}>Aide</Text>
-            <View style={styles.menuArrow}>
-              <Icon name="arrowForward" size={15} color={themeColors.primary} />
-            </View>
-          </Pressable>
-          {/* Subscription row */}
-          <Pressable style={styles.menuItem} accessibilityLabel="Mon abonnement">
-            <View style={styles.menuIcon}>
-              <Icon name="workspacePremium" size={22} color={themeColors.secondary} />
-            </View>
-            <Text style={styles.menuLabel}>Mon abonnement</Text>
-            <View style={styles.menuArrow}>
-              <Icon name="arrowForward" size={15} color={themeColors.primary} />
-            </View>
-          </Pressable>
-          {/* Languages row */}
-          <Pressable style={styles.menuItem} accessibilityLabel="Languages">
-            <View style={styles.menuIcon}>
-              <Icon name="language" size={22} color={themeColors.secondary} />
-            </View>
-            <Text style={styles.menuLabel}>Languages</Text>
-            <View style={styles.menuArrow}>
-              <Icon name="arrowForward" size={15} color={themeColors.primary} />
-            </View>
-          </Pressable>
-        </View>
-      ),
-    }),
+  const LazyMenu = React.useMemo(() => 
+    React.lazy(() =>
+      Promise.resolve({
+        default: () => <MenuList themeColors={themeColors} styles={styles} />,
+      }),
+    ), [themeColors, styles]
   );
 
   return (

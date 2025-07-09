@@ -6,7 +6,7 @@ import { passwordGenerator } from '@utils/passwordGenerator';
 
 import { getPageStyles, spacing, radius, padding } from '@design/layout';
 import { typography } from '@design/typography';
-import { useToast } from '../components/Toast';
+
 import CopyButton from '../components/CopyButton';
 import { Button } from '../components/Buttons';
 import { Slider } from '../components/Slider';
@@ -21,11 +21,10 @@ export const GeneratorPage: React.FC = () => {
   const [hasUppercase, setHasUppercase] = useState(true);
   const [hasNumbers, setHasNumbers] = useState(true);
   const [hasSymbols, setHasSymbols] = useState(true);
-  const [hasLowercase, setHasLowercase] = useState(true);
+  const [hasLowercase] = useState(true);
   const [length, setLength] = useState(16);
   const [password, setPassword] = useState('');
   const [strength, setStrength] = useState<'weak' | 'average' | 'strong' | 'perfect'>('weak');
-  const { showToast } = useToast();
 
   // Generate password and check strength on mount and whenever options change
   useEffect(() => {
@@ -183,7 +182,7 @@ const getStyles = (mode: 'light' | 'dark') => {
       padding: padding.md,
     },
     pageSection: {
-      gap: spacing.xs
+      gap: spacing.xs,
     },
     passwordDisplay: {
       alignItems: 'center',
@@ -204,7 +203,7 @@ const getStyles = (mode: 'light' | 'dark') => {
       padding: padding.sm,
     },
     sectionLabel: {
-      color: themeColors.tertiary,
+      color: themeColors.tertiaryText,
       fontSize: typography.fontSize.xs,
       fontWeight: '500',
       margin: 0,
@@ -222,7 +221,7 @@ const getStyles = (mode: 'light' | 'dark') => {
     strengthStrong: { color: themeColors.primary },
     strengthWeak: { color: '#e57373' },
     switch: {
-      backgroundColor: '#ccc',
+      backgroundColor: themeColors.error,
       borderRadius: 22,
       height: 25,
       position: 'relative',
@@ -232,7 +231,7 @@ const getStyles = (mode: 'light' | 'dark') => {
       backgroundColor: themeColors.secondary,
     },
     switchSlider: {
-      backgroundColor: themeColors.primaryBackground,
+      backgroundColor: themeColors.white,
       borderRadius: radius.xl,
       bottom: 1.5,
       height: 22,

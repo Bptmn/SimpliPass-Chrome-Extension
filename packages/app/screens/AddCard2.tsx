@@ -6,7 +6,7 @@ import ItemBankCard from '@components/ItemBankCard';
 import { Icon } from '@components/Icon';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { spacing, radius, pageStyles, getPageStyles, padding } from '@design/layout';
+import { spacing, radius, getPageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { addItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
@@ -40,7 +40,7 @@ const AddCard2: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast] = useState<string | null>(null);
 
   // Helper for web: generate month and year options
 
@@ -75,9 +75,8 @@ const AddCard2: React.FC = () => {
         bankDomain: bankDomain || '',
       };
       await addItem(user.uid, userSecretKey, newCard);
-      navigate('/');
-    } catch (e: any) {
-      setError(e.message || 'Erreur lors de la création de la carte.');
+      navigate('/')    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Erreur lors de la création de la carte.');
     } finally {
       setLoading(false);
     }
@@ -161,7 +160,7 @@ const AddCard2: React.FC = () => {
                         }}
                         style={styles.inputDateSelect}
                       >
-                        <option value=""></option>
+                        <option value="" />
                         {monthOptions.map(m => (
                           <option key={m} value={m}>{m}</option>
                         ))}
@@ -185,7 +184,7 @@ const AddCard2: React.FC = () => {
                         }}
                         style={styles.inputDateSelect}
                       >
-                        <option value=""></option>
+                        <option value="" />
                         {yearOptions.map(y => (
                           <option key={y} value={y}>{y}</option>
                         ))}
@@ -261,11 +260,6 @@ const getStyles = (mode: 'light' | 'dark') => {
       color: themeColors.primary,
       fontSize: typography.fontSize.sm,
       fontWeight: typography.fontWeight.medium,
-    },
-    errorText: {
-      color: themeColors.error,
-      fontSize: typography.fontSize.sm,
-      textAlign: 'center',
     },
     inputColumn: {
       flex: 1,

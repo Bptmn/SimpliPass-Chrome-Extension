@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { View, TextInput } from 'react-native';
+import { View, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
 import { radius, spacing } from '@design/layout';
@@ -39,7 +39,7 @@ export const CodeInput: React.FC<CodeInputProps> = ({ value, length = 6, onChang
     }
   };
 
-  const handleKeyPress = (e: any, idx: number) => {
+  const handleKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>, idx: number) => {
     if (e.nativeEvent.key === 'Backspace' && !value[idx] && idx > 0) {
       inputs.current[idx - 1]?.focus();
     }
