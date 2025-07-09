@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import type { Meta, StoryFn } from '@storybook/react';
 import { DetailField } from '../DetailField';
 import { ThemeProvider } from '@app/core/logic/theme';
+import { spacing } from '@design/layout';
 
 export default {
   title: 'Components/DetailField',
@@ -10,13 +11,45 @@ export default {
   decorators: [
     (Story) => (
       <ThemeProvider>
-        <View style={{ padding: 20, gap: 16 }}>
+        <View style={{ padding: spacing.lg, gap: 16 }}>
           <Story />
         </View>
       </ThemeProvider>
     ),
   ],
 } as Meta<typeof DetailField>;
+
+// Custom ThemeProvider that forces dark mode
+const DarkThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Set dark mode immediately before rendering
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem('simplipass_theme_mode', 'dark');
+  }
+
+  return (
+    <ThemeProvider>
+      <View style={{ padding: spacing.lg, gap: 16, minHeight: 200 }}>
+        {children}
+      </View>
+    </ThemeProvider>
+  );
+};
+
+// Custom ThemeProvider that forces light mode
+const LightThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Set light mode immediately before rendering
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem('simplipass_theme_mode', 'light');
+  }
+
+  return (
+    <ThemeProvider>
+      <View style={{ padding: spacing.lg, gap: 16 }}>
+        {children}
+      </View>
+    </ThemeProvider>
+  );
+};
 
 const Template: StoryFn<React.ComponentProps<typeof DetailField>> = (args) => (
   <DetailField {...args} />
@@ -30,6 +63,23 @@ Default.args = {
   copyText: 'copier',
   ariaLabel: 'Copier le titulaire',
 };
+Default.decorators = [
+  (Story) => (
+    <LightThemeProvider>
+      <Story />
+    </LightThemeProvider>
+  ),
+];
+
+export const DefaultDark = Template.bind({});
+DefaultDark.args = Default.args;
+DefaultDark.decorators = [
+  (Story) => (
+    <DarkThemeProvider>
+      <Story />
+    </DarkThemeProvider>
+  ),
+];
 
 export const WithLaunchButton = Template.bind({});
 WithLaunchButton.args = {
@@ -37,6 +87,23 @@ WithLaunchButton.args = {
   value: 'https://example.com',
   showLaunchButton: true,
 };
+WithLaunchButton.decorators = [
+  (Story) => (
+    <LightThemeProvider>
+      <Story />
+    </LightThemeProvider>
+  ),
+];
+
+export const WithLaunchButtonDark = Template.bind({});
+WithLaunchButtonDark.args = WithLaunchButton.args;
+WithLaunchButtonDark.decorators = [
+  (Story) => (
+    <DarkThemeProvider>
+      <Story />
+    </DarkThemeProvider>
+  ),
+];
 
 export const EmptyValue = Template.bind({});
 EmptyValue.args = {
@@ -44,6 +111,23 @@ EmptyValue.args = {
   value: '',
   showCopyButton: true,
 };
+EmptyValue.decorators = [
+  (Story) => (
+    <LightThemeProvider>
+      <Story />
+    </LightThemeProvider>
+  ),
+];
+
+export const EmptyValueDark = Template.bind({});
+EmptyValueDark.args = EmptyValue.args;
+EmptyValueDark.decorators = [
+  (Story) => (
+    <DarkThemeProvider>
+      <Story />
+    </DarkThemeProvider>
+  ),
+];
 
 export const LongValue = Template.bind({});
 LongValue.args = {
@@ -53,6 +137,23 @@ LongValue.args = {
   copyText: 'copier',
   ariaLabel: 'Copier le numéro de carte',
 };
+LongValue.decorators = [
+  (Story) => (
+    <LightThemeProvider>
+      <Story />
+    </LightThemeProvider>
+  ),
+];
+
+export const LongValueDark = Template.bind({});
+LongValueDark.args = LongValue.args;
+LongValueDark.decorators = [
+  (Story) => (
+    <DarkThemeProvider>
+      <Story />
+    </DarkThemeProvider>
+  ),
+];
 
 export const CVV = Template.bind({});
 CVV.args = {
@@ -61,4 +162,21 @@ CVV.args = {
   showCopyButton: true,
   copyText: 'copier',
   ariaLabel: 'Copier le CVV',
-}; 
+};
+CVV.decorators = [
+  (Story) => (
+    <LightThemeProvider>
+      <Story />
+    </LightThemeProvider>
+  ),
+];
+
+export const CVVDark = Template.bind({});
+CVVDark.args = CVV.args;
+CVVDark.decorators = [
+  (Story) => (
+    <DarkThemeProvider>
+      <Story />
+    </DarkThemeProvider>
+  ),
+]; 

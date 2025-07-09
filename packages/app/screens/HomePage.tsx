@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
-import { pageStyles } from '@design/layout';
-import { radius, spacing } from '@design/layout';
+import { getPageStyles, spacing, radius, padding } from '@design/layout';
 import { typography } from '@design/typography';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
@@ -33,6 +32,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const {
     user,

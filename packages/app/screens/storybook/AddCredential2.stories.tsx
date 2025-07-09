@@ -1,6 +1,7 @@
 import React from 'react';
 import { AddCredential2 } from '../AddCredential2';
 import { MemoryRouter } from 'react-router-dom';
+import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 export default {
   title: 'Pages/AddCredential2',
@@ -14,4 +15,14 @@ export default {
   ],
 };
 
-export const Default = () => <AddCredential2 title="Example Credential" onSuccess={() => {}} />; 
+export const Default = () => (
+  <LightThemeProvider>
+    <AddCredential2 title="Example Credential" onSuccess={() => {}} />
+  </LightThemeProvider>
+);
+
+export const Dark = () => (
+  <DarkThemeProvider>
+    <AddCredential2 title="Example Credential" onSuccess={() => {}} />
+  </DarkThemeProvider>
+); 

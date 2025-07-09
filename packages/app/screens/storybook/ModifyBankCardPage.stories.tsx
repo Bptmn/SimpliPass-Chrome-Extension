@@ -2,21 +2,22 @@ import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ModifyBankCardPage } from '../ModifyBankCardPage';
 import { BankCardDecrypted } from '@app/core/types/types';
+import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 const mockCard: BankCardDecrypted = {
+  id: 'card1',
+  title: 'Title',
+  owner: 'Owner',
+  note: '',
+  color: '#5B8CA9',
+  itemKey: 'key',
+  cardNumber: '1234567890000000',
+  expirationDate: { month: 1, year: 2030 },
+  verificationNumber: '123',
+  bankName: 'Placeholder Bank',
+  bankDomain: 'placeholder.com',
   createdDateTime: new Date(),
   lastUseDateTime: new Date(),
-  title: 'Carte Visa Pro',
-  owner: 'Jean Dupont',
-  note: 'Carte professionnelle principale',
-  color: '#1976d2',
-  itemKey: 'mock-key',
-  cardNumber: '4111 1111 1111 1111',
-  expirationDate: new Date('2026-12-31T00:00:00Z'),
-  verificationNumber: '123',
-  bankName: 'BNP Paribas',
-  bankDomain: 'bnp.fr',
-  id: 'mock-id',
 };
 
 export default {
@@ -25,9 +26,21 @@ export default {
 };
 
 export const Default = () => (
-  <MemoryRouter initialEntries={[{ pathname: '/modify-bank-card', state: { cred: mockCard } }]}> 
-    <Routes>
-      <Route path="/modify-bank-card" element={<ModifyBankCardPage />} />
-    </Routes>
-  </MemoryRouter>
+  <LightThemeProvider>
+    <MemoryRouter initialEntries={[{ pathname: '/modify-bank-card', state: { cred: mockCard } }]}> 
+      <Routes>
+        <Route path="/modify-bank-card" element={<ModifyBankCardPage />} />
+      </Routes>
+    </MemoryRouter>
+  </LightThemeProvider>
+);
+
+export const Dark = () => (
+  <DarkThemeProvider>
+    <MemoryRouter initialEntries={[{ pathname: '/modify-bank-card', state: { cred: mockCard } }]}> 
+      <Routes>
+        <Route path="/modify-bank-card" element={<ModifyBankCardPage />} />
+      </Routes>
+    </MemoryRouter>
+  </DarkThemeProvider>
 ); 

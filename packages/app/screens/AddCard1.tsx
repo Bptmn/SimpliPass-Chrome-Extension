@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { View } from 'react-native';
 import { Input } from '@components/InputFields';
-import { pageStyles } from '@design/layout';
+import { getPageStyles } from '@design/layout';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
 import { useThemeMode } from '@app/core/logic/theme';
@@ -10,6 +10,7 @@ import { getColors } from '@design/colors';
 
 const AddCard1: React.FC = () => {
   const { mode } = useThemeMode();
+  const styles = getPageStyles(mode);
   const themeColors = getColors(mode);
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
@@ -23,12 +24,12 @@ const AddCard1: React.FC = () => {
   };
 
   return (
-    <View style={pageStyles.pageContainer}>
+    <View style={styles.pageContainer}>
       <HeaderTitle 
         title="Ajouter une carte" 
         onBackPress={() => navigate(-1)} 
       />
-      <View style={pageStyles.formContainer}>
+      <View style={styles.formContainer}>
         <Input
           label="Nom de la carte"
           _id="card-title"

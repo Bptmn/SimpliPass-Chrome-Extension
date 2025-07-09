@@ -31,7 +31,7 @@ export const darkColors = {
   info: '#ffffff',
   blackText: '#f1f4f8',
   disabled: '#444950',
-  white: '#23272a',
+  white: '#ffffff',
 } as const;
 
 export type ColorKey = keyof typeof lightColors;

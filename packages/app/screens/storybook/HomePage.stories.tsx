@@ -1,38 +1,31 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import { HomePage } from '../HomePage';
-import { UserProvider } from '../../core/hooks/useUser';
-import { useUserStore } from '../../core/states/user';
-import { Timestamp } from 'firebase/firestore';
+import { MemoryRouter } from 'react-router-dom';
+import { LightScreenThemeProvider, DarkScreenThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 export default {
   title: 'Pages/HomePage',
   component: HomePage,
-  parameters: {
-    layout: 'fullscreen',
-  },
 };
 
-const mockUser = {
-  uid: '1',
-  email: 'user@example.com',
-  created_time: Timestamp.fromDate(new Date()),
-  salt: 'mock-salt'
+const mockProps = {
+  user: { uid: '1', email: 'user@example.com' },
+  pageState: null,
+  onInjectCredential: () => {},
 };
 
-export const Default = () => {
-  // Set up the user store
-  useUserStore.getState().setUser(mockUser);
-  
-  return (
-    <BrowserRouter>
-      <UserProvider value={mockUser}>
-        <HomePage 
-          user={mockUser} 
-          pageState={null} 
-          onInjectCredential={() => {}} 
-        />
-      </UserProvider>
-    </BrowserRouter>
-  );
-}; 
+export const Default = () => (
+  <LightScreenThemeProvider>
+    <MemoryRouter>
+      <HomePage {...mockProps} />
+    </MemoryRouter>
+  </LightScreenThemeProvider>
+);
+
+export const Dark = () => (
+  <DarkScreenThemeProvider>
+    <MemoryRouter>
+      <HomePage {...mockProps} />
+    </MemoryRouter>
+  </DarkScreenThemeProvider>
+); 

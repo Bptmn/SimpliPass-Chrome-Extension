@@ -1,8 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
 import { Button } from '../Buttons';
 import { colors } from '@design/colors';
-import { spacing } from '@design/layout';
+import { LightThemeProvider, DarkThemeProvider } from './ThemeProviders';
 
 export default {
   title: 'Components/Buttons',
@@ -13,7 +12,7 @@ export default {
 };
 
 export const Primary = () => (
-  <View style={{ padding: spacing.lg }}>
+  <LightThemeProvider>
     <Button
       text="Primary Button"
       color={colors.primary}
@@ -23,11 +22,25 @@ export const Primary = () => (
       outline={false}
       onPress={() => console.log('Primary button pressed')}
     />
-  </View>
+  </LightThemeProvider>
+);
+
+export const PrimaryDark = () => (
+  <DarkThemeProvider>
+    <Button
+      text="Primary Button"
+      color={colors.primary}
+      width="full"
+      height="full"
+      align="center"
+      outline={false}
+      onPress={() => console.log('Primary button pressed')}
+    />
+  </DarkThemeProvider>
 );
 
 export const Secondary = () => (
-  <View style={{ padding: spacing.lg }}>
+  <LightThemeProvider>
     <Button
       text="Secondary Button"
       color={colors.secondary}
@@ -37,11 +50,25 @@ export const Secondary = () => (
       outline={false}
       onPress={() => console.log('Secondary button pressed')}
     />
-  </View>
+  </LightThemeProvider>
+);
+
+export const SecondaryDark = () => (
+  <DarkThemeProvider>
+    <Button
+      text="Secondary Button"
+      color={colors.secondary}
+      width="full"
+      height="full"
+      align="center"
+      outline={false}
+      onPress={() => console.log('Secondary button pressed')}
+    />
+  </DarkThemeProvider>
 );
 
 export const Outline = () => (
-  <View style={{ padding: spacing.lg }}>
+  <LightThemeProvider>
     <Button
       text="Outline Button"
       color={colors.primary}
@@ -51,11 +78,25 @@ export const Outline = () => (
       outline={true}
       onPress={() => console.log('Outline button pressed')}
     />
-  </View>
+  </LightThemeProvider>
+);
+
+export const OutlineDark = () => (
+  <DarkThemeProvider>
+    <Button
+      text="Outline Button"
+      color={colors.primary}
+      width="full"
+      height="full"
+      align="center"
+      outline={true}
+      onPress={() => console.log('Outline button pressed')}
+    />
+  </DarkThemeProvider>
 );
 
 export const Small = () => (
-  <View style={{ padding: spacing.lg }}>
+  <LightThemeProvider>
     <Button
       text="Small Button"
       color={colors.primary}
@@ -65,11 +106,25 @@ export const Small = () => (
       outline={false}
       onPress={() => console.log('Small button pressed')}
     />
-  </View>
+  </LightThemeProvider>
+);
+
+export const SmallDark = () => (
+  <DarkThemeProvider>
+    <Button
+      text="Small Button"
+      color={colors.primary}
+      width="fit"
+      height="fit"
+      align="center"
+      outline={false}
+      onPress={() => console.log('Small button pressed')}
+    />
+  </DarkThemeProvider>
 );
 
 export const Medium = () => (
-  <View style={{ padding: spacing.lg }}>
+  <LightThemeProvider>
     <Button
       text="Medium Button"
       color={colors.primary}
@@ -79,11 +134,25 @@ export const Medium = () => (
       outline={false}
       onPress={() => console.log('Medium button pressed')}
     />
-  </View>
+  </LightThemeProvider>
+);
+
+export const MediumDark = () => (
+  <DarkThemeProvider>
+    <Button
+      text="Medium Button"
+      color={colors.primary}
+      width="fit"
+      height="full"
+      align="center"
+      outline={false}
+      onPress={() => console.log('Medium button pressed')}
+    />
+  </DarkThemeProvider>
 );
 
 export const Large = () => (
-  <View style={{ padding: spacing.lg }}>
+  <LightThemeProvider>
     <Button
       text="Large Button"
       color={colors.primary}
@@ -93,39 +162,81 @@ export const Large = () => (
       outline={false}
       onPress={() => console.log('Large button pressed')}
     />
-  </View>
+  </LightThemeProvider>
+);
+
+export const LargeDark = () => (
+  <DarkThemeProvider>
+    <Button
+      text="Large Button"
+      color={colors.primary}
+      width="full"
+      height="fit"
+      align="center"
+      outline={false}
+      onPress={() => console.log('Large button pressed')}
+    />
+  </DarkThemeProvider>
 );
 
 export const LeftAligned = () => (
-  <View style={{ padding: spacing.lg }}>
+  <LightThemeProvider>
     <Button
       text="Left Aligned"
       color={colors.primary}
-      width="fit"
+      width="full"
       height="full"
       align="left"
       outline={false}
       onPress={() => console.log('Left aligned button pressed')}
     />
-  </View>
+  </LightThemeProvider>
+);
+
+export const LeftAlignedDark = () => (
+  <DarkThemeProvider>
+    <Button
+      text="Left Aligned"
+      color={colors.primary}
+      width="full"
+      height="full"
+      align="left"
+      outline={false}
+      onPress={() => console.log('Left aligned button pressed')}
+    />
+  </DarkThemeProvider>
 );
 
 export const RightAligned = () => (
-  <View style={{ padding: spacing.lg }}>
+  <LightThemeProvider>
     <Button
       text="Right Aligned"
       color={colors.primary}
-      width="fit"
+      width="full"
       height="full"
       align="right"
       outline={false}
       onPress={() => console.log('Right aligned button pressed')}
     />
-  </View>
+  </LightThemeProvider>
+);
+
+export const RightAlignedDark = () => (
+  <DarkThemeProvider>
+    <Button
+      text="Right Aligned"
+      color={colors.primary}
+      width="full"
+      height="full"
+      align="right"
+      outline={false}
+      onPress={() => console.log('Right aligned button pressed')}
+    />
+  </DarkThemeProvider>
 );
 
 export const Disabled = () => (
-  <View style={{ padding: spacing.lg }}>
+  <LightThemeProvider>
     <Button
       text="Disabled Button"
       color={colors.primary}
@@ -136,11 +247,26 @@ export const Disabled = () => (
       disabled={true}
       onPress={() => console.log('Disabled button pressed')}
     />
-  </View>
+  </LightThemeProvider>
+);
+
+export const DisabledDark = () => (
+  <DarkThemeProvider>
+    <Button
+      text="Disabled Button"
+      color={colors.primary}
+      width="full"
+      height="full"
+      align="center"
+      outline={false}
+      disabled={true}
+      onPress={() => console.log('Disabled button pressed')}
+    />
+  </DarkThemeProvider>
 );
 
 export const DisabledOutline = () => (
-  <View style={{ padding: spacing.lg }}>
+  <LightThemeProvider>
     <Button
       text="Disabled Outline"
       color={colors.primary}
@@ -151,5 +277,20 @@ export const DisabledOutline = () => (
       disabled={true}
       onPress={() => console.log('Disabled outline button pressed')}
     />
-  </View>
+  </LightThemeProvider>
+);
+
+export const DisabledOutlineDark = () => (
+  <DarkThemeProvider>
+    <Button
+      text="Disabled Outline"
+      color={colors.primary}
+      width="full"
+      height="full"
+      align="center"
+      outline={true}
+      disabled={true}
+      onPress={() => console.log('Disabled outline button pressed')}
+    />
+  </DarkThemeProvider>
 );

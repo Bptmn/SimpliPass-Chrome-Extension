@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { View, ScrollView } from 'react-native';
 import { Input } from '@components/InputFields';
-import { pageStyles } from '@design/layout';
+import { getPageStyles } from '@design/layout';
 import { addItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
 import { useUser } from '@app/core/hooks/useUser';
@@ -16,6 +16,7 @@ import { getColors } from '@design/colors';
 
 const AddSecureNote: React.FC = () => {
   const { mode } = useThemeMode();
+  const styles = React.useMemo(() => getPageStyles(mode), [mode]);
   const themeColors = getColors(mode);
   const navigate = useNavigate();
   const user = useUser();
@@ -51,14 +52,14 @@ const AddSecureNote: React.FC = () => {
   };
 
   return (
-    <View style={pageStyles.pageContainer}>
+    <View style={styles.pageContainer}>
       {error && <ErrorBanner message={error} />}
-      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <HeaderTitle 
           title="Ajouter une note" 
           onBackPress={() => navigate(-1)} 
         />
-        <View style={pageStyles.formContainer}>
+        <View style={styles.formContainer}>
           <Input
             label="Nom de la note sécurisée"
             _id="note-title"

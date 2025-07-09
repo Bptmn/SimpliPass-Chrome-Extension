@@ -1,6 +1,7 @@
 import React from 'react';
 import { EmailConfirmationPage } from '../EmailConfirmationPage';
 import { MemoryRouter } from 'react-router-dom';
+import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 export default {
   title: 'Pages/EmailConfirmationPage',
@@ -8,11 +9,25 @@ export default {
 };
 
 export const Default = () => (
-  <MemoryRouter>
-    <EmailConfirmationPage
-      email="user@example.com"
-      onConfirm={() => {}}
-      onResend={() => {}}
-    />
-  </MemoryRouter>
+  <LightThemeProvider>
+    <MemoryRouter>
+      <EmailConfirmationPage
+        email="user@example.com"
+        onConfirm={() => {}}
+        onResend={() => {}}
+      />
+    </MemoryRouter>
+  </LightThemeProvider>
+);
+
+export const Dark = () => (
+  <DarkThemeProvider>
+    <MemoryRouter>
+      <EmailConfirmationPage
+        email="user@example.com"
+        onConfirm={() => {}}
+        onResend={() => {}}
+      />
+    </MemoryRouter>
+  </DarkThemeProvider>
 ); 

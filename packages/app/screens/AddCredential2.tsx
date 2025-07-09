@@ -13,7 +13,7 @@ import { generateItemKey } from '@utils/crypto';
 import { Input, InputPasswordStrength } from '@components/InputFields';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { pageStyles, spacing } from '@design/layout';
+import { getPageStyles, spacing, radius, padding } from '@design/layout';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
 import { createPasswordGenerator } from '@app/core/logic/credentials';
@@ -27,6 +27,7 @@ interface AddCredential2Props {
 
 export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTitle, link = '', onSuccess }) => {
   const { mode } = useThemeMode();
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const themeColors = getColors(mode);
   const user = useUser();
   const navigate = useNavigate();
@@ -91,8 +92,8 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
   return (
     <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
-      <Toast message={toast} />
-      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
+      <Toast message={toast || ''} />
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={{flexGrow: 1}}>
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Ajouter un identifiant" 

@@ -10,7 +10,7 @@ import Toast from '@components/Toast';
 import { useToast } from '@app/core/hooks/useToast';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { pageStyles, spacing } from '@design/layout';
+import { getPageStyles, spacing, radius, padding } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
@@ -19,6 +19,7 @@ import { InputEdit } from '@components/InputEdit';
 export const ModifyCredentialPage: React.FC = () => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
   const location = useLocation();
@@ -85,7 +86,7 @@ export const ModifyCredentialPage: React.FC = () => {
     <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
       <Toast message={toast} />
-      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={{flexGrow: 1}}>
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Modifier l'identifiant" 

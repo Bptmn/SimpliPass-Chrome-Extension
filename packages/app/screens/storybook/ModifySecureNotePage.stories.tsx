@@ -2,6 +2,7 @@ import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ModifySecureNotePage } from '../ModifySecureNotePage';
 import { SecureNoteDecrypted } from '@app/core/types/types';
+import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 const mockNote: SecureNoteDecrypted = {
   createdDateTime: new Date(),
@@ -19,9 +20,21 @@ export default {
 };
 
 export const Default = () => (
-  <MemoryRouter initialEntries={[{ pathname: '/modify-secure-note', state: { note: mockNote } }]}> 
-    <Routes>
-      <Route path="/modify-secure-note" element={<ModifySecureNotePage />} />
-    </Routes>
-  </MemoryRouter>
+  <LightThemeProvider>
+    <MemoryRouter initialEntries={[{ pathname: '/modify-secure-note', state: { note: mockNote } }]}> 
+      <Routes>
+        <Route path="/modify-secure-note" element={<ModifySecureNotePage />} />
+      </Routes>
+    </MemoryRouter>
+  </LightThemeProvider>
+);
+
+export const Dark = () => (
+  <DarkThemeProvider>
+    <MemoryRouter initialEntries={[{ pathname: '/modify-secure-note', state: { note: mockNote } }]}> 
+      <Routes>
+        <Route path="/modify-secure-note" element={<ModifySecureNotePage />} />
+      </Routes>
+    </MemoryRouter>
+  </DarkThemeProvider>
 ); 

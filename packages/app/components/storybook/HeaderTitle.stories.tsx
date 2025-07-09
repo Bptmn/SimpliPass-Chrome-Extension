@@ -1,7 +1,6 @@
 import React from 'react';
-import { View } from 'react-native';
 import { HeaderTitle } from '../HeaderTitle';
-import { spacing } from '@design/layout';
+import { LightThemeProvider, DarkThemeProvider } from './ThemeProviders';
 
 export default {
   title: 'Components/HeaderTitle',
@@ -12,54 +11,73 @@ export default {
 };
 
 export const Default = () => (
-  <View style={{ padding: spacing.lg, width: '100%' }}>
-    <HeaderTitle
-      title="Page Title"
-      onBackPress={() => console.log('Back button pressed')}
-    />
-  </View>
+  <LightThemeProvider>
+    <HeaderTitle title="Titre de la page" onBackPress={() => console.log('Back pressed')} />
+  </LightThemeProvider>
 );
 
-export const WithCustomBackText = () => (
-  <View style={{ width: 400, padding: 24, backgroundColor: '#ffffff' }}>
-    <HeaderTitle 
-      title="Détails du compte" 
-      onBackPress={() => console.log('Back pressed')}
-    />
-  </View>
+export const DefaultDark = () => (
+  <DarkThemeProvider>
+    <HeaderTitle title="Titre de la page" onBackPress={() => console.log('Back pressed')} />
+  </DarkThemeProvider>
 );
 
 export const LongTitle = () => (
-  <View style={{ padding: spacing.lg, width: '100%' }}>
-    <HeaderTitle
-      title="Very Long Page Title That Might Overflow"
-      onBackPress={() => console.log('Back button pressed')}
-    />
-  </View>
+  <LightThemeProvider>
+    <HeaderTitle title="Titre très long qui peut déborder sur plusieurs lignes si nécessaire" onBackPress={() => console.log('Back pressed')} />
+  </LightThemeProvider>
+);
+
+export const LongTitleDark = () => (
+  <DarkThemeProvider>
+    <HeaderTitle title="Titre très long qui peut déborder sur plusieurs lignes si nécessaire" onBackPress={() => console.log('Back pressed')} />
+  </DarkThemeProvider>
+);
+
+export const NoBackButton = () => (
+  <LightThemeProvider>
+    <HeaderTitle title="Titre sans bouton retour" onBackPress={() => {}} />
+  </LightThemeProvider>
+);
+
+export const NoBackButtonDark = () => (
+  <DarkThemeProvider>
+    <HeaderTitle title="Titre sans bouton retour" onBackPress={() => {}} />
+  </DarkThemeProvider>
 );
 
 export const ShortTitle = () => (
-  <View style={{ width: 400, padding: 24, backgroundColor: '#ffffff' }}>
-    <HeaderTitle 
-      title="Accueil" 
-      onBackPress={() => console.log('Back pressed')} 
-    />
-  </View>
+  <LightThemeProvider>
+    <HeaderTitle title="Titre court" onBackPress={() => console.log('Back pressed')} />
+  </LightThemeProvider>
 );
 
-export const MultipleHeaders = () => (
-  <View style={{ width: 400, padding: 24, backgroundColor: '#ffffff', gap: 16 }}>
+export const ShortTitleDark = () => (
+  <DarkThemeProvider>
+    <HeaderTitle title="Titre court" onBackPress={() => console.log('Back pressed')} />
+  </DarkThemeProvider>
+);
+
+export const WithCustomBackAction = () => (
+  <LightThemeProvider>
     <HeaderTitle 
-      title="Ajouter une note" 
-      onBackPress={() => console.log('Back pressed')} 
+      title="Titre avec action personnalisée" 
+      onBackPress={() => {
+        console.log('Custom back action');
+        alert('Action personnalisée exécutée');
+      }} 
     />
+  </LightThemeProvider>
+);
+
+export const WithCustomBackActionDark = () => (
+  <DarkThemeProvider>
     <HeaderTitle 
-      title="Modifier un identifiant" 
-      onBackPress={() => console.log('Back pressed')} 
+      title="Titre avec action personnalisée" 
+      onBackPress={() => {
+        console.log('Custom back action');
+        alert('Action personnalisée exécutée');
+      }} 
     />
-    <HeaderTitle 
-      title="Paramètres" 
-      onBackPress={() => console.log('Back pressed')} 
-    />
-  </View>
+  </DarkThemeProvider>
 ); 

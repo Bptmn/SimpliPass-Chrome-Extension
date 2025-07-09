@@ -14,4 +14,12 @@ export const Default = () => (
       <ModeSwitch />
     </View>
   </ThemeProvider>
+);
+
+export const DefaultDark = () => (
+  <ThemeProvider>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: 120, backgroundColor: '#282c30' }}>
+      <ModeSwitch />
+    </View>
+  </ThemeProvider>
 ); 

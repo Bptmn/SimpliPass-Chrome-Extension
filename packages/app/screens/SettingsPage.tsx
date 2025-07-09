@@ -9,8 +9,7 @@ import { logoutUser } from '@app/core/logic/user';
 import { ErrorBanner } from '@components/ErrorBanner';
 import { Icon } from '@components/Icon';
 import { useToast } from '@app/core/hooks/useToast';
-import { pageStyles } from '@design/layout';
-import { radius, spacing } from '@design/layout';
+import { getPageStyles, spacing, radius, padding } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
 import { ModeSwitch } from '@components/ModeSwitch';
@@ -25,6 +24,7 @@ const SettingsPage: React.FC = () => {
   console.log('[SettingsPage] user:', user);
   const [error, setError] = useState<string | null>(null);
   const { toast, showToast } = useToast();
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
 
   const handleLogout = async () => {
@@ -180,12 +180,12 @@ const getStyles = (mode: 'light' | 'dark') => {
     },
     menuList: {
       backgroundColor: themeColors.secondaryBackground,
-      borderRadius: radius.md,
-      flexDirection: 'column',
-      padding: spacing.sm,
-      gap: spacing.sm,
       borderColor: themeColors.borderColor,
+      borderRadius: radius.md,
       borderWidth: 1,
+      flexDirection: 'column',
+      gap: spacing.sm,
+      padding: spacing.sm,
     },
     modeSwitchWrapper: {
       alignItems: 'center',

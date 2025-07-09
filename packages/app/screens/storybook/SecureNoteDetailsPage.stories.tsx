@@ -2,6 +2,7 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { SecureNoteDetailsPage } from '../SecureNoteDetailsPage';
 import { SecureNoteDecrypted } from '@app/core/types/types';
+import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 export default {
   title: 'Pages/SecureNoteDetailsPage',
@@ -19,7 +20,17 @@ const mockNote: SecureNoteDecrypted = {
 };
 
 export const Default = () => (
-  <MemoryRouter>
-    <SecureNoteDetailsPage note={mockNote} onBack={() => {}} />
-  </MemoryRouter>
+  <LightThemeProvider>
+    <MemoryRouter>
+      <SecureNoteDetailsPage note={mockNote} onBack={() => {}} />
+    </MemoryRouter>
+  </LightThemeProvider>
+);
+
+export const Dark = () => (
+  <DarkThemeProvider>
+    <MemoryRouter>
+      <SecureNoteDetailsPage note={mockNote} onBack={() => {}} />
+    </MemoryRouter>
+  </DarkThemeProvider>
 ); 

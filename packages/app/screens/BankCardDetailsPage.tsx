@@ -11,7 +11,7 @@ import { LazyCredentialIcon } from '@components/LazyCredentialIcon';
 import { useToast } from '@app/core/hooks/useToast';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { pageStyles, spacing } from '@design/layout';
+import { getPageStyles, spacing, radius, padding } from '@design/layout';
 import { typography } from '@design/typography';
 import { StyleSheet } from 'react-native';
 import { Button } from '@components/Buttons';
@@ -29,6 +29,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
   const user = useUser();
@@ -69,7 +70,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   return (
     <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
-      <View style={styles.pageContent}>
+      <View style={pageStyles.pageContent}>
         {/* Header */}
         <View style={styles.headerRow}>
           <Pressable style={styles.backBtn} onPress={onBack} accessibilityLabel="Retour">

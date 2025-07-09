@@ -14,32 +14,41 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const THEME_STORAGE_KEY = 'simplipass_theme_mode';
 
-export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [mode, setModeState] = useState<ThemeMode>('light');
+export const ThemeProvider: React.FC<{ children: ReactNode; mode?: ThemeMode }> = ({ children, mode }) => {
+  const [internalMode, setInternalMode] = useState<ThemeMode>('light');
+
+  // If mode is provided, always use it
+  const effectiveMode = mode ?? internalMode;
 
   useEffect(() => {
+    if (mode) {
+      setInternalMode(mode);
+      setColorsMode(mode);
+      setPageStylesMode(mode);
+      return;
+    }
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (stored === 'dark' || stored === 'light') {
-      setModeState(stored as ThemeMode);
+      setInternalMode(stored as ThemeMode);
     }
-  }, []);
-
-  useEffect(() => {
-    setColorsMode(mode);
-    setPageStylesMode(mode);
   }, [mode]);
 
-  const setMode = (mode: ThemeMode) => {
-    setModeState(mode);
-    localStorage.setItem(THEME_STORAGE_KEY, mode);
+  useEffect(() => {
+    setColorsMode(effectiveMode);
+    setPageStylesMode(effectiveMode);
+  }, [effectiveMode]);
+
+  const setMode = (newMode: ThemeMode) => {
+    setInternalMode(newMode);
+    localStorage.setItem(THEME_STORAGE_KEY, newMode);
   };
 
   const toggleMode = () => {
-    setMode(mode === 'light' ? 'dark' : 'light');
+    setMode(effectiveMode === 'light' ? 'dark' : 'light');
   };
 
   return (
-    <ThemeContext.Provider value={{ mode, setMode, toggleMode }}>
+    <ThemeContext.Provider value={{ mode: effectiveMode, setMode, toggleMode }}>
       {children}
     </ThemeContext.Provider>
   );

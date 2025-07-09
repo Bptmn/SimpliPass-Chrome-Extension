@@ -5,7 +5,7 @@ import { EmailConfirmationPage } from './EmailConfirmationPage';
 import { Input } from '@components/InputFields';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { layout, radius, spacing, pageStyles } from '@design/layout';
+import { getPageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
 import { useLoginPage } from '@app/core/hooks';
@@ -14,7 +14,7 @@ import logo from '../../../assets/logo/logo_simplify_long.png';
 const LoginPage: React.FC = () => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const styles = React.useMemo(() => getStyles(mode), [mode]);
+  const styles = React.useMemo(() => getPageStyles(mode), [mode]);
   const {
     email,
     password,
@@ -48,8 +48,8 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <ScrollView style={pageStyles.pageContainer}>
-      <View style={pageStyles.pageContent}>
+    <ScrollView style={styles.pageContainer}>
+      <View style={styles.pageContent}>
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image source={logo} style={styles.logo} />
@@ -133,16 +133,16 @@ const getStyles = (mode: 'light' | 'dark') => {
       alignItems: 'center',
       flexDirection: 'row',
     },
+    checkboxIcon: {
+      color: themeColors.whiteText,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+    },
     checkboxLabel: {
       color: themeColors.primary,
       fontSize: typography.fontSize.sm,
       fontWeight: typography.fontWeight.medium,
       marginLeft: spacing.xs,
-    },
-    checkboxIcon: {
-      color: themeColors.whiteText,
-      fontSize: typography.fontSize.sm,
-      fontWeight: typography.fontWeight.medium,
     },
     emailFormContainer: {
       gap: spacing.sm,

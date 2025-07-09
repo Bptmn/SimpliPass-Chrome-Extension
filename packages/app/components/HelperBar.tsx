@@ -46,7 +46,7 @@ export const HelperBar: React.FC = () => {
       flex: 1,
       flexDirection: 'row' as const,
       justifyContent: 'flex-end' as const,
-      marginLeft: spacing.xl,
+      gap: spacing.sm,
     },
     helperBarWeb: {
       bottom: 0,
@@ -66,8 +66,7 @@ export const HelperBar: React.FC = () => {
       flexDirection: 'column' as const,
       height: spacing.lg * 2,
       justifyContent: 'center' as const,
-      marginRight: spacing.md,
-      width: spacing.xl * 2,
+      width: 55,
     },
     helperBtnAdd: {
       alignItems: 'center' as const,
@@ -77,7 +76,6 @@ export const HelperBar: React.FC = () => {
       gap: spacing.xs,
       height: spacing.lg * 2,
       justifyContent: 'space-around' as const,
-      marginRight: spacing.md,
       padding: spacing.sm,
     },
     helperBtnText: {
@@ -89,8 +87,7 @@ export const HelperBar: React.FC = () => {
     },
     helperBtnTextAdd: {
       color: themeColors.whiteText,
-      fontSize: typography.fontSize.sm,
-      marginRight: spacing.xs,
+      fontSize: typography.fontSize.xs +1,
       textAlign: 'center' as const,
     },
   }), [mode]);
@@ -108,7 +105,7 @@ export const HelperBar: React.FC = () => {
           accessibilityLabel={addButtonText}
           testID="helper-add-button"
         >
-          <Icon name="add" size={25} color={themeColors.white} />
+          <Icon name="addCircle" size={23} color={themeColors.white} />
           <Text style={styles.helperBtnTextAdd}>{addButtonText}</Text>
         </Pressable>
       </View>

@@ -41,4 +41,41 @@ html, body {
     linear-gradient(rgba(0, 123, 255, 0.1) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 123, 255, 0.1) 1px, transparent 1px);
   background-size: 20px 20px;
+}
+
+/* Force Storybook preview to take full width */
+#storybook-preview-wrapper,
+#storybook-preview-iframe,
+.sb-show-main {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Override any Storybook container constraints */
+.sb-main-padded {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+
+/* Ensure the preview area takes full width */
+.sb-show-main {
+  width: 100% !important;
+  max-width: 100% !important;
+} 
+
+/* Force the storybook root to take full width and height */
+#storybook-root {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  background: none !important;
 } 

@@ -2,6 +2,7 @@ import React from 'react';
 import { CredentialDetailsPage } from '../CredentialDetailsPage';
 import { CredentialDecrypted } from '@app/core/types/types';
 import { MemoryRouter } from 'react-router-dom';
+import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 export default {
   title: 'Pages/CredentialDetailsPage',
@@ -21,7 +22,17 @@ const mockCredential: CredentialDecrypted = {
 };
 
 export const Default = () => (
-  <MemoryRouter>
-    <CredentialDetailsPage credential={mockCredential} onBack={() => {}} />
-  </MemoryRouter>
+  <LightThemeProvider>
+    <MemoryRouter>
+      <CredentialDetailsPage credential={mockCredential} onBack={() => {}} />
+    </MemoryRouter>
+  </LightThemeProvider>
+);
+
+export const Dark = () => (
+  <DarkThemeProvider>
+    <MemoryRouter>
+      <CredentialDetailsPage credential={mockCredential} onBack={() => {}} />
+    </MemoryRouter>
+  </DarkThemeProvider>
 ); 

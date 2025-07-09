@@ -4,7 +4,7 @@ import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { checkPasswordStrength } from '@utils/checkPasswordStrength';
 import { passwordGenerator } from '@utils/passwordGenerator';
 
-import { padding, radius, spacing, pageStyles } from '@design/layout';
+import { getPageStyles, spacing, radius, padding } from '@design/layout';
 import { typography } from '@design/typography';
 import { useToast } from '../components/Toast';
 import CopyButton from '../components/CopyButton';
@@ -16,6 +16,7 @@ import { getColors } from '@design/colors';
 export const GeneratorPage: React.FC = () => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const [hasUppercase, setHasUppercase] = useState(true);
   const [hasNumbers, setHasNumbers] = useState(true);

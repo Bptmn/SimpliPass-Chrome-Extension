@@ -1,112 +1,59 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Meta, StoryObj } from '@storybook/react';
-import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider } from '@app/core/logic/theme';
 import { HelperBar } from '../HelperBar';
+import { ThemeProvider } from '@app/core/logic/theme';
+import { spacing } from '@design/layout';
+import { MemoryRouter } from 'react-router';
 
-const meta: Meta<typeof HelperBar> = {
-  title: 'Components/HelperBar',
+export default {
+  title: 'components/HelperBar',
   component: HelperBar,
-  decorators: [
-    (Story) => (
-      <BrowserRouter>
-        <ThemeProvider>
-          <View style={{ padding: 20, backgroundColor: '#f5f5f5' }}>
-            <Story />
-          </View>
-        </ThemeProvider>
-      </BrowserRouter>
-    ),
-  ],
-  parameters: {
-    docs: {
-      description: {
-        component: 'HelperBar component with business logic extracted to useHelperBar hook. Handles navigation, refresh functionality, and dynamic button text based on current category.',
-      },
-    },
-  },
-  argTypes: {
-    // No props needed as the component uses the hook internally
-  },
 };
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+// Custom ThemeProvider that forces dark mode
+const DarkThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Set dark mode immediately before rendering
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem('simplipass_theme_mode', 'dark');
+  }
 
-export const Default: Story = {
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story: 'Default HelperBar with credentials category. Shows "Ajouter un identifiant" button.',
-      },
-    },
-  },
+  return (
+    <ThemeProvider>
+      <View style={{ padding: spacing.lg, minHeight: 200 }}>
+        {children}
+      </View>
+    </ThemeProvider>
+  );
 };
 
-export const BankCardsCategory: Story = {
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story: 'HelperBar in bank cards category. Shows "Ajouter une carte" button.',
-      },
-    },
-  },
-  decorators: [
-    (Story) => (
-      <BrowserRouter>
-        <ThemeProvider>
-          <View style={{ padding: 20, backgroundColor: '#f5f5f5' }}>
-            <Story />
-          </View>
-        </ThemeProvider>
-      </BrowserRouter>
-    ),
-  ],
+// Custom ThemeProvider that forces light mode
+const LightThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Set light mode immediately before rendering
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem('simplipass_theme_mode', 'light');
+  }
+
+  return (
+    <ThemeProvider>
+      <View style={{ padding: spacing.lg }}>
+        {children}
+      </View>
+    </ThemeProvider>
+  );
 };
 
-export const SecureNotesCategory: Story = {
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story: 'HelperBar in secure notes category. Shows "Ajouter une note" button.',
-      },
-    },
-  },
-  decorators: [
-    (Story) => (
-      <BrowserRouter>
-        <ThemeProvider>
-          <View style={{ padding: 20, backgroundColor: '#f5f5f5' }}>
-            <Story />
-          </View>
-        </ThemeProvider>
-      </BrowserRouter>
-    ),
-  ],
-};
+export const Default = () => (
+  <MemoryRouter>
+    <LightThemeProvider>
+      <HelperBar />
+    </LightThemeProvider>
+  </MemoryRouter>
+);
 
-export const WithRefreshFunctionality: Story = {
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story: 'HelperBar with refresh functionality. The refresh button will reload items from the server.',
-      },
-    },
-  },
-};
-
-export const WithFAQFunctionality: Story = {
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story: 'HelperBar with FAQ functionality. The FAQ button will navigate to help section.',
-      },
-    },
-  },
-}; 
+export const DefaultDark = () => (
+  <MemoryRouter>
+    <DarkThemeProvider>
+      <HelperBar />
+    </DarkThemeProvider>
+  </MemoryRouter>
+); 

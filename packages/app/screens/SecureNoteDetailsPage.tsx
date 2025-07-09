@@ -9,7 +9,7 @@ import { Icon } from '@components/Icon';
 import { useToast } from '@app/core/hooks/useToast';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { spacing, pageStyles } from '@design/layout';
+import { getPageStyles, spacing, radius, padding } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
 import { MoreInfo } from '@components/MoreInfo';
@@ -31,6 +31,7 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
 
   const handleEdit = () => {
@@ -61,7 +62,7 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
   return (
     <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
-      <View style={styles.pageContent}>
+      <View style={pageStyles.pageContent}>
         {/* Header */}
         <View style={styles.headerRow}>
           <Pressable style={styles.backBtn} onPress={onBack} accessibilityLabel="Retour">

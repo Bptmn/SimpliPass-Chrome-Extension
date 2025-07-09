@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, Image } from 'react-native';
-import { cardStyles } from '@design/card';
+import { getCardStyles } from '@design/card';
 import { useLazyCredentialIcon } from '@app/core/hooks';
+import { useThemeMode } from '@app/core/logic/theme';
 
 interface LazyCredentialIconProps {
   title: string;
@@ -10,6 +11,8 @@ interface LazyCredentialIconProps {
 }
 
 const LazyCredentialIconComponent: React.FC<LazyCredentialIconProps> = ({ title, url, style }) => {
+  const { mode } = useThemeMode();
+  const cardStyles = getCardStyles(mode);
   const {
     faviconUrl,
     isFaviconLoaded,

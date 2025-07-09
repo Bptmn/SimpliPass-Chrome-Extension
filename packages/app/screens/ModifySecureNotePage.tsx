@@ -11,16 +11,16 @@ import { InputEdit } from '@components/InputEdit';
 import { ColorSelector } from '@components/ColorSelector';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { pageStyles } from '@design/layout';
+import { getPageStyles, spacing, radius, padding } from '@design/layout';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
 import { typography } from '@design/typography';
 import { useToast } from '@app/core/hooks/useToast';
-import { spacing } from '@design/layout';
 
 export const ModifySecureNotePage: React.FC = () => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
   const location = useLocation();

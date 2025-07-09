@@ -4,11 +4,14 @@ import { View } from 'react-native';
 import { Input } from '@components/InputFields';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
-import { pageStyles } from '@design/layout';
+import { getPageStyles, spacing, radius, padding } from '@design/layout';
+import { useThemeMode } from '@app/core/logic/theme';
 
 const AddCredential1: React.FC = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
+  const { mode } = useThemeMode();
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
 
   const handleNext = () => {
     if (title.trim()) {

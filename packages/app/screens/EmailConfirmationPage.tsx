@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ErrorBanner } from '@components/ErrorBanner';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { spacing, pageStyles } from '@design/layout';
+import { getPageStyles, spacing, radius, padding } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
 import { CodeInput } from '@components/CodeInput';
@@ -21,6 +21,7 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -37,38 +38,40 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
   return (
     <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
-      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={{flexGrow: 1}}>
         <View style={pageStyles.pageContent}>
-          <View style={styles.confirmationForm}>
-            <View style={styles.formHeader}>
-              <Text style={styles.confirmationTitle}>Confirmation par email</Text>
-              <Text style={styles.confirmationSubtitle}>
-                Nous avons envoyé un code de confirmation à {email}
-              </Text>
-            </View>
-            <View style={styles.formSection}>
-              <Text style={styles.confirmationInputLabel}>Code de confirmation</Text>
-              <CodeInput
-                value={code}
-                onChange={setCode}
-              />
-            </View>
-            <View style={styles.btnList}>
-              <Button
-                text="Confirmer"
-                color={themeColors.secondary}
-                width="full"
-                height="full"
-                onPress={handleSubmit}
-              />
-              <Button
-                text="Renvoyer le code"
-                color={themeColors.primary}
-                width="full"
-                height="fit"
-                onPress={onResend}
-                outline={true}
-              />
+          <View style={pageStyles.formContainer}>
+            <View style={styles.confirmationForm}>
+              <View style={styles.formHeader}>
+                <Text style={styles.confirmationTitle}>Confirmation par email</Text>
+                <Text style={styles.confirmationSubtitle}>
+                  Nous avons envoyé un code de confirmation à {email}
+                </Text>
+              </View>
+              <View style={styles.formSection}>
+                <Text style={styles.confirmationInputLabel}>Code de confirmation</Text>
+                <CodeInput
+                  value={code}
+                  onChange={setCode}
+                />
+              </View>
+              <View style={styles.btnList}>
+                <Button
+                  text="Confirmer"
+                  color={themeColors.secondary}
+                  width="full"
+                  height="full"
+                  onPress={handleSubmit}
+                />
+                <Button
+                  text="Renvoyer le code"
+                  color={themeColors.primary}
+                  width="full"
+                  height="fit"
+                  onPress={onResend}
+                  outline={true}
+                />
+              </View>
             </View>
           </View>
         </View>

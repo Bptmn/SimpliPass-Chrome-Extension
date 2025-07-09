@@ -10,15 +10,13 @@ import { ErrorBanner } from '../components/ErrorBanner';
 import Toast from '../components/Toast';
 import { useToast } from '@app/core/hooks/useToast';
 import { InputEdit } from '../components/InputEdit';
-import { colors } from '@design/colors';
-import { spacing, radius, pageStyles } from '@design/layout';
+import { spacing, radius, getPageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '../components/Buttons';
 import { HeaderTitle } from '../components/HeaderTitle';
 import { ColorSelector } from '../components/ColorSelector';
 import ItemBankCard from '../components/ItemBankCard';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { textStyles } from '@app/design/text';
 import { getMonthOptions, getYearOptions } from '@app/core/logic/cards';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
@@ -29,6 +27,7 @@ const CARD_COLORS = ['#2bb6a3', '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a2
 export const ModifyBankCardPage: React.FC = () => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
   const location = useLocation();
@@ -262,11 +261,20 @@ const getStyles = (mode: 'light' | 'dark') => {
   const themeColors = getColors(mode);
   
   return StyleSheet.create({
+    dateSeparator: {
+      alignSelf: 'center',
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+    },
     errorText: {
       color: themeColors.error,
       fontSize: typography.fontSize.md,
       marginTop: spacing.xl,
       textAlign: 'center',
+    },
+    inputColumn: {
+      flex: 1,
     },
     inputContainer: {
       backgroundColor: themeColors.secondaryBackground,
@@ -277,12 +285,6 @@ const getStyles = (mode: 'light' | 'dark') => {
       gap: spacing.xs,
       paddingHorizontal: spacing.sm,
     },
-    inputColumn: {
-      flex: 1,
-    },
-    inputDateColumn: {
-      flex: 1,
-    },
     inputDate: {
       backgroundColor: themeColors.secondaryBackground,
       borderColor: themeColors.borderColor,
@@ -291,6 +293,9 @@ const getStyles = (mode: 'light' | 'dark') => {
       color: themeColors.blackText,
       paddingHorizontal: spacing.md,
       paddingVertical: spacing.sm,
+    },
+    inputDateColumn: {
+      flex: 1,
     },
     inputDateLabel: {
       color: themeColors.primary,
@@ -341,12 +346,6 @@ const getStyles = (mode: 'light' | 'dark') => {
       gap: spacing.xs,
       justifyContent: 'center',
       width: '100%',
-    },
-    dateSeparator: {
-      alignSelf: 'center',
-      color: themeColors.primary,
-      fontSize: typography.fontSize.sm,
-      fontWeight: typography.fontWeight.medium,
     },
   });
 };

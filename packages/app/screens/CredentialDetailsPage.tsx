@@ -10,7 +10,7 @@ import { LazyCredentialIcon } from '@components/LazyCredentialIcon';
 import { useToast } from '@app/core/hooks/useToast';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { padding, radius, spacing, pageStyles } from '@design/layout';
+import { getPageStyles, spacing, radius, padding } from '@design/layout';
 import { typography } from '@design/typography';
 import { Button } from '@components/Buttons';
 import CopyButton from '@components/CopyButton';
@@ -34,6 +34,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
 
   const handleLaunch = (url: string) => {
@@ -77,7 +78,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   return (
     <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
-      <View style={styles.pageContent}>
+      <View style={pageStyles.pageContent}>
         {/* Header */}
         <View style={styles.headerRow}>
           <Pressable style={styles.backBtn} onPress={onBack} accessibilityLabel="Retour">

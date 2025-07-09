@@ -2,6 +2,7 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { BankCardDetailsPage } from '../BankCardDetailsPage';
 import { BankCardDecrypted } from '@app/core/types/types';
+import { LightThemeProvider, DarkThemeProvider } from '@app/components/storybook/ThemeProviders';
 
 export default {
   title: 'Pages/BankCardDetailsPage',
@@ -9,23 +10,33 @@ export default {
 };
 
 const mockCard: BankCardDecrypted = {
-  createdDateTime: new Date('2023-01-01T10:00:00Z'),
-  lastUseDateTime: new Date('2023-06-01T12:00:00Z'),
-  title: 'Carte Visa Pro',
-  owner: 'Jean Dupont',
-  note: 'Carte professionnelle principale',
-  color: '#1976d2',
-  itemKey: 'mock-key',
-  cardNumber: '4111 1111 1111 1111',
-  expirationDate: new Date('2026-12-31T00:00:00Z'),
+  id: 'card1',
+  title: 'Title',
+  owner: 'Owner',
+  note: '',
+  color: '#5B8CA9',
+  itemKey: 'key',
+  cardNumber: '1234567890000000',
+  expirationDate: { month: 1, year: 2030 },
   verificationNumber: '123',
-  bankName: 'BNP Paribas',
-  bankDomain: 'bnp.fr',
-  id: 'mock-id',
+  bankName: 'Placeholder Bank',
+  bankDomain: 'placeholder.com',
+  createdDateTime: new Date(),
+  lastUseDateTime: new Date(),
 };
 
 export const Default = () => (
-  <MemoryRouter>
-    <BankCardDetailsPage card={mockCard} onBack={() => {}} />
-  </MemoryRouter>
+  <LightThemeProvider>
+    <MemoryRouter>
+      <BankCardDetailsPage card={mockCard} onBack={() => {}} />
+    </MemoryRouter>
+  </LightThemeProvider>
+);
+
+export const Dark = () => (
+  <DarkThemeProvider>
+    <MemoryRouter>
+      <BankCardDetailsPage card={mockCard} onBack={() => {}} />
+    </MemoryRouter>
+  </DarkThemeProvider>
 ); 

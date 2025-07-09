@@ -6,7 +6,7 @@ import ItemBankCard from '@components/ItemBankCard';
 import { Icon } from '@components/Icon';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
-import { spacing, radius, pageStyles } from '@design/layout';
+import { spacing, radius, pageStyles, getPageStyles, padding } from '@design/layout';
 import { typography } from '@design/typography';
 import { addItem } from '@app/core/logic/items';
 import { getUserSecretKey } from '@app/core/logic/user';
@@ -18,10 +18,13 @@ import { HeaderTitle } from '@components/HeaderTitle';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { ColorSelector } from '@components/ColorSelector';
 import { getMonthOptions, getYearOptions } from '@app/core/logic/cards';
+import { ErrorBanner } from '@components/ErrorBanner';
+import { Toast } from '@components/Toast';
 
 const AddCard2: React.FC = () => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,6 +40,7 @@ const AddCard2: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
   // Helper for web: generate month and year options
 
@@ -106,7 +110,7 @@ const AddCard2: React.FC = () => {
 
   return (
     <View style={pageStyles.pageContainer}>
-      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={{flexGrow: 1}}>
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Ajouter une carte" 
@@ -239,7 +243,8 @@ const AddCard2: React.FC = () => {
               onPress={handleConfirm}
               disabled={loading}
             />
-            {error && <Text style={styles.errorText}>{error}</Text>}
+            {error && <ErrorBanner message={error} />}
+            <Toast message={toast || ''} />
           </View>
         </View>
       </ScrollView>
@@ -251,10 +256,19 @@ const getStyles = (mode: 'light' | 'dark') => {
   const themeColors = getColors(mode);
   
   return StyleSheet.create({
+    dateSeparator: {
+      alignSelf: 'center',
+      color: themeColors.primary,
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.medium,
+    },
     errorText: {
       color: themeColors.error,
       fontSize: typography.fontSize.sm,
       textAlign: 'center',
+    },
+    inputColumn: {
+      flex: 1,
     },
     inputContainer: {
       backgroundColor: themeColors.secondaryBackground,
@@ -264,9 +278,6 @@ const getStyles = (mode: 'light' | 'dark') => {
       flexDirection: 'row',
       gap: spacing.xs,
       paddingHorizontal: spacing.sm,
-    },
-    inputColumn: {
-      flex: 1,
     },
     inputDate: {
       backgroundColor: themeColors.secondaryBackground,
@@ -324,14 +335,8 @@ const getStyles = (mode: 'light' | 'dark') => {
       alignItems: 'center',
       flexDirection: 'row',
       gap: spacing.xs,
-      width: '100%',
       justifyContent: 'center',
-    },
-    dateSeparator: {
-      alignSelf: 'center',
-      color: themeColors.primary,
-      fontSize: typography.fontSize.sm,
-      fontWeight: typography.fontWeight.medium,
+      width: '100%',
     },
   });
 };
