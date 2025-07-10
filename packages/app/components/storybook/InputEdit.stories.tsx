@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Meta, StoryFn } from '@storybook/react';
 import { InputEdit } from '../InputEdit';
 import { LightThemeProvider, DarkThemeProvider } from './ThemeProviders';

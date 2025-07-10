@@ -51,7 +51,7 @@ import {
 } from '@app/core/types/types';
 import { generateItemKey } from '@app/utils/crypto';
 import { doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
-import { db as firebaseDb } from '@app/core/auth/firebase';
+import { initFirebase } from '@app/core/auth/firebase';
 
 // Define DecryptedItem type locally
 type DecryptedItem = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted;
@@ -152,6 +152,7 @@ export async function getItemById(
     
     // If not in state, fetch from database - use Firebase SDK directly
     console.log('[Items] Item not in cache, fetching from database:', itemId);
+    const { db: firebaseDb } = await initFirebase();
     const docRef = doc(firebaseDb, 'users', userId, 'my_items', itemId);
     const docSnap = await getDoc(docRef);
     
@@ -280,6 +281,7 @@ export async function updateItem(
     }
     
     // Update in database - pass path segments separately
+    const { db: firebaseDb } = await initFirebase();
     const docRef = doc(firebaseDb, 'users', userId, 'my_items', itemId);
     await updateDoc(docRef, encryptedItem as any);
     
@@ -303,6 +305,7 @@ export async function deleteItem(userId: string, itemId: string): Promise<void> 
   
   try {
     // Delete from database - use Firebase SDK directly
+    const { db: firebaseDb } = await initFirebase();
     const docRef = doc(firebaseDb, 'users', userId, 'my_items', itemId);
     await deleteDoc(docRef);
     

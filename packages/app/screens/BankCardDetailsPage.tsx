@@ -161,7 +161,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
             height="full"
             onPress={handleEdit}
             disabled={loading}
-            style={{ flex: 1, maxWidth: 180 }}
+            style={{ flex: 1, maxWidth: 135 }}
           />
           <Button
             text="Supprimer"
@@ -170,7 +170,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
             height="full"
             onPress={handleDelete}
             disabled={loading}
-            style={{ flex: 1, maxWidth: 180 }}
+            style={{ flex: 1, maxWidth: 135 }}
           />
         </View>
         {/* Expandable meta info */}

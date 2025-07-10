@@ -2,6 +2,10 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Text } from 'react-native';
 import CopyButton from '../CopyButton';
+import { LightThemeProvider } from '../storybook/ThemeProviders';
+
+// Helper to wrap components in theme provider
+const renderWithTheme = (ui: React.ReactElement) => render(<LightThemeProvider>{ui}</LightThemeProvider>);
 
 // Mock navigator.clipboard
 Object.assign(navigator, {
@@ -12,7 +16,7 @@ Object.assign(navigator, {
 
 describe('CopyButton', () => {
   it('renders correctly', () => {
-    const { getByText } = render(
+    const { getByText } = renderWithTheme(
       <CopyButton textToCopy="test text">
         <Text>Copy</Text>
       </CopyButton>
@@ -25,7 +29,7 @@ describe('CopyButton', () => {
     const mockWriteText = jest.fn();
     navigator.clipboard.writeText = mockWriteText;
     
-    const { getByText } = render(
+    const { getByText } = renderWithTheme(
       <CopyButton textToCopy="test text">
         <Text>Copy</Text>
       </CopyButton>

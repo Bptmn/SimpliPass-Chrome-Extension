@@ -71,7 +71,7 @@ export const getPageStyles = (mode: 'light' | 'dark') => {
     },
     pageContent: {
       flex: 1,
-      gap: spacing.lg,
+      gap: spacing.md,
     },
     scrollView: {
       flex: 1,

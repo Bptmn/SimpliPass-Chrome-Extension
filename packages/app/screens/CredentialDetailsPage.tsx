@@ -192,7 +192,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
             height="full"
             onPress={handleEdit}
             disabled={loading}
-            style={{ flex: 1, maxWidth: 180 }}
+            style={{ flex: 1, maxWidth: 135 }}
           />
           <Button
             text="Supprimer"
@@ -201,7 +201,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
             height="full"
             onPress={handleDelete}
             disabled={loading}
-            style={{ flex: 1, maxWidth: 180 }}
+            style={{ flex: 1, maxWidth: 135 }}
           />
         </View>
 
@@ -322,7 +322,6 @@ const getStyles = (mode: 'light' | 'dark') => {
       alignItems: 'center',
       flex: 1,
       gap: spacing.sm,
-      marginTop: spacing.md,
     },
     headerRow: {
       alignItems: 'center',
@@ -333,9 +332,6 @@ const getStyles = (mode: 'light' | 'dark') => {
     iconCenter: {
       alignItems: 'center',
     },
-
-
-
     pageContent: {
       flex: 1,
       gap: spacing.md,

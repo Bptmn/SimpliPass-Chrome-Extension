@@ -124,7 +124,7 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
             height="full"
             onPress={handleEdit}
             disabled={loading}
-            style={{ flex: 1, maxWidth: 180 }}
+            style={{ flex: 1, maxWidth: 135 }}
           />
           <Button
             text="Supprimer"
@@ -133,7 +133,7 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
             height="full"
             onPress={handleDelete}
             disabled={loading}
-            style={{ flex: 1, maxWidth: 180 }}
+            style={{ flex: 1, maxWidth: 135 }}
           />
         </View>
         {/* Expandable meta info */}
@@ -169,8 +169,8 @@ const getStyles = (mode: 'light' | 'dark') => {
     },
     colorCircle: {
       borderRadius: spacing.lg * 2,
-      height: spacing.xxl,
-      width: spacing.xxl,
+      height: 28,
+      width: 28,
     },
     confirmButtons: {
       flexDirection: 'row',

@@ -73,8 +73,8 @@ export const DetailField: React.FC<DetailFieldProps> = ({
   return (
     <View style={styles.cardField}>
       <View style={styles.fieldLeft}>
-        <Text style={styles.fieldLabel}>{label}</Text>
-        <Text style={styles.fieldValue}>{value}</Text>
+        <Text style={styles.fieldLabel} accessibilityLabel={label}>{label}</Text>
+        <Text style={styles.fieldValue} accessibilityLabel={`Value: ${label}`}>{value}</Text>
       </View>
       {value && showCopyButton && (
         <CopyButton

@@ -127,7 +127,7 @@ export function getCardStyles(mode: 'light' | 'dark') {
       fontWeight: '600',
     },
     credentialCardUsername: {
-      color: colors.secondary,
+      color: colors.tertiaryText,
       flexShrink: 1,
       fontSize: 12,
     },

@@ -27,7 +27,7 @@ const LazyCredentialIconComponent: React.FC<LazyCredentialIconProps> = ({ title,
   const containerStyle = [
     {
       ...cardStyles.iconContainer,
-      backgroundColor: themeColors.white,
+      backgroundColor: themeColors.secondaryBackground,
       borderColor: themeColors.borderColor,
     },
     isFaviconLoaded && cardStyles.iconContainerNoBg,

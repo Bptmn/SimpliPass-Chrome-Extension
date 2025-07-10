@@ -90,10 +90,10 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
         <View style={cardStyles.credentialCardLeft}>
           <LazyCredentialIcon title={credential.title} url={credential.url} />
           <View style={cardStyles.credentialCardInfo}>
-            <Text style={[cardStyles.credentialCardTitle, { color: themeColors.primary }]} numberOfLines={1}>
+            <Text style={[cardStyles.credentialCardTitle]} numberOfLines={1}>
               {credential.title}
             </Text>
-            <Text style={[cardStyles.credentialCardUsername, { color: themeColors.secondary }]} numberOfLines={1}>
+            <Text style={cardStyles.credentialCardUsername} numberOfLines={1}>
               {credential.username}
             </Text>
           </View>

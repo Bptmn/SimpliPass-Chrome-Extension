@@ -10,7 +10,7 @@ export default {
 };
 
 const MoreInfoWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
+  <ThemeProvider mode="light">
     <View style={{ padding: spacing.lg }}>
       {children}
     </View>
@@ -18,7 +18,7 @@ const MoreInfoWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) 
 );
 
 const DarkMoreInfoWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
+  <ThemeProvider mode="dark">
     <View style={{ padding: spacing.lg, backgroundColor: '#282c30', minHeight: 200 }}>
       {children}
     </View>
@@ -42,39 +42,3 @@ export const DefaultDark = () => (
     />
   </DarkMoreInfoWrapper>
 );
-
-export const RecentUsage = () => (
-  <MoreInfoWrapper>
-    <MoreInfo
-      lastUseDateTime={new Date()}
-      createdDateTime={new Date('2024-01-01T09:00:00')}
-    />
-  </MoreInfoWrapper>
-);
-
-export const RecentUsageDark = () => (
-  <DarkMoreInfoWrapper>
-    <MoreInfo
-      lastUseDateTime={new Date()}
-      createdDateTime={new Date('2024-01-01T09:00:00')}
-    />
-  </DarkMoreInfoWrapper>
-);
-
-export const OldItem = () => (
-  <MoreInfoWrapper>
-    <MoreInfo
-      lastUseDateTime={new Date('2023-06-15T14:20:00')}
-      createdDateTime={new Date('2023-01-01T08:00:00')}
-    />
-  </MoreInfoWrapper>
-);
-
-export const OldItemDark = () => (
-  <DarkMoreInfoWrapper>
-    <MoreInfo
-      lastUseDateTime={new Date('2023-06-15T14:20:00')}
-      createdDateTime={new Date('2023-01-01T08:00:00')}
-    />
-  </DarkMoreInfoWrapper>
-); 

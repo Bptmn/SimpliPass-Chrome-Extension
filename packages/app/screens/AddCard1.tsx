@@ -40,30 +40,12 @@ const AddCard1: React.FC = () => {
           _required
         />
         <Input
-          label="Numéro de carte"
+          label="Nom de la banque"
           _id="card-number"
           type="text"
           value={cardNumber}
           onChange={setCardNumber}
-          placeholder="Entrez le numéro de votre carte"
-          _required
-        />
-        <Input
-          label="Date d'expiration"
-          _id="expiry-date"
-          type="text"
-          value={expiryDate}
-          onChange={setExpiryDate}
-          placeholder="MM/YY"
-          _required
-        />
-        <Input
-          label="CVV"
-          _id="cvv"
-          type="text"
-          value={cvv}
-          onChange={setCvv}
-          placeholder="Entrez le CVV"
+          placeholder="Entrez le nom de la banque"
           _required
         />
         <Button
@@ -72,7 +54,7 @@ const AddCard1: React.FC = () => {
           width="full"
           height="full"
           onPress={handleNext}
-          disabled={!title || !cardNumber || !expiryDate || !cvv}
+          disabled={!title || !cardNumber}
         />
       </View>
     </View>

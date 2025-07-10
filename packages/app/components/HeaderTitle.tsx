@@ -30,7 +30,6 @@ export const HeaderTitle: React.FC<HeaderTitleProps> = ({
   const styles = {
     backButton: {
       alignItems: 'center' as const,
-      height: 44,
       justifyContent: 'center' as const,
       left: 0,
       minWidth: 44,
@@ -42,9 +41,9 @@ export const HeaderTitle: React.FC<HeaderTitleProps> = ({
     headerContainer: {
       alignItems: 'center' as const,
       flexDirection: 'row' as const,
-      height: 44,
       position: 'relative' as const,
       width: '100%',
+      marginBottom: spacing.md,
     },
     title: {
       color: themeColors.primary,

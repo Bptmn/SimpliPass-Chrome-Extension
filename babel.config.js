@@ -2,32 +2,28 @@ const path = require('path');
 
 module.exports = {
   presets: [
-    ['@babel/preset-env', { targets: { node: 'current' } }],
-    '@babel/preset-react',
+    ['@babel/preset-env', { 
+      targets: { node: 'current' },
+      modules: 'commonjs' // Ensure CommonJS output for Jest
+    }],
     '@babel/preset-typescript',
+    '@babel/preset-react',
   ],
   plugins: [
-    'react-native-web',
-    ['@babel/plugin-proposal-decorators', { legacy: true }],
     ['@babel/plugin-proposal-class-properties', { loose: true }],
-    [
-      'module-resolver',
-      {
-        root: ['.'],
-        alias: {
-          '@app': path.resolve(__dirname, './packages/app'),
-          '@design': path.resolve(__dirname, './packages/app/design'),
-          '@components': path.resolve(__dirname, './packages/app/components'),
-          '@screens': path.resolve(__dirname, './packages/app/screens'),
-          '@hooks': path.resolve(__dirname, './packages/app/hooks'),
-          '@utils': path.resolve(__dirname, './packages/app/utils'),
-          '@logic': path.resolve(__dirname, './packages/app/core/logic'),
-          '@core': path.resolve(__dirname, './packages/app/core'),
-          '@shared': path.resolve(__dirname, './packages/shared'),
-          '@extension': path.resolve(__dirname, './packages/extension'),
-          '@mobile': path.resolve(__dirname, './packages/mobile'),
-        },
-      },
-    ],
+    ['@babel/plugin-proposal-private-methods', { loose: true }],
+    ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
+    ['@babel/plugin-transform-runtime', {
+      regenerator: true,
+      helpers: true,
+      useESM: false
+    }],
   ],
+  env: {
+    test: {
+      plugins: [
+        ['@babel/plugin-transform-modules-commonjs', { loose: true }]
+      ]
+    }
+  }
 }; 

@@ -32,6 +32,7 @@ export async function loginWithCognito(email: string, password: string): Promise
   const parts = idToken.split('.');
   if (parts.length !== 3) throw new Error('Invalid JWT structure');
   const payload = JSON.parse(atob(parts[1]));
+  console.log('[Cognito] Decoded JWT payload:', payload);
   const firebaseToken = payload.firebaseToken;
   if (!firebaseToken) throw new Error('Firebase token not found in Cognito ID token claims');
   const userAttributes = await fetchUserAttributes();

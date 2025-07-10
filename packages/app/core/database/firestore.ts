@@ -14,8 +14,8 @@ import {
   setDoc
 } from 'firebase/firestore';
 
-// Firebase is already initialized in @firebase.ts and exports the 'db' instance
-import { db } from '@app/core/auth/firebase';
+// Use async Firebase config
+import { initFirebase } from '@app/core/auth/firebase';
 
 /**
  * Get all documents from a collection
@@ -23,6 +23,7 @@ import { db } from '@app/core/auth/firebase';
 export const getCollection = async <T extends DocumentData = DocumentData>(
   collectionPath: string
 ): Promise<T[]> => {
+  const { db } = await initFirebase();
   const colRef = collection(db, collectionPath);
   const snapshot: QuerySnapshot = await getDocs(colRef);
   return snapshot.docs.map(docSnapshot => ({ id: docSnapshot.id, ...docSnapshot.data() } as unknown as T));
@@ -34,6 +35,7 @@ export const getCollection = async <T extends DocumentData = DocumentData>(
 export const getDocument = async <T extends DocumentData = DocumentData>(
   docPath: string
 ): Promise<T | null> => {
+  const { db } = await initFirebase();
   const docRef = doc(db, docPath);
   const snapshot: DocumentSnapshot = await getDoc(docRef);
   if (!snapshot.exists()) return null;
@@ -47,6 +49,7 @@ export const addDocument = async <T extends DocumentData = DocumentData>(
   collectionPath: string,
   data: T
 ): Promise<string> => {
+  const { db } = await initFirebase();
   const colRef = collection(db, collectionPath);
   const docRef = await addDoc(colRef, data);
   return docRef.id;
@@ -59,6 +62,7 @@ export const updateDocument = async <T extends DocumentData = DocumentData>(
   docPath: string,
   data: Partial<T>
 ): Promise<void> => {
+  const { db } = await initFirebase();
   const docRef: DocumentReference<DocumentData> = doc(db, docPath);
   await updateDoc(docRef, data as DocumentData);
 };
@@ -69,6 +73,7 @@ export const updateDocument = async <T extends DocumentData = DocumentData>(
 export const deleteDocument = async (
   docPath: string
 ): Promise<void> => {
+  const { db } = await initFirebase();
   const docRef = doc(db, docPath);
   await deleteDoc(docRef);
 };
@@ -80,6 +85,7 @@ export const addDocumentWithId = async <T extends DocumentData = DocumentData>(
   collectionPath: string,
   data: T
 ): Promise<string> => {
+  const { db } = await initFirebase();
   const colRef = collection(db, collectionPath);
   const docRef = doc(colRef); // generates a new doc ref with an ID
   await setDoc(docRef, { ...data, id: docRef.id });

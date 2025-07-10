@@ -1,5 +1,5 @@
-import { a as getUserSecretKey } from "./assets/user-DC34GCd8.js";
-import "./assets/localDB-2Qyp27Y-.js";
+import { a as getUserSecretKey } from "./assets/user-DqyHguYg.js";
+import "./assets/localDB-D4-JU8vh.js";
 const pageState = {};
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === "PAGE_INFO" && sender.tab?.id != null) {

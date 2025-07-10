@@ -7,7 +7,7 @@ import { auth } from '../auth/auth.adapter';
 import { setItem, getItem, removeItem, clearAll } from '@app/core/database/localDB';
 import { deriveKey } from '@app/utils/crypto';
 import { useUserStore } from '@app/core/states';
-import { db } from '@app/core/auth/firebase';
+import { initFirebase } from '@app/core/auth/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { User } from '@app/core/types/types';
 
@@ -146,21 +146,37 @@ export async function getUserSalt(): Promise<string> {
 
 // Store user secret key in local storage
 export async function storeUserSecretKey(key: string): Promise<void> {
-  await setItem(USER_SECRET_KEY, key);
+  try {
+    await setItem(USER_SECRET_KEY, key);
+  } catch (err) {
+    console.error('[User] Failed to store user secret key');
+    throw new Error('Failed to store user secret key');
+  }
 }
 
 // Get user secret key from local storage
 export async function getUserSecretKey(): Promise<string | null> {
-  return await getItem<string>(USER_SECRET_KEY);
+  try {
+    return await getItem<string>(USER_SECRET_KEY);
+  } catch (err) {
+    console.error('[User] Failed to get user secret key');
+    throw new Error('Failed to get user secret key');
+  }
 }
 
 // Delete user secret key from local storage
 export async function deleteUserSecretKey(): Promise<void> {
-  await removeItem(USER_SECRET_KEY);
+  try {
+    await removeItem(USER_SECRET_KEY);
+  } catch (err) {
+    console.error('[User] Failed to delete user secret key');
+    throw new Error('Failed to delete user secret key');
+  }
 }
 
 // Fetch the full user profile from Firestore
 export async function fetchUserProfile(uid: string): Promise<User | null> {
+  const { db } = await initFirebase();
   const userDoc = await getDoc(doc(db, 'users', uid));
   if (userDoc.exists()) {
     return userDoc.data() as User;

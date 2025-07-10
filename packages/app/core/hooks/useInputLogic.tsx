@@ -11,8 +11,8 @@ export const useInputLogic = (type: 'text' | 'email' | 'password' | 'note' = 'te
 
   // Toggle password visibility
   const togglePasswordVisibility = useCallback(() => {
-    setShowPassword(!showPassword);
-  }, [showPassword]);
+    setShowPassword((prev) => !prev);
+  }, []);
 
   // Handle content size change for note inputs
   const handleContentSizeChange = useCallback((event: { nativeEvent: { contentSize: { height: number } } }) => {

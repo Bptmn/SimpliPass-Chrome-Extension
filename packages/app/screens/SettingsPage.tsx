@@ -186,7 +186,7 @@ const getStyles = (mode: 'light' | 'dark') => {
     menuList: {
       backgroundColor: themeColors.secondaryBackground,
       borderColor: themeColors.borderColor,
-      borderRadius: radius.md,
+      borderRadius: radius.lg,
       borderWidth: 1,
       flexDirection: 'column',
       gap: spacing.sm,
@@ -200,7 +200,7 @@ const getStyles = (mode: 'light' | 'dark') => {
     profileCard: {
       backgroundColor: themeColors.secondaryBackground,
       borderColor: themeColors.borderColor,
-      borderRadius: radius.md,
+      borderRadius: radius.lg,
       borderWidth: 1,
       flexDirection: 'column',
       gap: spacing.sm,
@@ -219,6 +219,7 @@ const getStyles = (mode: 'light' | 'dark') => {
       color: themeColors.secondary,
       fontSize: typography.fontSize.sm,
       fontWeight: typography.fontWeight.medium,
+      paddingBottom: spacing.xs,
     },
     userEmail: {
       color: themeColors.primary,

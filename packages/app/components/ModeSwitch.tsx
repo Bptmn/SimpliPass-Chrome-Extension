@@ -15,7 +15,7 @@ export const ModeSwitch: React.FC = () => {
     container: {
       backgroundColor: themeColors.secondaryBackground,
       borderColor: themeColors.borderColor,
-      borderRadius: radius.md,
+      borderRadius: radius.lg,
       borderWidth: 1,
       height: 50,
       padding: spacing.xs,
@@ -23,13 +23,14 @@ export const ModeSwitch: React.FC = () => {
     },
     option: {
       alignItems: 'center' as const,
-      borderRadius: radius.md,
+      borderRadius: radius.md+2,
       borderWidth: 1,
       flex: 1,
       flexDirection: 'row' as const,
       gap: spacing.xs,
       height: '100%',
       justifyContent: 'center' as const,
+      padding: spacing.xs,
     },
     optionActive: {
       backgroundColor: themeColors.white,
@@ -45,19 +46,16 @@ export const ModeSwitch: React.FC = () => {
       color: themeColors.primary,
       fontSize: typography.fontSize.sm,
       fontWeight: typography.fontWeight.medium,
-      marginLeft: spacing.xs,
     },
     optionTextActiveLight: {
       color: themeColors.secondary,
       fontSize: typography.fontSize.sm,
       fontWeight: typography.fontWeight.medium,
-      marginLeft: spacing.xs,
     },
     optionTextInactive: {
       color: themeColors.tertiary,
       fontSize: typography.fontSize.sm,
       fontWeight: typography.fontWeight.medium,
-      marginLeft: spacing.xs,
     },
     row: {
       alignItems: 'center' as const,

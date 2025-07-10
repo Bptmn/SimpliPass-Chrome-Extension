@@ -19,9 +19,31 @@ export const MoreInfo: React.FC<MoreInfoProps> = ({
   const themeColors = getColors(mode);
   const [showMeta, setShowMeta] = useState(false);
 
-  const formatDateTime = (dateTime: Date): string => {
+  const formatDateTime = (dateTime: any): string => {
     if (!dateTime) return 'N/A';
-    return dateTime.toLocaleString('fr-FR');
+    let dateObj: Date;
+    if (dateTime instanceof Date) {
+      dateObj = dateTime;
+    } else if (typeof dateTime.toDate === 'function') {
+      // Firestore Timestamp
+      dateObj = dateTime.toDate();
+    } else if (typeof dateTime === 'string' || typeof dateTime === 'number') {
+      dateObj = new Date(dateTime);
+    } else {
+      return 'N/A';
+    }
+    return (
+      dateObj.toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }) +
+      ' à ' +
+      dateObj.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    );
   };
 
   // Dynamic styles
@@ -48,9 +70,18 @@ export const MoreInfo: React.FC<MoreInfoProps> = ({
       paddingLeft: spacing.lg,
     },
     metaText: {
-      color: themeColors.tertiary,
-      fontSize: typography.fontSize.sm,
+      color: themeColors.primary,
+      fontSize: typography.fontSize.xs,
       marginBottom: spacing.xxs,
+    },
+    metaRowContent: {
+      flexDirection: 'row' as const,
+      justifyContent: 'flex-start' as const,
+    },
+    metaLabelText: {
+      color: themeColors.tertiaryText,
+      fontSize: typography.fontSize.xs,
+      marginRight: spacing.sm,
     },
   };
 
@@ -77,12 +108,22 @@ export const MoreInfo: React.FC<MoreInfoProps> = ({
       </View>
       {showMeta && (
         <View style={styles.metaRow}>
-          <Text style={styles.metaText}>
-            Dernière utilisation : {formatDateTime(lastUseDateTime)}
-          </Text>
-          <Text style={styles.metaText}>
-            Date de création : {formatDateTime(createdDateTime)}
-          </Text>
+          <View style={styles.metaRowContent}>
+            <Text style={styles.metaLabelText}>
+              Dernière utilisation :
+            </Text>
+            <Text style={styles.metaText}>
+              {formatDateTime(lastUseDateTime)}
+            </Text>
+          </View>
+          <View style={styles.metaRowContent}>
+            <Text style={styles.metaLabelText}>
+              Date de création :
+            </Text>
+            <Text style={styles.metaText}>
+              {formatDateTime(createdDateTime)}
+            </Text>
+          </View>
         </View>
       )}
     </Pressable>

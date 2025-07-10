@@ -114,6 +114,7 @@ const getStyles = (mode: 'light' | 'dark') => {
     },
     formSection: {
       marginBottom: spacing.lg,
+      alignItems: 'center',
     },
   });
 };

@@ -55,11 +55,11 @@ const AddSecureNote: React.FC = () => {
     <View style={styles.pageContainer}>
       {error && <ErrorBanner message={error} />}
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <HeaderTitle 
-          title="Ajouter une note" 
-          onBackPress={() => navigate(-1)} 
-        />
         <View style={styles.formContainer}>
+          <HeaderTitle 
+            title="Ajouter une note" 
+            onBackPress={() => navigate(-1)} 
+          />
           <Input
             label="Nom de la note sécurisée"
             _id="note-title"

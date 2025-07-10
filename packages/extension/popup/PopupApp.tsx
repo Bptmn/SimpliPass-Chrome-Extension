@@ -19,7 +19,7 @@ import { colors } from '@design/colors';
 import { useUserStore } from '@app/core/states/user';
 import { PageState } from '@app/core/types/types';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth as firebaseAuth } from '@app/core/auth/firebase';
+import { initFirebase } from '@app/core/auth/firebase';
 import { User as FirebaseUser } from 'firebase/auth';
 import { User as AppUser } from '@app/core/types/types';
 import NavBar from '@app/components/NavBar';
@@ -73,28 +73,34 @@ export const PopupApp: React.FC = () => {
 
     // Listen for Firebase Auth state changes (robust persistence)
     setIsLoading(true);
-    const unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser: FirebaseUser | null) => {
-      if (firebaseUser) {
-        // Fetch full user profile from Firestore
-        const firestoreUser = await fetchUserProfile(firebaseUser.uid);
-        if (firestoreUser) {
-          setUser(firestoreUser);
+    let unsubscribe: (() => void) | undefined;
+    (async () => {
+      const { auth: firebaseAuth } = await initFirebase();
+      unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser: FirebaseUser | null) => {
+        if (firebaseUser) {
+          // Fetch full user profile from Firestore
+          const firestoreUser = await fetchUserProfile(firebaseUser.uid);
+          if (firestoreUser) {
+            setUser(firestoreUser);
+          } else {
+            // Fallback to Auth user if Firestore user is missing
+            const mappedUser: AppUser = {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email || '',
+              created_time: new Date() as any,
+              salt: '',
+            };
+            setUser(mappedUser);
+          }
         } else {
-          // Fallback to Auth user if Firestore user is missing
-          const mappedUser: AppUser = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email || '',
-            created_time: new Date() as any,
-            salt: '',
-          };
-          setUser(mappedUser);
+          setUser(null);
         }
-      } else {
-        setUser(null);
-      }
-      setIsLoading(false);
-    });
-    return () => unsubscribe();
+        setIsLoading(false);
+      });
+    })();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [setUser]);
 
   console.log('Current render state:', { isLoading, user });

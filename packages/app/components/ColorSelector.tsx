@@ -52,7 +52,7 @@ export const ColorSelector: React.FC<ColorSelectorProps> = ({
     },
     title: {
       color: themeColors.primary,
-      fontSize: typography.fontSize.md,
+      fontSize: typography.fontSize.sm,
       fontWeight: typography.fontWeight.medium,
     },
   };

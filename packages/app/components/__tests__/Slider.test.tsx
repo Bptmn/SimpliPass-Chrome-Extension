@@ -1,6 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { Slider } from '../Slider';
+import { LightThemeProvider } from '../storybook/ThemeProviders';
+
+// Helper to wrap components in theme provider
+const renderWithTheme = (ui: React.ReactElement) => render(<LightThemeProvider>{ui}</LightThemeProvider>);
 
 describe('Slider', () => {
   const mockOnValueChange = jest.fn();
@@ -10,7 +14,7 @@ describe('Slider', () => {
   });
 
   it('renders with label', () => {
-    const { getByText } = render(
+    const { getByText } = renderWithTheme(
       <Slider
         value={50}
         onValueChange={mockOnValueChange}
@@ -24,7 +28,7 @@ describe('Slider', () => {
   });
 
   it('renders without label', () => {
-    const { queryByText } = render(
+    const { queryByText } = renderWithTheme(
       <Slider
         value={50}
         onValueChange={mockOnValueChange}
@@ -37,7 +41,7 @@ describe('Slider', () => {
   });
 
   it('displays min and max values', () => {
-    const { getByText } = render(
+    const { getByText } = renderWithTheme(
       <Slider
         value={50}
         onValueChange={mockOnValueChange}
@@ -52,7 +56,7 @@ describe('Slider', () => {
   });
 
   it('renders with custom testID', () => {
-    const { getByTestId } = render(
+    const { getByTestId } = renderWithTheme(
       <Slider
         value={50}
         onValueChange={mockOnValueChange}
@@ -66,7 +70,7 @@ describe('Slider', () => {
   });
 
   it('renders with accessibility label', () => {
-    const { getByRole } = render(
+    const { getByRole } = renderWithTheme(
       <Slider
         value={50}
         onValueChange={mockOnValueChange}
