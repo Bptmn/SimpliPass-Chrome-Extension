@@ -22,6 +22,20 @@ interface CredentialDetailsPageProps {
   onBack: () => void;
 }
 
+// Platform-specific openUrl
+async function openUrlPlatform(url: string): Promise<void> {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+    // Mobile: use Linking
+    const { Linking } = await import('react-native');
+    await Linking.openURL(url);
+  } else if (typeof chrome !== 'undefined' && chrome.tabs) {
+    // Extension: use chrome.tabs
+    await chrome.tabs.create({ url });
+  } else {
+    throw new Error('Unsupported platform');
+  }
+}
+
 export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   credential,
   onBack,
@@ -38,10 +52,10 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
 
-  const handleLaunch = (url: string) => {
+  const handleLaunch = async (url: string) => {
     try {
       const normalizedUrl = url.match(/^https?:\/\//i) ? url : `https://${url}`;
-      window.open(normalizedUrl, '_blank');
+      await openUrlPlatform(normalizedUrl);
     } catch {
       setError("Erreur lors de l'ouverture du lien.");
     }

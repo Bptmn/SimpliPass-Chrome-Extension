@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react';
 import { HeaderTitle } from '../HeaderTitle';
-import { LightThemeProvider } from '../storybook/ThemeProviders';
+import { ThemeProvider } from '@app/core/logic/theme';
 
 // Helper to wrap components in theme provider
-const renderWithTheme = (ui: React.ReactElement) => render(<LightThemeProvider>{ui}</LightThemeProvider>);
+const renderWithTheme = (ui: React.ReactElement) => render(<ThemeProvider>{ui}</ThemeProvider>);
 
 describe('HeaderTitle', () => {
   const mockOnBackPress = jest.fn();
@@ -33,7 +33,7 @@ describe('HeaderTitle', () => {
     );
 
     const backButton = getByLabelText('Retour');
-    fireEvent.press(backButton);
+    fireEvent.click(backButton);
 
     expect(mockOnBackPress).toHaveBeenCalledTimes(1);
   });

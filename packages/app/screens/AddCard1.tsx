@@ -15,12 +15,10 @@ const AddCard1: React.FC = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
 
   const handleNext = () => {
-    if (!title || !cardNumber || !expiryDate || !cvv) return;
-    navigate('/add-card-2', { state: { title, cardNumber, expiryDate, cvv } });
+    if (!title || !cardNumber) return;
+    navigate('/add-card-2', { state: { title, cardNumber } });
   };
 
   return (

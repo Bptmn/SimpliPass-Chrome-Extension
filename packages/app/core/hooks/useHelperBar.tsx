@@ -51,7 +51,7 @@ export const useHelperBar = () => {
       const userSecretKey = await getUserSecretKey();
       if (userSecretKey) {
         await refreshItems(currentUser.uid, userSecretKey);
-        window.location.reload();
+        await reloadBrowserPlatform();
       }
     } else {
       console.log('No user logged in, cannot refresh cache');
@@ -65,4 +65,20 @@ export const useHelperBar = () => {
     handleFAQ,
     handleRefresh,
   };
-}; 
+};
+
+// Platform-specific reloadBrowser
+async function reloadBrowserPlatform(): Promise<void> {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+    // Mobile: no-op or implement as needed
+    return;
+  } else if (typeof chrome !== 'undefined' && chrome.tabs) {
+    // Extension: reload current tab
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab?.id) {
+      await chrome.tabs.reload(tab.id);
+    }
+  } else {
+    throw new Error('Unsupported platform');
+  }
+} 

@@ -79,7 +79,7 @@ describe('useInputLogic Hook', () => {
       
       expect(result.current.showPassword).toBe(true);
       
-      rerender();
+      rerender('password');
       
       expect(result.current.showPassword).toBe(true);
     });

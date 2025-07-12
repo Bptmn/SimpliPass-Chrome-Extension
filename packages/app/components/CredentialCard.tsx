@@ -45,7 +45,8 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
   const handleCopy = async () => {
     try {
       // Password is already decrypted in the new architecture
-      await navigator.clipboard.writeText(credential.password);
+      const { writeToClipboard } = await import('@app/core/platform/clipboard');
+      await writeToClipboard(credential.password);
       if (onCopy) onCopy();
     } catch {
       setError('Impossible de copier le mot de passe');
@@ -90,7 +91,7 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
         <View style={cardStyles.credentialCardLeft}>
           <LazyCredentialIcon title={credential.title} url={credential.url} />
           <View style={cardStyles.credentialCardInfo}>
-            <Text style={[cardStyles.credentialCardTitle]} numberOfLines={1}>
+            <Text style={cardStyles.credentialCardTitle} numberOfLines={1}>
               {credential.title}
             </Text>
             <Text style={cardStyles.credentialCardUsername} numberOfLines={1}>

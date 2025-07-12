@@ -3,11 +3,11 @@
 // It renders the credential suggestion UI, receives credentials from the parent via postMessage,
 // and communicates actions (pick, close) and sizing (height/width) back to the parent.
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, createContext, useContext, ReactNode } from 'react';
 import { Text } from 'react-native';
 import './PopoverCredentialPicker.css';
 import { createRoot } from 'react-dom/client';
-
+import { ThemeProvider } from '@app/core/logic/theme';
 import { CredentialCard } from '@components/CredentialCard';
 
 // Minimal popover-specific ErrorBanner
@@ -74,47 +74,49 @@ export const PopoverCredentialPicker: React.FC<PopoverCredentialPickerProps> = (
   }, [credentials, error]);
 
   return (
-    <div className="popover-content-root" ref={rootRef} style={{ minHeight: 120, minWidth: 320 }}>
-      {error && <PopoverErrorBanner message={error} />}
-      <button className="inpage-picker-close" onClick={onClose} aria-label="Fermer">
-        <Text>×</Text>
-      </button>
-      <div className="inpage-picker-title">
-        <Text>Suggestion</Text>
+    <ThemeProvider>
+      <div className="popover-content-root" ref={rootRef} style={{ minHeight: 120, minWidth: 320 }}>
+        {error && <PopoverErrorBanner message={error} />}
+        <button className="inpage-picker-close" onClick={onClose} aria-label="Fermer">
+          <Text>×</Text>
+        </button>
+        <div className="inpage-picker-title">
+          <Text>Suggestion</Text>
+        </div>
+        <div className="inpage-picker-list">
+          {credentials.slice(0, 3).map((cred) => (
+            <div
+              key={cred.id}
+              className="inpage-picker-card"
+              onClick={() => onPick(cred)}
+              tabIndex={0}
+              role="button"
+              aria-label={`Utiliser l'identifiant pour ${cred.title} (${cred.username})`}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') onPick(cred);
+              }}
+            >
+              {/* Use the shared CredentialCard, but hide the copy button and use popover-specific onClick */}
+              <CredentialCard 
+                credential={{ 
+                  id: cred.id,
+                  title: cred.title,
+                  username: cred.username,
+                  password: '', // Will be filled by the parent
+                  url: cred.url || '',
+                  note: '',
+                  createdDateTime: new Date(),
+                  lastUseDateTime: new Date(),
+                  itemKey: ''
+                }} 
+                onPress={() => onPick(cred)}
+                hideCopyBtn={true} 
+              />
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="inpage-picker-list">
-        {credentials.slice(0, 3).map((cred) => (
-          <div
-            key={cred.id}
-            className="inpage-picker-card"
-            onClick={() => onPick(cred)}
-            tabIndex={0}
-            role="button"
-            aria-label={`Utiliser l'identifiant pour ${cred.title} (${cred.username})`}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') onPick(cred);
-            }}
-          >
-            {/* Use the shared CredentialCard, but hide the copy button and use popover-specific onClick */}
-            <CredentialCard 
-              credential={{ 
-                id: cred.id,
-                title: cred.title,
-                username: cred.username,
-                password: '', // Will be filled by the parent
-                url: cred.url || '',
-                note: '',
-                createdDateTime: new Date(),
-                lastUseDateTime: new Date(),
-                itemKey: ''
-              }} 
-              onPress={() => onPick(cred)}
-              hideCopyBtn={true} 
-            />
-          </div>
-        ))}
-      </div>
-    </div>
+    </ThemeProvider>
   );
 };
 

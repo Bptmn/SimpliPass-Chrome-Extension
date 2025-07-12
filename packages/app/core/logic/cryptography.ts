@@ -105,11 +105,9 @@ export async function decryptAllItems(
   userSecretKey: string,
   itemsList: ItemEncrypted[],
 ): Promise<DecryptedItem[]> {
-  console.log('[Cryptography] Decrypting all items:', itemsList.length, 'items');
   const decryptedItems: DecryptedItem[] = [];
   
   if (!itemsList.length) {
-    console.debug('No items provided.');
     return decryptedItems;
   }
   

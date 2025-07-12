@@ -7,8 +7,7 @@
  * IMPORTANT: Replace all placeholder values with real, valid data before running tests.
  */
 
-// Import config values for Firebase
-import { config } from '../../extension/config/config';
+// Test data for Firebase - using static values for tests
 
 // ============================================================================
 // USER AUTHENTICATION DATA
@@ -160,10 +159,10 @@ export const TEST_FIRESTORE = {
   collectionName: 'my_items',
   
   /** Valid Firestore project ID from config */
-  projectId: config.firebase.projectId,
+  projectId: 'test-project-id',
   
   /** Valid Firestore API key from config */
-  apiKey: config.firebase.apiKey
+  apiKey: 'test-api-key'
 };
 
 // ============================================================================

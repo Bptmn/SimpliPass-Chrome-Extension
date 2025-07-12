@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Text } from 'react-native';
 import { useUser } from '@app/core/hooks/useUser';
 import { passwordGenerator } from '@utils/passwordGenerator';
 import { addItem } from '@app/core/logic/items';
@@ -16,8 +16,9 @@ import { getColors } from '@design/colors';
 import { getPageStyles, spacing } from '@design/layout';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
-import { createPasswordGenerator } from '@app/core/logic/credentials';
+import { createPasswordGenerator } from '@app/utils/credentials';
 import { checkPasswordStrength } from '@utils/checkPasswordStrength';
+import { useSecretKeyCheck } from '@app/core/hooks/useSecretKeyCheck';
 
 interface AddCredential2Props {
   title: string;
@@ -39,6 +40,23 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast, showToast } = useToast();
+  const { isChecking } = useSecretKeyCheck();
+
+  // Show loading while checking secret key
+  if (isChecking) {
+    return (
+      <View style={pageStyles.pageContainer}>
+        <View style={pageStyles.pageContent}>
+          <HeaderTitle title="Ajouter un identifiant" onBackPress={() => navigate(-1)} />
+          <View style={pageStyles.formContainer}>
+            <View style={{ padding: 20, alignItems: 'center' }}>
+              <Text>Vérification de la clé de sécurité...</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   // Calculate password strength
   const passwordStrength = checkPasswordStrength(password);

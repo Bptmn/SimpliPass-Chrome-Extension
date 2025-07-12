@@ -1,11 +1,11 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react';
 import { Text } from 'react-native';
 import CopyButton from '../CopyButton';
-import { LightThemeProvider } from '../storybook/ThemeProviders';
+import { ThemeProvider } from '@app/core/logic/theme';
 
 // Helper to wrap components in theme provider
-const renderWithTheme = (ui: React.ReactElement) => render(<LightThemeProvider>{ui}</LightThemeProvider>);
+const renderWithTheme = (ui: React.ReactElement) => render(<ThemeProvider>{ui}</ThemeProvider>);
 
 // Mock navigator.clipboard
 Object.assign(navigator, {
@@ -35,7 +35,7 @@ describe('CopyButton', () => {
       </CopyButton>
     );
     
-    fireEvent.press(getByText('Copy'));
+    fireEvent.click(getByText('Copy'));
     
     expect(mockWriteText).toHaveBeenCalledWith('test text');
   });

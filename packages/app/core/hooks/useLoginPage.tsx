@@ -7,7 +7,7 @@ const REMEMBER_EMAIL_KEY = 'simplipass_remembered_email';
 
 /**
  * Hook for LoginPage component business logic
- * Handles authentication, email remembering, and MFA
+ * Handles authentication, email remembering, MFA, and persistent sessions
  */
 export const useLoginPage = () => {
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ export const useLoginPage = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [rememberEmail, setRememberEmail] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [mfaStep, setMfaStep] = useState(false);
   const [mfaUser, setMfaUser] = useState<unknown>(null);
@@ -64,7 +65,12 @@ export const useLoginPage = () => {
     }
 
     try {
-      const result = await loginUser({ email, password, rememberEmail });
+      const result = await loginUser({ 
+        email, 
+        password, 
+        rememberEmail, 
+        rememberMe 
+      });
       if (result.mfaRequired) {
         setMfaStep(true);
         setMfaUser(result.mfaUser);
@@ -79,7 +85,7 @@ export const useLoginPage = () => {
       setError(loginError instanceof Error ? loginError.message : 'Erreur lors de la connexion.');
       setIsLoading(false);
     }
-  }, [email, password, rememberEmail, navigate, setUser]);
+  }, [email, password, rememberEmail, rememberMe, navigate, setUser]);
 
   // Handle MFA confirmation
   const handleMfaConfirm = useCallback(async (code: string) => {
@@ -101,6 +107,7 @@ export const useLoginPage = () => {
     emailError,
     passwordError,
     rememberEmail,
+    rememberMe,
     isLoading,
     mfaStep,
     mfaUser,
@@ -110,6 +117,7 @@ export const useLoginPage = () => {
     setEmail,
     setPassword,
     setRememberEmail,
+    setRememberMe,
     setError,
     
     // Event handlers

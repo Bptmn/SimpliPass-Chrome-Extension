@@ -40,6 +40,8 @@
       "resources": [
         "src/content/popovers/PopoverCredentialPicker.html",
         "src/content/popovers/PopoverCredentialPicker.css",
+        "src/content/popovers/LoginPromptPopover.html",
+        "src/content/popovers/LoginPromptPopover.js",
         "assets/credentialPicker-DGVzlcZ6.js"
       ],
       "matches": ["<all_urls>"]

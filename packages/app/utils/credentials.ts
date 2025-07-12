@@ -1,4 +1,4 @@
-import { passwordGenerator } from '@utils/passwordGenerator';
+import { passwordGenerator } from './passwordGenerator';
 
 export function handleGeneratePassword(setPassword: (password: string) => void) {
   const newPassword = passwordGenerator(true, true, true, true, 16);

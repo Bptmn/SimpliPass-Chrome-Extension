@@ -36,7 +36,6 @@ export const HomePage: React.FC<HomePageProps> = ({
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const {
-    user,
     category,
     filter,
     selected,
@@ -57,9 +56,6 @@ export const HomePage: React.FC<HomePageProps> = ({
     handleCopyOther,
     handleAddSuggestion,
   } = useHomePage(_pageState || undefined);
-
-  // Debug logging
-  console.log('[HomePage] Render', { user, loading });
 
   // If a credential is selected, show the detail page
   if (selected) {

@@ -7,13 +7,11 @@ import './popup/popup.css';
 import { PopupApp } from './popup/PopupApp';
 import { ErrorBoundary } from '../app/components/ErrorBoundary';
 import { UserProvider } from '../app/core/hooks/useUser';
-import { initStorage } from '../app/core/database/localDB';
+
 import { ThemeProvider } from '../app/core/logic/theme';
 
 const initializeApp = () => {
-  console.log('Initializing Chrome extension app...');
   const rootElement = document.getElementById('root');
-  console.log('Root element:', rootElement);
 
   if (!rootElement) {
     console.error('Failed to find root element');
@@ -21,10 +19,8 @@ const initializeApp = () => {
   }
 
   try {
-    console.log('Creating React root...');
     const root = createRoot(rootElement);
 
-    console.log('Rendering app...');
     root.render(
       React.createElement(React.StrictMode, null,
         React.createElement(ThemeProvider, null,
@@ -38,7 +34,6 @@ const initializeApp = () => {
         )
       )
     );
-    console.log('App rendered successfully');
   } catch (error) {
     console.error('Error during React initialization:', error);
     rootElement.innerHTML = `
@@ -52,21 +47,18 @@ const initializeApp = () => {
 
 const startApp = async () => {
   try {
-    await initStorage();
     initializeApp();
   } catch (e) {
     const rootElement = document.getElementById('root');
     if (rootElement) {
-      rootElement.innerHTML = `<div style='color: red; padding: 20px;'><h2>Fatal Error Initializing Storage</h2><pre>${e instanceof Error ? e.message : String(e)}</pre></div>`;
+      rootElement.innerHTML = `<div style='color: red; padding: 20px;'><h2>Fatal Error Initializing App</h2><pre>${e instanceof Error ? e.message : String(e)}</pre></div>`;
     }
-    console.error('Failed to initialize storage:', e);
+    console.error('Failed to initialize app:', e);
   }
 };
 
 if (document.readyState === 'loading') {
-  console.log('Document still loading, waiting for DOMContentLoaded...');
   document.addEventListener('DOMContentLoaded', startApp);
 } else {
-  console.log('Document already loaded, initializing immediately...');
   startApp();
 } 

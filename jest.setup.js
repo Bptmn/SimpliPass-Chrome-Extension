@@ -4,6 +4,25 @@ const { TextEncoder, TextDecoder } = require('util');
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 
+// Mock import.meta for Vite environment variables in tests
+global.import = {
+  meta: {
+    env: {
+      // Add any Vite environment variables you need in tests
+      VITE_FIREBASE_API_KEY: 'test-api-key',
+      VITE_FIREBASE_AUTH_DOMAIN: 'test-project.firebaseapp.com',
+      VITE_FIREBASE_PROJECT_ID: 'test-project',
+      VITE_FIREBASE_STORAGE_BUCKET: 'test-project.appspot.com',
+      VITE_FIREBASE_MESSAGING_SENDER_ID: '123456789',
+      VITE_FIREBASE_APP_ID: 'test-app-id',
+      VITE_FIREBASE_MEASUREMENT_ID: 'test-measurement-id',
+      VITE_COGNITO_USER_POOL_ID: 'test-user-pool-id',
+      VITE_COGNITO_CLIENT_ID: 'test-client-id',
+      VITE_COGNITO_REGION: 'us-east-1',
+    }
+  }
+};
+
 // Comprehensive IndexedDB mock for tests
 class MockIDBRequest {
   constructor() {
@@ -42,14 +61,14 @@ class MockIDBDatabase {
   constructor(name, version = 1) {
     this.name = name;
     this.version = version;
-    this.objectStoreNames = [];
+    this._objectStoreNames = [];
     this.stores = new Map();
   }
 
   createObjectStore(name, options = {}) {
     const store = new MockIDBObjectStore(name, options);
     this.stores.set(name, store);
-    this.objectStoreNames.push(name);
+    this._objectStoreNames.push(name);
     return store;
   }
 
@@ -59,6 +78,14 @@ class MockIDBDatabase {
 
   close() {
     // Mock close operation
+  }
+
+  get objectStoreNames() {
+    return {
+      contains: (name) => this._objectStoreNames.includes(name),
+      length: this._objectStoreNames.length,
+      [Symbol.iterator]: () => this._objectStoreNames[Symbol.iterator](),
+    };
   }
 }
 
@@ -153,14 +180,23 @@ global.indexedDB = {
     
     setTimeout(() => {
       let db = databases.get(dbName);
+      let isNewDatabase = false;
       
       if (!db) {
         // Create new database
         db = new MockIDBDatabase(dbName, version);
         databases.set(dbName, db);
-        
-        // Trigger upgrade needed event
-        request.triggerUpgradeNeeded();
+        isNewDatabase = true;
+      }
+      
+      // Set the result first so it's available in onupgradeneeded
+      request.result = db;
+      
+      if (isNewDatabase) {
+        // Trigger upgrade needed event with the database object
+        if (request.onupgradeneeded) {
+          request.onupgradeneeded({ target: request });
+        }
       }
       
       // Always create keyValueStore if it doesn't exist (for SimplipassDB)
@@ -168,7 +204,10 @@ global.indexedDB = {
         db.createObjectStore('keyValueStore', { keyPath: 'key' });
       }
       
-      request.setResult(db);
+      // Trigger success event
+      if (request.onsuccess) {
+        request.onsuccess({ target: request });
+      }
     }, 0);
     
     return request;
@@ -188,33 +227,100 @@ if (typeof global.chrome === 'undefined') {
   global.chrome = {
     storage: {
       local: {
-        get: jest.fn(),
-        set: jest.fn(),
-        remove: jest.fn(),
+        get: jest.fn((keys, callback) => {
+          // Return empty object for any key lookup
+          const result = {};
+          if (Array.isArray(keys)) {
+            keys.forEach(key => {
+              result[key] = undefined;
+            });
+          } else if (typeof keys === 'string') {
+            result[keys] = undefined;
+          }
+          if (callback) {
+            callback(result);
+          }
+          return Promise.resolve(result);
+        }),
+        set: jest.fn((data, callback) => {
+          if (callback) callback();
+          return Promise.resolve();
+        }),
+        remove: jest.fn((keys, callback) => {
+          if (callback) callback();
+          return Promise.resolve();
+        }),
         clear: jest.fn((callback) => {
           if (callback) callback();
+          return Promise.resolve();
         }),
       },
       sync: {
-        get: jest.fn(),
-        set: jest.fn(),
-        remove: jest.fn(),
+        get: jest.fn((keys, callback) => {
+          const result = {};
+          if (Array.isArray(keys)) {
+            keys.forEach(key => {
+              result[key] = undefined;
+            });
+          } else if (typeof keys === 'string') {
+            result[keys] = undefined;
+          }
+          if (callback) {
+            callback(result);
+          }
+          return Promise.resolve(result);
+        }),
+        set: jest.fn((data, callback) => {
+          if (callback) callback();
+          return Promise.resolve();
+        }),
+        remove: jest.fn((keys, callback) => {
+          if (callback) callback();
+          return Promise.resolve();
+        }),
+        clear: jest.fn((callback) => {
+          if (callback) callback();
+          return Promise.resolve();
+        }),
       },
     },
     runtime: {
-      id: 'test-extension-id',
       sendMessage: jest.fn(),
       onMessage: {
         addListener: jest.fn(),
         removeListener: jest.fn(),
       },
     },
+    tabs: {
+      query: jest.fn(),
+      sendMessage: jest.fn(),
+    },
   };
-} else if (global.chrome.storage?.local?.clear) {
-  global.chrome.storage.local.clear = jest.fn((callback) => {
-    if (callback) callback();
-  });
 }
+
+// Mock navigator.clipboard
+Object.assign(global, {
+  navigator: {
+    ...global.navigator,
+    clipboard: {
+      writeText: jest.fn().mockResolvedValue(undefined),
+      readText: jest.fn().mockResolvedValue(''),
+    },
+  },
+});
+
+// Mock window.alert
+global.alert = jest.fn();
+
+// Mock console methods to reduce noise in tests
+global.console = {
+  ...console,
+  log: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+  info: jest.fn(),
+  debug: jest.fn(),
+};
 
 // Extend Jest matchers for React Native Testing Library
 require('@testing-library/jest-native/extend-expect'); 

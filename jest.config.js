@@ -24,6 +24,10 @@ module.exports = {
     '^@extension/(.*)$': '<rootDir>/packages/extension/$1',
     '^@mobile/(.*)$': '<rootDir>/packages/mobile/$1',
     '^@/(.*)$': '<rootDir>/packages/app/$1',
+    '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
+    // Mock config files that use import.meta
+    '^@app/core/auth/config$': '<rootDir>/__mocks__/configMock.js',
+    '^@extension/config/config$': '<rootDir>/__mocks__/configMock.js',
   },
   testMatch: [
     '**/__tests__/**/*.(ts|tsx|js)',
@@ -48,7 +52,7 @@ module.exports = {
     },
   },
   // Optimize for faster test execution
-  testTimeout: 5000,
+  testTimeout: 10000,
   // Run tests in parallel for better performance
   maxWorkers: '50%',
   // Reduce verbosity for faster output

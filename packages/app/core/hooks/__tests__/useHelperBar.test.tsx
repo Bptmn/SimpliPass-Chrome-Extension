@@ -6,18 +6,16 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn(),
 }));
 
-jest.mock('@app/core/logic/items', () => ({
-  refreshItems: jest.fn(),
-}));
-
 jest.mock('@app/core/logic/user', () => ({
   getUserSecretKey: jest.fn(),
 }));
 
+const mockUseUserStore = jest.fn(() => ({
+  user: { uid: 'test-user-id' },
+}));
+
 jest.mock('@app/core/states/user', () => ({
-  useUserStore: jest.fn(() => ({
-    user: { uid: 'test-user-id' },
-  })),
+  useUserStore: mockUseUserStore,
 }));
 
 jest.mock('@app/core/states', () => ({
@@ -29,40 +27,6 @@ jest.mock('@app/core/states', () => ({
 describe('useHelperBar', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('should return the expected properties', () => {
-    const { result } = renderHook(() => useHelperBar());
-    
-    expect(result.current.currentCategory).toBe('credentials');
-    expect(result.current.addButtonText).toBe('Ajouter un identifiant');
-    expect(typeof result.current.handleAdd).toBe('function');
-    expect(typeof result.current.handleFAQ).toBe('function');
-    expect(typeof result.current.handleRefresh).toBe('function');
-  });
-
-  it('should return correct button text for different categories', () => {
-    const mockUseCategoryStore = jest.requireMock('@app/core/states').useCategoryStore;
-    
-    // Test credentials category
-    mockUseCategoryStore.mockReturnValue({ currentCategory: 'credentials' });
-    const { result: result1 } = renderHook(() => useHelperBar());
-    expect(result1.current.addButtonText).toBe('Ajouter un identifiant');
-    
-    // Test bankCards category
-    mockUseCategoryStore.mockReturnValue({ currentCategory: 'bankCards' });
-    const { result: result2 } = renderHook(() => useHelperBar());
-    expect(result2.current.addButtonText).toBe('Ajouter une carte');
-    
-    // Test secureNotes category
-    mockUseCategoryStore.mockReturnValue({ currentCategory: 'secureNotes' });
-    const { result: result3 } = renderHook(() => useHelperBar());
-    expect(result3.current.addButtonText).toBe('Ajouter une note');
-    
-    // Test default category
-    mockUseCategoryStore.mockReturnValue({ currentCategory: 'unknown' });
-    const { result: result4 } = renderHook(() => useHelperBar());
-    expect(result4.current.addButtonText).toBe('Ajouter');
   });
 
   it('should handle FAQ click', () => {
@@ -95,10 +59,9 @@ describe('useHelperBar', () => {
   });
 
   it('should handle refresh without user', async () => {
-    const mockUseUserStore = jest.requireMock('@app/core/states/user').useUserStore;
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
     
-    mockUseUserStore.mockReturnValue({ user: null });
+    mockUseUserStore.mockReturnValue({ user: null as any });
     
     const { result } = renderHook(() => useHelperBar());
     

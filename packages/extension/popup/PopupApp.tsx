@@ -7,24 +7,23 @@
 // - Route between pages (home, generator, settings, login)
 // - Render the main UI (navbar, helper bar, etc.)
 
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { HomePage } from '@app/screens/HomePage';
-import LoginPage from '@app/screens/LoginPage';
-import SettingsPage from '@app/screens/SettingsPage';
-import { GeneratorPage } from '@app/screens/GeneratorPage';
 import { ToastProvider } from '@app/components/Toast';
-import { colors } from '@design/colors';
-import { useUserStore } from '@app/core/states/user';
-import { PageState } from '@app/core/types/types';
-import { onAuthStateChanged } from 'firebase/auth';
-import { initFirebase } from '@app/core/auth/firebase';
-import { User as FirebaseUser } from 'firebase/auth';
-import { User as AppUser } from '@app/core/types/types';
 import NavBar from '@app/components/NavBar';
 import { HelperBar } from '@app/components/HelperBar';
+import { useUserStore } from '@app/core/states/user';
+import { initFirebase } from '../config/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import { fetchUserProfile } from '@app/core/logic/user';
+import { PageState } from '@app/core/types/types';
+import { User as FirebaseUser } from 'firebase/auth';
+import { User as AppUser } from '@app/core/types/types';
+import { HomePage } from '@app/screens/HomePage';
+import LoginPage from '@app/screens/LoginPage';
+import { GeneratorPage } from '@app/screens/GeneratorPage';
+import SettingsPage from '@app/screens/SettingsPage';
 import AddCard1 from '@app/screens/AddCard1';
 import AddCard2 from '@app/screens/AddCard2';
 import AddSecureNote from '@app/screens/AddSecureNote';
@@ -33,12 +32,14 @@ import { ModifyBankCardPage } from '@app/screens/ModifyBankCardPage';
 import { ModifySecureNotePage } from '@app/screens/ModifySecureNotePage';
 import AddCredential1 from '@app/screens/AddCredential1';
 import AddCredential2 from '@app/screens/AddCredential2';
+import { ReEnterPasswordPage } from '@app/screens/ReEnterPasswordPage';
+import { ReUnlockPage } from '@app/screens/ReUnlockPage';
+import { loadVaultIfNeeded } from '@extension/utils/vaultLoader';
+import { colors } from '@app/design/colors';
 
 const HELPERBAR_HEIGHT = 56;
 
 export const PopupApp: React.FC = () => {
-  console.log('PopupApp component rendering...');
-
   // State for loading, error, and page info
   const [isLoading, setIsLoading] = useState(true);
   const [pageState, setPageState] = useState<PageState | null>(null);
@@ -48,8 +49,6 @@ export const PopupApp: React.FC = () => {
   const setUser = useUserStore((state) => state.setUser);
 
   useEffect(() => {
-    console.log('PopupApp useEffect running...');
-
     // On mount, query the current tab for page info (domain, url, login form)
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
@@ -98,29 +97,50 @@ export const PopupApp: React.FC = () => {
         setIsLoading(false);
       });
     })();
+
+    // Load vault on mount
+    loadVaultIfNeeded().then(() => {
+      console.log('[Popup] Vault load attempt completed');
+    }).catch(() => {
+      console.log('[Popup] No vault available, user must login');
+    });
+
     return () => {
       if (unsubscribe) unsubscribe();
     };
   }, [setUser]);
 
-  console.log('Current render state:', { isLoading, user });
-
   // Handler to inject a credential into the current tab
-  const handleInjectCredential = (credentialId: string) => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]?.id) {
-        chrome.runtime.sendMessage({
-          type: 'INJECT_CREDENTIAL',
-          credentialId,
-          tabId: tabs[0].id,
-        });
+  const handleInjectCredential = async (credentialId: string) => {
+    try {
+      // Check if vault is loaded before attempting injection
+      const sessionResponse = await new Promise<{ isValid: boolean }>((resolve) => {
+        chrome.runtime.sendMessage({ 
+          type: 'GET_SESSION_STATUS'
+        }, resolve);
+      });
+
+      if (!sessionResponse || !sessionResponse.isValid) {
+        console.log('[Popup] No valid vault loaded, cannot inject credential');
+        return;
       }
-    });
+
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]?.id) {
+          chrome.runtime.sendMessage({
+            type: 'INJECT_CREDENTIAL',
+            credentialId,
+            tabId: tabs[0].id,
+          });
+        }
+      });
+    } catch (error) {
+      console.error('[Popup] Error injecting credential:', error);
+    }
   };
 
   // Render loading state
   if (isLoading) {
-    console.log('Rendering loading state...');
     return (
       <View style={styles.container}>
         <Text>Loading...</Text>
@@ -128,7 +148,6 @@ export const PopupApp: React.FC = () => {
     );
   }
 
-  console.log('Rendering main content...');
   return (
     <ToastProvider>
       <View style={styles.container}>
@@ -172,6 +191,8 @@ export const PopupApp: React.FC = () => {
                   <Route path="/modify-credential" element={<ModifyCredentialPage />} />
                   <Route path="/modify-bank-card" element={<ModifyBankCardPage />} />
                   <Route path="/modify-secure-note" element={<ModifySecureNotePage />} />
+                  <Route path="/re-enter-password" element={<ReEnterPasswordPage />} />
+                  <Route path="/re-unlock" element={<ReUnlockPage />} />
                 </Routes>
               </ScrollView>
             </View>

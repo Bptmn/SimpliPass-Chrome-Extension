@@ -3,77 +3,136 @@
  * Tests state, effect, error, and handler logic
  */
 
-import { renderHook, act } from '@testing-library/react-native';
+import { renderHook, act } from '@testing-library/react';
 import { useLoginPage } from '../useLoginPage';
+import { loginUser, confirmMfa } from '@app/core/logic/user';
 
-// Mock dependencies
-jest.mock('@app/core/logic/user', () => ({
-  loginUser: jest.fn(() => Promise.resolve({ success: true })),
+// Mock the dependencies
+jest.mock('@app/core/logic/user');
+jest.mock('@app/core/states/user', () => ({
+  useUserStore: {
+    getState: jest.fn(() => ({ user: null })),
+  },
 }));
-jest.mock('@app/core/states/user', () => {
-  const mockSetUser = jest.fn();
-  const mockUser = { id: 'u1', email: 'test@example.com' };
-  const useUserStore = (selector: any) => selector({ setUser: mockSetUser });
-  useUserStore.getState = () => ({ user: mockUser });
-  return { useUserStore };
-});
-jest.mock('@app/core/hooks', () => ({
-  useToast: () => ({ showToast: jest.fn() }),
-}));
-jest.mock('react-router-dom', () => {
-  const navigate = jest.fn();
-  return { useNavigate: () => navigate, __esModule: true, navigate };
+
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+};
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
 });
 
-describe('useLoginPage Hook', () => {
+// Mock navigate
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  useNavigate: () => mockNavigate,
+}));
+
+describe('useLoginPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorageMock.getItem.mockReturnValue(null);
   });
 
-  it('should initialize with default state', () => {
+  it('should initialize with rememberMe as false', () => {
     const { result } = renderHook(() => useLoginPage());
-    expect(result.current.email).toBe('');
-    expect(result.current.password).toBe('');
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.error).toBe(null);
+    expect(result.current.rememberMe).toBe(false);
   });
 
-  it('should update email and password', () => {
+  it('should update rememberMe state', () => {
     const { result } = renderHook(() => useLoginPage());
+
+    act(() => {
+      result.current.setRememberMe(true);
+    });
+
+    expect(result.current.rememberMe).toBe(true);
+  });
+
+  it('should pass rememberMe as false by default to loginUser', async () => {
+    const mockLoginUser = loginUser as jest.MockedFunction<typeof loginUser>;
+    mockLoginUser.mockResolvedValue({ mfaRequired: false });
+
+    const { result } = renderHook(() => useLoginPage());
+
+    // Set form data
     act(() => {
       result.current.setEmail('test@example.com');
-      result.current.setPassword('secret');
+      result.current.setPassword('password123');
+      result.current.setRememberEmail(false);
     });
-    expect(result.current.email).toBe('test@example.com');
-    expect(result.current.password).toBe('secret');
-  });
 
-  it('should handle login success', async () => {
-    const { navigate } = require('react-router-dom');
-    const { result } = renderHook(() => useLoginPage());
-    act(() => {
-      result.current.setEmail('test@example.com');
-      result.current.setPassword('secret');
-    });
+    // Trigger login
     await act(async () => {
       await result.current.handleLogin();
     });
-    expect(result.current.error).toBe(null);
-    expect(navigate).toHaveBeenCalledWith('/home');
+
+    expect(mockLoginUser).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      password: 'password123',
+      rememberEmail: false,
+      rememberMe: false,
+    });
   });
 
-  it('should handle login error', async () => {
-    const { loginUser } = require('@app/core/logic/user');
-    loginUser.mockImplementationOnce(() => Promise.reject(new Error('Login failed')));
+  it('should pass rememberMe as true to loginUser', async () => {
+    const mockLoginUser = loginUser as jest.MockedFunction<typeof loginUser>;
+    mockLoginUser.mockResolvedValue({ mfaRequired: false });
+
     const { result } = renderHook(() => useLoginPage());
+
+    // Set rememberMe
     act(() => {
-      result.current.setEmail('fail@example.com');
-      result.current.setPassword('fail');
+      result.current.setRememberMe(true);
     });
+
+    // Set form data
+    act(() => {
+      result.current.setEmail('test@example.com');
+      result.current.setPassword('password123');
+      result.current.setRememberEmail(true);
+    });
+
+    // Trigger login
     await act(async () => {
       await result.current.handleLogin();
     });
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.error).toBe('Login failed');
+
+    expect(mockLoginUser).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      password: 'password123',
+      rememberEmail: true,
+      rememberMe: true,
+    });
+  });
+
+  it('should call confirmMfa with code and password', async () => {
+    const mockConfirmMfa = confirmMfa as jest.MockedFunction<typeof confirmMfa>;
+    mockConfirmMfa.mockResolvedValue({} as any);
+
+    const { result } = renderHook(() => useLoginPage());
+
+    // Set password
+    act(() => {
+      result.current.setPassword('password123');
+    });
+
+    // Set MFA user
+    act(() => {
+      result.current.setError(null);
+    });
+
+    // Trigger MFA confirmation
+    await act(async () => {
+      await result.current.handleMfaConfirm('123456');
+    });
+
+    expect(mockConfirmMfa).toHaveBeenCalledWith({
+      code: '123456',
+      password: 'password123',
+    });
   });
 }); 

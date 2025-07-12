@@ -4,4 +4,7 @@ export * from './crypto';
 export * from './domain';
 export * from './expirationDate';
 export * from './icon';
-export * from './passwordGenerator'; 
+export * from './passwordGenerator';
+export * from './cards';
+export * from './credentials';
+export * from './homePage'; 

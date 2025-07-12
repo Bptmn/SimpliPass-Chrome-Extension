@@ -3,106 +3,130 @@
  * Low-level Cognito service functions for authentication and user management.
  * No business logic, just direct API calls.
  */
-import { fetchUserAttributes, signIn, confirmSignIn, fetchAuthSession, signOut } from 'aws-amplify/auth';
+import { Amplify } from 'aws-amplify';
+import { getCognitoConfig } from '../config/platform';
 
-/**
- * Full Cognito login flow (handles sign-in, MFA, token extraction, user attributes, Firebase token)
- * Returns: { mfaRequired, mfaUser, idToken, firebaseToken, userAttributes }
- */
-export async function loginWithCognito(email: string, password: string): Promise<unknown> {
-  console.log('[Cognito] Starting login with email:', email);
-  // Sign in with Cognito
-  const user = await signIn({ username: email, password });
-  const mfaSteps = [
-    'CONFIRM_SIGN_IN_WITH_SMS_CODE',
-    'CONFIRM_SIGN_IN_WITH_TOTP_CODE',
-    'CONFIRM_SIGN_IN_WITH_EMAIL_CODE',
-    'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
-    'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED',
-    'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
-  ];
-  if (user.nextStep && mfaSteps.includes(user.nextStep.signInStep)) {
-    console.log('[Cognito] loginWithCognito success: MFA required');
-    return { mfaRequired: true, mfaUser: user };
+let isInitialized = false;
+
+export async function initCognito() {
+  if (isInitialized) {
+    return;
   }
-  // Authenticated, get tokens and user attributes
-  const { tokens } = await fetchAuthSession();
-  const idToken = tokens?.idToken?.toString();
-  if (!idToken) throw new Error('No IdToken found');
-  const parts = idToken.split('.');
-  if (parts.length !== 3) throw new Error('Invalid JWT structure');
-  const payload = JSON.parse(atob(parts[1]));
-  console.log('[Cognito] Decoded JWT payload:', payload);
-  const firebaseToken = payload.firebaseToken;
-  if (!firebaseToken) throw new Error('Firebase token not found in Cognito ID token claims');
-  const userAttributes = await fetchUserAttributes();
-  console.log('[Cognito] loginWithCognito success: User authenticated');
-  return { mfaRequired: false, idToken, firebaseToken, userAttributes };
+
+  try {
+    const cognitoConfig = await getCognitoConfig();
+    
+    Amplify.configure({
+      Auth: {
+        Cognito: cognitoConfig,
+      },
+    });
+    
+    isInitialized = true;
+    console.log('[Cognito] Initialized successfully');
+  } catch (error) {
+    console.error('[Cognito] Failed to initialize:', error);
+    throw error;
+  }
 }
 
-/**
- * Confirm MFA step with Cognito (low-level)
- * Returns: { idToken, firebaseToken, userAttributes }
- */
+export async function loginWithCognito(email: string, password: string): Promise<unknown> {
+  await initCognito();
+  
+  try {
+    const { signIn } = await import('aws-amplify/auth');
+    const result = await signIn({ username: email, password });
+    console.log('[Cognito] Login successful');
+    return result;
+  } catch (error) {
+    console.error('[Cognito] Login failed:', error);
+    throw error;
+  }
+}
+
 export async function confirmMfaWithCognito(code: string): Promise<unknown> {
-  console.log('[Cognito] Confirming MFA with code');
-  const user = await confirmSignIn({ challengeResponse: code });
-  const { tokens } = await fetchAuthSession();
-  const idToken = tokens?.idToken?.toString();
-  if (!idToken) throw new Error('No IdToken found');
-  const parts = idToken.split('.');
-  if (parts.length !== 3) throw new Error('Invalid JWT structure');
-  const payload = JSON.parse(atob(parts[1]));
-  const firebaseToken = payload.firebaseToken;
-  if (!firebaseToken) throw new Error('Firebase token not found in Cognito ID token claims');
-  const userAttributes = await fetchUserAttributes();
-  console.log('[Cognito] confirmMfaWithCognito success');
-  return { idToken, firebaseToken, userAttributes, user };
-        }
+  await initCognito();
+  
+  try {
+    const { confirmSignIn } = await import('aws-amplify/auth');
+    const result = await confirmSignIn({ challengeResponse: code });
+    console.log('[Cognito] MFA confirmation successful');
+    return result;
+  } catch (error) {
+    console.error('[Cognito] MFA confirmation failed:', error);
+    throw error;
+  }
+}
 
-/**
- * Fetch user attributes from Cognito (low-level)
- */
 export async function fetchUserAttributesCognito(): Promise<unknown> {
-  console.log('[Cognito] Fetching user attributes');
-  const attributes = await fetchUserAttributes();
-  console.log('[Cognito] fetchUserAttributesCognito success');
-  return attributes;
+  await initCognito();
+  
+  try {
+    const { fetchUserAttributes } = await import('aws-amplify/auth');
+    const attributes = await fetchUserAttributes();
+    console.log('[Cognito] User attributes fetched successfully');
+    return attributes;
+  } catch (error) {
+    console.error('[Cognito] Failed to fetch user attributes:', error);
+    throw error;
+  }
 }
 
-/**
- * Fetch user salt from Cognito (low-level, wrapper for attribute fetch)
- */
 export async function fetchUserSaltCognito(): Promise<string> {
-  console.log('[Cognito] Fetching user salt');
-  const attrs = await fetchUserAttributes();
-  const salt = attrs['custom:salt'] || '';
-  console.log('[Cognito] fetchUserSaltCognito success');
-  return salt;
+  await initCognito();
+  
+  try {
+    const { fetchUserAttributes } = await import('aws-amplify/auth');
+    const attributes = await fetchUserAttributes();
+    const salt = attributes['custom:salt'] as string;
+    
+    if (!salt) {
+      throw new Error('User salt not found in Cognito attributes');
+    }
+    
+    console.log('[Cognito] User salt fetched successfully');
+    return salt;
+  } catch (error) {
+    console.error('[Cognito] Failed to fetch user salt:', error);
+    throw error;
+  }
 }
 
-/**
- * Sign out from Cognito (low-level)
- */
 export async function signOutCognito(): Promise<void> {
-  console.log('[Cognito] Signing out from Cognito');
-  await signOut();
-  console.log('[Cognito] signOutCognito success');
+  await initCognito();
+  
+  try {
+    const { signOut } = await import('aws-amplify/auth');
+    await signOut();
+    console.log('[Cognito] Sign out successful');
+  } catch (error) {
+    console.error('[Cognito] Sign out failed:', error);
+    throw error;
+  }
 }
 
-/**
- * Get Cognito tokens and Firebase token from the current session (low-level)
- */
 export async function getCognitoTokensAndFirebaseToken(): Promise<{ idToken: string; firebaseToken: string }> {
-  console.log('[Cognito] Getting Cognito tokens and Firebase token');
-  const { tokens } = await fetchAuthSession();
-  const idToken = tokens?.idToken?.toString();
-  if (!idToken) throw new Error('No IdToken found');
-  const parts = idToken.split('.');
-  if (parts.length !== 3) throw new Error('Invalid JWT structure');
-  const payload = JSON.parse(atob(parts[1]));
-  const firebaseToken = payload.firebaseToken;
-  if (!firebaseToken) throw new Error('Firebase token not found in Cognito ID token claims');
-  console.log('[Cognito] getCognitoTokensAndFirebaseToken success');
-  return { idToken, firebaseToken };
+  await initCognito();
+  
+  try {
+    const { fetchAuthSession } = await import('aws-amplify/auth');
+    const session = await fetchAuthSession();
+    
+    if (!session.tokens) {
+      throw new Error('No tokens available in Cognito session');
+    }
+    
+    const idToken = session.tokens.idToken?.toString() || '';
+    const firebaseToken = session.tokens.accessToken?.toString() || '';
+    
+    if (!idToken || !firebaseToken) {
+      throw new Error('Missing required tokens from Cognito session');
+    }
+    
+    console.log('[Cognito] Tokens retrieved successfully');
+    return { idToken, firebaseToken };
+  } catch (error) {
+    console.error('[Cognito] Failed to get tokens:', error);
+    throw error;
+  }
 }

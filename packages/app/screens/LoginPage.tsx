@@ -22,6 +22,7 @@ const LoginPage: React.FC = () => {
     emailError,
     passwordError,
     rememberEmail,
+    rememberMe,
     isLoading,
     mfaStep,
     mfaUser,
@@ -29,6 +30,7 @@ const LoginPage: React.FC = () => {
     setEmail,
     setPassword,
     setRememberEmail,
+    setRememberMe,
 
     handleLogin,
     handleMfaConfirm,
@@ -59,33 +61,34 @@ const LoginPage: React.FC = () => {
         {/* Login Form */}
         <View style={pageStyles.formContainer}>
           <View style={styles.emailFormContainer}>
-          <Input
-            label="Email"
-            _id="email"
-            value={email}
-            onChange={setEmail}
-            placeholder="votre@email.com"
-            type="email"
-            _autoComplete="email"
-            _required
-            error={emailError}
-            disabled={isLoading}
-          />
-          {/* Remember Email Checkbox */}
-          <Pressable
-            style={styles.checkboxContainer}
-            onPress={() => setRememberEmail(!rememberEmail)}
-            disabled={isLoading}
-            testID="remember-email-checkbox"
-          >
-            <View style={[styles.checkbox, rememberEmail && styles.checkboxChecked]}>
-              {rememberEmail && (
-                <Text style={styles.checkboxIcon}>✓</Text>
-              )}
-            </View>
-            <Text style={styles.checkboxLabel}>Se souvenir de l&apos;email</Text>
-          </Pressable>
+            <Input
+              label="Email"
+              _id="email"
+              value={email}
+              onChange={setEmail}
+              placeholder="votre@email.com"
+              type="email"
+              _autoComplete="email"
+              _required
+              error={emailError}
+              disabled={isLoading}
+            />
+            {/* Remember Email Checkbox */}
+            <Pressable
+              style={styles.checkboxContainer}
+              onPress={() => setRememberEmail(!rememberEmail)}
+              disabled={isLoading}
+              testID="remember-email-checkbox"
+            >
+              <View style={[styles.checkbox, rememberEmail && styles.checkboxChecked]}>
+                {rememberEmail && (
+                  <Text style={styles.checkboxIcon}>✓</Text>
+                )}
+              </View>
+              <Text style={styles.checkboxLabel}>Se souvenir de l&apos;email</Text>
+            </Pressable>
           </View>
+          
           <Input
             label="Mot de passe"
             _id="password"
@@ -98,6 +101,23 @@ const LoginPage: React.FC = () => {
             error={passwordError}
             disabled={isLoading}
           />
+
+          {/* Remember Me Checkbox */}
+          <Pressable
+            style={styles.checkboxContainer}
+            onPress={() => setRememberMe(!rememberMe)}
+            disabled={isLoading}
+            testID="remember-me-checkbox"
+          >
+            <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
+              {rememberMe && (
+                <Text style={styles.checkboxIcon}>✓</Text>
+              )}
+            </View>
+            <Text style={styles.checkboxLabel}>Se souvenir de moi pendant 15 jours</Text>
+          </Pressable>
+
+
 
           {/* Login Button */}
           <Button

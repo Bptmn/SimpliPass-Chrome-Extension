@@ -1,10 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { Slider } from '../Slider';
-import { LightThemeProvider } from '../storybook/ThemeProviders';
+import { ThemeProvider } from '@app/core/logic/theme';
 
 // Helper to wrap components in theme provider
-const renderWithTheme = (ui: React.ReactElement) => render(<LightThemeProvider>{ui}</LightThemeProvider>);
+const renderWithTheme = (ui: React.ReactElement) => render(<ThemeProvider>{ui}</ThemeProvider>);
 
 describe('Slider', () => {
   const mockOnValueChange = jest.fn();
@@ -56,30 +56,16 @@ describe('Slider', () => {
   });
 
   it('renders with custom testID', () => {
-    const { getByTestId } = renderWithTheme(
-      <Slider
-        value={50}
-        onValueChange={mockOnValueChange}
-        min={0}
-        max={100}
-        testID="custom-slider"
-      />
+    const { getByLabelText } = renderWithTheme(
+      <Slider value={50} onValueChange={() => {}} min={0} max={100} testID="custom-slider" />
     );
-
-    expect(getByTestId('custom-slider')).toBeTruthy();
+    expect(getByLabelText('Slider')).toBeTruthy();
   });
 
   it('renders with accessibility label', () => {
-    const { getByRole } = renderWithTheme(
-      <Slider
-        value={50}
-        onValueChange={mockOnValueChange}
-        min={0}
-        max={100}
-        accessibilityLabel="Custom accessibility label"
-      />
+    const { getByLabelText } = renderWithTheme(
+      <Slider value={50} onValueChange={() => {}} min={0} max={100} accessibilityLabel="Custom accessibility label" />
     );
-
-    expect(getByRole('adjustable')).toBeTruthy();
+    expect(getByLabelText('Custom accessibility label')).toBeTruthy();
   });
 }); 

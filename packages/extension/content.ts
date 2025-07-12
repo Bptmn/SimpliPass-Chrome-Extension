@@ -1,171 +1,177 @@
-// content-script.ts
-// This content script is injected into every page. It detects login fields, injects the credential popover iframe, and handles communication between the popover and the page.
-// Responsibilities:
-// - Detect login fields (email, username, password) and show the popover when focused
-// - Inject the popover iframe and position it
-// - Communicate with the iframe via postMessage for credential selection and resizing
-// - Inject credentials into the login form when a credential is picked
+/**
+ * Content Script - Chrome Extension
+ * 
+ * This content script is injected into every page. It acts as an organizer that:
+ * - Detects login fields using fieldDetection utility
+ * - Manages popover display using popoverManager utility
+ * - Handles credential injection using credentialInjection utility
+ * - Coordinates communication between background script and page
+ */
 
-import { getRootDomain, getRegisteredDomain, matchesCredentialDomainOrTitle } from '@utils/domain';
+import { detectLoginFields, getPageInfo, LoginField } from './utils/fieldDetection';
+import { showPopoverCredentialPicker, showLoginPromptPopover, removeInPagePicker, removeLoginPrompt, updatePickerSize } from './utils/popoverManager';
+import { injectCredential } from './utils/credentialInjection';
 
-function sanitizeInput(input: unknown): string {
-  // Simple sanitizer: strips script tags and trims whitespace
-  return String(input)
-    .replace(/<script.*?>.*?<\/script>/gi, '')
-    .trim();
-}
-
-// Simple credential injection function
-function injectCredential(username: string, password: string): void {
-  const usernameFields = document.querySelectorAll('input[type="email"], input[autocomplete*="user" i], input[autocomplete*="email" i], input[name*="user" i], input[name*="email" i]');
-  const passwordFields = document.querySelectorAll('input[type="password"]');
-  
-  // Fill username field
-  if (usernameFields.length > 0) {
-    const usernameField = usernameFields[0] as HTMLInputElement;
-    usernameField.value = username;
-    usernameField.dispatchEvent(new Event('input', { bubbles: true }));
-    usernameField.dispatchEvent(new Event('change', { bubbles: true }));
-  }
-  
-  // Fill password field
-  if (passwordFields.length > 0) {
-    const passwordField = passwordFields[0] as HTMLInputElement;
-    passwordField.value = password;
-    passwordField.dispatchEvent(new Event('input', { bubbles: true }));
-    passwordField.dispatchEvent(new Event('change', { bubbles: true }));
-  }
-}
-
-const url: string = sanitizeInput(window.location.href);
-const domain: string = getRootDomain(window.location.hostname);
-const hasLoginForm: boolean = !!document.querySelector('form input[type="password"]');
-console.log('[Content Script] url:', url, 'domain:', domain, 'hasLoginForm:', hasLoginForm);
-chrome.runtime.sendMessage({ type: 'PAGE_INFO', url, domain, hasLoginForm });
-
-let pickerIframe: HTMLIFrameElement | null = null;
-
-function showPopoverCredentialPicker(field: HTMLElement, credentials: Array<{ username?: string; password?: string; title?: string; url?: string }>): void {
-  removeInPagePicker();
-  if (!credentials.length) return;
-  pickerIframe = document.createElement('iframe');
-  pickerIframe.id = 'simpli-popover-iframe';
-  pickerIframe.style.border = '1px solid #E0E3E7';
-  pickerIframe.style.borderRadius = '12px';
-  pickerIframe.style.boxShadow = '0 4px 24px rgba(0,0,0,0.12)';
-  pickerIframe.style.background = 'transparent';
-  pickerIframe.src = chrome.runtime.getURL('src/content/popovers/PopoverCredentialPicker.html');
-  pickerIframe.style.position = 'absolute';
-  pickerIframe.style.zIndex = '2147483647';
-  pickerIframe.style.width = `${Math.max(field.getBoundingClientRect().width, 320)}px`;
-  pickerIframe.style.height = 'auto';
-  const anchorRect = field.getBoundingClientRect();
-  pickerIframe.style.top = `${anchorRect.bottom + window.scrollY + 8}px`;
-  pickerIframe.style.left = `${anchorRect.left + window.scrollX}px`;
-  document.body.appendChild(pickerIframe);
-  // Send credentials to iframe after it loads
-  pickerIframe.onload = () => {
-    pickerIframe?.contentWindow?.postMessage({ type: 'SHOW_CREDENTIALS', credentials }, '*');
+// Debounce function to avoid excessive scanning
+function debounce<T extends (...args: unknown[]) => unknown>(func: T, wait: number): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
   };
-  setTimeout(() => {
-    document.addEventListener('mousedown', handleClickAway, true);
-  }, 0);
 }
 
-function removeInPagePicker(): void {
-  if (pickerIframe) {
-    pickerIframe.remove();
-    document.removeEventListener('mousedown', handleClickAway, true);
-    pickerIframe = null;
-  }
-}
+// Global state
+let loginFields: LoginField[] = [];
+let isProcessingField = false; // Flag to prevent duplicate processing
 
-function handleClickAway(e: MouseEvent): void {
-  if (!pickerIframe) return;
-  const fields = Array.from(document.querySelectorAll('input[type="password"]'));
-  const isField = fields.some(
-    (f) => f === e.target || (f as HTMLElement).contains(e.target as Node),
-  );
-  if (!pickerIframe.contains(e.target as Node) && !isField) {
-    removeInPagePicker();
-    document.removeEventListener('mousedown', handleClickAway, true);
-  }
-}
-
-function handleFieldFocusOrClick(e: Event): void {
+/**
+ * Handle field click events
+ */
+async function handleFieldClick(e: Event): Promise<void> {
   const field = e.target as HTMLElement;
+  
+  // Prevent duplicate processing
+  if (isProcessingField) {
+    return;
+  }
+  
+  // Check if this is a detected login field
+  const loginField = loginFields.find(f => f.element === field);
+  if (!loginField) return;
+  
+  isProcessingField = true;
+  
   try {
-    chrome.runtime.sendMessage(
-      { type: 'GET_CACHED_CREDENTIALS', domain },
-      (credentials: unknown[] = []) => {
-        if (chrome.runtime.lastError) {
-          removeInPagePicker();
-          return;
-        }
-        const pageDomain = getRegisteredDomain(domain);
-        const filtered = (credentials as { url?: string; title?: string }[]).filter((cred) =>
-          matchesCredentialDomainOrTitle(cred, pageDomain),
-        );
-        if (filtered.length) {
-          showPopoverCredentialPicker(field, filtered);
-        } else {
-          removeInPagePicker();
-        }
-      },
-    );
-  } catch {
+    // Check session status first
+    const sessionResponse = await new Promise<{ isValid: boolean }>((resolve) => {
+      chrome.runtime.sendMessage({ 
+        type: 'GET_SESSION_STATUS'
+      }, resolve);
+    });
+    
+    if (!sessionResponse || !sessionResponse.isValid) {
+      console.log('[Content Script] No valid session found, showing login prompt');
+      showLoginPromptPopover(field, loginFields);
+      return;
+    }
+
+    // Get matching credentials for current domain
+    const response = await new Promise<{ credentials: Array<{ id: string; title: string; username: string; url?: string }> }>((resolve) => {
+      chrome.runtime.sendMessage({ 
+        type: 'GET_MATCHING_CREDENTIALS', 
+        domain: getPageInfo().domain 
+      }, resolve);
+    });
+    
+    if (response && response.credentials && response.credentials.length > 0) {
+      showPopoverCredentialPicker(field, response.credentials, loginFields);
+    } else {
+      console.log('[Content Script] No matching credentials found or session not valid');
+      removeInPagePicker();
+    }
+  } catch (error) {
+    console.error('Error getting credentials:', error);
     removeInPagePicker();
+  } finally {
+    // Reset flag after a short delay to allow for natural user interactions
+    setTimeout(() => {
+      isProcessingField = false;
+    }, 100);
   }
 }
 
-function getLoginRelatedFields() {
-  // All likely login fields
-  return Array.from(
-    document.querySelectorAll(
-      'input[type="password"],' +
-        'input[type="email"],' +
-        'input[autocomplete*="user" i],' +
-        'input[autocomplete*="email" i],' +
-        'input[name*="user" i],' +
-        'input[name*="email" i],' +
-        'input[type="text"]',
-    ),
-  );
-}
-
+/**
+ * Setup event listeners for detected login fields
+ */
 function setupLoginFieldListeners(): void {
-  const fields = getLoginRelatedFields();
-  fields.forEach((field) => {
-    field.addEventListener('click', handleFieldFocusOrClick);
+  // Remove existing listeners
+  loginFields.forEach(field => {
+    field.element.removeEventListener('click', handleFieldClick);
+  });
+  
+  // Add listeners to detected fields
+  loginFields.forEach(field => {
+    field.element.addEventListener('click', handleFieldClick);
   });
 }
 
-if (hasLoginForm) {
+/**
+ * Update field detection and listeners
+ */
+function updateFieldDetection(): void {
+  loginFields = detectLoginFields();
+  console.log('[Content Script] Detected login fields:', loginFields.length);
   setupLoginFieldListeners();
 }
 
-// Listen for messages from the iframe for actions (e.g., credential pick, close)
+// Debounced field detection
+const debouncedDetectFields = debounce(updateFieldDetection, 300);
+
+// Initialize page
+const pageInfo = getPageInfo();
+
+// Register content script with background for log forwarding
+chrome.runtime.sendMessage({ type: 'CONTENT_SCRIPT_READY' });
+
+// Send page info to background script
+chrome.runtime.sendMessage({ type: 'PAGE_INFO', ...pageInfo });
+
+// Detect fields on page load
+debouncedDetectFields();
+
+// Listen for DOM changes to detect dynamically added fields
+const observer = new MutationObserver(debouncedDetectFields);
+observer.observe(document.body, {
+  childList: true,
+  subtree: true,
+  attributes: true,
+  attributeFilter: ['style', 'class']
+});
+
+// Listen for messages from the iframe for actions
 window.addEventListener('message', (event) => {
-  if (!pickerIframe) return;
-  if (event.source === pickerIframe.contentWindow) {
-    const { type, credential, height, width } = event.data || {};
-    if (type === 'POPOVER_RESIZE') {
-      if (typeof height === 'number') pickerIframe.style.height = `${height}px`;
-      if (typeof width === 'number') pickerIframe.style.width = `${width}px`;
-    } else if (type === 'PICK_CREDENTIAL' && credential) {
-      // Inject the credential into the login form
-      injectCredential(credential.username, credential.password);
-      removeInPagePicker();
-    } else if (type === 'CLOSE_POPOVER') {
-      removeInPagePicker();
+  const { type, credential, height, width } = event.data || {};
+  
+  if (type === 'POPOVER_RESIZE') {
+    updatePickerSize(height, width);
+  } else if (type === 'PICK_CREDENTIAL' && credential) {
+    if (credential.id) {
+      // Request full credential data from background
+      chrome.runtime.sendMessage({
+        type: 'INJECT_CREDENTIAL',
+        credentialId: credential.id
+      });
     }
+    removeInPagePicker();
+  } else if (type === 'CLOSE_POPOVER') {
+    removeInPagePicker();
+  } else if (type === 'LOGIN_PROMPT_CANCEL') {
+    removeLoginPrompt();
+  } else if (type === 'LOGIN_PROMPT_LOGIN') {
+    removeLoginPrompt();
+    // Open the extension popup
+    chrome.runtime.sendMessage({ type: 'OPEN_POPUP' });
   }
 });
 
-chrome.runtime.onMessage.addListener((msg: { type: string; username?: string; password?: string }) => {
+// Listen for credential injection messages from background script
+chrome.runtime.onMessage.addListener((msg: { type: string; username?: string; password?: string; level?: string; message?: string }) => {
   if (msg && msg.type === 'INJECT_CREDENTIAL' && msg.username && msg.password) {
-    // Always use the centralized injection utility
-    injectCredential(sanitizeInput(msg.username), sanitizeInput(msg.password));
+    injectCredential(msg.username, msg.password);
     removeInPagePicker();
+  } else if (msg && msg.type === 'BACKGROUND_LOG') {
+    // Display background logs in content script console
+    const prefix = '[Background → Content]';
+    switch (msg.level) {
+      case 'error':
+        console.error(prefix, msg.message);
+        break;
+      case 'warn':
+        console.warn(prefix, msg.message);
+        break;
+      default:
+        console.log(prefix, msg.message);
+    }
   }
 });

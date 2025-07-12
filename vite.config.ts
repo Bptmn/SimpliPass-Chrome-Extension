@@ -14,6 +14,14 @@ export default defineConfig({
           dest: 'src/content/popovers',
         },
         {
+          src: 'packages/extension/LoginPromptPopover.html',
+          dest: 'src/content/popovers',
+        },
+        {
+          src: 'packages/extension/LoginPromptPopover.js',
+          dest: 'src/content/popovers',
+        },
+        {
           src: 'packages/extension/PopoverCredentialPicker.css',
           dest: 'src/content/popovers',
         },
@@ -52,8 +60,9 @@ export default defineConfig({
           if (chunk.name === 'background') return 'background.js';
           if (chunk.name === 'content') return 'assets/content.js';
           if (chunk.name === 'index') return 'assets/index.js';
+          if (chunk.name === 'credentialPicker') return 'src/content/popovers/PopoverCredentialPicker.js';
           return 'assets/[name]-[hash].js';
-        }
+        },
       }
     },
     minify: false,

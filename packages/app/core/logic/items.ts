@@ -6,8 +6,6 @@
 - store all items in states using statesService.ts
 */
 
-
-
 // get a specific item
 /*
 - try to get an item from statesService.ts
@@ -16,8 +14,6 @@
 - store the item in states using statesService.ts
 */
 
-
-
 // add an item to the database
 /*
 - encrypt the item using cryptography.ts
@@ -25,16 +21,12 @@
 - store the encrypted item in states using statesService.ts
 */
 
-
-
 // update an item
 /*
 - encrypt the item using cryptography.ts
 - update the encrypted item in db.adapter.ts
 - update the encrypted item in states using statesService.ts
 */
-
-
 
 // delete an item
 /*
@@ -77,12 +69,33 @@ export async function getAllItems(userId: string, userSecretKey: string): Promis
     const totalStateItems = stateCredentials.length + stateBankCards.length + stateSecureNotes.length;
     
     if (totalStateItems > 0) {
-      console.log('[Items] Returning cached items from state:', totalStateItems, 'items');
+      console.log('[Items] Returning items from states:', totalStateItems, 'items');
       return [...stateCredentials, ...stateBankCards, ...stateSecureNotes];
     }
     
-    // If no items in state, fetch from database
-    console.log('[Items] No cached items, fetching from database...');
+    // If no items in state, try to load from encrypted vault (extension only)
+    let vaultLoaded = false;
+    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+      const { loadVaultFromStorage } = await import('@extension/utils/vault');
+      vaultLoaded = await loadVaultFromStorage(userSecretKey);
+      
+      if (vaultLoaded) {
+        // Re-check states after vault load
+        const updatedCredentials = credentialsStore.credentials;
+        const updatedBankCards = bankCardsStore.bankCards;
+        const updatedSecureNotes = secureNotesStore.secureNotes;
+        
+        const totalUpdatedItems = updatedCredentials.length + updatedBankCards.length + updatedSecureNotes.length;
+        
+        if (totalUpdatedItems > 0) {
+          console.log('[Items] Returning items from vault-loaded states:', totalUpdatedItems, 'items');
+          return [...updatedCredentials, ...updatedBankCards, ...updatedSecureNotes];
+        }
+      }
+    }
+    
+    // If no vault or vault is empty, fetch from database
+    console.log('[Items] Fetching items from database...');
     const encryptedItems = await db.getCollection<ItemEncrypted>(`users/${userId}/my_items`);
     
     if (encryptedItems.length === 0) {
@@ -112,6 +125,12 @@ export async function getAllItems(userId: string, userSecretKey: string): Promis
     credentialsStore.setCredentials(credentials);
     bankCardsStore.setBankCards(bankCards);
     secureNotesStore.setSecureNotes(secureNotes);
+    
+    // Create encrypted vault for extension (not for mobile)
+    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+      const { createEncryptedVault } = await import('@extension/utils/vault');
+      await createEncryptedVault(userSecretKey);
+    }
     
     console.log('[Items] Successfully loaded and cached items:', decryptedItems.length, 'items');
     return decryptedItems;
@@ -333,7 +352,7 @@ export async function deleteItem(userId: string, itemId: string): Promise<void> 
 /**
  * Clear all cached items from state
  */
-export function clearItemsCache(): void {
+export async function clearItemsCache(): Promise<void> {
   const credentialsStore = useCredentialsStore.getState();
   const bankCardsStore = useBankCardsStore.getState();
   const secureNotesStore = useSecureNotesStore.getState();
@@ -341,7 +360,14 @@ export function clearItemsCache(): void {
   credentialsStore.setCredentials([]);
   bankCardsStore.setBankCards([]);
   secureNotesStore.setSecureNotes([]);
-  console.log('[Items] Cleared items cache');
+  
+  // Clear encrypted vault for extension only
+  if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+    const { clearVault } = await import('@extension/utils/vault');
+    await clearVault();
+  }
+  
+  console.log('[Items] Cache and encrypted vault cleared');
 }
 
 /**

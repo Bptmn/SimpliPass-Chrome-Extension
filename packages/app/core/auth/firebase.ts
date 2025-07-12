@@ -1,9 +1,9 @@
-import { getFirebaseConfig } from '@extension/config/firebase';
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, signInWithCustomToken, signOut, browserLocalPersistence, setPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getFirebaseConfig, validateFirebaseConfig } from '../config/platform';
 
-// Check if we're in Storybook environment or have Firebase mocks
+// Check if we're in a Storybook environment or have Firebase mocks
 const isStorybook = typeof window !== 'undefined' && window.location.hostname === 'localhost' && (window.location.port === '6006' || window.location.port === '6007' || window.location.port === '6008');
 const hasFirebaseMocks = typeof window !== 'undefined' && (window as any).__FIREBASE_MOCKS__;
 
@@ -49,6 +49,7 @@ export async function initFirebase() {
   } else {
     // Real Firebase initialization
     const firebaseConfig = await getFirebaseConfig();
+    validateFirebaseConfig();
     app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
@@ -77,8 +78,15 @@ export async function signInWithFirebaseToken(token: string): Promise<void> {
     auth = f.auth;
   }
   console.log('[Firebase] Signing in with Firebase token');
-  await signInWithCustomToken(auth, token);
-  console.log('[Firebase] signInWithFirebaseToken success');
+  
+  try {
+    await signInWithCustomToken(auth, token);
+    
+    console.log('[Firebase] signInWithFirebaseToken success');
+  } catch (error) {
+    console.error('[Firebase] Error signing in with custom token:', error);
+    throw error;
+  }
 }
 
 // Sign out from Firebase (low-level)

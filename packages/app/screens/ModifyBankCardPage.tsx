@@ -17,7 +17,7 @@ import { HeaderTitle } from '../components/HeaderTitle';
 import { ColorSelector } from '../components/ColorSelector';
 import ItemBankCard from '../components/ItemBankCard';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { getMonthOptions, getYearOptions } from '@app/core/logic/cards';
+import { getMonthOptions, getYearOptions } from '@app/utils/cards';
 import { useThemeMode } from '@app/core/logic/theme';
 import { getColors } from '@design/colors';
 import { Icon } from '@components/Icon';

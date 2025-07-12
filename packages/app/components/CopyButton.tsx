@@ -19,7 +19,8 @@ const CopyButton: React.FC<CopyButtonProps> = ({ textToCopy, ariaLabel = 'Copier
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(textToCopy);
+      const { writeToClipboard } = await import('@app/core/platform/clipboard');
+      await writeToClipboard(textToCopy);
       if (onClick) onClick();
       // Optionally, show a feedback (can be improved)
       Alert.alert('Copié !');

@@ -17,7 +17,7 @@ import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { ColorSelector } from '@components/ColorSelector';
-import { getMonthOptions, getYearOptions } from '@app/core/logic/cards';
+import { getMonthOptions, getYearOptions } from '@app/utils/cards';
 import { ErrorBanner } from '@components/ErrorBanner';
 import { Toast } from '@components/Toast';
 
