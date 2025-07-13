@@ -5,7 +5,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useUserStore } from '@app/core/states/user';
-import { logoutUser } from '@app/core/logic/user';
+import { logoutUser } from '@app/core/logic/auth';
 import { colors } from '@design/colors';
 import { spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';

@@ -3,8 +3,6 @@
  * Handles session expiration and locking
  */
 
-import { lockSession } from './vaultSession';
-
 // Session timeout in milliseconds (30 minutes)
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
 
@@ -23,7 +21,7 @@ export function startSessionTimer(onExpire?: () => void): void {
   // Set new timer
   sessionTimeoutId = setTimeout(async () => {
     console.log('[SessionManager] Session expired, locking...');
-    await lockSession();
+    // await lockSession(); // TODO: Implement or restore if needed
     if (onExpire) {
       onExpire();
     }
@@ -53,7 +51,7 @@ export function stopSessionTimer(): void {
 export async function manualLockSession(): Promise<void> {
   console.log('[SessionManager] Manual session lock requested');
   stopSessionTimer();
-  await lockSession();
+  // await lockSession(); // TODO: Implement or restore if needed
 }
 
 /**

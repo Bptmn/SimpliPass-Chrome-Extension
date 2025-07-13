@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { Text } from 'react-native';
 import CopyButton from '../CopyButton';
-import { ThemeProvider } from '@app/core/logic/theme';
+import { ThemeProvider } from '@app/components';
 
 // Helper to wrap components in theme provider
 const renderWithTheme = (ui: React.ReactElement) => render(<ThemeProvider>{ui}</ThemeProvider>);

@@ -5,7 +5,7 @@ import { Input } from '@components/InputFields';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
 import { getPageStyles } from '@design/layout';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 import { useSecretKeyCheck } from '@app/core/hooks/useSecretKeyCheck';
 
 const AddCredential1: React.FC = () => {

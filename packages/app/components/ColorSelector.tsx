@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 import { getColors } from '@design/colors';
 import { spacing } from '@design/layout';
 import { typography } from '@design/typography';

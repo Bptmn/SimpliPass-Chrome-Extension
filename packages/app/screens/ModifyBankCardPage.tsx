@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-n
 import { BankCardDecrypted } from '@app/core/types/types';
 import { parseExpirationDate, formatExpirationDate } from '@app/utils';
 import { updateItem } from '@app/core/logic/items';
-import { getUserSecretKey } from '@app/core/logic/user';
+import { getUserSecretKey } from '@app/core/logic/auth';
 import { useUser } from '@app/core/hooks/useUser';
 import { ErrorBanner } from '../components/ErrorBanner';
 import Toast from '../components/Toast';
@@ -18,7 +18,7 @@ import { ColorSelector } from '../components/ColorSelector';
 import ItemBankCard from '../components/ItemBankCard';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { getMonthOptions, getYearOptions } from '@app/utils/cards';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 import { getColors } from '@design/colors';
 import { Icon } from '@components/Icon';
 

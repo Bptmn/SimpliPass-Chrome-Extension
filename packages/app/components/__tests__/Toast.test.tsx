@@ -6,6 +6,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { Toast, ToastProvider, useToast } from '../Toast';
+import { Text } from 'react-native';
 
 // Mock dependencies
 jest.mock('@app/core/logic/theme', () => ({
@@ -65,7 +66,7 @@ describe('ToastProvider', () => {
   it('renders children', () => {
     const { getByText } = render(
       <ToastProvider>
-        <div>Child content</div>
+        <Text>Child content</Text>
       </ToastProvider>
     );
 

@@ -7,7 +7,7 @@ import { useUser } from '@app/core/hooks/useUser';
 import { ErrorBanner } from '@components/ErrorBanner';
 import { Icon } from '@components/Icon';
 import { useToast } from '@app/core/hooks/useToast';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 import { getColors } from '@design/colors';
 import { getPageStyles, spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';

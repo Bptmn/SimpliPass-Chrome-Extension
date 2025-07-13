@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet, ScrollView, Image } from 'react-nati
 import { ErrorBanner } from '@components/ErrorBanner';
 import { EmailConfirmationPage } from './EmailConfirmationPage';
 import { Input } from '@components/InputFields';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 import { getColors } from '@design/colors';
 import { getPageStyles, spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';
@@ -31,7 +31,6 @@ const LoginPage: React.FC = () => {
     setPassword,
     setRememberEmail,
     setRememberMe,
-
     handleLogin,
     handleMfaConfirm,
   } = useLoginPage();

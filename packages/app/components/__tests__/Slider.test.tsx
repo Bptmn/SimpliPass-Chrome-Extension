@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { Slider } from '../Slider';
-import { ThemeProvider } from '@app/core/logic/theme';
+import { ThemeProvider } from '@app/components';
 
 // Helper to wrap components in theme provider
 const renderWithTheme = (ui: React.ReactElement) => render(<ThemeProvider>{ui}</ThemeProvider>);

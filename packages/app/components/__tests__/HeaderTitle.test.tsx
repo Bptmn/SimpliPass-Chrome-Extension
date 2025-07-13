@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { HeaderTitle } from '../HeaderTitle';
-import { ThemeProvider } from '@app/core/logic/theme';
+import { ThemeProvider } from '@app/components';
 
 // Helper to wrap components in theme provider
 const renderWithTheme = (ui: React.ReactElement) => render(<ThemeProvider>{ui}</ThemeProvider>);

@@ -7,20 +7,26 @@
 import React from 'react';
 import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
 import { Icon } from './Icon';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 import { getColors } from '@design/colors';
-import { useHelperBar } from '@app/core/hooks';
-
 export const HelperBar: React.FC = () => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   
-  const {
-    addButtonText,
-    handleAdd,
-    handleFAQ,
-    handleRefresh,
-  } = useHelperBar();
+  // Simple implementation without the hook
+  const addButtonText = 'Ajouter';
+  const handleAdd = () => {
+    console.log('Add button pressed');
+    // TODO: Implement add functionality
+  };
+  const handleFAQ = () => {
+    console.log('FAQ button pressed');
+    // TODO: Implement FAQ functionality
+  };
+  const handleRefresh = () => {
+    console.log('Refresh button pressed');
+    // TODO: Implement refresh functionality
+  };
 
   // Dynamic styles with useMemo
   const styles = React.useMemo(

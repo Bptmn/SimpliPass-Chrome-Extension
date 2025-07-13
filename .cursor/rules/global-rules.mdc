@@ -1,186 +1,152 @@
 ---
-description: 
+description: SimpliPass Cursor Global Rules – Post-Refactor Architecture
 globs: 
 alwaysApply: true
 ---
-# SimpliPass – Cursor Rules  
-*(Chrome Extension + React Native Web Monorepo)*
 
-**SimpliPass** is a secure, cross-platform password manager.  
-It uses **React Native Web** for UI and a modular **monorepo architecture**, designed for shared usage across **Chrome Extension** and **Mobile App**.
+# 📐 SimpliPass – Global Cursor Rules  
+*(Unified Monorepo for Mobile & Extension – React Native / Manifest V3)*
 
-## ⚙️ Cursor Execution Protocol (Updated Rule)
+## 🧠 Architecture Foundations
 
-**Cursor must not wait for explicit confirmation to execute tasks.**  
-It should behave like a proactive assistant with the following behavior:
+### ✅ Single Source of Truth
+All UI data must come from memory (Zustand states). UI logic never fetches directly from storage or network.
 
-### ✅ Cursor Must Always...
-### 🧠 Think → Plan → Execute → Report
+### ✅ Platform Separation
+- Shared UI and logic must remain platform-agnostic (in `app/` and `core/`)
+- Platform-specific logic must be isolated in `mobile/` or `extension/`
+- Use `core/adapters/platform.adapter.ts` to abstract all platform-specific implementations
 
-**Investigate the request thoroughly:**
-- Understand the implications across files and architecture
-- Anticipate side effects and dependencies
+### ✅ Feature Verticalization
+Related business logic should be grouped by domain (e.g. credentials, auth) within `core/`.
 
-**Think before coding:**
-- Evaluate alternatives and choose the cleanest scalable solution
-- Don’t suggest multiple plans—just execute the best one unless told otherwise
-
-**Plan the necessary steps:**
-- Organize work into logical steps (e.g. update types → update logic → update UI)
-- Only summarize the plan at the end for reporting, not before execution
-
-**Execute immediately:**
-- Make all the required code changes without asking again
-- Don't break down requests unnecessarily unless there's ambiguity
-
-**After major changes, always run:**
-```bash
-npm run lint
-npm run build
-npm run test
-npm run storybook
-```
-
-- If any command fails, iterate and fix the issue
-- Repeat until all commands succeed
-
-**Summarize what was done:**
-- At the end of execution, clearly list the files edited, what was changed, and which validations passed
-
-### ❌ Cursor Must Never...
-- Wait for permission to start once the task is clear  
-- Ask if it should apply a fix when an error is encountered  
-- Stop after generating code without applying it  
-- Skip lint, build, test, or storybook checks after an important refactor  
-- Leave incomplete logic or broken imports behind  
-
-## 🧱 Architecture Principles
-
-### 🧩 Monorepo with clearly isolated packages:
-```
-app/       → All visual UI (React Native)  
-extension/ → Chrome-specific code (background, content, manifest)  
-core/      → All shared app logic (auth, db, encryption, states, logic)  
-shared/    → Static types, constants, crypto  
-```
-
-- 🔒 Encrypted data fetched from Firestore, decrypted locally in memory  
-- 💾 Local decrypted data stored in `@/core/states` (RAM only, not persisted)  
-- 🔃 Sync managed by Firestore listeners and automatic replacement in states  
-
-## ✅ Cursor AI Must Always...
-
-### 🧠 Architecture Compliance
-- Respect package boundaries:
-  - UI → `app/`
-  - Logic → `core/`
-  - Chrome APIs → `extension/`
-  - Types/constants → `shared/`
-
-- Use React Native components only:
-  - `<View>`, `<Text>`, `<TextInput>`, `<Pressable>`, etc.
-  - Never use HTML tags (`<div>`, `<span>`) or `document.querySelector`
-
-- Use platform abstraction:
-  - `useStorage()` for key-value
-  - `useStates()` for decrypted data
-  - `db/adapter.ts` for Firestore access
-  - `auth/adapter.ts` for authentication layer
-  - Never use Firebase or Amplify SDKs directly in screens or components
-
-### 🎨 Design & Style System
-- Use only tokens from `@/core/design/tokens`:  
-  `colors`, `spacing`, `radius`, `typography`, `shadow`, `page`
-
-- Use shared layout styles from `@/core/design/page.ts`:  
-  `pageContainer`, `pageContent`, `pageSection`, `pageHeader`, etc.
-
-- Use components from `app/components/`  
-  Avoid inline styles or duplicated component code
-
-- All UI must support both light and dark mode (via `useTheme()`)
-
-### 🧪 Testing & Stability
-- Write tests:
-  - Logic functions → `*.test.ts` in `core/`
-  - Crypto functions → must be unit-tested
-  - UI behavior → `*.test.tsx` or story snapshot tests
-
-- Write Storybook stories for all UI:
-  - Story lives next to component in `components/`
-  - Wrap in `ThemeProvider` for visual testing
-
-- Run checks:
-  - `npm run lint`, `npm run build`, `npm run test` must pass
-  - Cursor must fix errors automatically when introducing new code
-
-- Use `testID` and `accessibilityLabel` on all interactive components
-
-- Build extension before finalizing work:
-```bash
-cd packages/extension && npm run build
-```
-
-## ❌ Cursor AI Must Never...
-- Use `chrome.*` APIs inside React Native  
-- Use `any` or `unknown` without justification  
-- Hardcode spacing, font sizes, colors, radius  
-- Write inline styles in `*.tsx` files  
-- Duplicate logic — always refactor to `core/logic` or `core/utils`  
-- Create visual components outside of `app/components`  
-- Mix responsibilities — no data access in UI or vice versa  
-- Break theme compatibility (must support dark/light)
-
-#### 📏 Spacing Rules (Vertical Layout)
-- Cursor **must never add `marginTop` or `marginBottom`** on containers, sections, or components
-- All vertical spacing must be handled exclusively via `gap`, using one of the following layout classes from `core/design/layout.ts`:
-  - `formContainer`
-  - `pageContainer`
-  - `pageContent`
-  - `scrollView`
-- These classes must be used to structure spacing between elements
-- Cursor must preserve this rule during all code updates and never override it with inline spacing or external overrides
+### ✅ Secure by Design
+- No decrypted data is ever persisted
+- All encryption/decryption handled via `core/crypto` or `core/utils/encryption`
+- Platform-specific persistence must use encrypted local storage or secure keychain
 
 ---
 
-## 📦 Folder Expectations
+## 📁 Package Responsibilities
+
 ```
 packages/
-├── app/
-│   ├── components/       # UI building blocks
-│   ├── screens/          # Pages: HomePage, SettingsPage...
-│   └── index.tsx         # RNW entrypoint
-│
-├── core/
-│   ├── auth/             # auth/adapter.ts (Cognito, Firebase)
-│   ├── database/         # db/adapter.ts (Firestore CRUD)
-│   ├── design/           # design tokens (colors, typography, layout)
-│   ├── logic/            # app logic (loginUser, getAllCredentials)
-│   ├── states/           # local RAM stores (credentials, user, notes...)
-│   ├── hooks/            # React hooks used by logic/screens
-│   └── utils/            # encryption, validation, formatting...
-│
-├── extension/
-│   ├── popup/            # Chrome extension popup rendered via RNW
-│   ├── content.ts        # Content script
-│   ├── background.ts     # Background script (JWT, autofill, etc.)
-│   └── messaging/        # Communication bridge between parts
-│
-├── mobile/               # Placeholder for mobile app
-│   └── (ios/android/)    # React Native native targets
-│
-├── shared/
-│   ├── types.ts          # Types used globally
-│   └── constants.ts      # Static values, error messages...
+├── app/        → Shared UI (popup + mobile)
+├── core/       → Platform-agnostic logic, auth, state, crypto
+├── mobile/     → Mobile-specific services, keychain access
+├── extension/  → Chrome-specific background, content, storage
 ```
 
-## 🧠 Coding Workflow for Cursor AI
+---
 
-- Use only `states/` to read/write decrypted data in UI  
-- Never use raw Firestore SDK in UI, only through `db/adapter.ts`  
-- For data logic (login, getCredentials, etc.) → use `logic/*.ts`  
-- For UI → use `tokens` and layout styles, no hardcoded CSS  
-- If UI is reused → create a component in `app/components/`  
-- If UI is styled → add story + testID + accessibility  
-- Run: `npm run lint`, `npm run build`, `npm run test`, `npm run storybook`  
-- Add doc comments to every exported function  
+## 🧩 Cursor Execution Strategy
+
+### ✅ Cursor Must Always
+- Think → Plan → Execute → Report
+- Organize changes by domain (update types → logic → UI)
+- Use `platform.adapter.ts` for cross-platform logic
+- Update related tests to reflect changes
+- Update related readme file to reflect changes
+- Validate with:
+```bash
+npm run lint && npm run build && npm run test
+```
+
+### 🧪 Testing
+- All business logic must have `*.test.ts`
+- All UI components must have `*.test.tsx` and `*.stories.tsx`
+- Include `testID` and `accessibilityLabel` for interactive UI
+
+### 🎨 Design System
+- Use `@/core/design/tokens` for color, spacing, typography
+- Structure layout using `pageContainer`, `scrollView`, etc.
+- Never use inline styles or hardcoded values
+
+---
+
+## 🧱 Cursor Coding Constraints
+
+### ✅ Always Use
+- React Native components (`<View>`, `<Text>`, etc.)
+- Zustand for all state access and updates
+- Absolute imports from `@app`, `@core`, `@mobile`, `@extension`, `@shared`
+- Error boundaries and consistent return types in logic
+
+### ❌ Never Use
+- `chrome.*` APIs outside `extension/`
+- `any`/`unknown` types unless explicitly justified
+- Direct Firestore/Storage SDKs in UI
+- Raw access to keychain, storage, or memory in `app/` or `core/logic/`
+- Duplicate logic (always centralize in `core/logic/`)
+- `marginTop`/`marginBottom`: Use `gap` via layout classes only
+
+---
+
+## 🧠 Cursor Memory Model
+
+- UI reads from Zustand only (no storage fallback)
+- Platform-specific adapters restore vault and hydrate state on launch
+- All decrypted values are ephemeral in RAM
+- `logout()` must clear all RAM + persistent user secret
+
+---
+
+## 📚 Cursor File Naming & Import Conventions
+
+### File Names
+```
+Components:      CredentialCard.tsx
+Stores:          credentials.state.ts
+Hooks:           useBiometry.ts
+Utilities:       decryptVault.ts
+Types:           types.ts / interfaces.ts
+Tests:           *.test.ts(x)
+Stories:         *.stories.tsx
+```
+
+### Import Order
+```ts
+// External
+import React from 'react';
+// Aliased
+import { loginUser } from '@core/logic/auth';
+// Relative
+import styles from './styles';
+```
+
+---
+
+## 🔐 Platform Secure Storage
+
+### Mobile
+- Use `expo-secure-store` to persist `userSecretKey`
+- Decrypt on app launch → hydrate state
+
+### Extension
+- Encrypt `userSecretKey` with `deviceFingerprintKey`
+- Store encrypted version in `chrome.storage.local`
+- Decrypt in background → load RAM vault
+
+---
+
+## ☑️ Build Checklist
+
+After every major change, always run:
+```bash
+npm run lint
+npm run test
+npm run build
+```
+
+Cursor must fix all errors and validate the code before considering the task done.
+
+---
+
+## 🤖 Cursor Summary Rules
+
+- Never bypass platformAdapter
+- Never persist decrypted data
+- Never write platform logic in `app/` or `core/logic/`
+- Always validate types, tests, build
+- Only use Zustand for UI-bound data
+- Run full validation cycle after structural changes

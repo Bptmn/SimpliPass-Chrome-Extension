@@ -19,4 +19,7 @@ export { ColorSelector } from './ColorSelector';
 export { Slider } from './Slider';
 export { Button } from './Buttons';
 export { ErrorBoundary } from './ErrorBoundary';
-export { HeaderTitle } from './HeaderTitle'; 
+export { HeaderTitle } from './HeaderTitle';
+
+// Re-export design hooks
+export { useThemeMode, ThemeProvider } from '@app/design/ThemeProvider'; 

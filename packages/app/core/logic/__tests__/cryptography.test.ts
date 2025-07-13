@@ -1,22 +1,16 @@
 jest.mock('@utils/crypto', () => ({
-  encryptData: jest.fn(async (data: unknown, key: string) => {
-    // Return a mock encrypted string that can be decrypted
-    return `encrypted_${key}_${JSON.stringify(data)}`;
+  encryptData: jest.fn(async (key, data) => {
+    // Simulate encryption by encoding the key and data as a JSON string
+    return JSON.stringify({ key, data });
   }),
-  decryptData: jest.fn(async (encryptedData: string, key: string) => {
-    // Parse the mock encrypted string
-    if (encryptedData.startsWith('encrypted_')) {
-      const parts = encryptedData.replace('encrypted_', '').split('_');
-      const actualKey = parts[0];
-      const data = parts.slice(1).join('_');
-      if (actualKey === key) {
-        try {
-          return JSON.parse(data);
-        } catch {
-          return data; // Return as string if not valid JSON
-        }
+  decryptData: jest.fn(async (key, encrypted) => {
+    // Simulate decryption by decoding the JSON string
+    try {
+      const parsed = JSON.parse(encrypted);
+      if (parsed.key === key) {
+        return parsed.data;
       }
-    }
+    } catch (e) {}
     throw new Error('Invalid encrypted data');
   }),
 }));

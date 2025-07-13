@@ -10,10 +10,9 @@ import type {
   BankCardDecrypted, 
   SecureNoteDecrypted 
 } from '@app/core/types/types';
-import { db } from '@app/core/database/db.adapter';
 import { encryptCredential, encryptBankCard, encryptSecureNote, decryptAllItems } from '../cryptography';
 import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@app/core/states';
-import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { updateDoc, deleteDoc } from 'firebase/firestore';
 
 // Mock the crypto module
 jest.mock('../cryptography', () => ({
@@ -23,12 +22,18 @@ jest.mock('../cryptography', () => ({
   decryptAllItems: jest.fn(),
 }));
 
-// Mock the database module
-jest.mock('@app/core/database/db.adapter', () => ({
-  getCollection: jest.fn(),
-  addDocumentWithId: jest.fn(),
-  updateDocument: jest.fn(),
-  deleteDocument: jest.fn(),
+// Mock the unified logic module
+jest.mock('../unified', () => ({
+  unifiedLoadVault: jest.fn(() => Promise.resolve({ success: true, data: [] })),
+  unifiedSaveVault: jest.fn(() => Promise.resolve({ success: true })),
+}));
+
+// Mock the platform adapter factory
+jest.mock('../../adapters/adapter.factory', () => ({
+  getPlatformAdapter: jest.fn(() => Promise.resolve({
+    supportsOfflineVault: jest.fn(() => false),
+    deleteEncryptedVault: jest.fn(() => Promise.resolve()),
+  })),
 }));
 
 // Mock the user store
@@ -37,18 +42,27 @@ jest.mock('@app/core/states', () => ({
     getState: jest.fn(() => ({
       credentials: [],
       setCredentials: jest.fn(),
+      addCredential: jest.fn(),
+      updateCredential: jest.fn(),
+      removeCredential: jest.fn(),
     })),
   },
   useBankCardsStore: {
     getState: jest.fn(() => ({
       bankCards: [],
       setBankCards: jest.fn(),
+      addBankCard: jest.fn(),
+      updateBankCard: jest.fn(),
+      removeBankCard: jest.fn(),
     })),
   },
   useSecureNotesStore: {
     getState: jest.fn(() => ({
       secureNotes: [],
       setSecureNotes: jest.fn(),
+      addSecureNote: jest.fn(),
+      updateSecureNote: jest.fn(),
+      removeSecureNote: jest.fn(),
     })),
   },
 }));
@@ -141,27 +155,31 @@ describe('Items Logic', () => {
   const createMockCredentialsStore = () => ({
     credentials: [] as CredentialDecrypted[],
     setCredentials: jest.fn(),
+    addCredential: jest.fn(),
+    updateCredential: jest.fn(),
+    removeCredential: jest.fn(),
   });
   
   const createMockBankCardsStore = () => ({
     bankCards: [] as BankCardDecrypted[],
     setBankCards: jest.fn(),
+    addBankCard: jest.fn(),
+    updateBankCard: jest.fn(),
+    removeBankCard: jest.fn(),
   });
   
   const createMockSecureNotesStore = () => ({
     secureNotes: [] as SecureNoteDecrypted[],
     setSecureNotes: jest.fn(),
+    addSecureNote: jest.fn(),
+    updateSecureNote: jest.fn(),
+    removeSecureNote: jest.fn(),
   });
 
   beforeEach(() => {
     jest.clearAllMocks();
     
     // Setup mock implementations
-    (db.getCollection as jest.Mock).mockResolvedValue([]);
-    (db.addDocumentWithId as jest.Mock).mockResolvedValue('new-id');
-    (db.updateDocument as jest.Mock).mockResolvedValue(undefined);
-    (db.deleteDocument as jest.Mock).mockResolvedValue(undefined);
-    
     (encryptCredential as jest.Mock).mockResolvedValue(createTestEncryptedCredential());
     (encryptBankCard as jest.Mock).mockResolvedValue(createTestEncryptedBankCard());
     (encryptSecureNote as jest.Mock).mockResolvedValue(createTestEncryptedSecureNote());
@@ -179,18 +197,16 @@ describe('Items Logic', () => {
       const mockEncrypted = createTestEncryptedCredential();
       
       (encryptCredential as jest.Mock).mockResolvedValue(mockEncrypted);
-      (db.addDocumentWithId as jest.Mock).mockResolvedValue('new-id');
       
       const result = await addItem(TEST_USER.userId, TEST_CRYPTO.validKey, testCredential);
       
-      expect(result).toBe('new-id');
+      expect(result).toMatch(/^item-\d+$/); // Mock ID from addDocumentToDatabase
       expect(encryptCredential).toHaveBeenCalledWith(TEST_CRYPTO.validKey, expect.objectContaining({
         title: testCredential.title,
         username: testCredential.username,
         password: testCredential.password,
-        itemKey: expect.any(String) // Allow any itemKey value
+        itemKey: expect.any(String)
       }));
-      expect(db.addDocumentWithId).toHaveBeenCalledWith(`users/${TEST_USER.userId}/my_items`, mockEncrypted);
     });
   });
 
@@ -199,23 +215,20 @@ describe('Items Logic', () => {
       const testCredential = createTestCredential();
       const mockStore = createMockCredentialsStore();
       mockStore.credentials = [testCredential];
-      
+      mockStore.setCredentials = jest.fn();
       (useCredentialsStore.getState as jest.Mock).mockReturnValue(mockStore);
-      
+      // Patch decryptAllItems to not be called
+      (decryptAllItems as jest.Mock).mockImplementation(() => { throw new Error('Should not be called'); });
       const result = await getAllItems(TEST_USER.userId, TEST_CRYPTO.validKey);
-      
       expect(result).toEqual([testCredential]);
-      expect(db.getCollection).not.toHaveBeenCalled();
     });
 
     it('should fetch from database when no cached items', async () => {
-      (db.getCollection as jest.Mock).mockResolvedValue([]);
       (decryptAllItems as jest.Mock).mockResolvedValue([]);
       
       const result = await getAllItems(TEST_USER.userId, TEST_CRYPTO.validKey);
       
       expect(result).toEqual([]);
-      expect(db.getCollection).toHaveBeenCalled();
     });
   });
 
@@ -223,6 +236,11 @@ describe('Items Logic', () => {
     it('should update a credential successfully', async () => {
       const testCredential = createTestCredential();
       const updates = { title: 'Updated Title' };
+      
+      // Mock the store to return the item
+      const mockStore = createMockCredentialsStore();
+      mockStore.credentials = [testCredential];
+      (useCredentialsStore.getState as jest.Mock).mockReturnValue(mockStore);
       
       (encryptCredential as jest.Mock).mockResolvedValue(createTestEncryptedCredential());
       (updateDoc as jest.Mock).mockResolvedValue(undefined);
@@ -233,7 +251,6 @@ describe('Items Logic', () => {
         ...testCredential,
         ...updates
       }));
-      // Note: updateItem uses Firebase directly, not db.updateDocument
     });
   });
 
@@ -243,7 +260,6 @@ describe('Items Logic', () => {
       
       await deleteItem(TEST_USER.userId, 'test-item-id');
       
-      // Note: deleteItem uses Firebase directly, not db.deleteDocument
       expect(deleteDoc).toHaveBeenCalled();
     });
   });
@@ -254,11 +270,10 @@ describe('Items Logic', () => {
       const mockEncrypted = createTestEncryptedBankCard();
       
       (encryptBankCard as jest.Mock).mockResolvedValue(mockEncrypted);
-      (db.addDocumentWithId as jest.Mock).mockResolvedValue('new-card-id');
       
       const result = await addItem(TEST_USER.userId, TEST_CRYPTO.validKey, testBankCard);
       
-      expect(result).toBe('new-card-id');
+      expect(result).toMatch(/^item-\d+$/);
       expect(encryptBankCard).toHaveBeenCalledWith(TEST_CRYPTO.validKey, expect.objectContaining({
         title: testBankCard.title,
         cardNumber: testBankCard.cardNumber,
@@ -271,11 +286,10 @@ describe('Items Logic', () => {
       const mockEncrypted = createTestEncryptedSecureNote();
       
       (encryptSecureNote as jest.Mock).mockResolvedValue(mockEncrypted);
-      (db.addDocumentWithId as jest.Mock).mockResolvedValue('new-note-id');
       
       const result = await addItem(TEST_USER.userId, TEST_CRYPTO.validKey, testSecureNote);
       
-      expect(result).toBe('new-note-id');
+      expect(result).toMatch(/^item-\d+$/);
       expect(encryptSecureNote).toHaveBeenCalledWith(TEST_CRYPTO.validKey, expect.objectContaining({
         title: testSecureNote.title,
         note: testSecureNote.note,
@@ -286,13 +300,11 @@ describe('Items Logic', () => {
 
   describe('getAllItems with different scenarios', () => {
     it('should handle empty database', async () => {
-      (db.getCollection as jest.Mock).mockResolvedValue([]);
       (decryptAllItems as jest.Mock).mockResolvedValue([]);
       
       const result = await getAllItems(TEST_USER.userId, TEST_CRYPTO.validKey);
       
       expect(result).toEqual([]);
-      expect(db.getCollection).toHaveBeenCalled();
     });
   });
 
@@ -302,7 +314,6 @@ describe('Items Logic', () => {
       
       await deleteItem(TEST_USER.userId, 'test-item-id');
       
-      // Note: deleteItem uses Firebase directly, not db.deleteDocument
       expect(deleteDoc).toHaveBeenCalled();
     });
   });
@@ -313,7 +324,6 @@ describe('Items Logic', () => {
       const mockStore = createMockCredentialsStore();
       
       (useCredentialsStore.getState as jest.Mock).mockReturnValue(mockStore);
-      (db.getCollection as jest.Mock).mockResolvedValue([]);
       (decryptAllItems as jest.Mock).mockResolvedValue([testCredential]);
       
       await refreshItems(TEST_USER.userId, TEST_CRYPTO.validKey);
@@ -325,7 +335,6 @@ describe('Items Logic', () => {
       const mockStore = createMockCredentialsStore();
       
       (useCredentialsStore.getState as jest.Mock).mockReturnValue(mockStore);
-      (db.getCollection as jest.Mock).mockResolvedValue([]);
       (decryptAllItems as jest.Mock).mockResolvedValue([]);
       
       await refreshItems(TEST_USER.userId, TEST_CRYPTO.validKey);
@@ -336,8 +345,9 @@ describe('Items Logic', () => {
 
   describe('Error Handling', () => {
     it('should handle database errors gracefully', async () => {
-      (db.getCollection as jest.Mock).mockRejectedValue(new Error('Database error'));
-      
+      (decryptAllItems as jest.Mock).mockRejectedValue(new Error('Database error'));
+      // Patch store to return empty so decryptAllItems is called
+      (useCredentialsStore.getState as jest.Mock).mockReturnValue(createMockCredentialsStore());
       await expect(getAllItems(TEST_USER.userId, TEST_CRYPTO.validKey)).rejects.toThrow('Database error');
     });
   });

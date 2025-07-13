@@ -10,7 +10,7 @@ import { typography } from '@design/typography';
 import CopyButton from '../components/CopyButton';
 import { Button } from '../components/Buttons';
 import { Slider } from '../components/Slider';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 import { getColors } from '@design/colors';
 
 export const GeneratorPage: React.FC = () => {

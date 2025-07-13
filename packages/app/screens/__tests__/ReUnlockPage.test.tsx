@@ -4,20 +4,25 @@
 
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider } from '@app/core/logic/theme';
+import { Alert } from 'react-native';
 import { ReUnlockPage } from '../ReUnlockPage';
-import { loginUser, getUserSalt, storeUserSecretKey } from '@app/core/logic/user';
-import { storeUserSecretKeyPersistent } from '@app/core/sessionPersistent/storeUserSecretKeyPersistent';
+import { loginUser, getUserSalt, storeUserSecretKey } from '@app/core/logic/auth';
+import { storeUserSecretKeyPersistent } from '@app/core/auth/persistent-session';
 import { deriveKey } from '@app/utils/crypto';
+import { useUserStore } from '@app/core/states/user';
+import { useAuthStore } from '@app/core/states/auth.state';
 
 // Mock dependencies
 jest.mock('@app/core/logic/user');
-jest.mock('@app/core/sessionPersistent/storeUserSecretKeyPersistent');
-jest.mock('@app/core/sessionPersistent/restoreUserSecretKeyPersistent');
+jest.mock('@app/core/auth/persistent-session');
 jest.mock('@app/utils/crypto');
 jest.mock('@app/core/states/user');
+jest.mock('@app/core/states/auth.state');
+jest.mock('react-native', () => ({
+  Alert: {
+    alert: jest.fn(),
+  },
+}));
 
 // Mock useNavigate
 const mockNavigate = jest.fn();

@@ -4,4 +4,5 @@ export * from './layout';
 export * from './typography';
 export * from './text';
 export * from './form';
-export * from './card'; 
+export * from './card';
+export * from './ThemeProvider'; 

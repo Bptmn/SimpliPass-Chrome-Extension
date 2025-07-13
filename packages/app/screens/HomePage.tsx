@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { getPageStyles, spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 import { getColors } from '@design/colors';
 
 import { CredentialDetailsPage } from './CredentialDetailsPage';
@@ -13,12 +13,16 @@ import { CredentialCard } from '@components/CredentialCard';
 import { ErrorBanner } from '@components/ErrorBanner';
 import { Icon } from '@components/Icon';
 import { SkeletonCard } from '@components/SkeletonCard';
-import { useHomePage } from '@app/core/hooks';
+import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@app/core/states';
+import { useUserStore } from '@app/core/states/user';
+import { useToast } from '@app/core/hooks';
+import { refreshStateItems } from '@app/core/logic/items';
+import { getUserSecretKey } from '@app/core/logic/auth';
 import ItemBankCard from '@components/ItemBankCard';
 import ItemSecureNote from '@components/ItemSecureNote';
 import { BankCardDetailsPage } from './BankCardDetailsPage';
 import { SecureNoteDetailsPage } from './SecureNoteDetailsPage';
-import { CredentialDecrypted } from '@app/core/types/types';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@app/core/types/types';
 
 /**
  * HomePage component displays the main vault UI:
@@ -35,27 +39,97 @@ export const HomePage: React.FC<HomePageProps> = ({
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const {
-    category,
-    filter,
-    selected,
-    selectedBankCard,
-    selectedSecureNote,
-    error,
-    loading,
-    setFilter,
-    setCategory,
-    setSelected,
-    setSelectedBankCard,
-    setSelectedSecureNote,
-    getFilteredItems,
-    getSuggestions,
-    handleCardClick,
-    handleOtherItemClick,
-    handleCopyCredential,
-    handleCopyOther,
-    handleAddSuggestion,
-  } = useHomePage(_pageState || undefined);
+  
+  // State management
+  const user = useUserStore((state) => state.user);
+  const { credentials } = useCredentialsStore();
+  const { bankCards } = useBankCardsStore();
+  const { secureNotes } = useSecureNotesStore();
+  const [category, setCategory] = React.useState<'credentials' | 'bankCards' | 'secureNotes'>('credentials');
+  const { showToast } = useToast();
+  
+  // Local state
+  const [filter, setFilter] = React.useState('');
+  const [selected, setSelected] = React.useState<CredentialDecrypted | null>(null);
+  const [selectedBankCard, setSelectedBankCard] = React.useState<BankCardDecrypted | null>(null);
+  const [selectedSecureNote, setSelectedSecureNote] = React.useState<SecureNoteDecrypted | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  // Load items when user changes or when states are empty
+  React.useEffect(() => {
+    if (!user) return;
+    
+    // Check if states have data
+    const hasData = credentials.length > 0 || bankCards.length > 0 || secureNotes.length > 0;
+    
+    if (!hasData) {
+      setLoading(true);
+      (async () => {
+        try {
+          await refreshStateItems(user.uid);
+        } catch (error) {
+          console.error('[HomePage] Failed to refresh state items:', error);
+          setError('Erreur lors du chargement des identifiants.');
+        } finally {
+          setLoading(false);
+        }
+      })();
+    } else {
+      setLoading(false);
+    }
+  }, [user, credentials.length, bankCards.length, secureNotes.length]);
+
+  // Filter items by search input based on category
+  const getFilteredItems = React.useCallback(() => {
+    const items = category === 'credentials' ? credentials : 
+                  category === 'bankCards' ? bankCards : 
+                  secureNotes;
+    
+    return items.filter((item) =>
+      item.title?.toLowerCase().includes(filter.toLowerCase()),
+    );
+  }, [category, credentials, bankCards, secureNotes, filter]);
+
+  // Handle card click for credentials
+  const handleCardClick = React.useCallback((cred: CredentialDecrypted) => {
+    setSelected(cred);
+  }, []);
+
+  // Handle click on other item types
+  const handleOtherItemClick = React.useCallback((item: unknown) => {
+    if (item && typeof item === 'object' && 'id' in item && 'username' in item && 'password' in item) {
+      setSelected(item as CredentialDecrypted);
+    } else {
+      console.warn('handleOtherItemClick: item is not a CredentialDecrypted', item);
+    }
+  }, []);
+
+  // Generate suggestions based on current URL
+  const getSuggestions = React.useCallback(() => {
+    if (category === 'credentials' && _pageState?.url && credentials.length > 0) {
+      const domain = _pageState.url.replace(/^https?:\/\//, '').split('/')[0].toLowerCase();
+      return credentials.filter(
+        (cred) => cred.url && cred.url.toLowerCase().includes(domain)
+      ).slice(0, 3);
+    }
+    return [];
+  }, [category, credentials, _pageState?.url]);
+
+  // Handle copy actions
+  const handleCopyCredential = React.useCallback(() => {
+    showToast('Mot de passe copié !');
+  }, [showToast]);
+
+  const handleCopyOther = React.useCallback(() => {
+    showToast('Contenu copié !');
+  }, [showToast]);
+
+  // Handle add suggestion navigation
+  const handleAddSuggestion = React.useCallback(() => {
+    // Navigation would be handled by parent component
+    console.log('Add suggestion clicked');
+  }, []);
 
   // If a credential is selected, show the detail page
   if (selected) {

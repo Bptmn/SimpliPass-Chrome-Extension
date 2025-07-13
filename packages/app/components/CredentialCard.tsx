@@ -12,7 +12,7 @@ import { LazyCredentialIcon } from './LazyCredentialIcon';
 import CopyButton from './CopyButton';
 import { spacing } from '@design/layout';
 import { typography } from '@design/typography';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 
 // Minimal RN-compatible ErrorBanner
 const ErrorBanner: React.FC<{ message: string; styles: Record<string, object> }> = ({ message, styles }) => (
@@ -44,9 +44,10 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
   // Handles copying the password to clipboard
   const handleCopy = async () => {
     try {
-      // Password is already decrypted in the new architecture
-      const { writeToClipboard } = await import('@app/core/platform/clipboard');
-      await writeToClipboard(credential.password);
+      // Use platform adapter for clipboard operations
+      const { getPlatformAdapter } = await import('@app/core/adapters/adapter.factory');
+      const adapter = await getPlatformAdapter();
+      await adapter.copyToClipboard(credential.password);
       if (onCopy) onCopy();
     } catch {
       setError('Impossible de copier le mot de passe');

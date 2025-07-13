@@ -3,7 +3,7 @@ import { View, Text, Image, StyleProp, ViewStyle } from 'react-native';
 import { getCardStyles } from '@design/card';
 import { getColors } from '@design/colors';
 import { useLazyCredentialIcon } from '@app/core/hooks';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 
 interface LazyCredentialIconProps {
   title: string;

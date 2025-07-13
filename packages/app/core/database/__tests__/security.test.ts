@@ -12,7 +12,7 @@ jest.mock('@app/utils/crypto', () => ({
 }));
 
 import { deriveKey, encryptData, decryptData, generateItemKey } from '@app/utils/crypto';
-import { storeUserSecretKey, getUserSecretKey, deleteUserSecretKey } from '@app/core/logic/user';
+import { storeUserSecretKey, getUserSecretKey, deleteUserSecretKey } from '@app/core/logic/auth';
 import { validateEncryptedItem } from '@app/core/types/types';
 import { 
   TEST_USER, 

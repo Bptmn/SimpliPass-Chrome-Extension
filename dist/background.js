@@ -1,12 +1,39 @@
-import { _ as __vitePreload } from "./assets/preload-helper-yRJZ--72.js";
-import { f as getAllItemsFromMemory, l as loadVaultIfNeeded } from "./assets/vaultLoader-D1HM3KiF.js";
+import { u as useCredentialsStore, a as useBankCardsStore, b as useSecureNotesStore, _ as __vitePreload } from "./assets/user-DHEi953b.js";
+const USER_SECRET_KEY_STORAGE = "simplipass_persistent_user_secret_key";
+const VAULT_ENCRYPTED_STORAGE = "simplipass_encrypted_vault";
+async function loadVaultIfNeeded() {
+  const credentialsStore = useCredentialsStore.getState();
+  const bankCardsStore = useBankCardsStore.getState();
+  const secureNotesStore = useSecureNotesStore.getState();
+  if (credentialsStore.credentials.length > 0 || bankCardsStore.bankCards.length > 0 || secureNotesStore.secureNotes.length > 0) {
+    return;
+  }
+  try {
+    const userKeyResult = await chrome.storage.local.get([USER_SECRET_KEY_STORAGE]);
+    const userKeyData = userKeyResult[USER_SECRET_KEY_STORAGE];
+    if (!userKeyData || !userKeyData.encryptedKey) {
+      console.warn("[VaultLoader] No persistent userSecretKey found");
+      return;
+    }
+    const vaultResult = await chrome.storage.local.get([VAULT_ENCRYPTED_STORAGE]);
+    const vaultEncrypted = vaultResult[VAULT_ENCRYPTED_STORAGE];
+    if (!vaultEncrypted) {
+      console.warn("[VaultLoader] No encrypted vault found");
+      return;
+    }
+    console.log("[VaultLoader] Vault loading logic updated to use states");
+  } catch (e) {
+    console.error("[VaultLoader] Error loading vault:", e);
+  }
+}
 function getRootDomain(hostname) {
   const parts = hostname.split(".").filter(Boolean);
   if (parts.length <= 2) return hostname.replace(/^www\./, "");
   return parts.slice(-2).join(".");
 }
 function isAutofillAvailable() {
-  return getAllItemsFromMemory().credentials.length > 0;
+  const credentialsStore = useCredentialsStore.getState();
+  return credentialsStore.credentials.length > 0;
 }
 function getMatchingCredentials(domain) {
   try {
@@ -14,8 +41,8 @@ function getMatchingCredentials(domain) {
       console.log("[AutofillBridge] No valid session for autofill");
       return [];
     }
-    const items = getAllItemsFromMemory();
-    const credentials = items.credentials;
+    const credentialsStore = useCredentialsStore.getState();
+    const credentials = credentialsStore.credentials;
     const pageRootDomain = getRootDomain(domain);
     return credentials.filter((credential) => {
       if (!credential.url) return false;
@@ -48,8 +75,8 @@ function getCredentialForInjection(credentialId) {
       console.log("[AutofillBridge] No valid session for credential injection");
       return null;
     }
-    const items = getAllItemsFromMemory();
-    return items.credentials.find((c) => c.id === credentialId) || null;
+    const credentialsStore = useCredentialsStore.getState();
+    return credentialsStore.credentials.find((c) => c.id === credentialId) || null;
   } catch (error) {
     console.error("[AutofillBridge] Error getting credential for injection:", error);
     return null;
@@ -169,9 +196,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     (async () => {
       try {
         const { setCredentialsInMemory, setBankCardsInMemory, setSecureNotesInMemory } = await __vitePreload(async () => {
-          const { setCredentialsInMemory: setCredentialsInMemory2, setBankCardsInMemory: setBankCardsInMemory2, setSecureNotesInMemory: setSecureNotesInMemory2 } = await import("./assets/vaultLoader-D1HM3KiF.js").then((n) => n.m);
+          const { setCredentialsInMemory: setCredentialsInMemory2, setBankCardsInMemory: setBankCardsInMemory2, setSecureNotesInMemory: setSecureNotesInMemory2 } = await Promise.resolve().then(() => memory);
           return { setCredentialsInMemory: setCredentialsInMemory2, setBankCardsInMemory: setBankCardsInMemory2, setSecureNotesInMemory: setSecureNotesInMemory2 };
-        }, true ? [] : void 0);
+        }, true ? void 0 : void 0);
         setCredentialsInMemory(msg.vaultData.credentials || []);
         setBankCardsInMemory(msg.vaultData.bankCards || []);
         setSecureNotesInMemory(msg.vaultData.secureNotes || []);
@@ -208,4 +235,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     ensureVaultLoaded();
   }
 });
+const memory = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null
+}, Symbol.toStringTag, { value: "Module" }));
 //# sourceMappingURL=background.js.map

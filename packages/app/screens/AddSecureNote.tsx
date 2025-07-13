@@ -4,22 +4,24 @@ import { View, ScrollView } from 'react-native';
 import { Input } from '@components/InputFields';
 import { getPageStyles } from '@design/layout';
 import { addItem } from '@app/core/logic/items';
-import { getUserSecretKey } from '@app/core/logic/user';
-import { useUser } from '@app/core/hooks/useUser';
+import { getUserSecretKey } from '@app/core/logic/auth';
+import { useUserStore } from '@app/core/states/user';
 import { SecureNoteDecrypted } from '@app/core/types/types';
 import { ErrorBanner } from '@components/ErrorBanner';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
 import { ColorSelector } from '@components/ColorSelector';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 import { getColors } from '@design/colors';
+import { useToast } from '@app/core/hooks';
 
 const AddSecureNote: React.FC = () => {
   const { mode } = useThemeMode();
   const styles = React.useMemo(() => getPageStyles(mode), [mode]);
   const themeColors = getColors(mode);
   const navigate = useNavigate();
-  const user = useUser();
+  const user = useUserStore((state) => state.user);
+  const { showToast } = useToast();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedColor, setSelectedColor] = useState('#4f86a2');

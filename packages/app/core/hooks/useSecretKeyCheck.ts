@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUserSecretKey } from '@app/core/logic/user';
+import { getUserSecretKey } from '@app/core/logic/auth';
 
 export const useSecretKeyCheck = () => {
   const [isChecking, setIsChecking] = useState(true);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ToastProvider } from '../packages/app/components/Toast';
-import { ThemeProvider } from '../packages/app/core/logic/theme';
+import { ThemeProvider } from '../packages/app/components';
 import type { Preview } from "@storybook/react";
 import { INITIAL_VIEWPORTS } from "@storybook/addon-viewport";
 import './storybook.css';

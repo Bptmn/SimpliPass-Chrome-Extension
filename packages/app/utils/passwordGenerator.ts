@@ -10,12 +10,13 @@ export function passwordGenerator(
   const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
   const specialCharacters = '!@#$%^&*()_+-=[]{}|;:,.<>?/`~';
   let charset = '';
-  let specialCharCount = 0;
   let result = '';
 
+  // Build charset based on selected options
   if (hasNumbers) charset += numbers;
   if (hasUppercase) charset += uppercaseLetters;
   if (hasLowercase) charset += lowercaseLetters;
+  if (hasSpecialCharacters) charset += specialCharacters;
 
   // If no character sets are selected, use a default mix
   if (!hasNumbers && !hasUppercase && !hasLowercase && !hasSpecialCharacters) {
@@ -27,13 +28,24 @@ export function passwordGenerator(
     return '';
   }
 
-  for (let i = 0; i < passwordWidth; i++) {
-    if (hasSpecialCharacters && specialCharCount < 2 && i < passwordWidth - 2) {
-      result += specialCharacters[Math.floor(Math.random() * specialCharacters.length)];
-      specialCharCount++;
-    } else {
-      result += charset[Math.floor(Math.random() * charset.length)];
-    }
+  // Ensure at least one character from each selected type
+  if (hasNumbers) {
+    result += numbers[Math.floor(Math.random() * numbers.length)];
+  }
+  if (hasUppercase) {
+    result += uppercaseLetters[Math.floor(Math.random() * uppercaseLetters.length)];
+  }
+  if (hasLowercase) {
+    result += lowercaseLetters[Math.floor(Math.random() * lowercaseLetters.length)];
+  }
+  if (hasSpecialCharacters) {
+    result += specialCharacters[Math.floor(Math.random() * specialCharacters.length)];
+  }
+
+  // Fill the rest with random characters from the charset
+  const remainingLength = passwordWidth - result.length;
+  for (let i = 0; i < remainingLength; i++) {
+    result += charset[Math.floor(Math.random() * charset.length)];
   }
 
   // Shuffle the result
@@ -41,5 +53,6 @@ export function passwordGenerator(
     .split('')
     .sort(() => 0.5 - Math.random())
     .join('');
+  
   return result;
 }

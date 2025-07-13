@@ -12,14 +12,14 @@ import { Input } from '@components/InputFields';
 import { Button } from '@components/Buttons';
 import { HeaderTitle } from '@components/HeaderTitle';
 import { getPageStyles } from '@design/layout';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 import { getColors } from '@design/colors';
 import { spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';
 import { deriveKey } from '@app/utils/crypto';
-import { storeUserSecretKey, getUserSalt } from '@app/core/logic/user';
+import { storeUserSecretKey, getUserSalt } from '@app/core/logic/auth';
 import { useUserStore } from '@app/core/states/user';
-import { storeUserSecretKeyPersistent } from '@app/core/sessionPersistent/storeUserSecretKeyPersistent';
+import { storeUserSecretKeyPersistent } from '@app/core/auth/persistent-session';
 
 interface LocationState {
   reason?: 'expired' | 'fingerprint_mismatch' | 'decryption_failed' | 'not_found' | 'corrupted';

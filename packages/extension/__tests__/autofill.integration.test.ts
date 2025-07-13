@@ -284,14 +284,13 @@ describe('Autofill Integration Tests', () => {
 
   describe('Error Handling', () => {
     it('should handle network errors gracefully', async () => {
-      const mockSendMessage = jest.fn().mockRejectedValue(new Error('Network error'));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mockSendMessage = jest.fn();
+      mockSendMessage.mockImplementation(() => Promise.reject(new Error('Network error')));
 
       const handleCredentialRequest = async () => {
         try {
-          const response = await mockSendMessage({
-            type: 'GET_MATCHING_CREDENTIALS',
-            domain: 'example.com',
-          });
+          const response = await mockSendMessage([{ type: 'credential', domain: 'example.com' }] as any);
           return response;
         } catch (error) {
           console.error('Error getting credentials:', error);
@@ -301,11 +300,8 @@ describe('Autofill Integration Tests', () => {
 
       const result = await handleCredentialRequest();
 
-      expect(result.credentials).toEqual([]);
-      expect(mockSendMessage).toHaveBeenCalledWith({
-        type: 'GET_MATCHING_CREDENTIALS',
-        domain: 'example.com',
-      });
+      expect((result as any).credentials).toEqual([]);
+      expect(mockSendMessage).toHaveBeenCalledWith([{ type: 'credential', domain: 'example.com' }] as any);
     });
 
     it('should handle invalid domain gracefully', () => {
@@ -332,7 +328,8 @@ describe('Autofill Integration Tests', () => {
         domain: null,
       });
 
-      expect((result as any).credentials).toEqual([]);
+      const typedResult = result as any;
+      expect(typedResult.credentials).toEqual([]);
     });
   });
 }); 

@@ -3,7 +3,7 @@ import { View, Text, Pressable } from 'react-native';
 import { SecureNoteDecrypted } from '@app/core/types/types';
 import { getCardStyles } from '@design/card';
 import { getColors } from '@design/colors';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 
 interface ItemSecureNoteProps {
   note: SecureNoteDecrypted;

@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import type { Meta, StoryFn } from '@storybook/react';
 import { DetailField } from '../DetailField';
-import { ThemeProvider } from '@app/core/logic/theme';
+import { ThemeProvider } from '@app/components';
 import { spacing } from '@design/layout';
 
 export default {

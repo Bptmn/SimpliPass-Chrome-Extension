@@ -16,7 +16,7 @@ import { HelperBar } from '@app/components/HelperBar';
 import { useUserStore } from '@app/core/states/user';
 import { initFirebase } from '../config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { fetchUserProfile } from '@app/core/logic/user';
+import { fetchUserProfile } from '@app/core/logic/auth';
 import { PageState } from '@app/core/types/types';
 import { User as FirebaseUser } from 'firebase/auth';
 import { User as AppUser } from '@app/core/types/types';

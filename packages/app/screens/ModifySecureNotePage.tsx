@@ -1,44 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { SecureNoteDecrypted } from '@app/core/types/types';
-import { updateItem } from '@app/core/logic/items';
-import { getUserSecretKey } from '@app/core/logic/user';
-import { useUser } from '@app/core/hooks/useUser';
-import { ErrorBanner } from '@components/ErrorBanner';
-import { Toast } from '@components/Toast';
-import { InputEdit } from '@components/InputEdit';
-import { ColorSelector } from '@components/ColorSelector';
-import { useThemeMode } from '@app/core/logic/theme';
-import { getColors } from '@design/colors';
-import { getPageStyles } from '@design/layout';
-import { Button } from '@components/Buttons';
-import { HeaderTitle } from '@components/HeaderTitle';
+import { getPageStyles, spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';
-import { useToast } from '@app/core/hooks/useToast';
+import { getColors } from '@design/colors';
+import { useUserStore } from '@app/core/states/user';
+import { SecureNoteDecrypted } from '@app/core/types/types';
+import { HeaderTitle } from '@components/HeaderTitle';
+import { InputEdit } from '@components/InputEdit';
+import { Button } from '@components/Buttons';
+import { useThemeMode } from '@app/components';
+import { useToast } from '@app/core/hooks';
+import { updateItem } from '@app/core/logic/items';
+import { getUserSecretKey } from '@app/core/logic/auth';
 
-export const ModifySecureNotePage: React.FC = () => {
+interface ModifySecureNotePageProps {
+  note: SecureNoteDecrypted;
+  onBack: () => void;
+}
+
+export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({ note, onBack }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const user = useUser();
-  const note = location.state?.note as SecureNoteDecrypted;
+  const user = useUserStore((state) => state.user);
+  const { showToast } = useToast();
 
   const [title, setTitle] = useState(note?.title || '');
   const [noteText, setNoteText] = useState(note?.note || '');
   const [color, setColor] = useState(note?.color || '');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { toast, showToast } = useToast();
-
-  useEffect(() => {
-    if (!note) {
-      navigate('/');
-    }
-  }, [note, navigate]);
 
   const handleSubmit = async () => {
     if (!note || !user) {
@@ -60,7 +52,7 @@ export const ModifySecureNotePage: React.FC = () => {
       };
       await updateItem(user.uid, note.id, userSecretKey, updates);
       showToast('Note modifiée avec succès');
-      navigate('/');
+      onBack();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la modification de la note.');
     } finally {
@@ -78,13 +70,11 @@ export const ModifySecureNotePage: React.FC = () => {
 
   return (
     <View style={pageStyles.pageContainer}>
-      {error && <ErrorBanner message={error} />}
-      <Toast message={toast} />
       <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={{flexGrow: 1}}>
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Modifier une note" 
-            onBackPress={() => navigate('/')} 
+            onBackPress={onBack} 
           />
           <View style={pageStyles.formContainer}>
             <InputEdit
@@ -94,11 +84,6 @@ export const ModifySecureNotePage: React.FC = () => {
               placeholder="[decryptedNote → title]"
               onClear={() => setTitle('')}
             />
-            <ColorSelector
-              title="Choisissez la couleur de votre note"
-              value={color}
-              onChange={setColor}
-            />
             <InputEdit
               label="Note"
               value={noteText}
@@ -107,15 +92,17 @@ export const ModifySecureNotePage: React.FC = () => {
               onClear={() => setNoteText('')}
               isNote={true}
             />
+            <Button
+              text="Confirmer"
+              color={themeColors.secondary}
+              width="full"
+              height="full"
+              onPress={handleSubmit}
+              disabled={loading}
+            />
           </View>
         </View>
       </ScrollView>
-        <Button
-          text="Confirmer"
-          color={themeColors.secondary}
-          onPress={handleSubmit}
-          disabled={loading}
-        />
     </View>
   );
 };

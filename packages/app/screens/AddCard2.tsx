@@ -4,13 +4,13 @@ import { View, Text, Pressable, StyleSheet, ScrollView, Platform } from 'react-n
 import { Input } from '@components/InputFields';
 import ItemBankCard from '@components/ItemBankCard';
 import { Icon } from '@components/Icon';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 import { getColors } from '@design/colors';
 import { spacing, radius, getPageStyles } from '@design/layout';
 import { typography } from '@design/typography';
 import { addItem } from '@app/core/logic/items';
-import { getUserSecretKey } from '@app/core/logic/user';
-import { useUser } from '@app/core/hooks/useUser';
+import { getUserSecretKey } from '@app/core/logic/auth';
+import { useUserStore } from '@app/core/states/user';
 import { BankCardDecrypted } from '@app/core/types/types';
 import { createExpirationDate, parseExpirationDate } from '@app/utils';
 import { Button } from '@components/Buttons';
@@ -28,7 +28,7 @@ const AddCard2: React.FC = () => {
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useUser();
+  const user = useUserStore((state) => state.user);
   const { title, bankName, bankDomain } = location.state || {};
 
   const [selectedColor, setSelectedColor] = useState('#4f86a2');

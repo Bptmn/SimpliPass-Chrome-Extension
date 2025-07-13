@@ -4,7 +4,7 @@
  */
 
 import { loadVaultIfNeeded } from './vaultLoader';
-import { getAllItemsFromMemory } from '../session/memory';
+import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@app/core/states';
 
 /**
  * Extracts the root domain from a hostname, removing 'www.' and subdomains.
@@ -22,7 +22,8 @@ function getRootDomain(hostname: string): string {
  * @returns true if autofill can be used, false otherwise
  */
 export function isAutofillAvailable(): boolean {
-  return getAllItemsFromMemory().credentials.length > 0;
+  const credentialsStore = useCredentialsStore.getState();
+  return credentialsStore.credentials.length > 0;
 }
 
 /**
@@ -43,8 +44,8 @@ export function getMatchingCredentials(domain: string): Array<{
       return [];
     }
 
-    const items = getAllItemsFromMemory();
-    const credentials = items.credentials;
+    const credentialsStore = useCredentialsStore.getState();
+    const credentials = credentialsStore.credentials;
     const pageRootDomain = getRootDomain(domain);
     
     return credentials
@@ -102,8 +103,8 @@ export function getCredentialForInjection(credentialId: string): {
       return null;
     }
 
-    const items = getAllItemsFromMemory();
-    return items.credentials.find(c => c.id === credentialId) || null;
+    const credentialsStore = useCredentialsStore.getState();
+    return credentialsStore.credentials.find(c => c.id === credentialId) || null;
   } catch (error) {
     console.error('[AutofillBridge] Error getting credential for injection:', error);
     return null;
@@ -139,8 +140,8 @@ export function getAllCredentials(): Array<{
       return [];
     }
 
-    const items = getAllItemsFromMemory();
-    return items.credentials.map(credential => ({
+    const credentialsStore = useCredentialsStore.getState();
+    return credentialsStore.credentials.map(credential => ({
       id: credential.id,
       title: credential.title,
       username: credential.username,
@@ -167,12 +168,12 @@ export function getAllBankCards(): Array<{
       return [];
     }
 
-    const items = getAllItemsFromMemory();
-    return items.bankCards.map(card => ({
+    const bankCardsStore = useBankCardsStore.getState();
+    return bankCardsStore.bankCards.map(card => ({
       id: card.id,
       title: card.title,
       cardNumber: card.cardNumber,
-      url: card.url
+      url: 'url' in card ? (card as any).url : '',
     }));
   } catch (error) {
     console.error('[AutofillBridge] Error getting all bank cards:', error);
@@ -194,11 +195,11 @@ export function getAllSecureNotes(): Array<{
       return [];
     }
 
-    const items = getAllItemsFromMemory();
-    return items.secureNotes.map(note => ({
+    const secureNotesStore = useSecureNotesStore.getState();
+    return secureNotesStore.secureNotes.map(note => ({
       id: note.id,
       title: note.title,
-      url: note.url
+      url: 'url' in note ? (note as any).url : '',
     }));
   } catch (error) {
     console.error('[AutofillBridge] Error getting all secure notes:', error);
@@ -207,14 +208,21 @@ export function getAllSecureNotes(): Array<{
 } 
 
 export async function getVaultForAutofill() {
-  let items = getAllItemsFromMemory();
+  const credentialsStore = useCredentialsStore.getState();
+  const bankCardsStore = useBankCardsStore.getState();
+  const secureNotesStore = useSecureNotesStore.getState();
+  
   if (
-    items.credentials.length === 0 &&
-    items.bankCards.length === 0 &&
-    items.secureNotes.length === 0
+    credentialsStore.credentials.length === 0 &&
+    bankCardsStore.bankCards.length === 0 &&
+    secureNotesStore.secureNotes.length === 0
   ) {
     await loadVaultIfNeeded();
-    items = getAllItemsFromMemory();
   }
-  return items;
+  
+  return {
+    credentials: credentialsStore.credentials,
+    bankCards: bankCardsStore.bankCards,
+    secureNotes: secureNotesStore.secureNotes,
+  };
 } 

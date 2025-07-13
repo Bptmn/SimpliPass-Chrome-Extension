@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, Alert } from 'react-native';
 import { Icon } from './Icon';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 import { getColors } from '@design/colors';
 import { radius, spacing } from '@design/layout';
 import { typography } from '@design/typography';
@@ -19,8 +19,10 @@ const CopyButton: React.FC<CopyButtonProps> = ({ textToCopy, ariaLabel = 'Copier
 
   const handleCopy = async () => {
     try {
-      const { writeToClipboard } = await import('@app/core/platform/clipboard');
-      await writeToClipboard(textToCopy);
+      // Use platform adapter for clipboard operations
+      const { getPlatformAdapter } = await import('@app/core/adapters/adapter.factory');
+      const adapter = await getPlatformAdapter();
+      await adapter.copyToClipboard(textToCopy);
       if (onClick) onClick();
       // Optionally, show a feedback (can be improved)
       Alert.alert('Copié !');

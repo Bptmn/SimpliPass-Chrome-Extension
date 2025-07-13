@@ -1,30 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { View, ScrollView, Text, StyleSheet } from 'react-native';
-import { CredentialDecrypted } from '@app/core/types/types';
-import { updateItem } from '@app/core/logic/items';
-import { getUserSecretKey } from '@app/core/logic/user';
-import { useUser } from '@app/core/hooks/useUser';
-import { ErrorBanner } from '@components/ErrorBanner';
-import Toast from '@components/Toast';
-import { useToast } from '@app/core/hooks/useToast';
-import { useThemeMode } from '@app/core/logic/theme';
-import { getColors } from '@design/colors';
-import { getPageStyles, spacing } from '@design/layout';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { getPageStyles, spacing, radius } from '@design/layout';
 import { typography } from '@design/typography';
-import { Button } from '@components/Buttons';
+import { getColors } from '@design/colors';
+import { useUserStore } from '@app/core/states/user';
+import { CredentialDecrypted } from '@app/core/types/types';
 import { HeaderTitle } from '@components/HeaderTitle';
 import { InputEdit } from '@components/InputEdit';
+import { Button } from '@components/Buttons';
+import { Icon } from '@components/Icon';
+import { useThemeMode } from '@app/components';
+import { useToast } from '@app/core/hooks';
+import { updateItem } from '@app/core/logic/items';
+import { getUserSecretKey } from '@app/core/logic/auth';
 
-export const ModifyCredentialPage: React.FC = () => {
+interface ModifyCredentialPageProps {
+  credential: CredentialDecrypted;
+  onBack: () => void;
+}
+
+export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({ credential, onBack }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const user = useUser();
-  const credential = location.state?.credential as CredentialDecrypted;
+  const user = useUserStore((state) => state.user);
+  const { showToast } = useToast();
   
   const [title, setTitle] = useState(credential?.title || '');
   const [username, setUsername] = useState(credential?.username || '');
@@ -33,13 +34,6 @@ export const ModifyCredentialPage: React.FC = () => {
   const [note, setNote] = useState(credential?.note || '');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { toast, showToast } = useToast();
-
-  useEffect(() => {
-    if (!credential) {
-      navigate('/');
-    }
-  }, [credential, navigate]);
 
   const handleSubmit = async () => {
     if (!credential || !user) {
@@ -66,7 +60,7 @@ export const ModifyCredentialPage: React.FC = () => {
 
       await updateItem(user.uid, credential.id, userSecretKey, updates);
       showToast('Identifiant modifié avec succès');
-      navigate('/');
+      onBack();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la modification de l\'identifiant.');
     } finally {
@@ -74,23 +68,13 @@ export const ModifyCredentialPage: React.FC = () => {
     }
   };
 
-  if (!credential) {
-    return (
-      <View style={pageStyles.pageContainer}>
-        <Text style={styles.errorText}>Identifiant non trouvé</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={pageStyles.pageContainer}>
-      {error && <ErrorBanner message={error} />}
-      <Toast message={toast} />
       <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={{flexGrow: 1}}>
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Modifier l'identifiant" 
-            onBackPress={() => navigate('/')} 
+            onBackPress={onBack} 
           />
           <View style={pageStyles.formContainer}>
             <InputEdit

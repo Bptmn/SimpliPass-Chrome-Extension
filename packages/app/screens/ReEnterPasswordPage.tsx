@@ -15,9 +15,9 @@ import { getColors } from '@design/colors';
 import { spacing } from '@design/layout';
 import { typography } from '@design/typography';
 import { deriveKey } from '@app/utils/crypto';
-import { storeUserSecretKey, getUserSalt } from '@app/core/logic/user';
+import { storeUserSecretKey, getUserSalt } from '@app/core/logic/auth';
 import { useUserStore } from '@app/core/states/user';
-import { useThemeMode } from '@app/core/logic/theme';
+import { useThemeMode } from '@app/components';
 
 export const ReEnterPasswordPage: React.FC = () => {
   const [password, setPassword] = useState('');
