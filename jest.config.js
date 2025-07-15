@@ -26,7 +26,7 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/packages/app/$1',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
     // Mock config files that use import.meta
-    '^@app/core/auth/config$': '<rootDir>/__mocks__/configMock.js',
+    '^@common/core/auth/config$': '<rootDir>/__mocks__/configMock.js',
     '^@extension/config/config$': '<rootDir>/__mocks__/configMock.js',
   },
   testMatch: [

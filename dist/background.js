@@ -1,6 +1,5 @@
-import { u as useCredentialsStore, a as useBankCardsStore, b as useSecureNotesStore, _ as __vitePreload } from "./assets/user-DHEi953b.js";
-const USER_SECRET_KEY_STORAGE = "simplipass_persistent_user_secret_key";
-const VAULT_ENCRYPTED_STORAGE = "simplipass_encrypted_vault";
+import { u as useCredentialsStore, a as useBankCardsStore, b as useSecureNotesStore, g as getUserSecretKey, _ as __vitePreload } from "./assets/secret-CDisq_NM.js";
+import "./assets/index-CxEHSNH9.js";
 async function loadVaultIfNeeded() {
   const credentialsStore = useCredentialsStore.getState();
   const bankCardsStore = useBankCardsStore.getState();
@@ -9,19 +8,12 @@ async function loadVaultIfNeeded() {
     return;
   }
   try {
-    const userKeyResult = await chrome.storage.local.get([USER_SECRET_KEY_STORAGE]);
-    const userKeyData = userKeyResult[USER_SECRET_KEY_STORAGE];
-    if (!userKeyData || !userKeyData.encryptedKey) {
-      console.warn("[VaultLoader] No persistent userSecretKey found");
+    const userSecretKey = await getUserSecretKey();
+    if (!userSecretKey) {
+      console.log("[VaultLoader] No persistent userSecretKey found (expected for new or logged-out users)");
       return;
     }
-    const vaultResult = await chrome.storage.local.get([VAULT_ENCRYPTED_STORAGE]);
-    const vaultEncrypted = vaultResult[VAULT_ENCRYPTED_STORAGE];
-    if (!vaultEncrypted) {
-      console.warn("[VaultLoader] No encrypted vault found");
-      return;
-    }
-    console.log("[VaultLoader] Vault loading logic updated to use states");
+    console.log("[VaultLoader] userSecretKey restored to state");
   } catch (e) {
     console.error("[VaultLoader] Error loading vault:", e);
   }
@@ -138,7 +130,54 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     pageState[sender.tab.id] = { url: msg.url, domain: msg.domain, hasLoginForm: msg.hasLoginForm };
   }
   if (msg.type === "GET_PAGE_STATE" && msg.tabId != null) {
-    sendResponse(pageState[msg.tabId] || null);
+    console.log("[Background] GET_PAGE_STATE request for tabId:", msg.tabId);
+    if (pageState[msg.tabId]) {
+      console.log("[Background] Returning cached page state for tabId:", msg.tabId);
+      sendResponse(pageState[msg.tabId]);
+      return true;
+    }
+    (async () => {
+      try {
+        const tab = await chrome.tabs.get(msg.tabId);
+        console.log("[Background] Tab info:", { id: tab.id, url: tab.url, status: tab.status });
+        if (tab.url && (tab.url.startsWith("chrome://") || tab.url.startsWith("chrome-extension://") || tab.url.startsWith("moz-extension://"))) {
+          console.log("[Background] Cannot access restricted URL:", tab.url);
+          sendResponse({
+            url: tab.url || "",
+            domain: "restricted",
+            hasLoginForm: false,
+            error: "Cannot access chrome:// or extension URLs"
+          });
+          return;
+        }
+        console.log("[Background] Executing script for tabId:", msg.tabId);
+        const results = await chrome.scripting.executeScript({
+          target: { tabId: msg.tabId },
+          func: () => ({
+            url: window.location.href,
+            domain: window.location.hostname,
+            hasLoginForm: !!document.querySelector('form input[type="password"]')
+          })
+        });
+        if (results && results[0]?.result) {
+          const pageInfo = results[0].result;
+          console.log("[Background] Page state retrieved:", pageInfo);
+          pageState[msg.tabId] = pageInfo;
+          sendResponse(pageInfo);
+        } else {
+          console.log("[Background] No results from script execution");
+          sendResponse(null);
+        }
+      } catch (error) {
+        console.error("[Background] Error executing script for page state:", error);
+        sendResponse({
+          url: "",
+          domain: "unknown",
+          hasLoginForm: false,
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    })();
     return true;
   }
   if (msg.type === "GET_SESSION_STATUS") {
@@ -196,9 +235,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     (async () => {
       try {
         const { setCredentialsInMemory, setBankCardsInMemory, setSecureNotesInMemory } = await __vitePreload(async () => {
-          const { setCredentialsInMemory: setCredentialsInMemory2, setBankCardsInMemory: setBankCardsInMemory2, setSecureNotesInMemory: setSecureNotesInMemory2 } = await Promise.resolve().then(() => memory);
+          const { setCredentialsInMemory: setCredentialsInMemory2, setBankCardsInMemory: setBankCardsInMemory2, setSecureNotesInMemory: setSecureNotesInMemory2 } = await import("./assets/memory-B8-2f7qf.js");
           return { setCredentialsInMemory: setCredentialsInMemory2, setBankCardsInMemory: setBankCardsInMemory2, setSecureNotesInMemory: setSecureNotesInMemory2 };
-        }, true ? void 0 : void 0);
+        }, true ? [] : void 0);
         setCredentialsInMemory(msg.vaultData.credentials || []);
         setBankCardsInMemory(msg.vaultData.bankCards || []);
         setSecureNotesInMemory(msg.vaultData.secureNotes || []);
@@ -235,7 +274,4 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     ensureVaultLoaded();
   }
 });
-const memory = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null
-}, Symbol.toStringTag, { value: "Module" }));
 //# sourceMappingURL=background.js.map

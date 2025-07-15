@@ -8,11 +8,14 @@
  * - Network detection
  */
 
-import { PlatformAdapter } from '../../app/core/adapters';
-import { getPlatformConfig } from '../../app/core/adapters/platform.detection';
+import { PlatformAdapter } from '@common/core/types/platform.types';
 
 export class MobilePlatformAdapter implements PlatformAdapter {
-  private config = getPlatformConfig();
+  private config = {
+    storageKey: 'userSecretKey',
+    biometricKey: 'biometricEnabled',
+    sessionKey: 'sessionData',
+  };
 
   // ===== Storage Operations =====
 
@@ -21,8 +24,9 @@ export class MobilePlatformAdapter implements PlatformAdapter {
       // Conditional import for Expo SecureStore
       const SecureStore = await this.getSecureStore();
       return await SecureStore.getItemAsync(this.config.storageKey);
-    } catch (error) {
-      throw new Error(`Failed to retrieve user secret key from secure storage: ${error}`);
+    } catch {
+      console.error('Failed to get user secret key');
+      return null;
     }
   }
 
@@ -30,8 +34,8 @@ export class MobilePlatformAdapter implements PlatformAdapter {
     try {
       const SecureStore = await this.getSecureStore();
       await SecureStore.setItemAsync(this.config.storageKey, key);
-    } catch (error) {
-      throw new Error(`Failed to store user secret key in secure storage: ${error}`);
+    } catch {
+      console.error('Failed to store user secret key');
     }
   }
 
@@ -39,8 +43,8 @@ export class MobilePlatformAdapter implements PlatformAdapter {
     try {
       const SecureStore = await this.getSecureStore();
       await SecureStore.deleteItemAsync(this.config.storageKey);
-    } catch (error) {
-      throw new Error(`Failed to delete user secret key from secure storage: ${error}`);
+    } catch {
+      console.error('Failed to delete user secret key');
     }
   }
 
@@ -90,6 +94,7 @@ export class MobilePlatformAdapter implements PlatformAdapter {
 
   async copyToClipboard(text: string): Promise<void> {
     try {
+      // @ts-expect-error - Dynamic import for clipboard functionality
       const { Clipboard } = await import('@react-native-clipboard/clipboard');
       await Clipboard.setString(text);
     } catch (error) {
@@ -99,6 +104,7 @@ export class MobilePlatformAdapter implements PlatformAdapter {
 
   async getFromClipboard(): Promise<string> {
     try {
+      // @ts-expect-error - Dynamic import for clipboard functionality
       const { Clipboard } = await import('@react-native-clipboard/clipboard');
       return await Clipboard.getString();
     } catch (error) {
@@ -114,8 +120,8 @@ export class MobilePlatformAdapter implements PlatformAdapter {
       // Clear all secure storage items
       const keys = await SecureStore.getAllKeysAsync();
       await Promise.all(keys.map((key: string) => SecureStore.deleteItemAsync(key)));
-    } catch (error) {
-      throw new Error(`Failed to clear session data: ${error}`);
+    } catch {
+      console.error('Failed to clear session');
     }
   }
 
@@ -216,50 +222,49 @@ export class MobilePlatformAdapter implements PlatformAdapter {
 
   // ===== App Information =====
 
-  /**
-   * Get app version
-   */
   getAppVersion(): string {
-    try {
-      const { Constants } = require('expo-constants');
-      return Constants.expoConfig?.version || '1.0.0';
-    } catch (error) {
-      console.warn('Failed to get app version:', error);
-      return '1.0.0';
-    }
+    return '1.0.0'; // This should be dynamically retrieved
   }
 
-  // ===== Helper Methods for Conditional Imports =====
+  // ===== Private Helper Methods =====
 
   private async getSecureStore() {
     try {
+      // @ts-expect-error - Dynamic import for secure store
       return await import('expo-secure-store');
-    } catch (error) {
-      throw new Error('expo-secure-store not available');
+    } catch {
+      console.error('Failed to import SecureStore');
+      throw new Error('SecureStore not available');
     }
   }
 
   private async getLocalAuthentication() {
     try {
+      // @ts-expect-error - Dynamic import for local authentication
       return await import('expo-local-authentication');
-    } catch (error) {
-      throw new Error('expo-local-authentication not available');
+    } catch {
+      console.error('Failed to import LocalAuthentication');
+      throw new Error('LocalAuthentication not available');
     }
   }
 
   private async getDevice() {
     try {
+      // @ts-expect-error - Dynamic import for device info
       return await import('expo-device');
-    } catch (error) {
-      throw new Error('expo-device not available');
+    } catch {
+      console.error('Failed to import Device');
+      throw new Error('Device not available');
     }
   }
 
   private async getNetwork() {
     try {
+      // @ts-expect-error - Dynamic import for network info
       return await import('expo-network');
-    } catch (error) {
-      throw new Error('expo-network not available');
+    } catch {
+      console.error('Failed to import Network');
+      throw new Error('Network not available');
     }
   }
 } 

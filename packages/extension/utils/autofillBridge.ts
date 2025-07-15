@@ -4,7 +4,7 @@
  */
 
 import { loadVaultIfNeeded } from './vaultLoader';
-import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@app/core/states';
+import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@common/core/states';
 
 /**
  * Extracts the root domain from a hostname, removing 'www.' and subdomains.

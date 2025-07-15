@@ -1,13 +1,13 @@
----
-description: SimpliPass Cursor Global Rules – Post-Refactor Architecture
-globs: 
-alwaysApply: true
----
 
 # 📐 SimpliPass – Global Cursor Rules  
-*(Unified Monorepo for Mobile & Extension – React Native / Manifest V3)*
+*(Three-Layer Architecture – React Native / Manifest V3)*
 
 ## 🧠 Architecture Foundations
+
+### ✅ Three-Layer Architecture
+- **Layer 1: Hooks** → UI state management and user interactions
+- **Layer 2: Services** → Business logic and orchestration
+- **Layer 3: Libraries & Adapters** → External APIs and platform integration
 
 ### ✅ Single Source of Truth
 All UI data must come from memory (Zustand states). UI logic never fetches directly from storage or network.
@@ -22,7 +22,7 @@ Related business logic should be grouped by domain (e.g. credentials, auth) with
 
 ### ✅ Secure by Design
 - No decrypted data is ever persisted
-- All encryption/decryption handled via `core/crypto` or `core/utils/encryption`
+- All encryption/decryption handled via `core/services/cryptography` or `app/utils/crypto`
 - Platform-specific persistence must use encrypted local storage or secure keychain
 
 ---
@@ -32,7 +32,12 @@ Related business logic should be grouped by domain (e.g. credentials, auth) with
 ```
 packages/
 ├── app/        → Shared UI (popup + mobile)
-├── core/       → Platform-agnostic logic, auth, state, crypto
+│   └── core/
+│       ├── hooks/         # Layer 1: UI Hooks
+│       ├── services/      # Layer 2: Business Logic
+│       ├── libraries/     # Layer 3: External Integrations
+│       ├── states/        # Zustand stores
+│       └── types/         # Type definitions
 ├── mobile/     → Mobile-specific services, keychain access
 ├── extension/  → Chrome-specific background, content, storage
 ```
@@ -43,11 +48,12 @@ packages/
 
 ### ✅ Cursor Must Always
 - Think → Plan → Execute → Report
+- Follow three-layer architecture: Hooks → Services → Libraries
 - Organize changes by domain (update types → logic → UI)
 - Use `platform.adapter.ts` for cross-platform logic
 - Update related tests to reflect changes
 - Update related readme file to reflect changes
-- Validate with:
+- Validate tasks done with:
 ```bash
 npm run lint && npm run build && npm run test
 ```
@@ -56,9 +62,10 @@ npm run lint && npm run build && npm run test
 - All business logic must have `*.test.ts`
 - All UI components must have `*.test.tsx` and `*.stories.tsx`
 - Include `testID` and `accessibilityLabel` for interactive UI
+- Test each layer independently (hooks, services, libraries)
 
 ### 🎨 Design System
-- Use `@/core/design/tokens` for color, spacing, typography
+- Use `@/app/design/tokens` for color, spacing, typography
 - Structure layout using `pageContainer`, `scrollView`, etc.
 - Never use inline styles or hardcoded values
 
@@ -66,19 +73,47 @@ npm run lint && npm run build && npm run test
 
 ## 🧱 Cursor Coding Constraints
 
+### ✅ Layer 1: Hooks (UI Layer)
+- Simple, readable functions
+- Handle UI state management
+- Abstract complexity from components
+- Return clear, predictable results
+- Handle loading states and errors
+- Ensure states are always accessible for UI
+
+### ✅ Layer 2: Services (Business Logic Layer)
+- Contain complex business logic
+- Orchestrate multiple operations
+- Handle data transformations
+- Manage business rules
+- Called only by hooks or other services
+- Platform-agnostic
+
+### ✅ Layer 3: Libraries, Adapters and utils (External Integration Layer)
+- Handle external API calls
+- Platform-specific implementations (via adapters)
+- Low-level operations (crypto, storage via utils)
+- Called only by services
+- Minimal business logic
+- Focus on integration
+
 ### ✅ Always Use
 - React Native components (`<View>`, `<Text>`, etc.)
 - Zustand for all state access and updates
 - Absolute imports from `@app`, `@core`, `@mobile`, `@extension`, `@shared`
 - Error boundaries and consistent return types in logic
+- Custom error classes with layer-specific error handling
 
 ### ❌ Never Use
 - `chrome.*` APIs outside `extension/`
 - `any`/`unknown` types unless explicitly justified
 - Direct Firestore/Storage SDKs in UI
-- Raw access to keychain, storage, or memory in `app/` or `core/logic/`
-- Duplicate logic (always centralize in `core/logic/`)
+- Raw access to keychain, storage, or memory in `app/` or `core/services/`
+- Duplicate logic (always centralize in `core/services/`)
 - `marginTop`/`marginBottom`: Use `gap` via layout classes only
+- Business logic in hooks (only UI state management)
+- External API calls in hooks (use services instead)
+- Never set placeholder implementation in the code. This is a real implementation
 
 ---
 
@@ -88,6 +123,7 @@ npm run lint && npm run build && npm run test
 - Platform-specific adapters restore vault and hydrate state on launch
 - All decrypted values are ephemeral in RAM
 - `logout()` must clear all RAM + persistent user secret
+- Hooks manage UI state, services manage business logic, libraries handle external calls
 
 ---
 
@@ -96,22 +132,28 @@ npm run lint && npm run build && npm run test
 ### File Names
 ```
 Components:      CredentialCard.tsx
-Stores:          credentials.state.ts
-Hooks:           useBiometry.ts
-Utilities:       decryptVault.ts
-Types:           types.ts / interfaces.ts
-Tests:           *.test.ts(x)
-Stories:         *.stories.tsx
+Hooks:          useLoginFlow.ts
+Services:       auth.ts
+Libraries:      cognito.ts
+Stores:         credentials.state.ts
+Utilities:      decryptVault.ts
+Types:          auth.types.ts
+Tests:          *.test.ts(x)
+Stories:        *.stories.tsx
 ```
 
 ### Import Order
 ```ts
 // External
 import React from 'react';
-// Aliased
-import { loginUser } from '@core/logic/auth';
-// Relative
-import styles from './styles';
+// Hooks (Layer 1)
+import { useLoginFlow } from '@core/hooks';
+// Services (Layer 2)
+import { loginUser } from '@core/services';
+// Libraries (Layer 3)
+import { loginWithCognito } from '@core/libraries';
+// Types
+import type { LoginResult } from '@core/types';
 ```
 
 ---
@@ -126,6 +168,34 @@ import styles from './styles';
 - Encrypt `userSecretKey` with `deviceFingerprintKey`
 - Store encrypted version in `chrome.storage.local`
 - Decrypt in background → load RAM vault
+
+---
+
+## 🛡️ Error Handling Strategy
+
+### Custom Error Classes
+```typescript
+// Base error class
+export class SimpliPassError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+    public layer: 'hook' | 'service' | 'library',
+    public originalError?: Error
+  ) {
+    super(message);
+    this.name = 'SimpliPassError';
+  }
+}
+
+// Layer-specific errors
+export class AuthenticationError extends SimpliPassError {
+  constructor(message: string, originalError?: Error) {
+    super(message, 'AUTH_ERROR', 'service', originalError);
+    this.name = 'AuthenticationError';
+  }
+}
+```
 
 ---
 
@@ -144,8 +214,17 @@ Cursor must fix all errors and validate the code before considering the task don
 
 ## 🤖 Cursor Summary Rules
 
+- Follow three-layer architecture: Hooks → Services → Libraries
 - Never bypass platformAdapter
 - Never persist decrypted data
+- Never write platform logic in `app/` or `core/services/`
+- Always validate types, tests, build
+- Only use Zustand for UI-bound data
+- Run full validation cycle after structural changes
+- Keep hooks simple and UI-focused
+- Keep services business-logic focused
+- Keep libraries integration-focused
+
 - Never write platform logic in `app/` or `core/logic/`
 - Always validate types, tests, build
 - Only use Zustand for UI-bound data

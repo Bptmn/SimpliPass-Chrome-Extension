@@ -1,4 +1,4 @@
-import { PageState } from '@app/core/types/types';
+import { PageState } from '@common/core/types/types';
 import { 
   isAutofillAvailable,
   getMatchingCredentials,
@@ -80,7 +80,64 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   // Popup requests current page state
   if (msg.type === 'GET_PAGE_STATE' && msg.tabId != null) {
-    sendResponse(pageState[msg.tabId] || null);
+    console.log('[Background] GET_PAGE_STATE request for tabId:', msg.tabId);
+    
+    // First check if we have cached page state
+    if (pageState[msg.tabId]) {
+      console.log('[Background] Returning cached page state for tabId:', msg.tabId);
+      sendResponse(pageState[msg.tabId]);
+      return true;
+    }
+    
+    // If not cached, execute script to get page state
+    (async () => {
+      try {
+        // First check if we can access this tab
+        const tab = await chrome.tabs.get(msg.tabId);
+        console.log('[Background] Tab info:', { id: tab.id, url: tab.url, status: tab.status });
+        
+        // Check if this is a chrome:// URL or other restricted URL
+        if (tab.url && (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://') || tab.url.startsWith('moz-extension://'))) {
+          console.log('[Background] Cannot access restricted URL:', tab.url);
+          sendResponse({ 
+            url: tab.url || '',
+            domain: 'restricted',
+            hasLoginForm: false,
+            error: 'Cannot access chrome:// or extension URLs'
+          });
+          return;
+        }
+        
+        console.log('[Background] Executing script for tabId:', msg.tabId);
+        const results = await chrome.scripting.executeScript({
+          target: { tabId: msg.tabId },
+          func: () => ({
+            url: window.location.href,
+            domain: window.location.hostname,
+            hasLoginForm: !!document.querySelector('form input[type="password"]'),
+          }),
+        });
+        
+        if (results && results[0]?.result) {
+          const pageInfo = results[0].result;
+          console.log('[Background] Page state retrieved:', pageInfo);
+          pageState[msg.tabId] = pageInfo;
+          sendResponse(pageInfo);
+        } else {
+          console.log('[Background] No results from script execution');
+          sendResponse(null);
+        }
+      } catch (error) {
+        console.error('[Background] Error executing script for page state:', error);
+        // Return a fallback response instead of null
+        sendResponse({ 
+          url: '',
+          domain: 'unknown',
+          hasLoginForm: false,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    })();
     return true;
   }
 

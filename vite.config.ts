@@ -49,7 +49,7 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       input: {
-        index: 'packages/extension/index.ts',
+        popup: 'packages/extension/popup/index.tsx',
         background: 'packages/extension/background.ts',
         content: 'packages/extension/content.ts',
         credentialPicker: 'packages/extension/PopoverCredentialPicker.tsx',
@@ -59,7 +59,7 @@ export default defineConfig({
         entryFileNames: chunk => {
           if (chunk.name === 'background') return 'background.js';
           if (chunk.name === 'content') return 'assets/content.js';
-          if (chunk.name === 'index') return 'assets/index.js';
+          if (chunk.name === 'popup') return 'assets/index.js';
           if (chunk.name === 'credentialPicker') return 'src/content/popovers/PopoverCredentialPicker.js';
           return 'assets/[name]-[hash].js';
         },

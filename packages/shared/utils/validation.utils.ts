@@ -5,7 +5,7 @@
  * across all packages without platform dependencies.
  */
 
-import { ValidationRule, ValidationResult, FieldValidation } from '../types/base.types';
+import { ValidationRule, ValidationResult } from '../types/base.types';
 
 // ===== Email Validation =====
 

@@ -3,9 +3,10 @@
  * Handles encrypted vault storage and state synchronization
  */
 
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted, ItemEncrypted } from '@app/core/types/types';
-import { decryptAllItems, encryptCredential, encryptBankCard, encryptSecureNote } from '@app/core/logic/cryptography';
-import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@app/core/states';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/types';
+import { ItemEncrypted } from '@common/core/types/items.types';
+import { decryptAllItems, encryptCredential, encryptBankCard, encryptSecureNote } from '@common/core/services/cryptography';
+import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@common/core/states';
 import { getLocalStorageItem, setLocalStorageItem, removeLocalStorageItem } from './localStorage';
 
 const VAULT_KEY = 'simplipass_encrypted_vault';
@@ -83,10 +84,11 @@ export async function loadVaultFromStorage(userSecretKey: string): Promise<boole
 }
 
 /**
- * Create encrypted vault from current states and store it locally
+ * Save current states to encrypted vault in local storage
  * @param userSecretKey User's secret key for encryption
+ * @returns true if vault was saved successfully
  */
-export async function createEncryptedVault(userSecretKey: string): Promise<void> {
+export async function saveVaultToStorage(userSecretKey: string): Promise<boolean> {
   try {
     const credentialsStore = useCredentialsStore.getState();
     const bankCardsStore = useBankCardsStore.getState();
@@ -96,61 +98,72 @@ export async function createEncryptedVault(userSecretKey: string): Promise<void>
     const bankCards = bankCardsStore.bankCards;
     const secureNotes = secureNotesStore.secureNotes;
 
+    if (credentials.length === 0 && bankCards.length === 0 && secureNotes.length === 0) {
+      console.log('[Vault] No items to save, skipping vault storage');
+      return true;
+    }
+
     // Encrypt all items
     const encryptedCredentials: ItemEncrypted[] = [];
     const encryptedBankCards: ItemEncrypted[] = [];
     const encryptedSecureNotes: ItemEncrypted[] = [];
 
+    // Encrypt credentials
     for (const credential of credentials) {
       const encrypted = await encryptCredential(userSecretKey, credential);
       encryptedCredentials.push(encrypted);
     }
 
+    // Encrypt bank cards
     for (const bankCard of bankCards) {
       const encrypted = await encryptBankCard(userSecretKey, bankCard);
       encryptedBankCards.push(encrypted);
     }
 
+    // Encrypt secure notes
     for (const secureNote of secureNotes) {
       const encrypted = await encryptSecureNote(userSecretKey, secureNote);
       encryptedSecureNotes.push(encrypted);
     }
 
-    // Store encrypted vault
-    const encryptedVault = {
+    // Save to local storage
+    const vaultData = {
       credentials: encryptedCredentials,
       bankCards: encryptedBankCards,
-      secureNotes: encryptedSecureNotes
+      secureNotes: encryptedSecureNotes,
+      version: '1.0',
+      lastUpdated: new Date().toISOString(),
     };
 
-    await setLocalStorageItem(VAULT_KEY, encryptedVault);
+    await setLocalStorageItem(VAULT_KEY, vaultData);
 
-    console.log('[Vault] Successfully created encrypted vault:', {
+    console.log('[Vault] Successfully saved vault to storage:', {
       credentials: encryptedCredentials.length,
       bankCards: encryptedBankCards.length,
       secureNotes: encryptedSecureNotes.length
     });
+
+    return true;
   } catch (error) {
-    console.error('[Vault] Failed to create encrypted vault:', error);
-    throw error;
+    console.error('[Vault] Failed to save vault to storage:', error);
+    return false;
   }
 }
 
 /**
- * Clear the encrypted vault from local storage
+ * Clear encrypted vault from local storage
  */
-export async function clearVault(): Promise<void> {
+export async function clearVaultFromStorage(): Promise<void> {
   try {
     await removeLocalStorageItem(VAULT_KEY);
-    console.log('[Vault] Encrypted vault cleared from storage');
+    console.log('[Vault] Cleared vault from storage');
   } catch (error) {
-    console.error('[Vault] Failed to clear vault:', error);
-    throw error;
+    console.error('[Vault] Failed to clear vault from storage:', error);
   }
 }
 
 /**
- * Check if encrypted vault exists in storage
+ * Check if vault exists in local storage
  */
 export async function vaultExists(): Promise<boolean> {
   try {

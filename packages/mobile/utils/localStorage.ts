@@ -13,17 +13,17 @@ export interface LocalStorageAdapter {
 
 // Mobile localStorage implementation using secure storage
 const mobileLocalStorage: LocalStorageAdapter = {
-  async setItem(key: string, value: unknown): Promise<void> {
+  async setItem(_key: string, _value: unknown): Promise<void> {
     // TODO: Implement setItem for secure storage
     throw new Error('setItem not implemented for secure storage');
   },
   
-  async getItem<T>(key: string): Promise<T | null> {
+  async getItem<T>(_key: string): Promise<T | null> {
     // TODO: Implement getItem for secure storage
     throw new Error('getItem not implemented for secure storage');
   },
   
-  async removeItem(key: string): Promise<void> {
+  async removeItem(_key: string): Promise<void> {
     // TODO: Implement removeItem for secure storage
     throw new Error('removeItem not implemented for secure storage');
   },
@@ -47,19 +47,19 @@ export function getMobileLocalStorage(): LocalStorageAdapter {
 }
 
 // Convenience functions
-export async function setLocalStorageItem(key: string, value: unknown): Promise<void> {
+export async function setLocalStorageItem(_key: string, _value: unknown): Promise<void> {
   const storage = getMobileLocalStorage();
-  await storage.setItem(key, value);
+  await storage.setItem(_key, _value);
 }
 
-export async function getLocalStorageItem<T>(key: string): Promise<T | null> {
+export async function getLocalStorageItem<T>(_key: string): Promise<T | null> {
   const storage = getMobileLocalStorage();
-  return await storage.getItem<T>(key);
+  return await storage.getItem<T>(_key);
 }
 
-export async function removeLocalStorageItem(key: string): Promise<void> {
+export async function removeLocalStorageItem(_key: string): Promise<void> {
   const storage = getMobileLocalStorage();
-  await storage.removeItem(key);
+  await storage.removeItem(_key);
 }
 
 export async function clearLocalStorage(): Promise<void> {

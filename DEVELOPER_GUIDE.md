@@ -133,7 +133,7 @@ export const createNewFeature = async (data: any) => {
 // packages/app/components/NewFeatureComponent.tsx
 import React from 'react';
 import { View, Text } from 'react-native';
-import { useNewFeatureStore } from '@app/core/states/newFeature.state';
+import { useNewFeatureStore } from '@common/core/states/newFeature.state';
 
 export const NewFeatureComponent: React.FC = () => {
   const { items, isLoading, error } = useNewFeatureStore();
@@ -380,7 +380,7 @@ const result = await someFunction();
 ### 1. Platform Detection
 
 ```typescript
-import { detectPlatform } from '@app/core/adapters/platform.detection';
+import { detectPlatform } from '@common/core/adapters/platform.detection';
 
 console.log('Current platform:', detectPlatform());
 ```
@@ -388,7 +388,7 @@ console.log('Current platform:', detectPlatform());
 ### 2. Adapter Debugging
 
 ```typescript
-import { getPlatformAdapter } from '@app/core/adapters/adapter.factory';
+import { getPlatformAdapter } from '@common/core/adapters/adapter.factory';
 
 const adapter = await getPlatformAdapter();
 console.log('Platform:', adapter.getPlatformName());
@@ -399,7 +399,7 @@ console.log('Supports offline vault:', adapter.supportsOfflineVault());
 ### 3. State Debugging
 
 ```typescript
-import { useAuthStore } from '@app/core/states/auth.state';
+import { useAuthStore } from '@common/core/states/auth.state';
 
 // Subscribe to state changes
 useAuthStore.subscribe((state) => {
@@ -410,7 +410,7 @@ useAuthStore.subscribe((state) => {
 ### 4. Network Debugging
 
 ```typescript
-import { getPlatformAdapter } from '@app/core/adapters/adapter.factory';
+import { getPlatformAdapter } from '@common/core/adapters/adapter.factory';
 
 const adapter = await getPlatformAdapter();
 const isOnline = await adapter.isOnline();
@@ -543,14 +543,14 @@ npm run build:all
 #### 1. Platform Detection Fails
 ```typescript
 // Check platform detection logic
-import { detectPlatform } from '@app/core/adapters/platform.detection';
+import { detectPlatform } from '@common/core/adapters/platform.detection';
 console.log('Detected platform:', detectPlatform());
 ```
 
 #### 2. Adapter Not Found
 ```typescript
 // Check adapter factory
-import { getPlatformAdapter } from '@app/core/adapters/adapter.factory';
+import { getPlatformAdapter } from '@common/core/adapters/adapter.factory';
 const adapter = await getPlatformAdapter();
 console.log('Adapter:', adapter.constructor.name);
 ```

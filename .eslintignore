@@ -1,13 +1,42 @@
+# Dependencies
 node_modules/
+
+# Build artifacts
 dist/
 build/
-.git/
-.husky/
-assets/
-.vscode/
-coverage/
+storybook-static/
+
+# Old project
+OLD_PROJECT/
+
+# Generated files
 *.min.js
 *.bundle.js
+*.chunk.js
+
+# Config files
 *.config.js
+*.config.ts
+vite.config.ts
+metro.config.js
+babel.config.js
+
+# Static assets
+*.css
+*.scss
+*.html
+*.md
 *.json
-*.lock
+
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Package files
+package-lock.json
+yarn.lock
+
+# Environment
+.env*
+

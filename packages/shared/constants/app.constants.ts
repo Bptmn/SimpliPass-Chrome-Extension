@@ -56,6 +56,7 @@ export const STORAGE_KEYS = {
   APP_VERSION: 'appVersion',
 } as const;
 
+
 // ===== UI Constants =====
 export const UI = {
   // Animation
@@ -221,3 +222,5 @@ export const IMPORT_FORMATS = {
   LASTPASS: 'lastpass',
   BITWARDEN: 'bitwarden',
 } as const; 
+
+export const FIRESTORE_USER_ITEMS_SUBCOLLECTION = (userId: string) => `users/${userId}/my_items`; 

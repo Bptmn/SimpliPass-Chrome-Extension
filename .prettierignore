@@ -1,2 +1,166 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build artifacts
 dist/
-node_modules/ 
+build/
+storybook-static/
+.next/
+.nuxt/
+.output/
+
+# Old project
+OLD_PROJECT/
+
+# Generated files
+*.min.js
+*.bundle.js
+*.chunk.js
+*.jsbundle
+*.tgz
+*.tar.gz
+*.zip
+*.crx
+*.pem
+
+# Package files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Config files
+*.config.js
+*.config.ts
+vite.config.ts
+metro.config.js
+babel.config.js
+jest.config.js
+jest.setup.js
+postcss.config.js
+
+# Static assets
+*.css
+*.scss
+*.html
+*.md
+*.json
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.woff
+*.woff2
+*.ttf
+*.eot
+
+# Environment files
+.env*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Coverage directory
+coverage/
+*.lcov
+.nyc_output/
+
+# Cache directories
+.cache
+.parcel-cache
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# React Native specific
+# iOS
+ios/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+
+# Android
+android/
+*.iml
+*.hprof
+.cxx/
+*.keystore
+local.properties
+
+# Expo
+.expo/
+web-build/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Testing
+junit.xml
+
+# Temporary folders
+tmp/
+temp/
+
+# Git
+.git/
+.husky/
+
+# Storybook
+storybook-static/
+.out
+.storybook-out
+
+# Chrome Extension specific
+*.crx
+*.pem
+*.zip
+
+# Misc
+*.tgz
+*.tar.gz 

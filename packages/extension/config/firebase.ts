@@ -1,30 +1,43 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, signInWithCustomToken, signOut, browserLocalPersistence, setPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getFirebaseConfig, validateFirebaseConfig } from '@app/core/config/platform';
+import { getFirebaseConfig, validateFirebaseConfig } from '@common/config/platform';
 
 let app: any;
 let auth: any;
 let db: any;
 
 export async function initFirebase() {
-  // Only real Firebase initialization
-  const firebaseConfig = await getFirebaseConfig();
-  validateFirebaseConfig();
-  app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
-  // Set persistence to local (so user stays logged in across popup closes)
-  if (typeof window !== 'undefined') {
-    setPersistence(auth, browserLocalPersistence)
-      .then(() => {
-        console.log('[Firebase] Auth persistence set to local');
-      })
-      .catch((error) => {
-        console.error('[Firebase] Failed to set auth persistence:', error);
-      });
+  try {
+    // Only real Firebase initialization
+    const firebaseConfig = await getFirebaseConfig();
+    
+    // Check if Firebase config is properly set
+    if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+      console.warn('[Firebase] Firebase configuration is missing or incomplete. Extension will work in offline mode.');
+      throw new Error('Firebase configuration is missing');
+    }
+    
+    validateFirebaseConfig();
+    app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    
+    // Set persistence to local (so user stays logged in across popup closes)
+    if (typeof window !== 'undefined') {
+      setPersistence(auth, browserLocalPersistence)
+        .then(() => {
+          console.log('[Firebase] Auth persistence set to local');
+        })
+        .catch((error) => {
+          console.error('[Firebase] Failed to set auth persistence:', error);
+        });
+    }
+    return { auth, db };
+  } catch (error) {
+    console.error('[Firebase] Initialization failed:', error);
+    throw error;
   }
-  return { auth, db };
 }
 
 // Sign in to Firebase with a custom token (low-level)

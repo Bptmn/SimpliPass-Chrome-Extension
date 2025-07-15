@@ -3,12 +3,12 @@
 // It renders the credential suggestion UI, receives credentials from the parent via postMessage,
 // and communicates actions (pick, close) and sizing (height/width) back to the parent.
 
-import React, { useEffect, useRef, createContext, useContext, ReactNode } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Text } from 'react-native';
 import './PopoverCredentialPicker.css';
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider } from '@app/components';
-import { CredentialCard } from '@components/CredentialCard';
+import { ThemeProvider } from '@common/core/logic/theme';
+import { CredentialCard } from '@ui/components/CredentialCard';
 
 // Minimal popover-specific ErrorBanner
 const PopoverErrorBanner: React.FC<{ message: string }> = ({ message }) => (
@@ -100,6 +100,7 @@ export const PopoverCredentialPicker: React.FC<PopoverCredentialPickerProps> = (
               <CredentialCard 
                 credential={{ 
                   id: cred.id,
+                  itemType: 'credential',
                   title: cred.title,
                   username: cred.username,
                   password: '', // Will be filled by the parent
@@ -107,7 +108,7 @@ export const PopoverCredentialPicker: React.FC<PopoverCredentialPickerProps> = (
                   note: '',
                   createdDateTime: new Date(),
                   lastUseDateTime: new Date(),
-                  itemKey: ''
+                  itemKey: '',
                 }} 
                 onPress={() => onPick(cred)}
                 hideCopyBtn={true} 

@@ -30,7 +30,9 @@ export interface Result<T = any, E = string> {
   error?: E;
 }
 
-export interface AsyncResult<T = any, E = string> extends Promise<Result<T, E>> {}
+export interface AsyncResult<T = any, E = string> extends Promise<Result<T, E>> {
+  readonly __asyncResultBrand: unique symbol;
+}
 
 // ===== Pagination Types =====
 

@@ -5,7 +5,8 @@
   "main": "index.ts",
   "types": "index.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "echo 'Extension builds are handled by the root build system. Run npm run build from the project root.'",
+    "type-check": "tsc --noEmit",
     "test": "jest",
     "lint": "eslint . --ext .ts,.tsx"
   },

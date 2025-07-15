@@ -8,247 +8,217 @@
 // - Render the main UI (navbar, helper bar, etc.)
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { ToastProvider } from '@app/components/Toast';
-import NavBar from '@app/components/NavBar';
-import { HelperBar } from '@app/components/HelperBar';
-import { useUserStore } from '@app/core/states/user';
-import { initFirebase } from '../config/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import { fetchUserProfile } from '@app/core/logic/auth';
-import { PageState } from '@app/core/types/types';
-import { User as FirebaseUser } from 'firebase/auth';
-import { User as AppUser } from '@app/core/types/types';
-import { HomePage } from '@app/screens/HomePage';
-import LoginPage from '@app/screens/LoginPage';
-import { GeneratorPage } from '@app/screens/GeneratorPage';
-import SettingsPage from '@app/screens/SettingsPage';
-import AddCard1 from '@app/screens/AddCard1';
-import AddCard2 from '@app/screens/AddCard2';
-import AddSecureNote from '@app/screens/AddSecureNote';
-import { ModifyCredentialPage } from '@app/screens/ModifyCredentialPage';
-import { ModifyBankCardPage } from '@app/screens/ModifyBankCardPage';
-import { ModifySecureNotePage } from '@app/screens/ModifySecureNotePage';
-import AddCredential1 from '@app/screens/AddCredential1';
-import AddCredential2 from '@app/screens/AddCredential2';
-import { ReEnterPasswordPage } from '@app/screens/ReEnterPasswordPage';
-import { ReUnlockPage } from '@app/screens/ReUnlockPage';
-import { loadVaultIfNeeded } from '@extension/utils/vaultLoader';
-import { colors } from '@app/design/colors';
-
-const HELPERBAR_HEIGHT = 56;
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { ToastProvider } from '@ui/components/Toast';
+import NavBar from '@ui/components/NavBar';
+import { HelperBar } from '@ui/components/HelperBar';
+import { HomePage } from '@ui/pages/HomePage';
+import LoginPage from '@ui/pages/LoginPage';
+import { GeneratorPage } from '@ui/pages/GeneratorPage';
+import { SettingsPage } from '@ui/pages/SettingsPage';
+import AddCard1 from '@ui/pages/AddCard1';
+import { AddCard2 } from '@ui/pages/AddCard2';
+import { AddSecureNote } from '@ui/pages/AddSecureNote';
+import { ModifyCredentialPage } from '@ui/pages/ModifyCredentialPage';
+import { ModifyBankCardPage } from '@ui/pages/ModifyBankCardPage';
+import { ModifySecureNotePage } from '@ui/pages/ModifySecureNotePage';
+import AddCredential1 from '@ui/pages/AddCredential1';
+import { AddCredential2 } from '@ui/pages/AddCredential2';
+import { ReEnterPasswordPage } from '@ui/pages/ReEnterPasswordPage';
+import { ReUnlockPage } from '@ui/pages/ReUnlockPage';
+import { useAuthStore } from '@common/core/states/auth.state';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
+import { CredentialDetailsPage } from '@ui/pages/CredentialDetailsPage';
+import { BankCardDetailsPage } from '@ui/pages/BankCardDetailsPage';
+import { SecureNoteDetailsPage } from '@ui/pages/SecureNoteDetailsPage';
 
 export const PopupApp: React.FC = () => {
-  // State for loading, error, and page info
-  const [isLoading, setIsLoading] = useState(true);
-  const [pageState, setPageState] = useState<PageState | null>(null);
+  console.log('PopupApp component rendering...');
 
-  // Use global Zustand user store
-  const user = useUserStore((state) => state.user);
-  const setUser = useUserStore((state) => state.setUser);
+  // State for user, loading, error, and page info
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Use global Zustand auth store
+  const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  const [pageState] = useState(null);
+  const [selectedCredential] = useState<CredentialDecrypted | null>(null);
+  const [selectedBankCard] = useState<BankCardDecrypted | null>(null);
+  const [selectedSecureNote] = useState<SecureNoteDecrypted | null>(null);
+
+  const navigate = useNavigate();
+
+  const handleInjectCredential = (_credentialId: string) => {
+    // Implement credential injection logic here
+  };
 
   useEffect(() => {
+    console.log('PopupApp useEffect running...');
+
     // On mount, query the current tab for page info (domain, url, login form)
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
-      if (!tab?.id) return;
-      chrome.scripting.executeScript(
-        {
-          target: { tabId: tab.id },
-          func: () => ({
-            url: window.location.href,
-            domain: window.location.hostname,
-            hasLoginForm: !!document.querySelector('form input[type="password"]'),
-          }),
-        },
-        (results) => {
-          if (chrome.runtime.lastError || !results || !results[0]?.result) return;
-          const { url, domain, hasLoginForm } = results[0].result;
-          setPageState({ url, domain, hasLoginForm });
-        },
-      );
-    });
-
-    // Listen for Firebase Auth state changes (robust persistence)
-    setIsLoading(true);
-    let unsubscribe: (() => void) | undefined;
-    (async () => {
-      const { auth: firebaseAuth } = await initFirebase();
-      unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser: FirebaseUser | null) => {
-        if (firebaseUser) {
-          // Fetch full user profile from Firestore
-          const firestoreUser = await fetchUserProfile(firebaseUser.uid);
-          if (firestoreUser) {
-            setUser(firestoreUser);
-          } else {
-            // Fallback to Auth user if Firestore user is missing
-            const mappedUser: AppUser = {
-              uid: firebaseUser.uid,
-              email: firebaseUser.email || '',
-              created_time: new Date() as any,
-              salt: '',
-            };
-            setUser(mappedUser);
-          }
-        } else {
-          setUser(null);
-        }
+      if (!tab?.id) {
+        setError('Failed to get current tab');
         setIsLoading(false);
-      });
-    })();
-
-    // Load vault on mount
-    loadVaultIfNeeded().then(() => {
-      console.log('[Popup] Vault load attempt completed');
-    }).catch(() => {
-      console.log('[Popup] No vault available, user must login');
-    });
-
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  }, [setUser]);
-
-  // Handler to inject a credential into the current tab
-  const handleInjectCredential = async (credentialId: string) => {
-    try {
-      // Check if vault is loaded before attempting injection
-      const sessionResponse = await new Promise<{ isValid: boolean }>((resolve) => {
-        chrome.runtime.sendMessage({ 
-          type: 'GET_SESSION_STATUS'
-        }, resolve);
-      });
-
-      if (!sessionResponse || !sessionResponse.isValid) {
-        console.log('[Popup] No valid vault loaded, cannot inject credential');
         return;
       }
-
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs[0]?.id) {
-          chrome.runtime.sendMessage({
-            type: 'INJECT_CREDENTIAL',
-            credentialId,
-            tabId: tabs[0].id,
-          });
+      
+      // Send message to background script to get page state
+      chrome.runtime.sendMessage(
+        { type: 'GET_PAGE_STATE', tabId: tab.id },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            console.error('[PopupApp] Runtime error:', chrome.runtime.lastError);
+            setError('Failed to get page state');
+            setIsLoading(false);
+            return;
+          }
+          if (!response) {
+            console.error('[PopupApp] No response from background script');
+            setError('Failed to get page state');
+            setIsLoading(false);
+            return;
+          }
+          // Page state received successfully, can be used later if needed
+          console.log('[PopupApp] Page state received:', response);
+          if (response.error) {
+            console.log('[PopupApp] Page state has error:', response.error);
+          }
+          setIsLoading(false);
         }
-      });
-    } catch (error) {
-      console.error('[Popup] Error injecting credential:', error);
-    }
-  };
+      );
+    });
+  }, []);
 
-  // Render loading state
-  if (isLoading) {
+  console.log('Current render state:', { isLoading, error, user, isAuthenticated });
+
+  // Mock data for modify pages (not used)
+  // const mockCredential: CredentialDecrypted = {
+  //   id: 'mock-cred-1',
+  //   itemType: 'credential',
+  //   createdDateTime: new Date(),
+  //   lastUseDateTime: new Date(),
+  //   title: 'Mock Credential',
+  //   username: 'mock@example.com',
+  //   password: 'mockpassword',
+  //   url: 'https://example.com',
+  //   note: 'Mock credential for testing',
+  //   itemKey: 'mock-key',
+  // };
+  
+  // const mockBankCard: BankCardDecrypted = {
+  //   id: 'mock-card-1',
+  //   itemType: 'bankCard',
+  //   createdDateTime: new Date(),
+  //   lastUseDateTime: new Date(),
+  //   title: 'Mock Bank Card',
+  //   owner: 'Mock Owner',
+  //   cardNumber: '4111111111111111',
+  //   expirationDate: { month: 12, year: 2025 },
+  //   verificationNumber: '123',
+  //   bankName: 'Mock Bank',
+  //   bankDomain: 'mockbank.com',
+  //   note: 'Mock bank card for testing',
+  //   color: '#007AFF',
+  //   itemKey: 'mock-key',
+  // };
+  
+  // const mockSecureNote: SecureNoteDecrypted = {
+  //   id: 'mock-note-1',
+  //   itemType: 'secureNote',
+  //   createdDateTime: new Date(),
+  //   lastUseDateTime: new Date(),
+  //   title: 'Mock Secure Note',
+  //   note: 'Mock secure note content for testing',
+  //   color: '#007AFF',
+  //   itemKey: 'mock-key',
+  // };
+
+  // Render error state if any
+  if (error) {
+    console.log('Rendering error state...');
     return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
-      </View>
+      <div className="container">
+        {error && <div className="error-message">{error}</div>}
+      </div>
     );
   }
 
+  // Render loading state
+  if (isLoading) {
+    console.log('Rendering loading state...');
+    return (
+      <div className="container">
+        {isLoading && <div className="loading" />}
+      </div>
+    );
+  }
+
+  console.log('Rendering main content...');
   return (
     <ToastProvider>
-      <View style={styles.container}>
-        {!user ? (
+      <div className="container">
+        {isAuthenticated && <NavBar />}
+        <div id="content">
           <Routes>
-            <Route path="*" element={<LoginPage />} />
+            {!isAuthenticated ? (
+              <Route path="*" element={<LoginPage />} />
+            ) : (
+              <>
+                <Route path="/" element={<Navigate to="/home" replace />} />
+                <Route
+                  path="/home"
+                  element={
+                    <HomePage
+                      user={user}
+                      pageState={pageState}
+                      onInjectCredential={handleInjectCredential}
+                    />
+                  }
+                />
+                <Route path="/generator" element={<GeneratorPage onBack={() => navigate(-1)} />} />
+                <Route path="/settings" element={<SettingsPage onBack={() => navigate(-1)} />} />
+                <Route path="/add-credential-1" element={<AddCredential1 />} />
+                <Route path="/add-credential-2" element={<AddCredential2 title="" onBack={() => navigate(-1)} />} />
+                <Route path="/add-card-1" element={<AddCard1 />} />
+                <Route path="/add-card-2" element={<AddCard2 onBack={() => navigate(-1)} />} />
+                <Route path="/add-securenote" element={<AddSecureNote onCancel={() => navigate(-1)} />} />
+                <Route
+                  path="/credential/:id"
+                  element={selectedCredential && <CredentialDetailsPage credential={selectedCredential} onBack={() => navigate(-1)} />}
+                />
+                <Route
+                  path="/bank-card/:id"
+                  element={selectedBankCard && <BankCardDetailsPage card={selectedBankCard} onBack={() => navigate(-1)} />}
+                />
+                <Route
+                  path="/secure-note/:id"
+                  element={selectedSecureNote && <SecureNoteDetailsPage note={selectedSecureNote} onBack={() => navigate(-1)} />}
+                />
+                <Route
+                  path="/modify-credential"
+                  element={selectedCredential && <ModifyCredentialPage credential={selectedCredential} onBack={() => navigate(-1)} />}
+                />
+                <Route
+                  path="/modify-bank-card"
+                  element={selectedBankCard && <ModifyBankCardPage bankCard={selectedBankCard} onBack={() => navigate(-1)} />}
+                />
+                <Route
+                  path="/modify-secure-note"
+                  element={selectedSecureNote && <ModifySecureNotePage secureNote={selectedSecureNote} onBack={() => navigate(-1)} />}
+                />
+                <Route path="/re-enter-password" element={<ReEnterPasswordPage />} />
+                <Route path="/re-unlock" element={<ReUnlockPage />} />
+              </>
+            )}
           </Routes>
-        ) : (
-          <View style={styles.appLayout}>
-            {/* Header - NavBar */}
-            <View style={styles.header}>
-              <NavBar />
-            </View>
-            
-            {/* Main Content Area */}
-            <View style={styles.mainContent}>
-              <ScrollView 
-                style={styles.scrollView} 
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-              >
-                <Routes>
-                  <Route path="/" element={<Navigate to="/home" replace />} />
-                  <Route
-                    path="/home"
-                    element={
-                      <HomePage
-                        user={user}
-                        pageState={pageState}
-                        onInjectCredential={handleInjectCredential}
-                      />
-                    }
-                  />
-                  <Route path="/generator" element={<GeneratorPage />} />
-                  <Route path="/settings" element={<SettingsPage />} />
-                  <Route path="/add-credential-1" element={<AddCredential1 />} />
-                  <Route path="/add-credential-2" element={<AddCredential2Wrapper />} />
-                  <Route path="/add-card-1" element={<AddCard1 />} />
-                  <Route path="/add-card-2" element={<AddCard2 />} />
-                  <Route path="/add-securenote" element={<AddSecureNote />} />
-                  <Route path="/modify-credential" element={<ModifyCredentialPage />} />
-                  <Route path="/modify-bank-card" element={<ModifyBankCardPage />} />
-                  <Route path="/modify-secure-note" element={<ModifySecureNotePage />} />
-                  <Route path="/re-enter-password" element={<ReEnterPasswordPage />} />
-                  <Route path="/re-unlock" element={<ReUnlockPage />} />
-                </Routes>
-              </ScrollView>
-            </View>
-            
-            {/* Footer - HelperBar */}
-            <View style={styles.footer}>
-              <HelperBar />
-            </View>
-          </View>
-        )}
-      </View>
+        </div>
+        {isAuthenticated && <HelperBar />}
+      </div>
     </ToastProvider>
   );
 };
 
-const styles = StyleSheet.create({
-  appLayout: {
-    flex: 1,
-    flexDirection: 'column',
-    minHeight: 0,
-  },
-  container: {
-    backgroundColor: colors.primaryBackground,
-    flex: 1,
-    minHeight: 0,
-    position: 'relative',
-  },
-  footer: {
-    backgroundColor: colors.primaryBackground, // fallback for transparency
-    bottom: 0,
-    height: HELPERBAR_HEIGHT,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    zIndex: 10,
-  },
-  header: {
-    flexShrink: 0,
-  },
-  mainContent: {
-    flex: 1,
-    minHeight: 0,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: HELPERBAR_HEIGHT, // ensure content is never hidden
-  },
-  scrollView: {
-    flex: 1,
-    minHeight: 0,
-  },
-});
-
-// AddCredential2Wrapper to extract title from location.state
-const AddCredential2Wrapper = () => {
-  const location = useLocation();
-  const title = location.state?.title || '';
-  return <AddCredential2 title={title} />;
-};
