@@ -10,6 +10,5 @@ export * from './useInputLogic';
 export * from './useLazyCredentialIcon';
 export * from './useSecretKeyCheck';
 export * from './useToast';
-export { useLoginPage } from './useLoginPage';
 export { useGeneratorPage } from './useGeneratorPage';
 export { useHomePage } from './useHomePage'; 

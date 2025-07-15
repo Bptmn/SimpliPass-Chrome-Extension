@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { HomePage } from '@ui/pages/HomePage';
 import { ThemeProvider } from '@common/core/logic/theme';
+import { initializePlatform } from '@common/core/platform';
 
 export default function App() {
+  useEffect(() => {
+    initializePlatform();
+  }, []);
+
   return (
     <ThemeProvider>
       <View style={styles.container}>

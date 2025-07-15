@@ -1,29 +1,32 @@
 /**
- * Session Management Logic
+ * Session Management Service
  * 
- * Handles session management operations using platform adapters.
- * This provides a unified interface for session operations across platforms.
+ * Handles user session initialization, validation, and cleanup.
+ * Sessions are stored in platform-specific storage.
  */
 
-import { getPlatformAdapter } from '../platform/platform.adapter';
+import { platform } from '../platform/platform.adapter';
 import { useAuthStore } from '../states/auth.state';
 import { UserSession } from '../types/auth.types';
 
 /**
+ * Generate a unique session ID
+ */
+function generateSessionId(): string {
+  return crypto.randomUUID();
+}
+
+/**
  * Initialize user session after successful authentication
  */
-export const initializeUserSession = async (userId: string): Promise<void> => {
+export async function initializeUserSession(userId: string, _userSecretKey: string): Promise<UserSession> {
   try {
-    
-    // Get platform adapter
-    const adapter = await getPlatformAdapter();
-    
     // Get device fingerprint
-    const deviceFingerprint = await adapter.getDeviceFingerprint();
-
-    // Create session object
+    const deviceFingerprint = await platform.getDeviceFingerprint();
+    
+    // Create session
     const session: UserSession = {
-      id: crypto.randomUUID(),
+      id: generateSessionId(),
       userId,
       deviceFingerprint,
       isActive: true,
@@ -31,85 +34,81 @@ export const initializeUserSession = async (userId: string): Promise<void> => {
       expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes
     };
     
-    // Store in auth state
-    useAuthStore.getState().setSession(session);
-    useAuthStore.getState().setAuthenticated(true);
-    
     // Store session metadata in platform storage
-    await adapter.storeSessionMetadata({
+    await platform.storeSessionMetadata({
       sessionId: session.id,
       userId: session.userId,
       deviceFingerprint: session.deviceFingerprint,
+      isActive: session.isActive,
       createdAt: session.createdAt.toISOString(),
       expiresAt: session.expiresAt.toISOString(),
     });
     
-    console.log('[Session] User session initialized successfully');
-  } catch (error) {
-    console.error('[Session] Failed to initialize user session:', error);
+    return session;
+  } catch (_error) {
     throw new Error('Failed to initialize user session');
   }
-};
+}
 
 /**
  * Clear user session and all related data
  */
-export const clearUserSession = async (): Promise<void> => {
+export async function clearUserSession(): Promise<void> {
   try {
-    console.log('[Session] Clearing user session...');
-    
-    // Get platform adapter
-    const adapter = await getPlatformAdapter();
-    
     // Clear auth state
     useAuthStore.getState().clearAuth();
     
     // Clear session metadata from platform storage
-    await adapter.deleteSessionMetadata();
-    
-    // Clear user secret key
-    await adapter.deleteUserSecretKey();
-    
-    console.log('[Session] User session cleared successfully');
-  } catch (error) {
-    console.error('[Session] Failed to clear user session:', error);
+    await platform.deleteSessionMetadata();
+  } catch (_error) {
     throw new Error('Failed to clear user session');
   }
-};
+}
 
 /**
  * Check if user session is valid
  */
-export const isSessionValid = async (): Promise<boolean> => {
+export async function validateUserSession(): Promise<boolean> {
   try {
-    const session = useAuthStore.getState().session;
-    
-    if (!session) {
-      return false;
-    }
-    
-    // Check if session has expired
-    if (session.expiresAt < new Date()) {
-      console.log('[Session] Session has expired');
-      await clearUserSession();
-      return false;
-    }
-    
     // Check if user secret key exists
-    const adapter = await getPlatformAdapter();
-    const userSecretKey = await adapter.getUserSecretKey();
+    const userSecretKey = await platform.getUserSecretKey();
     
     if (!userSecretKey) {
-      console.log('[Session] User secret key not found');
       return false;
     }
     
+    // Get session metadata
+    const sessionMetadata = await platform.getSessionMetadata();
+    
+    if (!sessionMetadata) {
+      return false;
+    }
+    
+    // Validate session metadata
+    const session = sessionMetadata as UserSession;
+    const now = new Date();
+    const expiresAt = new Date(session.expiresAt);
+    
+    if (now > expiresAt || !session.isActive) {
+      return false;
+    }
+    
+    // Update session metadata
+    await platform.storeSessionMetadata({
+      ...sessionMetadata,
+      expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // Extend session
+    });
+    
     return true;
-  } catch (error) {
-    console.error('[Session] Error checking session validity:', error);
+  } catch (_error) {
     return false;
   }
-};
+}
+
+/**
+ * Check if user session is valid (alias for validateUserSession)
+ */
+export const isSessionValid = validateUserSession;
 
 /**
  * Refresh user session (extend expiration time)
@@ -132,8 +131,7 @@ export const refreshUserSession = async (): Promise<void> => {
     });
     
     // Update session metadata in platform storage
-    const adapter = await getPlatformAdapter();
-    await adapter.storeSessionMetadata({
+    await platform.storeSessionMetadata({
       sessionId: session.id,
       userId: session.userId,
       deviceFingerprint: session.deviceFingerprint,

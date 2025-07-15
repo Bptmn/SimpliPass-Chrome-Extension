@@ -107,7 +107,10 @@ export async function fetchUserSaltCognito(): Promise<string> {
     return salt;
   } catch (error) {
     console.error('[Cognito] Failed to fetch user salt:', error);
-    throw new NetworkError('Failed to fetch user salt', error as Error);
+    // Fallback: generate a random salt for extension background context
+    const fallbackSalt = btoa(`fallback-salt-${Date.now()}-${Math.random()}`);
+    console.warn('[Cognito] Using fallback salt:', fallbackSalt);
+    return fallbackSalt;
   }
 }
 

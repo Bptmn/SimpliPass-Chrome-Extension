@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView, Image } from 'react-native';
 import { useThemeMode } from '@common/core/logic/theme';
 import { getColors } from '@ui/design/colors';
@@ -7,47 +7,8 @@ import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
 import { Input } from '@ui/components/InputFields';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
-import logo from '../../../assets/logo/logo_simplify_long.png';
-
-// Minimal useLoginPage hook for UI purposes
-const useLoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberEmail, setRememberEmail] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleLogin = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    // Simulate login process
-    setTimeout(() => {
-      setIsLoading(false);
-      // Mock login logic
-    }, 1000);
-  };
-
-  const _clearError = () => {
-    setError(null);
-  };
-
-  return {
-    email,
-    password,
-    rememberEmail,
-    rememberMe,
-    isLoading,
-    error,
-    setEmail,
-    setPassword,
-    setRememberEmail,
-    setRememberMe,
-    handleLogin,
-    clearError: _clearError,
-  };
-};
+import { useLoginFlow } from '@common/hooks/useLoginFlow';
+import logo from '../../../../assets/logo/logo_simplify_long.png';
 
 const LoginPage: React.FC = () => {
   const { mode } = useThemeMode();
@@ -55,20 +16,57 @@ const LoginPage: React.FC = () => {
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   
-  const {
-    email,
-    password,
-    rememberEmail,
-    rememberMe,
-    isLoading,
-    error,
-    setEmail,
-    setPassword,
-    setRememberEmail,
-    setRememberMe,
-    handleLogin,
-    clearError: _clearError,
-  } = useLoginPage();
+  const { login, isLoading, error } = useLoginFlow();
+
+  // Form state
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [emailError, setEmailError] = React.useState('');
+  const [passwordError, setPasswordError] = React.useState('');
+  const [rememberEmail, setRememberEmail] = React.useState(false);
+
+  // Load remembered email on mount
+  React.useEffect(() => {
+    const remembered = localStorage.getItem('simplipass_remembered_email');
+    if (remembered) {
+      setEmail(remembered);
+      setRememberEmail(true);
+    }
+  }, []);
+
+  // Persist or remove remembered email
+  React.useEffect(() => {
+    if (rememberEmail && email) {
+      localStorage.setItem('simplipass_remembered_email', email);
+    } else if (!rememberEmail) {
+      localStorage.removeItem('simplipass_remembered_email');
+    }
+  }, [rememberEmail, email]);
+
+  const handleLogin = React.useCallback(async () => {
+    setEmailError('');
+    setPasswordError('');
+    
+    let hasError = false;
+    if (!email) {
+      setEmailError('Email is required');
+      hasError = true;
+    }
+    if (!password) {
+      setPasswordError('Password is required');
+      hasError = true;
+    }
+    if (hasError) {
+      return;
+    }
+
+    try {
+      await login(email, password);
+    } catch (loginError: unknown) {
+      // Error is handled by useLoginFlow hook
+      console.error('Login error:', loginError);
+    }
+  }, [email, password, login]);
 
   if (error) {
     return <ErrorBanner message={error} />;
@@ -95,6 +93,7 @@ const LoginPage: React.FC = () => {
               _autoComplete="email"
               _required
               disabled={isLoading}
+              error={emailError}
             />
             {/* Remember Email Checkbox */}
             <Pressable
@@ -122,22 +121,8 @@ const LoginPage: React.FC = () => {
             _autoComplete="current-password"
             _required
             disabled={isLoading}
+            error={passwordError}
           />
-
-          {/* Remember Me Checkbox */}
-          <Pressable
-            style={styles.checkboxContainer}
-            onPress={() => setRememberMe(!rememberMe)}
-            disabled={isLoading}
-            testID="remember-me-checkbox"
-          >
-            <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
-              {rememberMe && (
-                <Text style={styles.checkboxIcon}>✓</Text>
-              )}
-            </View>
-            <Text style={styles.checkboxLabel}>Se souvenir de moi pendant 15 jours</Text>
-          </Pressable>
 
           {/* Login Button */}
           <Button

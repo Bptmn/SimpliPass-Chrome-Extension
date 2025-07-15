@@ -17,7 +17,8 @@ import { getColors } from '@ui/design/colors';
 import { spacing, radius } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { deriveKey } from '@common/utils/crypto';
-import { storeUserSecretKey, getUserSalt } from '@common/core/services/auth';
+import { storeUserSecretKey } from '@common/core/services/auth';
+import { auth } from '@common/core/adapters/auth.adapter';
 import { useUserStore } from '@common/core/states/user';
 
 interface LocationState {
@@ -68,7 +69,7 @@ export const ReUnlockPage: React.FC = () => {
 
     try {
       // Get user salt
-      const salt = await getUserSalt();
+      const salt = await auth.getUserSalt();
       if (!salt) {
         Alert.alert('Erreur', 'Impossible de récupérer le sel utilisateur.');
         return;

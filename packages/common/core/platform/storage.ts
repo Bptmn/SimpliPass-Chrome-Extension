@@ -6,15 +6,14 @@
  */
 
 import { StorageError } from '../types/errors.types';
-import { getPlatformAdapter } from './adapter.factory';
+import { platform } from './platform.adapter';
 
 /**
  * Store user secret key encrypted in platform storage
  */
 export async function storeUserSecretKeyEncrypted(encryptedKey: string): Promise<void> {
   try {
-    const adapter = await getPlatformAdapter();
-    await adapter.storeUserSecretKey(encryptedKey);
+    await platform.storeUserSecretKey(encryptedKey);
   } catch (error) {
     throw new StorageError('Failed to store user secret key', error as Error);
   }
@@ -25,8 +24,7 @@ export async function storeUserSecretKeyEncrypted(encryptedKey: string): Promise
  */
 export async function getUserSecretKeyEncrypted(): Promise<string | null> {
   try {
-    const adapter = await getPlatformAdapter();
-    return await adapter.getUserSecretKey();
+    return await platform.getUserSecretKey();
   } catch (error) {
     throw new StorageError('Failed to get user secret key', error as Error);
   }
@@ -37,8 +35,7 @@ export async function getUserSecretKeyEncrypted(): Promise<string | null> {
  */
 export async function deleteUserSecretKeyEncrypted(): Promise<void> {
   try {
-    const adapter = await getPlatformAdapter();
-    await adapter.deleteUserSecretKey();
+    await platform.deleteUserSecretKey();
   } catch (error) {
     throw new StorageError('Failed to delete user secret key', error as Error);
   }

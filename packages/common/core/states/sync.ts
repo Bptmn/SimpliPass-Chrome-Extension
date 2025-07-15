@@ -10,7 +10,7 @@ import { useCredentialsStore } from './credentials.state';
 import { useBankCardsStore } from './bankCards';
 import { useSecureNotesStore } from './secureNotes';
 import { useUserStore } from './user';
-import { getPlatformAdapter } from '../platform';
+import { platform } from '../platform';
 
 // ===== Types =====
 
@@ -92,7 +92,7 @@ export const syncAllStates = async (
     if (data.auth && options.updateAuth !== false) {
       try {
         const authStore = useAuthStore.getState();
-        if (data.auth.user) authStore.setUser(data.auth.user);
+        if (data.auth.user) useUserStore.getState().setUser(data.auth.user);
         if (data.auth.session) authStore.setSession(data.auth.session);
         if (data.auth.isAuthenticated !== undefined) authStore.setAuthenticated(data.auth.isAuthenticated);
         updatedStates.push('auth');
@@ -128,8 +128,7 @@ export const clearAllStates = async () => {
     useSecureNotesStore.getState().setSecureNotes([]);
     
     // Clear platform-specific storage
-    const adapter = await getPlatformAdapter();
-    await adapter.clearSession();
+    await platform.clearSession();
     
     console.log('[Sync] All states cleared successfully');
   } catch (error) {

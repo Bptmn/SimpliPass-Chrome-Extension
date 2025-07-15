@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { View, ScrollView } from 'react-native';
-import { useAuthStore } from '@common/core/states/auth.state';
+import { useUserStore } from '@common/core/states/user';
 import { passwordGenerator } from '@common/utils/passwordGenerator';
 import { addItem } from '@common/core/logic/items';
 import { getUserSecretKey } from '@common/core/services/secret';
@@ -29,7 +29,7 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
   const { mode } = useThemeMode();
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const themeColors = getColors(mode);
-  const user = useAuthStore(state => state.user);
+  const user = useUserStore(state => state.user);
   const navigate = useNavigate();
   const [title, setTitle] = useState(initialTitle);
   const [username, setUsername] = useState(user?.email || '');

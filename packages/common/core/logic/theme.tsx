@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { setColorsMode } from '@ui/design/colors';
-import { setPageStylesMode } from '@ui/design/layout';
+import { setColorsMode } from '@common/ui/design/colors';
+import { setPageStylesMode } from '@common/ui/design/layout';
 
 export type ThemeMode = 'light' | 'dark';
 

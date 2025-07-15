@@ -1,328 +1,143 @@
-# Platform Adapters Documentation
+# Platform Adapter
+
+This module provides platform-specific functionality abstraction for SimpliPass, ensuring the app remains platform-agnostic.
 
 ## Overview
 
-The platform adapter system provides a unified interface for platform-specific functionality while keeping the core application logic platform-agnostic. This ensures that the `app/` and `core/` packages can work consistently across mobile and extension platforms.
+The platform adapter loads the appropriate implementation (mobile or extension) once at startup and provides a unified interface for all platform-specific operations.
 
-## Architecture
+## Usage
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   App/Core      │    │  Platform       │    │   Platform      │
-│   Logic         │◄──►│  Adapter        │◄──►│   Specific      │
-│                 │    │  Interface      │    │   Implementation│
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
+### 1. Initialize at App Startup
 
-## Core Principles
-
-1. **Platform Agnostic**: App and core logic never directly access platform APIs
-2. **Single Interface**: All platform functionality goes through the adapter interface
-3. **Consistent API**: Same methods work across all platforms
-4. **Error Handling**: Platform-specific errors are abstracted into common error types
-
-## Platform Adapter Interface
-
-### Storage Operations
+Call `initializePlatform()` at your app startup to load the correct platform implementation:
 
 ```typescript
-interface PlatformAdapter {
-  // User secret key management
-  getUserSecretKey(): Promise<string | null>;
-  storeUserSecretKey(key: string): Promise<void>;
-  deleteUserSecretKey(): Promise<void>;
-  
-  // Vault operations (Extension only)
-  getEncryptedVault?(): Promise<EncryptedVault | null>;
-  storeEncryptedVault?(vault: EncryptedVault): Promise<void>;
-  deleteEncryptedVault?(): Promise<void>;
-}
+import { initializePlatform } from '@common/core/platform';
+
+// In your app startup (e.g., App.tsx, main.tsx)
+const App = () => {
+  useEffect(() => {
+    const initApp = async () => {
+      try {
+        await initializePlatform();
+        console.log('Platform initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize platform:', error);
+      }
+    };
+    
+    initApp();
+  }, []);
+
+  return <YourApp />;
+};
 ```
 
-### Platform Information
+### 2. Use Platform Functions
+
+Once initialized, you can use platform functions directly:
 
 ```typescript
-interface PlatformAdapter {
-  getPlatformName(): 'mobile' | 'extension';
-  supportsBiometric(): boolean;
-  supportsOfflineVault(): boolean;
-}
+import { platform } from '@common/core/platform';
+
+// Storage operations
+const secretKey = await platform.getUserSecretKey();
+await platform.storeUserSecretKey('my-secret-key');
+
+// Clipboard operations
+await platform.copyToClipboard('text to copy');
+const clipboardText = await platform.getFromClipboard();
+
+// Platform information
+const platformName = platform.getPlatformName(); // 'mobile' | 'extension'
+const supportsBiometric = platform.supportsBiometric(); // boolean
+
+// Network operations
+const isOnline = await platform.isOnline();
+const networkStatus = await platform.getNetworkStatus(); // 'online' | 'offline' | 'unknown'
 ```
 
-### Authentication
+### 3. Direct Adapter Access (Advanced)
+
+If you need direct access to the platform adapter:
 
 ```typescript
-interface PlatformAdapter {
-  authenticateWithBiometrics?(): Promise<boolean>;
-  isBiometricAvailable?(): Promise<boolean>;
-}
-```
+import { initializePlatformAdapter } from '@common/core/platform';
 
-### Clipboard Operations
-
-```typescript
-interface PlatformAdapter {
-  copyToClipboard(text: string): Promise<void>;
-  getFromClipboard(): Promise<string>;
-}
-```
-
-### Session Management
-
-```typescript
-interface PlatformAdapter {
-  clearSession(): Promise<void>;
-  getDeviceFingerprint(): Promise<string>;
-}
-```
-
-### Network Operations
-
-```typescript
-interface PlatformAdapter {
-  isOnline(): Promise<boolean>;
-  getNetworkStatus(): Promise<'online' | 'offline' | 'unknown'>;
-}
-```
-
-## Platform Implementations
-
-### Mobile Platform Adapter
-
-**Location**: `packages/mobile/adapters/platform.adapter.ts`
-
-**Features**:
-- Uses iOS Keychain / Android Keystore for secure storage
-- Supports biometric authentication
-- No local vault (always fetches from Firestore)
-- Automatic memory clearing on background
-
-**Key Methods**:
-```typescript
-class MobilePlatformAdapter implements PlatformAdapter {
-  async getUserSecretKey() {
-    return SecureStore.getItemAsync('userSecretKey');
-  }
-  
-  async storeUserSecretKey(key: string) {
-    return SecureStore.setItemAsync('userSecretKey', key);
-  }
-  
-  async authenticateWithBiometrics() {
-    return LocalAuthentication.authenticateAsync({
-      promptMessage: 'Authenticate to access SimpliPass',
-    });
-  }
-}
-```
-
-### Extension Platform Adapter
-
-**Location**: `packages/extension/adapters/platform.adapter.ts`
-
-**Features**:
-- Uses Chrome storage for encrypted vault
-- Device fingerprint-based encryption
-- Background script owns decrypted vault
-- Content script receives only needed data
-
-**Key Methods**:
-```typescript
-class ExtensionPlatformAdapter implements PlatformAdapter {
-  async getUserSecretKey() {
-    const encrypted = await chrome.storage.local.get('userSecretKey');
-    return this.decryptFromStorage(encrypted.userSecretKey);
-  }
-  
-  async storeUserSecretKey(key: string) {
-    const encrypted = await this.encryptForStorage(key);
-    return chrome.storage.local.set({ userSecretKey: encrypted });
-  }
-  
-  async getEncryptedVault() {
-    return chrome.storage.local.get('encryptedVault');
-  }
-}
-```
-
-## Adapter Factory
-
-**Location**: `packages/app/core/adapters/adapter.factory.ts`
-
-The adapter factory automatically detects the current platform and returns the appropriate adapter implementation.
-
-```typescript
-import { getPlatformAdapter } from '@common/core/adapters/adapter.factory';
-
-// Get the appropriate adapter for the current platform
-const adapter = await getPlatformAdapter();
-
-// Use platform-agnostic code
-const userSecretKey = await adapter.getUserSecretKey();
-await adapter.copyToClipboard('password123');
+const adapter = await initializePlatformAdapter();
+await adapter.authenticateWithBiometrics();
 ```
 
 ## Platform Detection
 
-**Location**: `packages/app/core/adapters/platform.detection.ts`
+The platform is automatically detected based on available APIs:
 
-Automatically detects whether the code is running on mobile or extension:
+- **Extension**: Detected when `chrome.storage` is available
+- **Mobile**: Detected when `navigator.userAgent` includes 'ReactNative'
+- **Default**: Falls back to extension for web builds
 
-```typescript
-import { detectPlatform } from '@common/core/adapters/platform.detection';
+## Available Operations
 
-const platform = detectPlatform(); // 'mobile' | 'extension'
-```
+### Storage Operations
+- `getUserSecretKey()` - Get user's secret key from secure storage
+- `storeUserSecretKey(key)` - Store user's secret key in secure storage
+- `deleteUserSecretKey()` - Delete user's secret key from storage
+
+### Session Metadata
+- `getSessionMetadata()` - Get session metadata
+- `storeSessionMetadata(metadata)` - Store session metadata
+- `deleteSessionMetadata()` - Delete session metadata
+
+### Platform Information
+- `getPlatformName()` - Get current platform ('mobile' | 'extension')
+- `supportsBiometric()` - Check if biometric authentication is supported
+- `supportsOfflineVault()` - Check if offline vault storage is supported
+
+### Authentication
+- `authenticateWithBiometrics()` - Authenticate with biometrics (mobile only)
+- `isBiometricAvailable()` - Check if biometric authentication is available
+
+### Clipboard Operations
+- `copyToClipboard(text)` - Copy text to clipboard
+- `getFromClipboard()` - Get text from clipboard
+
+### Session Management
+- `clearSession()` - Clear all session data
+- `getDeviceFingerprint()` - Get device fingerprint for encryption
+
+### Network Operations
+- `isOnline()` - Check if device is online
+- `getNetworkStatus()` - Get network status ('online' | 'offline' | 'unknown')
+
+### Email Remembering
+- `setRememberedEmail(email)` - Set remembered email
+- `getRememberedEmail()` - Get remembered email
+
+### Vault Operations (Extension only)
+- `getEncryptedVault()` - Get encrypted vault from storage
+- `storeEncryptedVault(vault)` - Store encrypted vault
+- `deleteEncryptedVault()` - Delete encrypted vault
 
 ## Error Handling
 
-All platform adapters throw standardized error types:
+The platform adapter throws meaningful errors when:
+
+- Platform initialization fails
+- Platform-specific operations fail
+- Platform adapter is used before initialization
 
 ```typescript
-export class PlatformError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public platform: string,
-    public originalError?: Error
-  ) {
-    super(message);
-    this.name = 'PlatformError';
-  }
-}
-
-export class BiometricError extends PlatformError {
-  constructor(message: string, platform: string, originalError?: Error) {
-    super(message, 'BIOMETRIC_ERROR', platform, originalError);
-    this.name = 'BiometricError';
-  }
-}
-
-export class StorageError extends PlatformError {
-  constructor(message: string, platform: string, originalError?: Error) {
-    super(message, 'STORAGE_ERROR', platform, originalError);
-    this.name = 'StorageError';
-  }
+try {
+  await platform.copyToClipboard('text');
+} catch (error) {
+  console.error('Clipboard operation failed:', error.message);
 }
 ```
 
-## Usage Examples
+## Performance Benefits
 
-### Authentication Flow
-
-```typescript
-import { getPlatformAdapter } from '@common/core/adapters/adapter.factory';
-
-async function loginUser(email: string, password: string) {
-  const adapter = await getPlatformAdapter();
-  
-  // Store user secret key securely
-  const userSecretKey = deriveKey(password, salt);
-  await adapter.storeUserSecretKey(userSecretKey);
-  
-  // Biometric authentication if supported
-  if (adapter.supportsBiometric()) {
-    const isAvailable = await adapter.isBiometricAvailable?.();
-    if (isAvailable) {
-      const authenticated = await adapter.authenticateWithBiometrics?.();
-      if (!authenticated) {
-        throw new BiometricError('Authentication failed', adapter.getPlatformName());
-      }
-    }
-  }
-}
-```
-
-### Clipboard Operations
-
-```typescript
-import { getPlatformAdapter } from '@common/core/adapters/adapter.factory';
-
-async function copyPassword(password: string) {
-  const adapter = await getPlatformAdapter();
-  await adapter.copyToClipboard(password);
-}
-```
-
-### Vault Management
-
-```typescript
-import { getPlatformAdapter } from '@common/core/adapters/adapter.factory';
-
-async function loadVault() {
-  const adapter = await getPlatformAdapter();
-  
-  if (adapter.getPlatformName() === 'mobile') {
-    // Mobile: Always fetch from Firestore
-    return await fetchFromFirestore();
-  } else {
-    // Extension: Try local vault first, then Firestore
-    const localVault = await adapter.getEncryptedVault?.();
-    if (localVault) {
-      return await decryptVault(localVault);
-    }
-    return await fetchFromFirestore();
-  }
-}
-```
-
-## Testing
-
-Platform adapters should be tested with platform-specific mocks:
-
-```typescript
-// Mock mobile platform
-jest.mock('expo-secure-store', () => ({
-  getItemAsync: jest.fn(() => Promise.resolve('mock-key')),
-  setItemAsync: jest.fn(() => Promise.resolve()),
-}));
-
-// Mock extension platform
-jest.mock('chrome', () => ({
-  storage: {
-    local: {
-      get: jest.fn(() => Promise.resolve({ userSecretKey: 'mock-key' })),
-      set: jest.fn(() => Promise.resolve()),
-    },
-  },
-}));
-```
-
-## Best Practices
-
-1. **Never access platform APIs directly** from app/core logic
-2. **Always use the adapter interface** for platform-specific operations
-3. **Handle errors consistently** using the standardized error types
-4. **Test with platform mocks** to ensure cross-platform compatibility
-5. **Document platform-specific behavior** in adapter implementations
-
-## Migration Guide
-
-When adding new platform-specific functionality:
-
-1. **Add method to interface** in `platform.adapter.ts`
-2. **Implement in both adapters** (mobile and extension)
-3. **Add comprehensive tests** for both implementations
-4. **Update documentation** with usage examples
-5. **Consider backward compatibility** for existing code
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Platform detection fails**: Check that platform detection logic is up to date
-2. **Adapter not found**: Ensure adapter factory is properly configured
-3. **Method not implemented**: Verify both platform adapters implement the interface
-4. **Type errors**: Check that interface and implementations match
-
-### Debug Tips
-
-```typescript
-import { getPlatformAdapter } from '@common/core/adapters/adapter.factory';
-
-// Debug platform detection
-const adapter = await getPlatformAdapter();
-console.log('Platform:', adapter.getPlatformName());
-console.log('Supports biometric:', adapter.supportsBiometric());
-console.log('Supports offline vault:', adapter.supportsOfflineVault());
-``` 
+- **Single initialization**: Platform is detected and loaded once at startup
+- **No repeated detection**: Platform functions use the pre-loaded implementation
+- **Lazy loading**: Platform-specific code is only loaded when needed
+- **Cached instance**: The same adapter instance is reused for all operations 

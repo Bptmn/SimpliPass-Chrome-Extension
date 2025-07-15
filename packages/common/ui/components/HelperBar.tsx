@@ -32,7 +32,7 @@ export const HelperBar: React.FC = () => {
           borderTopColor: themeColors.borderColor,
           borderTopWidth: 1,
           flexDirection: 'row',
-          height: '100%',
+          height: 55,
           justifyContent: 'center',
           paddingHorizontal: 8,
           width: '100%',

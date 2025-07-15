@@ -23,6 +23,8 @@ module.exports = {
     '^@shared/(.*)$': '<rootDir>/packages/shared/$1',
     '^@extension/(.*)$': '<rootDir>/packages/extension/$1',
     '^@mobile/(.*)$': '<rootDir>/packages/mobile/$1',
+    '^@ui/(.*)$': '<rootDir>/packages/common/ui/$1',
+    '^@common/(.*)$': '<rootDir>/packages/common/$1',
     '^@/(.*)$': '<rootDir>/packages/app/$1',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
     // Mock config files that use import.meta

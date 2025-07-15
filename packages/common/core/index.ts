@@ -56,8 +56,8 @@ export * from './libraries/auth';
 // Crypto functionality moved to services/cryptography
 export * from './libraries/database';
 
-// Platform exports (specific to avoid conflicts)
-export { getPlatformAdapter } from './platform';
+// Platform adapters
+export { platform } from './platform';
 export type { PlatformAdapter } from './types/platform.types';
 
 // States (specific exports to avoid conflicts)

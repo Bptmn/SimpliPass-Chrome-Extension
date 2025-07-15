@@ -6,32 +6,27 @@
  */
 
 import { AuthenticationError } from '../types/errors.types';
-import { getPlatformAdapter } from '../platform';
-import { encryptWithDeviceFingerprint, decryptWithDeviceFingerprint } from './cryptography';
+import { platform } from '../platform';
+import { encryptWithDeviceFingerprintKey, decryptWithDeviceFingerprintKey } from './cryptography';
 import { useAuthStore } from '../states/auth.state';
-import { fetchUserAttributesCognito } from '../libraries/auth/cognito';
 import { deriveKey } from '../../utils/crypto';
+import { auth } from '../adapters/auth.adapter';
 
 /**
  * Get user secret key from state or platform storage
  */
 export async function getUserSecretKey(): Promise<string | null> {
-  // 1. Check Zustand state first
-  const keyInState = useAuthStore.getState().userSecretKey;
-  if (keyInState) {
-    return keyInState;
+  const session = useAuthStore.getState().session;
+  if (!session) {
+    throw new AuthenticationError('User not authenticated');
   }
   try {
-    const adapter = await getPlatformAdapter();
-    const encryptedKey = await adapter.getUserSecretKey();
+    const encryptedKey = await platform.getUserSecretKey();
     if (!encryptedKey) {
       return null;
     }
     // Decrypt the key using device fingerprint
-    const decryptedKey = await decryptWithDeviceFingerprint(encryptedKey);
-    // Store in state for future use
-    useAuthStore.getState().setUserSecretKey(decryptedKey);
-    return decryptedKey;
+    return await decryptWithDeviceFingerprintKey(encryptedKey);
   } catch (error) {
     console.error('[Secret] Failed to get user secret key:', error);
     return null;
@@ -43,20 +38,22 @@ export async function getUserSecretKey(): Promise<string | null> {
  */
 export async function storeUserSecretKey(key: string): Promise<void> {
   try {
-    // 1. Store in Zustand state (clear)
-    useAuthStore.getState().setUserSecretKey(key);
-
+    // 1. Validate the key
+    if (!key || key.length < 32) {
+      throw new Error('Invalid user secret key');
+    }
     // 2. Encrypt the key using device fingerprint
-    const encryptedKey = await encryptWithDeviceFingerprint(key);
-    const adapter = await getPlatformAdapter();
+    const encryptedKey = await encryptWithDeviceFingerprintKey(key);
 
     // 3. Store in platform storage (encrypted)
-    await adapter.storeUserSecretKey(encryptedKey);
+    await platform.storeUserSecretKey(encryptedKey);
     
+    // 4. Update Zustand state
+    useAuthStore.getState().setUserSecretKey(key);
     console.log('[Secret] User secret key stored successfully');
   } catch (error) {
     console.error('[Secret] Failed to store user secret key:', error);
-    throw new AuthenticationError('Failed to store user secret key', error as Error);
+    throw error;
   }
 }
 
@@ -67,12 +64,11 @@ export async function deleteUserSecretKey(): Promise<void> {
   try {
     // Clear from Zustand state
     useAuthStore.getState().clearUserSecretKey();
-    const adapter = await getPlatformAdapter();
-    await adapter.deleteUserSecretKey();
+    await platform.deleteUserSecretKey();
     console.log('[Secret] User secret key deleted successfully');
   } catch (error) {
     console.error('[Secret] Failed to delete user secret key:', error);
-    throw new AuthenticationError('Failed to delete user secret key', error as Error);
+    throw error;
   }
 }
 
@@ -81,11 +77,31 @@ export async function deleteUserSecretKey(): Promise<void> {
  */
 export async function getDeviceFingerprint(): Promise<string> {
   try {
-    const adapter = await getPlatformAdapter();
-    return await adapter.getDeviceFingerprint();
+    return await platform.getDeviceFingerprint();
   } catch (error) {
-    console.warn('[Secret] Failed to get device fingerprint:', error);
-    return `device_${Date.now()}`;
+    console.error('[Secret] Failed to get device fingerprint:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generate device fingerprint key from device fingerprint and user salt
+ */
+export async function generateDeviceFingerprintKey(): Promise<string> {
+  try {
+    // 1. Get device fingerprint from platform adapter
+    const deviceFingerprint = await getDeviceFingerprint();
+    
+    // 2. Get user salt from Cognito attributes
+    const userSalt = await auth.getUserSalt();
+    
+    // 3. Derive a proper cryptographic key from device fingerprint and user salt
+    const deviceFingerprintKey = await deriveKey(deviceFingerprint, userSalt);
+    
+    return deviceFingerprintKey;
+  } catch (error) {
+    console.error('[Secret] Failed to generate device fingerprint key:', error);
+    throw new Error(`Failed to generate device fingerprint key: ${error}`);
   }
 }
 
@@ -102,12 +118,8 @@ export async function hasUserSecretKey(): Promise<boolean> {
 } 
 
 export async function initializeUserSecretKey(password: string): Promise<void> {
-  // 1. Fetch user attributes from Cognito
-  const attributes = await fetchUserAttributesCognito();
-  const userSalt = attributes['custom:salt'] as string;
-  if (!userSalt) {
-    throw new Error('User salt not found in Cognito attributes');
-  }
+  // 1. Get user salt from Cognito attributes
+  const userSalt = await auth.getUserSalt();
   // 2. Derive user secret key
   const userSecretKey = await deriveKey(password, userSalt);
   // 3. Store in state and local storage

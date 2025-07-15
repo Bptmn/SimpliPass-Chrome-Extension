@@ -5,7 +5,7 @@ import { Input } from '@ui/components/InputFields';
 import { getPageStyles } from '@ui/design/layout';
 import { addItem } from '@common/core/logic/items';
 import { getUserSecretKey } from '@common/core/services/secret';
-import { useAuthStore } from '@common/core/states/auth.state';
+import { useUserStore } from '@common/core/states/user';
 import { SecureNoteDecrypted } from '@common/core/types/items.types';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Button } from '@ui/components/Buttons';
@@ -23,7 +23,7 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
   const styles = React.useMemo(() => getPageStyles(mode), [mode]);
   const themeColors = getColors(mode);
   const navigate = useNavigate();
-  const user = useAuthStore(state => state.user);
+  const user = useUserStore(state => state.user);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedColor, setSelectedColor] = useState('#4f86a2');

@@ -117,6 +117,8 @@ export interface PlatformAdapter {
    */
   getDeviceFingerprint(): Promise<string>;
   
+
+  
   // ===== Network Operations =====
   
   /**

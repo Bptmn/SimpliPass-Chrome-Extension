@@ -6,10 +6,9 @@
  */
 
 import { create } from 'zustand';
-import { User, UserSession } from '../types/auth.types';
+import { UserSession } from '../types/auth.types';
 
 interface AuthState {
-  user: User | null;
   session: UserSession | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -17,7 +16,6 @@ interface AuthState {
   userSecretKey: string | null;
   
   // Actions
-  setUser: (user: User) => void;
   setSession: (session: UserSession) => void;
   setAuthenticated: (authenticated: boolean) => void;
   setLoading: (loading: boolean) => void;
@@ -28,20 +26,17 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set, _get) => ({
-  user: null,
   session: null,
   isAuthenticated: false,
   isLoading: false,
   error: null,
   userSecretKey: null,
   
-  setUser: (user) => set({ user }),
   setSession: (session) => set({ session }),
   setAuthenticated: (authenticated) => set({ isAuthenticated: authenticated }),
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),
   clearAuth: () => set({ 
-    user: null, 
     session: null, 
     isAuthenticated: false, 
     error: null,
@@ -51,5 +46,4 @@ export const useAuthStore = create<AuthState>((set, _get) => ({
   clearUserSecretKey: () => set({ userSecretKey: null }),
 }));
 
-// Legacy export for backward compatibility
-export const useUser = useAuthStore; 
+// Note: useUser is now exported from useUser.ts and uses useUserStore 

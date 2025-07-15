@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { useCredentialsStore } from '../core/states/credentials.state';
 import { addCredentialToDatabase, updateItemInDatabase, deleteItemFromDatabase } from '../core/services/items';
 import { CredentialDecrypted } from '../core/types/items.types';
+import { platform } from '../core/platform';
 
 export const useCredentials = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -100,11 +101,7 @@ export const useCredentials = () => {
       if (!credential) {
         throw new Error('Credential not found');
       }
-
-      // Get platform adapter for clipboard operations
-      const { getPlatformAdapter } = await import('../core/platform');
-      const adapter = await getPlatformAdapter();
-      await adapter.copyToClipboard(credential.password);
+      await platform.copyToClipboard(credential.password);
     } catch {
       throw new Error('Failed to copy password');
     }

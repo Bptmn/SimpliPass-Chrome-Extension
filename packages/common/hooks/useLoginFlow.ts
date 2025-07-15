@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { loginUser } from '../core/services/auth';
 import { initializeUserSession } from '../core/services/session';
-import { initializeUserSecretKey } from '../core/services/secret';
+import { initializeUserSecretKey, getUserSecretKey } from '../core/services/secret';
 import { useRefreshData } from './useRefreshData';
 import { refreshUserInfo } from './useUser';
 
@@ -32,7 +32,8 @@ export const useLoginFlow = () => {
       await refreshUserInfo(userId);
 
       // Step 4: Initialize user session
-      await initializeUserSession(userId);
+      const userSecretKey = await getUserSecretKey();
+      await initializeUserSession(userId, userSecretKey || '');
 
       // Step 5: Refresh data
       await refreshData();

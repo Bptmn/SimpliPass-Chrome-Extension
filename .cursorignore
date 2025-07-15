@@ -31,7 +31,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # Old project (if you want to ignore it)
-OLD_PROJECT/
 
 # Temporary files
 *.tmp

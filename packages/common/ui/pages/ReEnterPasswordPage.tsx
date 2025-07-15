@@ -15,7 +15,8 @@ import { getColors } from '@ui/design/colors';
 import { spacing } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { deriveKey } from '@common/utils/crypto';
-import { storeUserSecretKey, getUserSalt } from '@common/core/services/auth';
+import { storeUserSecretKey } from '@common/core/services/auth';
+import { auth } from '@common/core/adapters/auth.adapter';
 import { initializeUserSession } from '@common/core/services/session';
 import { useUserStore } from '@common/core/states/user';
 import { useThemeMode } from '@common/core/logic/theme';
@@ -47,7 +48,7 @@ export const ReEnterPasswordPage: React.FC = () => {
       console.log('[ReEnterPasswordPage] Starting password re-entry process...');
       
       // Get user salt
-      const salt = await getUserSalt();
+      const salt = await auth.getUserSalt();
       if (!salt) {
         Alert.alert('Erreur', 'Impossible de récupérer le sel utilisateur.');
         return;
@@ -66,7 +67,7 @@ export const ReEnterPasswordPage: React.FC = () => {
       console.log('[ReEnterPasswordPage] Key stored, initializing session...');
 
       // Initialize user session with the new secret key
-      await initializeUserSession(userSecretKey);
+      await initializeUserSession(user.id, userSecretKey);
 
       console.log('[ReEnterPasswordPage] Session initialized successfully');
       

@@ -9,28 +9,29 @@
 
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { ToastProvider } from '@ui/components/Toast';
-import NavBar from '@ui/components/NavBar';
-import { HelperBar } from '@ui/components/HelperBar';
-import { HomePage } from '@ui/pages/HomePage';
-import LoginPage from '@ui/pages/LoginPage';
-import { GeneratorPage } from '@ui/pages/GeneratorPage';
-import { SettingsPage } from '@ui/pages/SettingsPage';
-import AddCard1 from '@ui/pages/AddCard1';
-import { AddCard2 } from '@ui/pages/AddCard2';
-import { AddSecureNote } from '@ui/pages/AddSecureNote';
-import { ModifyCredentialPage } from '@ui/pages/ModifyCredentialPage';
-import { ModifyBankCardPage } from '@ui/pages/ModifyBankCardPage';
-import { ModifySecureNotePage } from '@ui/pages/ModifySecureNotePage';
-import AddCredential1 from '@ui/pages/AddCredential1';
-import { AddCredential2 } from '@ui/pages/AddCredential2';
-import { ReEnterPasswordPage } from '@ui/pages/ReEnterPasswordPage';
-import { ReUnlockPage } from '@ui/pages/ReUnlockPage';
+import { ToastProvider } from '@common/ui/components/Toast';
+import NavBar from '@common/ui/components/NavBar';
+import { HelperBar } from '@common/ui/components/HelperBar';
+import { HomePage } from '@common/ui/pages/HomePage';
+import LoginPage from '@common/ui/pages/LoginPage';
+import { GeneratorPage } from '@common/ui/pages/GeneratorPage';
+import { SettingsPage } from '@common/ui/pages/SettingsPage';
+import AddCard1 from '@common/ui/pages/AddCard1';
+import { AddCard2 } from '@common/ui/pages/AddCard2';
+import { AddSecureNote } from '@common/ui/pages/AddSecureNote';
+import { ModifyCredentialPage } from '@common/ui/pages/ModifyCredentialPage';
+import { ModifyBankCardPage } from '@common/ui/pages/ModifyBankCardPage';
+import { ModifySecureNotePage } from '@common/ui/pages/ModifySecureNotePage';
+import AddCredential1 from '@common/ui/pages/AddCredential1';
+import { AddCredential2 } from '@common/ui/pages/AddCredential2';
+import { ReEnterPasswordPage } from '@common/ui/pages/ReEnterPasswordPage';
+import { ReUnlockPage } from '@common/ui/pages/ReUnlockPage';
 import { useAuthStore } from '@common/core/states/auth.state';
+import { useUserStore } from '@common/core/states/user';
 import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
-import { CredentialDetailsPage } from '@ui/pages/CredentialDetailsPage';
-import { BankCardDetailsPage } from '@ui/pages/BankCardDetailsPage';
-import { SecureNoteDetailsPage } from '@ui/pages/SecureNoteDetailsPage';
+import { CredentialDetailsPage } from '@common/ui/pages/CredentialDetailsPage';
+import { BankCardDetailsPage } from '@common/ui/pages/BankCardDetailsPage';
+import { SecureNoteDetailsPage } from '@common/ui/pages/SecureNoteDetailsPage';
 
 export const PopupApp: React.FC = () => {
   console.log('PopupApp component rendering...');
@@ -40,7 +41,7 @@ export const PopupApp: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   
   // Use global Zustand auth store
-  const user = useAuthStore((state) => state.user);
+  const user = useUserStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const [pageState] = useState(null);
@@ -180,7 +181,7 @@ export const PopupApp: React.FC = () => {
                   }
                 />
                 <Route path="/generator" element={<GeneratorPage onBack={() => navigate(-1)} />} />
-                <Route path="/settings" element={<SettingsPage onBack={() => navigate(-1)} />} />
+                <Route path="/settings" element={<SettingsPage onLogout={() => navigate(-1)} />} />
                 <Route path="/add-credential-1" element={<AddCredential1 />} />
                 <Route path="/add-credential-2" element={<AddCredential2 title="" onBack={() => navigate(-1)} />} />
                 <Route path="/add-card-1" element={<AddCard1 />} />

@@ -7,8 +7,9 @@
  */
 
 import { AuthenticationError } from '../types/errors.types';
-import { loginWithCognito, fetchUserSaltCognito, signInWithFirebaseToken, getCurrentUserId, signOutFromFirebase, signOutCognito } from '../libraries/auth';
-import { getPlatformAdapter } from '../platform';
+import { loginWithCognito, signInWithFirebaseToken, getCurrentUserId, signOutFromFirebase, signOutCognito } from '../libraries/auth';
+import { platform } from '../platform';
+import { isSessionValid } from './session';
 
 /**
  * Step 1-3: Authenticate user and derive secret key
@@ -63,23 +64,17 @@ export async function signOutUser(): Promise<void> {
 
 // Store user secret key in platform adapter
 export async function storeUserSecretKey(userSecretKey: string): Promise<void> {
-  const adapter = await getPlatformAdapter();
-  await adapter.storeUserSecretKey(userSecretKey);
-}
-
-// Get user salt from Cognito
-export async function getUserSalt(): Promise<string> {
-  return fetchUserSaltCognito();
+  await platform.storeUserSecretKey(userSecretKey);
 }
 
 // Check authentication status (stub, should be replaced with real implementation if needed)
 export async function checkAuthenticationStatus(): Promise<any> {
   const isUserConnected = await isUserAuthenticated();
-  const isSessionValid = await import('./session').then(m => m.isSessionValid());
+  const sessionValid = await isSessionValid();
   
   return {
     isUserConnected,
-    isSessionValid,
+    isSessionValid: sessionValid,
     user: getCurrentUserId(),
     session: null,
   };

@@ -20,119 +20,119 @@ export const detectPlatform = (): 'mobile' | 'extension' => {
   return 'extension';
 };
 
-// Platform adapter factory
+// Platform adapter instance - loaded once at startup
 let platformAdapter: PlatformAdapter | null = null;
 
-export const getPlatformAdapter = async (): Promise<PlatformAdapter> => {
-  if (!platformAdapter) {
-    const platform = detectPlatform();
-    
-    if (platform === 'mobile') {
-      // For mobile, we'll use the default adapter for now
-      // The actual mobile adapter will be loaded at runtime
-      platformAdapter = new DefaultPlatformAdapter();
-    } else {
-      // For extension and web, use the extension adapter
-      try {
-        const { ExtensionPlatformAdapter } = await import('@extension/adapters/platform.adapter');
-        platformAdapter = new ExtensionPlatformAdapter();
-      } catch (error) {
-        console.warn('[PlatformAdapter] Failed to load extension adapter, using default:', error);
-        platformAdapter = new DefaultPlatformAdapter();
-      }
+// Initialize platform adapter (internal)
+const initializePlatformAdapter = async (): Promise<PlatformAdapter> => {
+  if (platformAdapter) {
+    return platformAdapter;
+  }
+  const platform = detectPlatform();
+  if (platform === 'mobile') {
+    try {
+      const { MobilePlatformAdapter } = await import('../../../mobile/adapters/platform.adapter');
+      platformAdapter = new MobilePlatformAdapter();
+    } catch (error) {
+      throw new Error(`Failed to load mobile platform adapter: ${error}`);
+    }
+  } else {
+    try {
+      const { ExtensionPlatformAdapter } = await import('../../../extension/adapters/platform.adapter');
+      platformAdapter = new ExtensionPlatformAdapter();
+    } catch (error) {
+      throw new Error(`Failed to load extension platform adapter: ${error}`);
     }
   }
-  
+  if (!platformAdapter) {
+    throw new Error('Failed to initialize platform adapter');
+  }
   return platformAdapter;
 };
 
-// Re-export the type for convenience
-export type { PlatformAdapter } from '../types/platform.types';
+// Startup initialization - call this at app startup
+export const initializePlatform = async (): Promise<void> => {
+  try {
+    await initializePlatformAdapter();
+    console.log('[Platform] Platform adapter initialized successfully');
+  } catch (error) {
+    console.error('[Platform] Failed to initialize platform adapter:', error);
+    throw error;
+  }
+};
 
-// Default platform adapter implementation
-export class DefaultPlatformAdapter implements PlatformAdapter {
+// Helper function to get the initialized platform adapter
+const getAdapter = (): PlatformAdapter => {
+  if (!platformAdapter) {
+    throw new Error('Platform adapter not initialized. Call initializePlatform() first.');
+  }
+  return platformAdapter;
+};
+
+// 🔌 Platform adapter functions that can be called from common code
+// These functions use the pre-loaded platform implementation
+
+export const platform: PlatformAdapter = {
   async getUserSecretKey(): Promise<string | null> {
-    console.warn('[DefaultPlatformAdapter] getUserSecretKey not implemented');
-    return null;
-  }
+    return getAdapter().getUserSecretKey();
+  },
 
-  async storeUserSecretKey(_key: string, _metadata?: any): Promise<void> {
-    console.warn('[DefaultPlatformAdapter] storeUserSecretKey not implemented');
-  }
+  async storeUserSecretKey(key: string): Promise<void> {
+    return getAdapter().storeUserSecretKey(key);
+  },
 
   async deleteUserSecretKey(): Promise<void> {
-    console.warn('[DefaultPlatformAdapter] deleteUserSecretKey not implemented');
-  }
+    return getAdapter().deleteUserSecretKey();
+  },
 
   async getSessionMetadata(): Promise<any> {
-    console.warn('[DefaultPlatformAdapter] getSessionMetadata not implemented');
-    return null;
-  }
+    return getAdapter().getSessionMetadata();
+  },
 
-  async storeSessionMetadata(_metadata: any): Promise<void> {
-    console.warn('[DefaultPlatformAdapter] storeSessionMetadata not implemented');
-  }
+  async storeSessionMetadata(metadata: any): Promise<void> {
+    return getAdapter().storeSessionMetadata(metadata);
+  },
 
   async deleteSessionMetadata(): Promise<void> {
-    console.warn('[DefaultPlatformAdapter] deleteSessionMetadata not implemented');
-  }
+    return getAdapter().deleteSessionMetadata();
+  },
 
   getPlatformName(): 'mobile' | 'extension' {
-    return 'extension';
-  }
+    return getAdapter().getPlatformName();
+  },
 
   supportsBiometric(): boolean {
-    return false;
-  }
+    return getAdapter().supportsBiometric();
+  },
 
   supportsOfflineVault(): boolean {
-    return false;
-  }
+    return getAdapter().supportsOfflineVault();
+  },
 
-  async authenticateWithBiometrics(): Promise<boolean> {
-    console.warn('[DefaultPlatformAdapter] authenticateWithBiometrics not implemented');
-    return false;
-  }
-
-  async isBiometricAvailable(): Promise<boolean> {
-    console.warn('[DefaultPlatformAdapter] isBiometricAvailable not implemented');
-    return false;
-  }
-
-  async copyToClipboard(_text: string): Promise<void> {
-    console.warn('[DefaultPlatformAdapter] copyToClipboard not implemented');
-  }
+  async copyToClipboard(text: string): Promise<void> {
+    return getAdapter().copyToClipboard(text);
+  },
 
   async getFromClipboard(): Promise<string> {
-    console.warn('[DefaultPlatformAdapter] getFromClipboard not implemented');
-    return '';
-  }
+    return getAdapter().getFromClipboard();
+  },
 
   async clearSession(): Promise<void> {
-    console.warn('[DefaultPlatformAdapter] clearSession not implemented');
-  }
+    return getAdapter().clearSession();
+  },
 
   async getDeviceFingerprint(): Promise<string> {
-    console.warn('[DefaultPlatformAdapter] getDeviceFingerprint not implemented');
-    return 'default-fingerprint';
-  }
+    return getAdapter().getDeviceFingerprint();
+  },
 
   async isOnline(): Promise<boolean> {
-    console.warn('[DefaultPlatformAdapter] isOnline not implemented');
-    return true;
-  }
+    return getAdapter().isOnline();
+  },
 
   async getNetworkStatus(): Promise<'online' | 'offline' | 'unknown'> {
-    console.warn('[DefaultPlatformAdapter] getNetworkStatus not implemented');
-    return 'online';
-  }
+    return getAdapter().getNetworkStatus();
+  },
+};
 
-  async setRememberedEmail(_email: string | null): Promise<void> {
-    console.warn('[DefaultPlatformAdapter] setRememberedEmail not implemented');
-  }
-
-  async getRememberedEmail(): Promise<string | null> {
-    console.warn('[DefaultPlatformAdapter] getRememberedEmail not implemented');
-    return null;
-  }
-} 
+// Re-export the interface for convenience
+export type { PlatformAdapter } from '../types/platform.types'; 

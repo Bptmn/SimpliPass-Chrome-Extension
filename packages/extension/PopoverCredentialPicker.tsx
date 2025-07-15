@@ -8,7 +8,7 @@ import { Text } from 'react-native';
 import './PopoverCredentialPicker.css';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@common/core/logic/theme';
-import { CredentialCard } from '@ui/components/CredentialCard';
+import { CredentialCard } from '@common/ui/components/CredentialCard';
 
 // Minimal popover-specific ErrorBanner
 const PopoverErrorBanner: React.FC<{ message: string }> = ({ message }) => (

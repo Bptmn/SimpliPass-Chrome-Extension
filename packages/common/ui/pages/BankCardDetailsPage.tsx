@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { BankCardDecrypted } from '@common/core/types/types';
 import { ExpirationDate, formatExpirationDate } from '@common/utils';
 import { deleteItem } from '@common/core/logic/items';
-import { useAuthStore } from '@common/core/states/auth.state';
+import { useUserStore } from '@common/core/states/user';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { LazyCredentialIcon } from '@ui/components/LazyCredentialIcon';
@@ -32,7 +32,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
-  const user = useAuthStore(state => state.user);
+  const user = useUserStore(state => state.user);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);

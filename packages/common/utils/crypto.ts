@@ -14,18 +14,25 @@ export function base64ToBytes(base64: string): Uint8Array {
   return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 }
 
+function getCrypto(): Crypto {
+  if (typeof globalThis !== 'undefined' && globalThis.crypto) return globalThis.crypto;
+  if (typeof window !== 'undefined' && window.crypto) return window.crypto;
+  throw new Error('Crypto API not available in this environment');
+}
+
 export async function deriveKey(masterPassword: string, saltBase64Url: string): Promise<string> {
   const salt = base64UrlToBytes(saltBase64Url);
   
   const enc = new TextEncoder();
-  const passwordKey = await window.crypto.subtle.importKey(
+  const crypto = getCrypto();
+  const passwordKey = await crypto.subtle.importKey(
     'raw',
     enc.encode(masterPassword),
     { name: 'PBKDF2' },
     false,
     ['deriveBits'],
   );
-  const derivedBits = await window.crypto.subtle.deriveBits(
+  const derivedBits = await crypto.subtle.deriveBits(
     {
       name: 'PBKDF2',
       salt: salt,
@@ -71,7 +78,8 @@ export function decryptData(symmetricKey: string, encryptedData: string): string
 }
 
 export function generateItemKey(): string {
-  const key = window.crypto.getRandomValues(new Uint8Array(32));
+  const crypto = getCrypto();
+  const key = crypto.getRandomValues(new Uint8Array(32));
   // Standard base64
   const base64 = btoa(String.fromCharCode(...key));
   // Convert to base64url

@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { CredentialDecrypted } from '@common/core/types/types';
 import { deleteItem } from '@common/core/logic/items';
-import { useAuthStore } from '@common/core/states/auth.state';
+import { useUserStore } from '@common/core/states/user';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { LazyCredentialIcon } from '@ui/components/LazyCredentialIcon';
@@ -29,7 +29,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const navigate = useNavigate();
-  const user = useAuthStore(state => state.user);
+  const user = useUserStore(state => state.user);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);

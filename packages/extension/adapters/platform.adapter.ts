@@ -46,7 +46,7 @@ export class ExtensionPlatformAdapter implements PlatformAdapter {
 
   // ===== Platform Information =====
 
-  getPlatformName(): 'extension' {
+  getPlatformName(): 'mobile' | 'extension' {
     return 'extension';
   }
 
@@ -96,14 +96,142 @@ export class ExtensionPlatformAdapter implements PlatformAdapter {
     }
   }
 
+  /**
+   * Generate a reliable device fingerprint using multiple stable characteristics
+   * Based on research from fingerprinting techniques, this uses:
+   * - Hardware characteristics (CPU cores, memory)
+   * - Browser capabilities (WebGL, Canvas)
+   * - Extension-specific identifiers
+   * - Stable browser APIs
+   */
   async getDeviceFingerprint(): Promise<string> {
     try {
-      // Use a combination of user agent and extension ID
-      const userAgent = navigator.userAgent;
-      const extensionId = chrome.runtime.id;
-      return `extension-${extensionId}-${userAgent.length}`;
-    } catch (error) {
-      throw new Error(`Failed to get device fingerprint: ${error}`);
+      const fingerprintComponents: string[] = [];
+
+      // 1. Extension ID (most stable identifier)
+      if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+        fingerprintComponents.push(`ext:${chrome.runtime.id}`);
+      }
+
+      // 2. Hardware characteristics
+      if (typeof navigator !== 'undefined') {
+        // CPU cores
+        if (navigator.hardwareConcurrency) {
+          fingerprintComponents.push(`cpu:${navigator.hardwareConcurrency}`);
+        }
+        
+        // Device memory
+        if ('deviceMemory' in navigator) {
+          fingerprintComponents.push(`mem:${(navigator as any).deviceMemory}`);
+        }
+      }
+
+      // 3. Browser capabilities (stable across sessions)
+      if (typeof navigator !== 'undefined') {
+        // Language and languages
+        fingerprintComponents.push(`lang:${navigator.language}`);
+        if (navigator.languages && navigator.languages.length > 0) {
+          fingerprintComponents.push(`langs:${navigator.languages.slice(0, 3).join(',')}`);
+        }
+        
+        // Platform
+        if (navigator.platform) {
+          fingerprintComponents.push(`platform:${navigator.platform}`);
+        }
+        
+        // User agent (sanitized)
+        if (navigator.userAgent) {
+          const ua = navigator.userAgent;
+          // Extract browser and OS info without version numbers
+          const browserMatch = ua.match(/(Chrome|Firefox|Safari|Edge)\//);
+          const osMatch = ua.match(/(Windows|Mac|Linux|Android|iOS)/);
+          if (browserMatch) fingerprintComponents.push(`browser:${browserMatch[1]}`);
+          if (osMatch) fingerprintComponents.push(`os:${osMatch[1]}`);
+        }
+      }
+
+      // 4. Canvas fingerprint (hardware-dependent)
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          // Draw a simple pattern that varies by hardware
+          ctx.fillStyle = 'rgb(255,255,255)';
+          ctx.fillRect(0, 0, 1, 1);
+          ctx.fillStyle = 'rgb(0,0,0)';
+          ctx.fillRect(1, 1, 1, 1);
+          const dataURL = canvas.toDataURL();
+          // Use a hash of the canvas data
+          const canvasHash = await this.hashString(dataURL);
+          fingerprintComponents.push(`canvas:${canvasHash}`);
+        }
+      } catch (_error) {
+        // Canvas fingerprinting failed, continue without it
+      }
+
+      // 5. WebGL fingerprint (hardware-dependent)
+      try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl') as WebGLRenderingContext;
+        if (gl) {
+          const renderer = gl.getParameter(gl.RENDERER);
+          const vendor = gl.getParameter(gl.VENDOR);
+          if (renderer) fingerprintComponents.push(`gpu:${renderer}`);
+          if (vendor) fingerprintComponents.push(`gpuVendor:${vendor}`);
+        }
+      } catch (_error) {
+        // WebGL fingerprinting failed, continue without it
+      }
+
+      // 6. Timezone (stable)
+      try {
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (timezone) {
+          fingerprintComponents.push(`tz:${timezone}`);
+        }
+      } catch (_error) {
+        // Timezone detection failed
+      }
+
+      // 7. Screen characteristics (stable)
+      if (typeof screen !== 'undefined') {
+        fingerprintComponents.push(`screen:${screen.width}x${screen.height}`);
+        if (screen.colorDepth) {
+          fingerprintComponents.push(`colorDepth:${screen.colorDepth}`);
+        }
+      }
+
+      // Combine all components and create a hash
+      const fingerprintString = fingerprintComponents.join('|');
+      const fingerprintHash = await this.hashString(fingerprintString);
+      
+      return `extension-${fingerprintHash}`;
+    } catch (_error) {
+      // Fallback to basic fingerprint
+      return `extension-fallback-${Date.now()}`;
+    }
+  }
+
+  /**
+   * Create a hash of a string using Web Crypto API
+   */
+  private async hashString(str: string): Promise<string> {
+    try {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(str);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex.substring(0, 16); // Use first 16 characters for brevity
+    } catch (_error) {
+      // Fallback to simple hash
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32-bit integer
+      }
+      return Math.abs(hash).toString(16).substring(0, 16);
     }
   }
 
@@ -126,84 +254,75 @@ export class ExtensionPlatformAdapter implements PlatformAdapter {
   async setRememberedEmail(email: string | null): Promise<void> {
     try {
       if (email) {
-        await chrome.storage.local.set({ remembered_email: email });
+        await chrome.storage.local.set({ rememberedEmail: email });
       } else {
-        await chrome.storage.local.remove('remembered_email');
+        await chrome.storage.local.remove('rememberedEmail');
       }
-    } catch (error) {
-      console.warn('Failed to set remembered email:', error);
+    } catch (_error) {
+      throw new Error('Failed to set remembered email');
     }
   }
 
   async getRememberedEmail(): Promise<string | null> {
     try {
-      const result = await chrome.storage.local.get('remembered_email');
-      return result.remembered_email || null;
-    } catch (error) {
-      console.warn('Failed to get remembered email:', error);
+      const result = await chrome.storage.local.get('rememberedEmail');
+      return result.rememberedEmail || null;
+    } catch (_error) {
       return null;
     }
   }
 
   // ===== Session Metadata =====
 
-  async storeSessionMetadata(metadata: string): Promise<void> {
+  async storeSessionMetadata(metadata: any): Promise<void> {
     try {
-      await chrome.storage.local.set({ session_metadata: metadata });
-    } catch (error) {
-      throw new Error(`Failed to store session metadata: ${error}`);
+      await chrome.storage.local.set({ sessionMetadata: metadata });
+    } catch (_error) {
+      throw new Error('Failed to store session metadata');
     }
   }
 
-  async getSessionMetadata(): Promise<string | null> {
+  async getSessionMetadata(): Promise<any> {
     try {
-      const result = await chrome.storage.local.get('session_metadata');
-      return result.session_metadata || null;
-    } catch (error) {
-      console.warn('Failed to get session metadata:', error);
+      const result = await chrome.storage.local.get('sessionMetadata');
+      return result.sessionMetadata || null;
+    } catch (_error) {
       return null;
     }
   }
 
   async deleteSessionMetadata(): Promise<void> {
     try {
-      await chrome.storage.local.remove('session_metadata');
-    } catch (error) {
-      throw new Error(`Failed to delete session metadata: ${error}`);
+      await chrome.storage.local.remove('sessionMetadata');
+    } catch (_error) {
+      throw new Error('Failed to delete session metadata');
     }
   }
 
-  // ===== App Information =====
-
-  getAppVersion(): string {
-    return chrome.runtime.getManifest().version || '1.0.0';
-  }
-
-  // ===== Vault Operations =====
+  // ===== Vault Operations (Extension-specific) =====
 
   async getEncryptedVault(): Promise<EncryptedVault | null> {
     try {
       const result = await chrome.storage.local.get(this.config.vaultKey);
       return result[this.config.vaultKey] || null;
-    } catch (error) {
-      console.warn('Failed to get encrypted vault:', error);
-      return null;
+    } catch (_error) {
+      throw new Error('Failed to retrieve encrypted vault');
     }
   }
 
   async storeEncryptedVault(vault: EncryptedVault): Promise<void> {
     try {
       await chrome.storage.local.set({ [this.config.vaultKey]: vault });
-    } catch (error) {
-      throw new Error(`Failed to store encrypted vault: ${error}`);
+    } catch (_error) {
+      throw new Error('Failed to store encrypted vault');
     }
   }
 
   async deleteEncryptedVault(): Promise<void> {
     try {
       await chrome.storage.local.remove(this.config.vaultKey);
-    } catch (error) {
-      throw new Error(`Failed to delete encrypted vault: ${error}`);
+    } catch (_error) {
+      throw new Error('Failed to delete encrypted vault');
     }
   }
 } 

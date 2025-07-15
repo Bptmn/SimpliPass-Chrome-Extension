@@ -44,7 +44,7 @@ export async function setDataInStates(data: {
 
     // Set auth data
     if (data.auth) {
-      useAuthStore.getState().setUser(data.auth.user);
+      useUserStore.getState().setUser(data.user);
       useAuthStore.getState().setSession(data.auth.session);
       useAuthStore.getState().setAuthenticated(data.auth.isAuthenticated);
     }
@@ -135,7 +135,7 @@ export async function deleteItemFromStates(
  */
 export async function setAuthState(user: any): Promise<void> {
   try {
-    useAuthStore.getState().setUser(user);
+    useUserStore.getState().setUser(user);
     useAuthStore.getState().setAuthenticated(true);
     console.log('[States] Auth state set successfully');
   } catch (error) {

@@ -21,11 +21,9 @@ export class MobilePlatformAdapter implements PlatformAdapter {
 
   async getUserSecretKey(): Promise<string | null> {
     try {
-      // Conditional import for Expo SecureStore
       const SecureStore = await this.getSecureStore();
       return await SecureStore.getItemAsync(this.config.storageKey);
     } catch {
-      console.error('Failed to get user secret key');
       return null;
     }
   }
@@ -35,7 +33,7 @@ export class MobilePlatformAdapter implements PlatformAdapter {
       const SecureStore = await this.getSecureStore();
       await SecureStore.setItemAsync(this.config.storageKey, key);
     } catch {
-      console.error('Failed to store user secret key');
+      throw new Error('Failed to store user secret key');
     }
   }
 
@@ -44,18 +42,17 @@ export class MobilePlatformAdapter implements PlatformAdapter {
       const SecureStore = await this.getSecureStore();
       await SecureStore.deleteItemAsync(this.config.storageKey);
     } catch {
-      console.error('Failed to delete user secret key');
+      throw new Error('Failed to delete user secret key');
     }
   }
 
   // ===== Platform Information =====
 
-  getPlatformName(): 'mobile' {
+  getPlatformName(): 'mobile' | 'extension' {
     return 'mobile';
   }
 
   supportsBiometric(): boolean {
-    // Will be checked dynamically
     return true;
   }
 
@@ -73,8 +70,8 @@ export class MobilePlatformAdapter implements PlatformAdapter {
         fallbackLabel: 'Use passcode',
       });
       return result.success;
-    } catch (error) {
-      throw new Error(`Biometric authentication failed: ${error}`);
+    } catch (_error) {
+      throw new Error('Biometric authentication failed');
     }
   }
 
@@ -84,8 +81,7 @@ export class MobilePlatformAdapter implements PlatformAdapter {
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
       return hasHardware && isEnrolled;
-    } catch (error) {
-      console.warn('Failed to check biometric availability:', error);
+    } catch (_error) {
       return false;
     }
   }
@@ -94,21 +90,19 @@ export class MobilePlatformAdapter implements PlatformAdapter {
 
   async copyToClipboard(text: string): Promise<void> {
     try {
-      // @ts-expect-error - Dynamic import for clipboard functionality
-      const { Clipboard } = await import('@react-native-clipboard/clipboard');
-      await Clipboard.setString(text);
-    } catch (error) {
-      throw new Error(`Failed to copy to clipboard: ${error}`);
+      const Clipboard = await import('@react-native-clipboard/clipboard');
+      await Clipboard.default.setString(text);
+    } catch (_error) {
+      throw new Error('Failed to copy to clipboard');
     }
   }
 
   async getFromClipboard(): Promise<string> {
     try {
-      // @ts-expect-error - Dynamic import for clipboard functionality
-      const { Clipboard } = await import('@react-native-clipboard/clipboard');
-      return await Clipboard.getString();
-    } catch (error) {
-      throw new Error(`Failed to get from clipboard: ${error}`);
+      const Clipboard = await import('@react-native-clipboard/clipboard');
+      return await Clipboard.default.getString();
+    } catch (_error) {
+      throw new Error('Failed to get from clipboard');
     }
   }
 
@@ -117,21 +111,29 @@ export class MobilePlatformAdapter implements PlatformAdapter {
   async clearSession(): Promise<void> {
     try {
       const SecureStore = await this.getSecureStore();
-      // Clear all secure storage items
-      const keys = await SecureStore.getAllKeysAsync();
-      await Promise.all(keys.map((key: string) => SecureStore.deleteItemAsync(key)));
+      // Clear all known keys manually since getAllKeysAsync is not available
+      const knownKeys = [
+        this.config.storageKey,
+        'remembered_email',
+        'session_metadata',
+        this.config.biometricKey,
+        this.config.sessionKey
+      ];
+      await Promise.all(knownKeys.map((key: string) => SecureStore.deleteItemAsync(key)));
     } catch {
-      console.error('Failed to clear session');
+      throw new Error('Failed to clear session');
     }
   }
 
   async getDeviceFingerprint(): Promise<string> {
     try {
       const Device = await this.getDevice();
-      const deviceId = await Device.getDeviceIdAsync();
-      return `mobile-${deviceId}`;
-    } catch (error) {
-      throw new Error(`Failed to get device fingerprint: ${error}`);
+      // Use device name and type as fingerprint since getDeviceIdAsync is not available
+      const deviceName = Device.deviceName || 'unknown';
+      const deviceType = await Device.getDeviceTypeAsync();
+      return `mobile-${deviceName}-${deviceType}`;
+    } catch (_error) {
+      throw new Error('Failed to get device fingerprint');
     }
   }
 
@@ -141,9 +143,8 @@ export class MobilePlatformAdapter implements PlatformAdapter {
     try {
       const Network = await this.getNetwork();
       const networkState = await Network.getNetworkStateAsync();
-      return networkState.isConnected && networkState.isInternetReachable;
-    } catch (error) {
-      console.warn('Failed to check network status:', error);
+      return (networkState.isConnected ?? false) && (networkState.isInternetReachable ?? false);
+    } catch (_error) {
       return false;
     }
   }
@@ -159,8 +160,7 @@ export class MobilePlatformAdapter implements PlatformAdapter {
       } else {
         return 'unknown';
       }
-    } catch (error) {
-      console.warn('Failed to get network status:', error);
+    } catch (_error) {
       return 'unknown';
     }
   }
@@ -175,8 +175,8 @@ export class MobilePlatformAdapter implements PlatformAdapter {
       } else {
         await SecureStore.deleteItemAsync('remembered_email');
       }
-    } catch (error) {
-      console.warn('Failed to set remembered email:', error);
+    } catch (_error) {
+      throw new Error('Failed to set remembered email');
     }
   }
 
@@ -184,29 +184,28 @@ export class MobilePlatformAdapter implements PlatformAdapter {
     try {
       const SecureStore = await this.getSecureStore();
       return await SecureStore.getItemAsync('remembered_email');
-    } catch (error) {
-      console.warn('Failed to get remembered email:', error);
+    } catch (_error) {
       return null;
     }
   }
 
   // ===== Session Metadata =====
 
-  async storeSessionMetadata(metadata: string): Promise<void> {
+  async storeSessionMetadata(metadata: any): Promise<void> {
     try {
       const SecureStore = await this.getSecureStore();
-      await SecureStore.setItemAsync('session_metadata', metadata);
-    } catch (error) {
-      throw new Error(`Failed to store session metadata: ${error}`);
+      await SecureStore.setItemAsync('session_metadata', JSON.stringify(metadata));
+    } catch (_error) {
+      throw new Error('Failed to store session metadata');
     }
   }
 
-  async getSessionMetadata(): Promise<string | null> {
+  async getSessionMetadata(): Promise<any> {
     try {
       const SecureStore = await this.getSecureStore();
-      return await SecureStore.getItemAsync('session_metadata');
-    } catch (error) {
-      console.warn('Failed to get session metadata:', error);
+      const metadata = await SecureStore.getItemAsync('session_metadata');
+      return metadata ? JSON.parse(metadata) : null;
+    } catch (_error) {
       return null;
     }
   }
@@ -215,55 +214,41 @@ export class MobilePlatformAdapter implements PlatformAdapter {
     try {
       const SecureStore = await this.getSecureStore();
       await SecureStore.deleteItemAsync('session_metadata');
-    } catch (error) {
-      throw new Error(`Failed to delete session metadata: ${error}`);
+    } catch (_error) {
+      throw new Error('Failed to delete session metadata');
     }
-  }
-
-  // ===== App Information =====
-
-  getAppVersion(): string {
-    return '1.0.0'; // This should be dynamically retrieved
   }
 
   // ===== Private Helper Methods =====
 
   private async getSecureStore() {
     try {
-      // @ts-expect-error - Dynamic import for secure store
       return await import('expo-secure-store');
     } catch {
-      console.error('Failed to import SecureStore');
       throw new Error('SecureStore not available');
     }
   }
 
   private async getLocalAuthentication() {
     try {
-      // @ts-expect-error - Dynamic import for local authentication
       return await import('expo-local-authentication');
     } catch {
-      console.error('Failed to import LocalAuthentication');
       throw new Error('LocalAuthentication not available');
     }
   }
 
   private async getDevice() {
     try {
-      // @ts-expect-error - Dynamic import for device info
       return await import('expo-device');
     } catch {
-      console.error('Failed to import Device');
       throw new Error('Device not available');
     }
   }
 
   private async getNetwork() {
     try {
-      // @ts-expect-error - Dynamic import for network info
       return await import('expo-network');
     } catch {
-      console.error('Failed to import Network');
       throw new Error('Network not available');
     }
   }

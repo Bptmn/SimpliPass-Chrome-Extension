@@ -11,7 +11,9 @@
       "@screens/*": ["../app/screens/*"],
       "@hooks/*": ["../app/hooks/*"],
       "@logic/*": ["../app/logic/*"],
-      "@utils/*": ["../app/utils/*"]
+      "@utils/*": ["../app/utils/*"],
+      "@ui/*": ["../common/ui/*"],
+      "@common/*": ["../common/*"]
     },
     "types": ["react-native", "jest"],
     "allowJs": true,

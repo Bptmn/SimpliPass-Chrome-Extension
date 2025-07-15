@@ -34,6 +34,8 @@ module.exports = {
       '@shared': path.resolve(__dirname, '../packages/shared'),
       '@extension': path.resolve(__dirname, '../packages/extension'),
       '@mobile': path.resolve(__dirname, '../packages/mobile'),
+      '@ui': path.resolve(__dirname, '../packages/common/ui'),
+      '@common': path.resolve(__dirname, '../packages/common'),
     };
     
     // Add web extensions

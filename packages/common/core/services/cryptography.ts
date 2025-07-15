@@ -191,27 +191,37 @@ export async function encryptSecureNote(userSecretKey: string, itemToEncrypt: Se
 // ===== Device Fingerprint Functions =====
 
 /**
- * Encrypt data with device fingerprint
+ * Encrypt data with device fingerprint key
  */
-export async function encryptWithDeviceFingerprint(data: string): Promise<string> {
+export async function encryptWithDeviceFingerprintKey(data: string): Promise<string> {
   try {
-    // For now, return a simple encrypted version
-    // In production, this would use proper device fingerprint encryption
-    return btoa(data);
+    // Get device fingerprint key from secret service
+    const { generateDeviceFingerprintKey } = await import('./secret');
+    const deviceFingerprintKey = await generateDeviceFingerprintKey();
+    
+    // Encrypt data with the device fingerprint key
+    const encryptedData = await encryptData(deviceFingerprintKey, data);
+    
+    return encryptedData;
   } catch (error) {
-    throw new CryptographyError('Failed to encrypt with device fingerprint', error as Error);
+    throw new CryptographyError('Failed to encrypt with device fingerprint key', error as Error);
   }
 }
 
 /**
- * Decrypt data with device fingerprint
+ * Decrypt data with device fingerprint key
  */
-export async function decryptWithDeviceFingerprint(encryptedData: string): Promise<string> {
+export async function decryptWithDeviceFingerprintKey(encryptedData: string): Promise<string> {
   try {
-    // For now, return a simple decrypted version
-    // In production, this would use proper device fingerprint decryption
-    return atob(encryptedData);
+    // Get device fingerprint key from secret service
+    const { generateDeviceFingerprintKey } = await import('./secret');
+    const deviceFingerprintKey = await generateDeviceFingerprintKey();
+    
+    // Decrypt data with the device fingerprint key
+    const decryptedData = await decryptData(deviceFingerprintKey, encryptedData);
+    
+    return decryptedData;
   } catch (error) {
-    throw new CryptographyError('Failed to decrypt with device fingerprint', error as Error);
+    throw new CryptographyError('Failed to decrypt with device fingerprint key', error as Error);
   }
 }
