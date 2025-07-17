@@ -7,4 +7,5 @@ export * from './database';
 // Crypto libraries - moved to services/cryptography
 
 // Platform libraries
-export * from '../platform'; 
+export { platform, initializePlatform, detectPlatform } from '../adapters';
+export type { PlatformAdapter } from '../adapters'; 

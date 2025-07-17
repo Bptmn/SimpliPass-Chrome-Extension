@@ -4,7 +4,6 @@ import {
   doc,
   getDocs,
   getDoc,
-  addDoc,
   updateDoc,
   deleteDoc,
   DocumentData,
@@ -51,7 +50,8 @@ export const addDocument = async <T extends DocumentData = DocumentData>(
   data: T
 ): Promise<string> => {
   const colRef = collection(getSafeFirestore(), collectionPath);
-  const docRef = await addDoc(colRef, data);
+  const docRef = doc(colRef); // generates a new doc ref with an ID
+  await setDoc(docRef, { ...data, id: docRef.id });
   return docRef.id;
 };
 
@@ -76,15 +76,21 @@ export const deleteDocument = async (
   await deleteDoc(docRef);
 };
 
-/**
- * Add a document to a collection with a generated ID and include the ID in the data
- */
-export const addDocumentWithId = async <T extends DocumentData = DocumentData>(
-  collectionPath: string,
-  data: T
-): Promise<string> => {
-  const colRef = collection(getSafeFirestore(), collectionPath);
-  const docRef = doc(colRef); // generates a new doc ref with an ID
-  await setDoc(docRef, { ...data, id: docRef.id });
-  return docRef.id;
-};
+export function generateItemDatabaseId(): string {
+  // Firestore-compatible: 20 chars, base64url alphabet
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  let autoId = '';
+  const bytes = new Uint8Array(20);
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    crypto.getRandomValues(bytes);
+    for (let i = 0; i < 20; ++i) {
+      autoId += chars[bytes[i] & 0x3f];
+    }
+  } else {
+    // Fallback: Math.random (not cryptographically secure)
+    for (let i = 0; i < 20; ++i) {
+      autoId += chars[Math.floor(Math.random() * chars.length)];
+    }
+  }
+  return autoId;
+}

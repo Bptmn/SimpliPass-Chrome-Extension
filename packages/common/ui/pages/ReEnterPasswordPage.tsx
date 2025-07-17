@@ -15,11 +15,11 @@ import { getColors } from '@ui/design/colors';
 import { spacing } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { deriveKey } from '@common/utils/crypto';
-import { storeUserSecretKey } from '@common/core/services/auth';
-import { auth } from '@common/core/adapters/auth.adapter';
+import { storeUserSecretKey } from '@common/core/services/secret';
+import { fetchUserSaltCognito } from '@common/core/libraries/auth/cognito';
 import { initializeUserSession } from '@common/core/services/session';
 import { useUserStore } from '@common/core/states/user';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { useLogoutFlow } from '@common/hooks/useLogoutFlow';
 
 export const ReEnterPasswordPage: React.FC = () => {
@@ -48,7 +48,7 @@ export const ReEnterPasswordPage: React.FC = () => {
       console.log('[ReEnterPasswordPage] Starting password re-entry process...');
       
       // Get user salt
-      const salt = await auth.getUserSalt();
+      const salt = await fetchUserSaltCognito();
       if (!salt) {
         Alert.alert('Erreur', 'Impossible de récupérer le sel utilisateur.');
         return;

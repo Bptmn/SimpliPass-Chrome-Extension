@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { View, ScrollView } from 'react-native';
-import { useUserStore } from '@common/core/states/user';
+import { useUser } from '@common/hooks/useUser';
 import { passwordGenerator } from '@common/utils/passwordGenerator';
-import { addItem } from '@common/core/logic/items';
-import { getUserSecretKey } from '@common/core/services/secret';
-import { CredentialDecrypted } from '@common/core/types/items.types';
+
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import Toast from '@ui/components/Toast';
 import { useToast } from '@common/hooks/useToast';
-import { generateItemKey } from '@common/utils/crypto';
+import { useItems } from '@common/hooks/useItems';
 import { Input, InputPasswordStrength } from '@ui/components/InputFields';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { getPageStyles, spacing } from '@ui/design/layout';
 import { Button } from '@ui/components/Buttons';
@@ -29,16 +27,17 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
   const { mode } = useThemeMode();
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const themeColors = getColors(mode);
-  const user = useUserStore(state => state.user);
+  const { user } = useUser();
   const navigate = useNavigate();
+  const { addCredential, isLoading } = useItems();
   const [title, setTitle] = useState(initialTitle);
   const [username, setUsername] = useState(user?.email || '');
   const [password, setPassword] = useState(passwordGenerator(true, true, true, true, 16));
   const [url, setUrl] = useState(link);
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const { toast, showToast } = useToast();
+  const [toast, _setToast] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   // Calculate password strength
   const passwordStrength = checkPasswordStrength(password);
@@ -59,34 +58,27 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
       return;
     }
 
-    setLoading(true);
     setError(null);
     try {
-      const userSecretKey = await getUserSecretKey();
-      if (!userSecretKey) {
-        throw new Error('Clé de sécurité utilisateur introuvable');
-      }
-
-      const newCredential: Omit<CredentialDecrypted, 'id'> = {
-        itemType: 'credential',
-        createdDateTime: new Date(),
-        lastUseDateTime: new Date(),
+      const newCredential = {
         title,
         username,
         password,
         note,
         url,
-        itemKey: generateItemKey(),
+        itemType: 'credential' as const,
       };
 
-      await addItem(user.id, userSecretKey, newCredential);
-      showToast('Identifiant ajouté avec succès');
-      if (onSuccess) onSuccess();
-      navigate('/');
+      const result = await addCredential(newCredential);
+      if (result.success) {
+        showToast('Identifiant ajouté avec succès');
+        if (onSuccess) onSuccess();
+        navigate('/');
+      } else {
+        setError(result.error || 'Erreur lors de l\'ajout de l\'identifiant.');
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de l\'ajout de l\'identifiant.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -160,7 +152,7 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
               text="Ajouter"
               color={themeColors.secondary}
               onPress={handleSubmit}
-              disabled={loading}
+              disabled={isLoading}
             />
           </View>
         </View>

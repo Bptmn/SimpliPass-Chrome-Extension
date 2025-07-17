@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { spacing } from '@ui/design/layout';
 import { radius } from '@ui/design/layout';

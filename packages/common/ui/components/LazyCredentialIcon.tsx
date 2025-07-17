@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleProp, ViewStyle, StyleSheet } from 'react-native';
 import { getColors } from '@ui/design/colors';
 import { useLazyCredentialIcon } from '@common/hooks/useLazyCredentialIcon';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 
 interface LazyCredentialIconProps {
   title: string;

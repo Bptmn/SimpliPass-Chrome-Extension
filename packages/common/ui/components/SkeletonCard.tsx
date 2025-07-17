@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { getColors } from '@ui/design/colors';
 import { radius, spacing } from '@ui/design/layout';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 
 export const SkeletonCard: React.FC = () => {
   const { mode } = useThemeMode();

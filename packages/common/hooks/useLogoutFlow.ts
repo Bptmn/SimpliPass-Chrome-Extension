@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signOutUser } from '../core/services/auth';
+import { auth } from '../core/adapters/auth.adapter';
 import { clearUserSession } from '../core/services/session';
 import { clearAllStates } from '../core/services/states';
 import { clearLocalVault } from '../core/services/vault';
@@ -26,7 +26,7 @@ export const useLogoutFlow = () => {
     setError(null);
     try {
       // 1. Sign out from Firebase and Cognito
-      await signOutUser();
+      await auth.signOut();
       // 2. Clear user session (Zustand + platform session metadata)
       await clearUserSession();
       // 3. Clear all app states (Zustand)

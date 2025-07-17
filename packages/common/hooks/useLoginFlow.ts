@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { loginUser } from '../core/services/auth';
+import { auth } from '../core/adapters/auth.adapter';
 import { initializeUserSession } from '../core/services/session';
 import { initializeUserSecretKey, getUserSecretKey } from '../core/services/secret';
 import { useRefreshData } from './useRefreshData';
@@ -23,7 +23,7 @@ export const useLoginFlow = () => {
     try {
 
       // Step 1: Authenticate user
-      const userId = await loginUser(email, password);
+      const userId = await auth.login(email, password);
 
       // Step 2: Initialize user secret key (fetch salt, derive, store)
       await initializeUserSecretKey(password);

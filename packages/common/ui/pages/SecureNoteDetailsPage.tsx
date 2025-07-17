@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { SecureNoteDecrypted } from '@common/core/types/items.types';
-import { deleteItemFromDatabase } from '@common/core/services/items';
-import { useUserStore } from '@common/core/states/user';
-import { ErrorBanner } from '@ui/components/ErrorBanner';
-import { Icon } from '@ui/components/Icon';
+import { useItems } from '@common/hooks/useItems';
+import { useUser } from '@common/hooks/useUser';
 import { useToast } from '@common/hooks/useToast';
-import { useThemeMode } from '@common/core/logic/theme';
-import { getColors } from '@ui/design/colors';
-import { getPageStyles, spacing, radius } from '@ui/design/layout';
-import { typography } from '@ui/design/typography';
+import { ErrorBanner } from '@ui/components/ErrorBanner';
+import { DetailField } from '@ui/components/DetailField';
 import { Button } from '@ui/components/Buttons';
+import { Icon } from '@ui/components/Icon';
 import { MoreInfo } from '@ui/components/MoreInfo';
-import DetailField from '@ui/components/DetailField';
+import { useThemeMode } from '@common/ui/design/theme';
+import { getColors } from '@ui/design/colors';
+import { spacing, radius, getPageStyles } from '@ui/design/layout';
+import { typography } from '@ui/design/typography';
 
 interface SecureNoteDetailsPageProps {
   note: SecureNoteDecrypted;
@@ -25,13 +25,15 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const user = useUserStore(state => state.user);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const { showToast } = useToast();
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
+  const { user } = useUser();
+  const { deleteItem } = useItems();
+  const { showToast } = useToast();
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleEdit = () => {
     // Navigate to edit page - this would be handled by the parent component
@@ -52,9 +54,14 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
     setError(null);
     setShowDeleteConfirm(false);
     try {
-      await deleteItemFromDatabase(user.id, note.id);
-      showToast('Note supprimée avec succès');
-      onBack();
+      const result = await deleteItem(note.id, 'secureNote');
+      
+      if (result.success) {
+        showToast('Note supprimée avec succès');
+        onBack();
+      } else {
+        setError(result.error || 'Erreur lors de la suppression.');
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la suppression.');
     } finally {

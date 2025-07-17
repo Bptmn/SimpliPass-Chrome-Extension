@@ -1,5 +1,5 @@
 import { DocumentData } from 'firebase/firestore';
-import type { DatabaseAdapter } from '../adapters/database.adapter';
+import type { DatabaseAdapter } from '../../adapters/database.adapter';
 
 type DocumentId = string;
 
@@ -48,12 +48,5 @@ export const mockDb: DatabaseAdapter = {
     // Mock implementation - does nothing
   },
 
-  addDocumentWithId: async <T extends DocumentData = DocumentData>(
-    collectionPath: string,
-    data: T
-  ): Promise<DocumentId> => {
-    console.log('[Mock DB] Adding document with ID to:', collectionPath, data);
-    // Mock implementation - returns mock ID
-    return 'mock-doc-id';
-  },
+  generateItemId: () => 'mock-id-123',
 }; 

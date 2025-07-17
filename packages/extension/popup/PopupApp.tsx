@@ -7,7 +7,7 @@
 // - Route between pages (home, generator, settings, login)
 // - Render the main UI (navbar, helper bar, etc.)
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ToastProvider } from '@common/ui/components/Toast';
 import NavBar from '@common/ui/components/NavBar';
@@ -26,7 +26,7 @@ import AddCredential1 from '@common/ui/pages/AddCredential1';
 import { AddCredential2 } from '@common/ui/pages/AddCredential2';
 import { ReEnterPasswordPage } from '@common/ui/pages/ReEnterPasswordPage';
 import { ReUnlockPage } from '@common/ui/pages/ReUnlockPage';
-import { useAuthStore } from '@common/core/states/auth.state';
+import { useAuthStore } from '@common/core/states/auth';
 import { useUserStore } from '@common/core/states/user';
 import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
 import { CredentialDetailsPage } from '@common/ui/pages/CredentialDetailsPage';
@@ -42,7 +42,8 @@ export const PopupApp: React.FC = () => {
   
   // Use global Zustand auth store
   const user = useUserStore((state) => state.user);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const session = useAuthStore((state) => state.session);
+  const isAuthenticated = session !== null;
 
   const [pageState] = useState(null);
   const [selectedCredential] = useState<CredentialDecrypted | null>(null);

@@ -5,7 +5,7 @@ import { Input } from '@ui/components/InputFields';
 import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { getPageStyles } from '@ui/design/layout';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 
 const AddCredential1: React.FC = () => {
   const navigate = useNavigate();

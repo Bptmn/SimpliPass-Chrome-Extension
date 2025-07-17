@@ -5,6 +5,8 @@
  * type consistency and prevent duplication.
  */
 
+import { ItemDecrypted } from "./types";
+
 // ===== Platform Types =====
 
 export type Platform = 'mobile' | 'extension';
@@ -62,21 +64,9 @@ export interface Tag {
 
 export interface Vault {
   userId: string;
-  credentials: any[];
-  bankCards: any[];
-  secureNotes: any[];
-  categories: Category[];
-  tags: Tag[];
+  items: ItemDecrypted[];
   lastSyncAt: Date;
   version: string;
-}
-
-export interface EncryptedVault {
-  version: string;
-  encryptedData: string;
-  iv: string;
-  salt: string;
-  timestamp: number;
 }
 
 // ===== Crypto & Security =====

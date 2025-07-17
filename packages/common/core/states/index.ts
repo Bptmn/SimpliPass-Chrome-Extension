@@ -1,24 +1,17 @@
-// Export all state stores
-export { useAuthStore } from './auth.state';
-export { useCredentialsStore } from './credentials.state';
-export { useBankCardsStore } from './bankCards';
-export { useSecureNotesStore } from './secureNotes';
+// Export simplified state stores
+export { useItemStates } from './itemStates';
+export { useAuthStore } from './auth';
 export { useUserStore } from './user';
+export { useCategoryStore } from './category';
 
-// Export sync utilities
-export {
-  syncAllStates,
-  clearAllStates,
-} from './sync';
-
-// Export types from new type definitions
+// Export types
 export type {
-  AuthState,
   User,
 } from '../types/auth.types';
 
 export type {
-  CredentialDecrypted as CredentialsState,
-  BankCardDecrypted as BankCardsState,
-  SecureNoteDecrypted as SecureNotesState,
-} from '@common/core/types/types';
+  CredentialDecrypted,
+  BankCardDecrypted, 
+  SecureNoteDecrypted,
+  ItemDecrypted,
+} from '../types/items.types';

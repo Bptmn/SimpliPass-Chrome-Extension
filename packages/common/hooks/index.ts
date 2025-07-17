@@ -1,7 +1,7 @@
 // Layer 1: UI Hooks
 export * from './useLoginFlow';
 export * from './useRefreshData';
-export * from './useCredentials';
+export * from './useItems';
 export * from './useLogoutFlow';
 
 // Existing hooks

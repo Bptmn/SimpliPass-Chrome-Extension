@@ -12,13 +12,13 @@ import { Input } from '@ui/components/InputFields';
 import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { getPageStyles } from '@ui/design/layout';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { spacing, radius } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { deriveKey } from '@common/utils/crypto';
-import { storeUserSecretKey } from '@common/core/services/auth';
-import { auth } from '@common/core/adapters/auth.adapter';
+import { storeUserSecretKey } from '@common/core/services/secret';
+import { fetchUserSaltCognito } from '@common/core/libraries/auth/cognito';
 import { useUserStore } from '@common/core/states/user';
 
 interface LocationState {
@@ -69,7 +69,7 @@ export const ReUnlockPage: React.FC = () => {
 
     try {
       // Get user salt
-      const salt = await auth.getUserSalt();
+      const salt = await fetchUserSaltCognito();
       if (!salt) {
         Alert.alert('Erreur', 'Impossible de récupérer le sel utilisateur.');
         return;

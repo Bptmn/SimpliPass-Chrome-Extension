@@ -6,10 +6,10 @@
  * Secret key management is handled by secret.ts
  */
 
-import { AuthenticationError } from '../types/errors.types';
-import { loginWithCognito, signInWithFirebaseToken, getCurrentUserId, signOutFromFirebase, signOutCognito } from '../libraries/auth';
-import { platform } from '../platform';
-import { isSessionValid } from './session';
+import { AuthenticationError } from '../../types/errors.types';
+import { loginWithCognito, signInWithFirebaseToken, getCurrentUserId, signOutFromFirebase, signOutCognito } from './index';
+import { platform } from '../../adapters';
+import { isSessionValid } from '../../services/session';
 
 /**
  * Step 1-3: Authenticate user and derive secret key

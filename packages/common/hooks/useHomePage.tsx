@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllItems } from '@common/core/logic/items';
+import { getAllItemsFromDatabase } from '../core/services/items';
 import { getUserSecretKey } from '@common/core/services/secret';
-import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@common/core/states';
+import { useItemStates } from '@common/core/states/itemStates';
 import { useCategoryStore } from '@common/core/states/category';
 import { useUserStore } from '@common/core/states/user';
 import { useToast } from '@common/hooks/useToast';
@@ -14,12 +14,15 @@ import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@co
  */
 export const useHomePage = (pageState?: { url?: string }) => {
   const user = useUserStore((state) => state.user);
-  const { credentials } = useCredentialsStore();
-  const { bankCards } = useBankCardsStore();
-  const { secureNotes } = useSecureNotesStore();
+  const itemStates = useItemStates();
   const { currentCategory: category, setCurrentCategory: setCategory } = useCategoryStore();
   const { showToast } = useToast();
   const navigate = useNavigate();
+
+  // Get items from unified store
+  const credentials = itemStates.getItemsByTypeFromState('credential') as CredentialDecrypted[];
+  const bankCards = itemStates.getItemsByTypeFromState('bankCard') as BankCardDecrypted[];
+  const secureNotes = itemStates.getItemsByTypeFromState('secureNote') as SecureNoteDecrypted[];
 
   // State management
   const [filter, setFilter] = useState('');
@@ -37,7 +40,7 @@ export const useHomePage = (pageState?: { url?: string }) => {
       try {
         const userSecretKey = await getUserSecretKey();
         if (userSecretKey) {
-          await getAllItems(user.id, userSecretKey);
+          await getAllItemsFromDatabase();
         }
       } catch {
         setError('Erreur lors du chargement des identifiants.');

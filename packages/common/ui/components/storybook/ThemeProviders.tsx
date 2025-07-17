@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { ThemeProvider } from '@common/core/logic/theme';
+import { ThemeProvider } from '@common/ui/design/theme';
 import { getPageStyles } from '@ui/design/layout';
 
 // Theme providers for COMPONENTS (with wrappers for background/layout)

@@ -9,7 +9,6 @@ export interface User {
 export interface UserSession {
   id: string;
   userId: string;
-  deviceFingerprint: string;
   isActive: boolean;
   createdAt: Date;
   expiresAt: Date;

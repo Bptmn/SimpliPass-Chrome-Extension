@@ -4,14 +4,14 @@
  */
 
 import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/types';
-import { ItemEncrypted } from '@common/core/types/items.types';
-import { decryptAllItems, encryptCredential, encryptBankCard, encryptSecureNote } from '@common/core/services/cryptography';
-import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@common/core/states';
+import { ItemEncrypted, ItemDecrypted } from '@common/core/types/items.types';
+import { decryptAllItems, encryptItem } from '@common/core/services/cryptography';
+import { useItemStates } from '@common/core/states/itemStates';
 import { getLocalStorageItem, setLocalStorageItem, removeLocalStorageItem } from './localStorage';
 
 const VAULT_KEY = 'simplipass_encrypted_vault';
 
-type DecryptedItem = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted;
+// type DecryptedItem = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted;
 
 /**
  * Load encrypted vault from local storage and decrypt items into states
@@ -46,34 +46,12 @@ export async function loadVaultFromStorage(userSecretKey: string): Promise<boole
 
     const decryptedItems = await decryptAllItems(userSecretKey, allEncryptedItems);
 
-    // Separate items by type and store in states
-    const credentials: CredentialDecrypted[] = [];
-    const bankCards: BankCardDecrypted[] = [];
-    const secureNotes: SecureNoteDecrypted[] = [];
-
-    decryptedItems.forEach((item: DecryptedItem) => {
-      if ('username' in item) {
-        credentials.push(item as CredentialDecrypted);
-      } else if ('cardNumber' in item) {
-        bankCards.push(item as BankCardDecrypted);
-      } else {
-        secureNotes.push(item as SecureNoteDecrypted);
-      }
-    });
-
-    // Update states
-    const credentialsStore = useCredentialsStore.getState();
-    const bankCardsStore = useBankCardsStore.getState();
-    const secureNotesStore = useSecureNotesStore.getState();
-
-    credentialsStore.setCredentials(credentials);
-    bankCardsStore.setBankCards(bankCards);
-    secureNotesStore.setSecureNotes(secureNotes);
+    // Update unified state
+    const itemStates = useItemStates.getState();
+    itemStates.setItemsInState(decryptedItems);
 
     console.log('[Vault] Successfully loaded vault into states:', {
-      credentials: credentials.length,
-      bankCards: bankCards.length,
-      secureNotes: secureNotes.length
+      totalItems: decryptedItems.length
     });
 
     return true;
@@ -90,18 +68,28 @@ export async function loadVaultFromStorage(userSecretKey: string): Promise<boole
  */
 export async function saveVaultToStorage(userSecretKey: string): Promise<boolean> {
   try {
-    const credentialsStore = useCredentialsStore.getState();
-    const bankCardsStore = useBankCardsStore.getState();
-    const secureNotesStore = useSecureNotesStore.getState();
+    const itemStates = useItemStates.getState();
+    const allItems = itemStates.getAllItemsFromState();
 
-    const credentials = credentialsStore.credentials;
-    const bankCards = bankCardsStore.bankCards;
-    const secureNotes = secureNotesStore.secureNotes;
-
-    if (credentials.length === 0 && bankCards.length === 0 && secureNotes.length === 0) {
+    if (allItems.length === 0) {
       console.log('[Vault] No items to save, skipping vault storage');
       return true;
     }
+
+    // Separate items by type
+    const credentials: CredentialDecrypted[] = [];
+    const bankCards: BankCardDecrypted[] = [];
+    const secureNotes: SecureNoteDecrypted[] = [];
+
+    allItems.forEach((item: ItemDecrypted) => {
+      if (item.itemType === 'credential') {
+        credentials.push(item as CredentialDecrypted);
+      } else if (item.itemType === 'bankCard') {
+        bankCards.push(item as BankCardDecrypted);
+      } else if (item.itemType === 'secureNote') {
+        secureNotes.push(item as SecureNoteDecrypted);
+      }
+    });
 
     // Encrypt all items
     const encryptedCredentials: ItemEncrypted[] = [];
@@ -110,19 +98,19 @@ export async function saveVaultToStorage(userSecretKey: string): Promise<boolean
 
     // Encrypt credentials
     for (const credential of credentials) {
-      const encrypted = await encryptCredential(userSecretKey, credential);
+      const encrypted = await encryptItem(userSecretKey, credential);
       encryptedCredentials.push(encrypted);
     }
 
     // Encrypt bank cards
     for (const bankCard of bankCards) {
-      const encrypted = await encryptBankCard(userSecretKey, bankCard);
+      const encrypted = await encryptItem(userSecretKey, bankCard);
       encryptedBankCards.push(encrypted);
     }
 
     // Encrypt secure notes
     for (const secureNote of secureNotes) {
-      const encrypted = await encryptSecureNote(userSecretKey, secureNote);
+      const encrypted = await encryptItem(userSecretKey, secureNote);
       encryptedSecureNotes.push(encrypted);
     }
 

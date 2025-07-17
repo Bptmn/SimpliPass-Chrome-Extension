@@ -10,7 +10,7 @@ import { radius, spacing } from '@ui/design/layout';
 import { LazyCredentialIcon } from './LazyCredentialIcon';
 import CopyButton from './CopyButton';
 import { typography } from '@ui/design/typography';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 
 // Minimal RN-compatible ErrorBanner
 const ErrorBanner: React.FC<{ message: string; styles: Record<string, object> }> = ({ message, styles }) => (

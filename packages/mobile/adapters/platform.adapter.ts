@@ -18,33 +18,7 @@ export class MobilePlatformAdapter implements PlatformAdapter {
   };
 
   // ===== Storage Operations =====
-
-  async getUserSecretKey(): Promise<string | null> {
-    try {
-      const SecureStore = await this.getSecureStore();
-      return await SecureStore.getItemAsync(this.config.storageKey);
-    } catch {
-      return null;
-    }
-  }
-
-  async storeUserSecretKey(key: string): Promise<void> {
-    try {
-      const SecureStore = await this.getSecureStore();
-      await SecureStore.setItemAsync(this.config.storageKey, key);
-    } catch {
-      throw new Error('Failed to store user secret key');
-    }
-  }
-
-  async deleteUserSecretKey(): Promise<void> {
-    try {
-      const SecureStore = await this.getSecureStore();
-      await SecureStore.deleteItemAsync(this.config.storageKey);
-    } catch {
-      throw new Error('Failed to delete user secret key');
-    }
-  }
+  // Removed getUserSecretKey, storeUserSecretKey, deleteUserSecretKey
 
   // ===== Platform Information =====
 

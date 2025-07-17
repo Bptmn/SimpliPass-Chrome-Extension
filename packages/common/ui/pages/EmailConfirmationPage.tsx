@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { getPageStyles, spacing } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';

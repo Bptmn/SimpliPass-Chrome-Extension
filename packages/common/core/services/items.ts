@@ -6,85 +6,42 @@
  */
 
 import { CryptographyError, NetworkError } from '../types/errors.types';
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted, ItemEncrypted, ItemDecrypted } from '../types/items.types';
+import { ItemEncrypted, ItemDecrypted } from '../types/items.types';
 import { getUserSecretKey } from './secret';
-import { encryptCredential, encryptBankCard, encryptSecureNote, decryptAllItems } from './cryptography';
+import { encryptItem, decryptAllItems } from './cryptography';
 import { addDocument, updateDocument, deleteDocument, getCollection } from '../libraries/database';
 import { FIRESTORE_USER_ITEMS_SUBCOLLECTION } from '@shared/constants/app.constants';
 import { getCurrentUserId } from '../libraries/auth/firebase';
 
 /**
- * Add a new credential to Firestore
+ * Add a new item to Database
  */
-export async function addCredentialToDatabase(credential: CredentialDecrypted): Promise<void> {
+export async function addItemToDatabase(item: ItemDecrypted): Promise<void> {
   try {
+    // Get user secret key
     const userSecretKey = await getUserSecretKey();
     if (!userSecretKey) {
       throw new Error('User not authenticated');
     }
+
+    // Get user id
     const userId = getCurrentUserId();
     if (!userId) throw new Error('User not authenticated');
     const collectionPath = FIRESTORE_USER_ITEMS_SUBCOLLECTION(userId);
 
-    const encryptedCredential = await encryptCredential(userSecretKey, credential);
-    await addDocument(collectionPath, encryptedCredential);
+    // Encrypt item
+    const encryptedItem = await encryptItem(userSecretKey, item);
     
-    console.log('[Items] Credential added successfully');
+    // Add item to database
+    await addDocument(collectionPath, { ...encryptedItem, id: item.id });
+
+    // Log success
+    console.log('[Items] Item added successfully:', item.itemType);
   } catch (error) {
     if (error instanceof NetworkError) {
-      throw new NetworkError('Failed to add credential to database', error);
+      throw new NetworkError('Failed to add item to database', error);
     }
-    throw new CryptographyError('Failed to encrypt credential', error as Error);
-  }
-}
-
-/**
- * Add a new bank card to Firestore
- */
-export async function addBankCardToDatabase(bankCard: BankCardDecrypted): Promise<void> {
-  try {
-    const userSecretKey = await getUserSecretKey();
-    if (!userSecretKey) {
-      throw new Error('User not authenticated');
-    }
-    const userId = getCurrentUserId();
-    if (!userId) throw new Error('User not authenticated');
-    const collectionPath = FIRESTORE_USER_ITEMS_SUBCOLLECTION(userId);
-
-    const encryptedBankCard = await encryptBankCard(userSecretKey, bankCard);
-    await addDocument(collectionPath, encryptedBankCard);
-    
-    console.log('[Items] Bank card added successfully');
-  } catch (error) {
-    if (error instanceof NetworkError) {
-      throw new NetworkError('Failed to add bank card to database', error);
-    }
-    throw new CryptographyError('Failed to encrypt bank card', error as Error);
-  }
-}
-
-/**
- * Add a new secure note to Firestore
- */
-export async function addSecureNoteToDatabase(secureNote: SecureNoteDecrypted): Promise<void> {
-  try {
-    const userSecretKey = await getUserSecretKey();
-    if (!userSecretKey) {
-      throw new Error('User not authenticated');
-    }
-    const userId = getCurrentUserId();
-    if (!userId) throw new Error('User not authenticated');
-    const collectionPath = FIRESTORE_USER_ITEMS_SUBCOLLECTION(userId);
-
-    const encryptedSecureNote = await encryptSecureNote(userSecretKey, secureNote);
-    await addDocument(collectionPath, encryptedSecureNote);
-    
-    console.log('[Items] Secure note added successfully');
-  } catch (error) {
-    if (error instanceof NetworkError) {
-      throw new NetworkError('Failed to add secure note to database', error);
-    }
-    throw new CryptographyError('Failed to encrypt secure note', error as Error);
+    throw new CryptographyError('Failed to encrypt item', error as Error);
   }
 }
 
@@ -92,26 +49,24 @@ export async function addSecureNoteToDatabase(secureNote: SecureNoteDecrypted): 
  * Update an existing item
  */
 export async function updateItemInDatabase(
-  userId: string,
   itemId: string,
-  userSecretKey: string,
   updatedItem: ItemDecrypted
 ): Promise<void> {
   try {
-    let encryptedUpdates;
-    // Determine the type and call the correct encrypt function
-    if ('username' in updatedItem && 'password' in updatedItem) {
-      encryptedUpdates = await encryptCredential(userSecretKey, updatedItem);
-    } else if ('cardNumber' in updatedItem && 'expirationDate' in updatedItem) {
-      encryptedUpdates = await encryptBankCard(userSecretKey, updatedItem);
-    } else if ('note' in updatedItem && !('username' in updatedItem)) {
-      encryptedUpdates = await encryptSecureNote(userSecretKey, updatedItem);
-    } else {
-      throw new Error('Unknown item type for encryption');
+    // Get user secret key
+    const userSecretKey = await getUserSecretKey();
+    if (!userSecretKey) {
+      throw new Error('User not authenticated');
     }
+    // Use the unified encryptItem function for all item types
+    const encryptedUpdates = await encryptItem(userSecretKey, updatedItem);
+
+    // Get user id
     const realUserId = getCurrentUserId();
     if (!realUserId) throw new Error('User not authenticated');
     const collectionPath = FIRESTORE_USER_ITEMS_SUBCOLLECTION(realUserId);
+
+    // Update item in database
     await updateDocument(`${collectionPath}/${itemId}`, encryptedUpdates);
     
     console.log('[Items] Item updated successfully');
@@ -126,11 +81,14 @@ export async function updateItemInDatabase(
 /**
  * Delete an item
  */
-export async function deleteItemFromDatabase(userId: string, itemId: string): Promise<void> {
+export async function deleteItemFromDatabase(itemId: string): Promise<void> {
   try {
+    // Get user id
     const realUserId = getCurrentUserId();
     if (!realUserId) throw new Error('User not authenticated');
     const collectionPath = FIRESTORE_USER_ITEMS_SUBCOLLECTION(realUserId);
+
+    // Delete item from database
     await deleteDocument(`${collectionPath}/${itemId}`);
     console.log('[Items] Item deleted successfully');
   } catch (error) {
@@ -139,7 +97,7 @@ export async function deleteItemFromDatabase(userId: string, itemId: string): Pr
 }
 
 /**
- * Get all items from Firestore and decrypt them
+ * Get all items from Database and decrypt them
  */
 export async function getAllItemsFromDatabase(): Promise<ItemDecrypted[]> {
  
@@ -155,7 +113,7 @@ export async function getAllItemsFromDatabase(): Promise<ItemDecrypted[]> {
     const userId = getCurrentUserId();
     if (!userId) throw new Error('User not authenticated');
 
-    // Get all items from Firestore
+    // Get all items from Database
     const encryptedItems = await getCollection<ItemEncrypted>(`users/${userId}/my_items`);
     
     if (encryptedItems.length === 0) {

@@ -4,11 +4,11 @@ import { View, Text, Pressable, StyleSheet, ScrollView, Platform } from 'react-n
 import { Input } from '@ui/components/InputFields';
 import ItemBankCard from '@ui/components/ItemBankCard';
 import { Icon } from '@ui/components/Icon';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { spacing, radius, getPageStyles } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
-import { addItem } from '@common/core/logic/items';
+import { addItemToDatabase } from '@common/core/services/items';
 import { getUserSecretKey } from '@common/core/services/secret';
 import { useUserStore } from '@common/core/states/user';
 import { BankCardDecrypted } from '@common/core/types/items.types';
@@ -17,7 +17,7 @@ import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { ColorSelector } from '@ui/components/ColorSelector';
-import { getMonthOptions, getYearOptions } from '@common/core/logic/cards';
+import { getMonthOptions, getYearOptions } from '@common/utils/cards';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Toast } from '@ui/components/Toast';
 
@@ -63,8 +63,11 @@ const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
       
       // Parse expiration date
       const expDate = parseExpirationDate(expirationDate) || createExpirationDate(1, new Date().getFullYear() + 1);
-      
-      const newCard: Omit<BankCardDecrypted, 'id'> = {
+  
+
+
+      const newCard: BankCardDecrypted = {
+        id: '',
         itemType: 'bankCard',
         createdDateTime: new Date(),
         lastUseDateTime: new Date(),
@@ -79,7 +82,7 @@ const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
         bankName: bankName || '',
         bankDomain: bankDomain || '',
       };
-      await addItem(user.id, userSecretKey, newCard);
+      await addItemToDatabase(newCard);
       navigate('/')    } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la création de la carte.');
     } finally {

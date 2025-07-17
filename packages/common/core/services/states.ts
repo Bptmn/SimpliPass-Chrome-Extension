@@ -5,12 +5,10 @@
  * Manages the conversion between unified types and state types.
  */
 
-import { useAuthStore } from '../states/auth.state';
-import { useCredentialsStore } from '../states/credentials.state';
-import { useBankCardsStore } from '../states/bankCards';
-import { useSecureNotesStore } from '../states/secureNotes';
+import { useAuthStore } from '../states/auth';
+import { useItemStates } from '../states/itemStates';
 import { useUserStore } from '../states/user';
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../types/items.types';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted, ItemDecrypted } from '../types/items.types';
 
 // ===== State Management Functions =====
 
@@ -22,20 +20,15 @@ export async function setDataInStates(data: {
   auth?: any;
 }): Promise<void> {
   try {
-    // Set credentials
-    if (data.credentials) {
-      useCredentialsStore.getState().setCredentials(data.credentials);
-    }
-
-    // Set bank cards
-    if (data.bankCards) {
-      useBankCardsStore.getState().setBankCards(data.bankCards);
-    }
-
-    // Set secure notes
-    if (data.secureNotes) {
-      useSecureNotesStore.getState().setSecureNotes(data.secureNotes);
-    }
+    // Combine all items into unified state
+    const allItems: ItemDecrypted[] = [
+      ...(data.credentials || []),
+      ...(data.bankCards || []),
+      ...(data.secureNotes || [])
+    ];
+    
+    // Set items in unified state
+    useItemStates.getState().setItemsInState(allItems);
 
     // Set user data
     if (data.user) {
@@ -46,7 +39,6 @@ export async function setDataInStates(data: {
     if (data.auth) {
       useUserStore.getState().setUser(data.user);
       useAuthStore.getState().setSession(data.auth.session);
-      useAuthStore.getState().setAuthenticated(data.auth.isAuthenticated);
     }
 
     console.log('[States] Data synchronized successfully');
@@ -59,9 +51,7 @@ export async function setDataInStates(data: {
 export async function clearAllStates(): Promise<void> {
   try {
     useAuthStore.getState().clearAuth();
-    useCredentialsStore.getState().setCredentials([]);
-    useBankCardsStore.getState().setBankCards([]);
-    useSecureNotesStore.getState().setSecureNotes([]);
+    useItemStates.getState().setItemsInState([]);
     useUserStore.getState().setUser(null);
     
     console.log('[States] All states cleared successfully');
@@ -77,28 +67,8 @@ export async function updateItemInStates(
   updates: Partial<CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted>
 ): Promise<void> {
   try {
-    switch (itemType) {
-      case 'credential': {
-        const credentialUpdates = updates as Partial<CredentialDecrypted>;
-        useCredentialsStore.getState().updateCredential(itemId, credentialUpdates);
-        break;
-      }
-        
-      case 'bankCard': {
-        const bankCardUpdates = updates as Partial<BankCardDecrypted>;
-        useBankCardsStore.getState().updateBankCard(itemId, bankCardUpdates);
-        break;
-      }
-        
-      case 'secureNote': {
-        const secureNoteUpdates = updates as Partial<SecureNoteDecrypted>;
-        useSecureNotesStore.getState().updateSecureNote(itemId, secureNoteUpdates);
-        break;
-      }
-        
-      default:
-        throw new Error(`Unknown item type: ${itemType}`);
-    }
+    // Update item in unified state
+    useItemStates.getState().updateItemInState(itemId, updates as Partial<ItemDecrypted>);
     
     console.log(`[States] Updated ${itemType} ${itemId} successfully`);
   } catch (error) {
@@ -115,13 +85,8 @@ export async function deleteItemFromStates(
   itemType: 'credential' | 'bankCard' | 'secureNote'
 ): Promise<void> {
   try {
-    if (itemType === 'credential') {
-      useCredentialsStore.getState().deleteCredential(itemId);
-    } else if (itemType === 'bankCard') {
-      useBankCardsStore.getState().deleteBankCard(itemId);
-    } else if (itemType === 'secureNote') {
-      useSecureNotesStore.getState().deleteSecureNote(itemId);
-    }
+    // Delete item from unified state
+    useItemStates.getState().deleteItemFromState(itemId);
     
     console.log('[States] Deleted item from states:', itemId, itemType);
   } catch (error) {
@@ -136,7 +101,6 @@ export async function deleteItemFromStates(
 export async function setAuthState(user: any): Promise<void> {
   try {
     useUserStore.getState().setUser(user);
-    useAuthStore.getState().setAuthenticated(true);
     console.log('[States] Auth state set successfully');
   } catch (error) {
     console.error('[States] Failed to set auth state:', error);

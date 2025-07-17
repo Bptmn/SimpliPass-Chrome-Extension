@@ -3,15 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { View, ScrollView } from 'react-native';
 import { Input } from '@ui/components/InputFields';
 import { getPageStyles } from '@ui/design/layout';
-import { addItem } from '@common/core/logic/items';
-import { getUserSecretKey } from '@common/core/services/secret';
-import { useUserStore } from '@common/core/states/user';
-import { SecureNoteDecrypted } from '@common/core/types/items.types';
+import { useUser } from '@common/hooks/useUser';
+import { useItems } from '@common/hooks/useItems';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { ColorSelector } from '@ui/components/ColorSelector';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 
 interface AddSecureNoteProps {
@@ -23,36 +21,32 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
   const styles = React.useMemo(() => getPageStyles(mode), [mode]);
   const themeColors = getColors(mode);
   const navigate = useNavigate();
-  const user = useUserStore(state => state.user);
+  const { user } = useUser();
+  const { addSecureNote, isLoading } = useItems();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedColor, setSelectedColor] = useState('#4f86a2');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleConfirm = async () => {
     if (!user) return;
-    setLoading(true);
     setError(null);
     try {
-      const userSecretKey = await getUserSecretKey();
-      if (!userSecretKey) throw new Error('Clé de sécurité utilisateur introuvable');
-      const now = new Date();
-      const newNote: Omit<SecureNoteDecrypted, 'id'> = {
-        itemType: 'secureNote',
-        createdDateTime: now,
-        lastUseDateTime: now,
+      const newNote = {
         title: title || '',
         note: content,
         color: selectedColor,
-        itemKey: '',
+        itemType: 'secureNote' as const,
       };
-      await addItem(user.id, userSecretKey, newNote);
-      navigate('/');
+      
+      const result = await addSecureNote(newNote);
+      if (result.success) {
+        navigate('/');
+      } else {
+        setError(result.error || 'Erreur lors de la création de la note.');
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la création de la note.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -94,7 +88,7 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
             width="full"
             height="full"
             onPress={handleConfirm}
-            disabled={loading}
+            disabled={isLoading}
           />
         </View>
       </ScrollView>

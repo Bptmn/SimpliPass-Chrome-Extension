@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import CopyButton from '../CopyButton';
-import { ThemeProvider } from '@common/core/logic/theme';
+import { ThemeProvider } from '@common/ui/design/theme';
 import { spacing } from '@ui/design/layout';
 
 export default {

@@ -3,7 +3,7 @@ import { View, Text, Pressable } from 'react-native';
 import { BankCardDecrypted } from '@common/core/types/types';
 import { formatExpirationDate } from '@common/utils';
 import { LazyCredentialIcon } from './LazyCredentialIcon';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { spacing } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';

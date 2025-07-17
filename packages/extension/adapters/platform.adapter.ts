@@ -18,31 +18,7 @@ export class ExtensionPlatformAdapter implements PlatformAdapter {
   };
 
   // ===== Storage Operations =====
-
-  async getUserSecretKey(): Promise<string | null> {
-    try {
-      const result = await chrome.storage.local.get(this.config.storageKey);
-      return result[this.config.storageKey] || null;
-    } catch (error) {
-      throw new Error(`Failed to retrieve user secret key from storage: ${error}`);
-    }
-  }
-
-  async storeUserSecretKey(key: string): Promise<void> {
-    try {
-      await chrome.storage.local.set({ [this.config.storageKey]: key });
-    } catch (error) {
-      throw new Error(`Failed to store user secret key in storage: ${error}`);
-    }
-  }
-
-  async deleteUserSecretKey(): Promise<void> {
-    try {
-      await chrome.storage.local.remove(this.config.storageKey);
-    } catch (error) {
-      throw new Error(`Failed to delete user secret key from storage: ${error}`);
-    }
-  }
+  // Removed getUserSecretKey, storeUserSecretKey, deleteUserSecretKey
 
   // ===== Platform Information =====
 

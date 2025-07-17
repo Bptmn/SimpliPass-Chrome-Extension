@@ -7,7 +7,7 @@ import React, { useEffect, useRef } from 'react';
 import { Text } from 'react-native';
 import './PopoverCredentialPicker.css';
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider } from '@common/core/logic/theme';
+import { ThemeProvider } from '@common/ui/design/theme';
 import { CredentialCard } from '@common/ui/components/CredentialCard';
 
 // Minimal popover-specific ErrorBanner

@@ -1,4 +1,4 @@
-import * as firebaseDb from '../database/firestore';
+import * as firebaseDb from '../libraries/database/firestore';
 import { DocumentData } from 'firebase/firestore';
 
 type DocumentId = string;
@@ -9,7 +9,7 @@ export interface DatabaseAdapter {
   addDocument<T extends DocumentData = DocumentData>(collectionPath: string, data: T): Promise<DocumentId>;
   updateDocument<T extends DocumentData = DocumentData>(docPath: string, data: Partial<T>): Promise<void>;
   deleteDocument(docPath: string): Promise<void>;
-  addDocumentWithId<T extends DocumentData = DocumentData>(collectionPath: string, data: T): Promise<DocumentId>;
+  generateItemId(): string;
 }
 
 // 🔌 Current implementation using Firebase
@@ -20,5 +20,5 @@ export const db: DatabaseAdapter = {
   addDocument: firebaseDb.addDocument,
   updateDocument: firebaseDb.updateDocument,
   deleteDocument: firebaseDb.deleteDocument,
-  addDocumentWithId: firebaseDb.addDocumentWithId,
+  generateItemId: firebaseDb.generateItemDatabaseId,
 }; 

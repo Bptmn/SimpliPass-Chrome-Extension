@@ -5,7 +5,7 @@ import { Input } from '@ui/components/InputFields';
 import { getPageStyles } from '@ui/design/layout';
 import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 
 const AddCard1: React.FC = () => {

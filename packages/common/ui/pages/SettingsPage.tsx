@@ -5,7 +5,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useUserStore } from '@common/core/states/user';
-import { signOutUser } from '@common/core/services/auth';
+import { auth } from '@common/core/adapters/auth.adapter';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { useToast } from '@common/hooks/useToast';
@@ -13,7 +13,7 @@ import { getPageStyles, spacing, radius } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
 import { ModeSwitch } from '@ui/components/ModeSwitch';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { Toast } from '@ui/components/Toast';
 
@@ -81,7 +81,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
   const handleLogout = async () => {
     try {
-      await signOutUser();
+      await auth.signOut();
       showToast('Déconnexion réussie');
       setTimeout(() => {
         onLogout?.();

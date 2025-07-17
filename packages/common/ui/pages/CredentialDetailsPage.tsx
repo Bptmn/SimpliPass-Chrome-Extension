@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { CredentialDecrypted } from '@common/core/types/types';
-import { deleteItem } from '@common/core/logic/items';
+import { deleteItemFromDatabase } from '@common/core/services/items';
 import { useUserStore } from '@common/core/states/user';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { LazyCredentialIcon } from '@ui/components/LazyCredentialIcon';
 import { useToast } from '@common/hooks/useToast';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { getPageStyles, spacing, radius, padding } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
@@ -65,7 +65,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
     setError(null);
     setShowDeleteConfirm(false);
     try {
-      await deleteItem(user.id, credential.id);
+      await deleteItemFromDatabase(credential.id);
       showToast('Identifiant supprimé avec succès');
       setTimeout(() => {
         onBack();

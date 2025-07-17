@@ -7,7 +7,7 @@
 import React from 'react';
 import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
 import { Icon } from './Icon';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { useHelperBar } from '@common/hooks/useHelperBar';
 

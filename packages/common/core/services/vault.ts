@@ -1,37 +1,28 @@
 /**
- * Vault Service - Layer 2: Business Logic
+ * Vault Service - Layer2 Business Logic
  * 
  * Handles vault management operations including local storage and synchronization.
  * Orchestrates vault operations between hooks and libraries.
  */
 
 import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/types';
-import { encryptData, decryptData } from '@common/utils/crypto';
-import { platform } from '../platform/platform.adapter';
+import { storage } from '../adapters/platform.storage.adapter';
 
 type ItemDecrypted = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted;
 
 /**
- * Store encrypted vault in local storage
+ * Store vault in local storage (clear text)
  */
 export async function setLocalVault(items: ItemDecrypted[]): Promise<void> {
   try {
-    if (!platform.storeEncryptedVault) {
+    if (!storage.storeVaultToSecureLocalStorage) {
       throw new Error('Local vault storage not supported on this platform');
     }
     
-    // Get device fingerprint for encryption
-    const deviceFingerprint = await platform.getDeviceFingerprint();
-    
-    // Encrypt the vault data
-    const encryptedData = encryptData(deviceFingerprint, JSON.stringify(items));
-    
-    // Store encrypted vault
-    await platform.storeEncryptedVault({
+    // Store vault in clear text
+    await storage.storeVaultToSecureLocalStorage({
       version: '1.0',
-      encryptedData,
-      iv: '', // Not used with ChaCha20Poly1305
-      salt: '', // Not used with ChaCha20Poly1305
+      data: JSON.stringify(items),
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -41,28 +32,23 @@ export async function setLocalVault(items: ItemDecrypted[]): Promise<void> {
 }
 
 /**
- * Load encrypted vault from local storage
+ * Load vault from local storage (clear text)
  */
 export async function getLocalVault(): Promise<ItemDecrypted[]> {
   try {
-    if (!platform.getEncryptedVault) {
+    if (!storage.getVaultFromSecureLocalStorage) {
       throw new Error('Local vault storage not supported on this platform');
     }
     
-    // Get encrypted vault
-    const encryptedVault = await platform.getEncryptedVault();
+    // Get vault
+    const vault = await storage.getVaultFromSecureLocalStorage();
     
-    if (!encryptedVault) {
+    if (!vault) {
       return [];
     }
     
-    // Get device fingerprint for decryption
-    const deviceFingerprint = await platform.getDeviceFingerprint();
-    
-    // Decrypt the vault data
-    const decryptedData = decryptData(deviceFingerprint, encryptedVault.encryptedData);
-    
-    return JSON.parse(decryptedData);
+    // Parse the clear text data
+    return JSON.parse(vault.encryptedData);
   } catch (error) {
     throw new Error(`Failed to get local vault: ${error}`);
   }
@@ -73,8 +59,8 @@ export async function getLocalVault(): Promise<ItemDecrypted[]> {
  */
 export async function clearLocalVault(): Promise<void> {
   try {
-    if (platform.deleteEncryptedVault) {
-      await platform.deleteEncryptedVault();
+    if (storage.deleteVaultFromSecureLocalStorage) {
+      await storage.deleteVaultFromSecureLocalStorage();
     }
   } catch (error) {
     throw new Error(`Failed to clear local vault: ${error}`);

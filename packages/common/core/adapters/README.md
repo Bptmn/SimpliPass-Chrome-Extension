@@ -1,6 +1,6 @@
 # Adapters Layer
 
-This layer provides provider-agnostic interfaces for authentication and database operations. This allows you to easily swap providers without changing your application code.
+This layer provides provider-agnostic interfaces for authentication, database operations, and platform-specific functionality. This allows you to easily swap providers without changing your application code.
 
 ## Architecture
 
@@ -23,16 +23,18 @@ Provides a unified interface for authentication operations:
 
 ```typescript
 interface AuthAdapter {
-  login(email: string, password: string): Promise<AuthResult>;
-  confirmMfa(code: string): Promise<AuthResult>;
+  login(email: string, password: string): Promise<string>;
+  isAuthenticated(): Promise<boolean>;
   signOut(): Promise<void>;
-  getUserSalt(): Promise<string>;
+  storeUserSecretKey(userSecretKey: string): Promise<void>;
+  checkAuthenticationStatus(): Promise<any>;
+  fetchUserSalt(): Promise<string>;
 }
 ```
 
 **Current Implementation**: AWS Cognito + Firebase Auth
 
-### Database Adapter (`db.adapter.ts`)
+### Database Adapter (`database.adapter.ts`)
 
 Provides a unified interface for database operations:
 
@@ -43,18 +45,47 @@ interface DatabaseAdapter {
   addDocument<T>(collectionPath: string, data: T): Promise<string>;
   updateDocument<T>(docPath: string, data: Partial<T>): Promise<void>;
   deleteDocument(docPath: string): Promise<void>;
-  addDocumentWithId<T>(collectionPath: string, data: T): Promise<string>;
+  generateItemId(): string;
 }
 ```
 
 **Current Implementation**: Firebase Firestore
+
+### Platform Adapter (`platform.adapter.ts`)
+
+Provides a unified interface for platform-specific functionality:
+
+```typescript
+interface PlatformAdapter {
+  getUserSecretKey(): Promise<string | null>;
+  storeUserSecretKey(key: string): Promise<void>;
+  deleteUserSecretKey(): Promise<void>;
+  getSessionMetadata(): Promise<any>;
+  storeSessionMetadata(metadata: any): Promise<void>;
+  deleteSessionMetadata(): Promise<void>;
+  getPlatformName(): 'mobile' | 'extension';
+  supportsBiometric(): boolean;
+  supportsOfflineVault(): boolean;
+  copyToClipboard(text: string): Promise<void>;
+  getFromClipboard(): Promise<string>;
+  clearSession(): Promise<void>;
+  getDeviceFingerprint(): Promise<string>;
+  isOnline(): Promise<boolean>;
+  getNetworkStatus(): Promise<'online' | 'offline' | 'unknown'>;
+}
+```
+
+**Current Implementation**: Dynamic loading of mobile or extension platform adapters
 
 ## Usage
 
 ### Importing Adapters
 
 ```typescript
-import { auth, db } from '@common/core/adapters';
+import { auth, db, platform, initializePlatform } from '@common/core/adapters';
+
+// Initialize platform adapter at app startup
+await initializePlatform();
 
 // Use auth adapter
 const result = await auth.login('user@example.com', 'password');
@@ -65,6 +96,11 @@ if (result.mfaRequired) {
 // Use database adapter
 const users = await db.getCollection('users');
 const user = await db.getDocument('users/123');
+
+// Use platform adapter
+const secretKey = await platform.getUserSecretKey();
+await platform.copyToClipboard('text to copy');
+const isOnline = await platform.isOnline();
 ```
 
 ### Swapping Providers
@@ -74,7 +110,7 @@ To swap providers, simply implement the adapter interface and update the export:
 #### Example: Switch to Mock Database
 
 ```typescript
-// In db.adapter.ts
+// In database.adapter.ts
 import { mockDb } from './mock.adapter';
 
 // Change this line:
@@ -92,7 +128,7 @@ export const mongoDb: DatabaseAdapter = {
   // ... other methods
 };
 
-// In db.adapter.ts
+// In database.adapter.ts
 import { mongoDb } from './mongodb.adapter';
 export const db: DatabaseAdapter = mongoDb;
 ```
@@ -113,6 +149,21 @@ import { auth0Auth } from './auth0.adapter';
 export const auth: AuthAdapter = auth0Auth;
 ```
 
+#### Example: Switch to Different Platform
+
+```typescript
+// Create web.adapter.ts
+export const webPlatform: PlatformAdapter = {
+  getUserSecretKey: async () => {
+    // Web-specific implementation
+  },
+  // ... other methods
+};
+
+// In platform.adapter.ts
+export const platform: PlatformAdapter = webPlatform;
+```
+
 ## Benefits
 
 1. **Provider Agnostic**: Your application code doesn't depend on specific providers
@@ -120,6 +171,7 @@ export const auth: AuthAdapter = auth0Auth;
 3. **Flexible Migration**: Switch providers without changing business logic
 4. **Consistent Interface**: Same API regardless of underlying provider
 5. **Type Safety**: TypeScript ensures correct implementation
+6. **Platform Independence**: Core logic works across mobile and extension platforms
 
 ## Testing
 
@@ -132,13 +184,14 @@ import { mockDb } from '@common/core/database/mock.adapter';
 jest.mock('@common/core/adapters', () => ({
   db: mockDb,
   auth: mockAuth,
+  platform: mockPlatform,
 }));
 ```
 
 ## Adding New Providers
 
 1. Create a new adapter file (e.g., `mongodb.adapter.ts`)
-2. Implement the interface (`DatabaseAdapter` or `AuthAdapter`)
+2. Implement the interface (`DatabaseAdapter`, `AuthAdapter`, or `PlatformAdapter`)
 3. Update the main adapter file to export your new implementation
 4. Your application code remains unchanged!
 

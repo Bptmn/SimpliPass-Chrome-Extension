@@ -5,7 +5,7 @@
  * Determines which config to use based on the current environment
  */
 
-import { detectPlatform } from '../core/platform/platform.adapter';
+import { detectPlatform } from '../core/adapters/platform.adapter';
 
 export const isTestEnvironment = process.env.NODE_ENV === 'test';
 

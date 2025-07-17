@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 import { Icon } from './Icon';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 
 interface NavItem {

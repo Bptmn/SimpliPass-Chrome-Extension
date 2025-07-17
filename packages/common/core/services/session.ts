@@ -5,8 +5,8 @@
  * Sessions are stored in platform-specific storage.
  */
 
-import { platform } from '../platform/platform.adapter';
-import { useAuthStore } from '../states/auth.state';
+import { platform } from '../adapters/platform.adapter';
+import { useAuthStore } from '../states/auth';
 import { UserSession } from '../types/auth.types';
 
 /**
@@ -21,14 +21,10 @@ function generateSessionId(): string {
  */
 export async function initializeUserSession(userId: string, _userSecretKey: string): Promise<UserSession> {
   try {
-    // Get device fingerprint
-    const deviceFingerprint = await platform.getDeviceFingerprint();
-    
     // Create session
     const session: UserSession = {
       id: generateSessionId(),
       userId,
-      deviceFingerprint,
       isActive: true,
       createdAt: new Date(),
       expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes
@@ -38,7 +34,6 @@ export async function initializeUserSession(userId: string, _userSecretKey: stri
     await platform.storeSessionMetadata({
       sessionId: session.id,
       userId: session.userId,
-      deviceFingerprint: session.deviceFingerprint,
       isActive: session.isActive,
       createdAt: session.createdAt.toISOString(),
       expiresAt: session.expiresAt.toISOString(),
@@ -70,13 +65,6 @@ export async function clearUserSession(): Promise<void> {
  */
 export async function validateUserSession(): Promise<boolean> {
   try {
-    // Check if user secret key exists
-    const userSecretKey = await platform.getUserSecretKey();
-    
-    if (!userSecretKey) {
-      return false;
-    }
-    
     // Get session metadata
     const sessionMetadata = await platform.getSessionMetadata();
     
@@ -134,7 +122,6 @@ export const refreshUserSession = async (): Promise<void> => {
     await platform.storeSessionMetadata({
       sessionId: session.id,
       userId: session.userId,
-      deviceFingerprint: session.deviceFingerprint,
       createdAt: session.createdAt.toISOString(),
       expiresAt: newExpiresAt.toISOString(),
     });

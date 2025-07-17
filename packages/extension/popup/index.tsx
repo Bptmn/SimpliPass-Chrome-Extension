@@ -2,8 +2,8 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { PopupApp } from './PopupApp';
 import { MemoryRouter } from 'react-router-dom';
-import { ThemeProvider } from '@common/core/logic/theme';
-import { initializePlatform } from '@common/core/platform';
+import { ThemeProvider } from '@common/ui/design/theme';
+import { initializePlatform } from '@common/core/adapters';
 
 const rootElement = document.getElementById('root');
 

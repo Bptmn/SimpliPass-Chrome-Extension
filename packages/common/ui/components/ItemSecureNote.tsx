@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { SecureNoteDecrypted } from '@common/core/types/types';
 import { getColors } from '@ui/design/colors';
 import { spacing } from '@ui/design/layout';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 
 interface ItemSecureNoteProps {
   note: SecureNoteDecrypted;

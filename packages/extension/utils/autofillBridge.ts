@@ -4,7 +4,7 @@
  */
 
 import { loadVaultIfNeeded } from './vaultLoader';
-import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@common/core/states';
+import { useItemStates } from '@common/core/states/itemStates';
 
 /**
  * Extracts the root domain from a hostname, removing 'www.' and subdomains.
@@ -22,8 +22,9 @@ function getRootDomain(hostname: string): string {
  * @returns true if autofill can be used, false otherwise
  */
 export function isAutofillAvailable(): boolean {
-  const credentialsStore = useCredentialsStore.getState();
-  return credentialsStore.credentials.length > 0;
+  const itemStates = useItemStates.getState();
+  const credentials = itemStates.getItemsByTypeFromState('credential');
+  return credentials.length > 0;
 }
 
 /**
@@ -44,12 +45,12 @@ export function getMatchingCredentials(domain: string): Array<{
       return [];
     }
 
-    const credentialsStore = useCredentialsStore.getState();
-    const credentials = credentialsStore.credentials;
+    const itemStates = useItemStates.getState();
+    const credentials = itemStates.getItemsByTypeFromState('credential');
     const pageRootDomain = getRootDomain(domain);
     
     return credentials
-      .filter(credential => {
+      .filter((credential: any) => {
         if (!credential.url) return false;
         
         const credRootDomain = getRootDomain(credential.url);
@@ -72,7 +73,7 @@ export function getMatchingCredentials(domain: string): Array<{
         
         return false;
       })
-      .map(credential => ({
+      .map((credential: any) => ({
         id: credential.id,
         title: credential.title,
         username: credential.username,
@@ -103,8 +104,21 @@ export function getCredentialForInjection(credentialId: string): {
       return null;
     }
 
-    const credentialsStore = useCredentialsStore.getState();
-    return credentialsStore.credentials.find(c => c.id === credentialId) || null;
+    const itemStates = useItemStates.getState();
+    const credentials = itemStates.getItemsByTypeFromState('credential');
+    const credential = credentials.find((c: any) => c.id === credentialId);
+    
+    if (!credential || credential.itemType !== 'credential') {
+      return null;
+    }
+    
+    return {
+      id: credential.id,
+      title: credential.title,
+      username: credential.username,
+      password: credential.password,
+      url: credential.url
+    };
   } catch (error) {
     console.error('[AutofillBridge] Error getting credential for injection:', error);
     return null;
@@ -140,8 +154,9 @@ export function getAllCredentials(): Array<{
       return [];
     }
 
-    const credentialsStore = useCredentialsStore.getState();
-    return credentialsStore.credentials.map(credential => ({
+    const itemStates = useItemStates.getState();
+    const credentials = itemStates.getItemsByTypeFromState('credential');
+    return credentials.map((credential: any) => ({
       id: credential.id,
       title: credential.title,
       username: credential.username,
@@ -168,8 +183,9 @@ export function getAllBankCards(): Array<{
       return [];
     }
 
-    const bankCardsStore = useBankCardsStore.getState();
-    return bankCardsStore.bankCards.map(card => ({
+    const itemStates = useItemStates.getState();
+    const bankCards = itemStates.getItemsByTypeFromState('bankCard');
+    return bankCards.map((card: any) => ({
       id: card.id,
       title: card.title,
       cardNumber: card.cardNumber,
@@ -195,8 +211,9 @@ export function getAllSecureNotes(): Array<{
       return [];
     }
 
-    const secureNotesStore = useSecureNotesStore.getState();
-    return secureNotesStore.secureNotes.map(note => ({
+    const itemStates = useItemStates.getState();
+    const secureNotes = itemStates.getItemsByTypeFromState('secureNote');
+    return secureNotes.map((note: any) => ({
       id: note.id,
       title: note.title,
       url: 'url' in note ? (note as any).url : '',
@@ -205,24 +222,32 @@ export function getAllSecureNotes(): Array<{
     console.error('[AutofillBridge] Error getting all secure notes:', error);
     return [];
   }
-} 
+}
 
+/**
+ * Get vault data for autofill operations
+ * @returns Promise<{credentials: any[], bankCards: any[], secureNotes: any[]}>
+ */
 export async function getVaultForAutofill() {
-  const credentialsStore = useCredentialsStore.getState();
-  const bankCardsStore = useBankCardsStore.getState();
-  const secureNotesStore = useSecureNotesStore.getState();
-  
-  if (
-    credentialsStore.credentials.length === 0 &&
-    bankCardsStore.bankCards.length === 0 &&
-    secureNotesStore.secureNotes.length === 0
-  ) {
+  try {
     await loadVaultIfNeeded();
+    
+    const itemStates = useItemStates.getState();
+    const credentials = itemStates.getItemsByTypeFromState('credential');
+    const bankCards = itemStates.getItemsByTypeFromState('bankCard');
+    const secureNotes = itemStates.getItemsByTypeFromState('secureNote');
+    
+    return {
+      credentials,
+      bankCards,
+      secureNotes,
+    };
+  } catch (error) {
+    console.error('[AutofillBridge] Error getting vault for autofill:', error);
+    return {
+      credentials: [],
+      bankCards: [],
+      secureNotes: [],
+    };
   }
-  
-  return {
-    credentials: credentialsStore.credentials,
-    bankCards: bankCardsStore.bankCards,
-    secureNotes: secureNotesStore.secureNotes,
-  };
 } 

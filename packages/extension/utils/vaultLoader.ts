@@ -1,5 +1,5 @@
 import { getUserSecretKey } from '@common/core/services/secret';
-import { useCredentialsStore, useBankCardsStore, useSecureNotesStore } from '@common/core/states';
+import { useItemStates } from '@common/core/states/itemStates';
 
 /**
  * Decrypts the vault using the userSecretKey
@@ -22,16 +22,10 @@ export async function decryptVaultWithUserSecretKey(vaultEncrypted: string, _use
  * - Ensures userSecretKey is restored to state from storage if needed
  */
 export async function loadVaultIfNeeded(): Promise<void> {
-  const credentialsStore = useCredentialsStore.getState();
-  const bankCardsStore = useBankCardsStore.getState();
-  const secureNotesStore = useSecureNotesStore.getState();
+  const itemStates = useItemStates.getState();
   
   // Check if vault is already loaded in states
-  if (
-    credentialsStore.credentials.length > 0 ||
-    bankCardsStore.bankCards.length > 0 ||
-    secureNotesStore.secureNotes.length > 0
-  ) {
+  if (itemStates.getAllItemsFromState().length > 0) {
     return;
   }
 

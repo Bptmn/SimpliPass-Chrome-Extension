@@ -42,8 +42,7 @@ export const STORAGE_KEYS = {
   USER_SETTINGS: 'userSettings',
   
   // Vault (Extension only)
-  ENCRYPTED_VAULT: 'encryptedVault',
-  DEVICE_FINGERPRINT: 'deviceFingerprint',
+  VAULT: 'vault',
   
   // UI State
   UI_STATE: 'uiState',

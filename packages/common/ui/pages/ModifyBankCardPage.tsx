@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
-import { BankCardDecrypted } from '@common/core/types/items.types';
-import { updateItemInDatabase } from '@common/core/services/items';
-import { getUserSecretKey } from '@common/core/services/secret';
-import { useUserStore } from '@common/core/states/user';
-import { ErrorBanner } from '@ui/components/ErrorBanner';
-import { Toast } from '@ui/components/Toast';
-import { useToast } from '@common/hooks/useToast';
-import { InputEdit } from '@ui/components/InputEdit';
-import { spacing, radius, getPageStyles } from '@ui/design/layout';
-import { typography } from '@ui/design/typography';
-import { Button } from '@ui/components/Buttons';
-import { HeaderTitle } from '@ui/components/HeaderTitle';
-import { ColorSelector } from '@ui/components/ColorSelector';
-import ItemBankCard from '@ui/components/ItemBankCard';
+import { View, Text, ScrollView, Pressable, Platform, StyleSheet } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { getMonthOptions, getYearOptions } from '@common/utils/cards';
-import { useThemeMode } from '@common/core/logic/theme';
-import { getColors } from '@ui/design/colors';
-import { Icon } from '@ui/components/Icon';
+import { useItems } from '@common/hooks/useItems';
+import { useUser } from '@common/hooks/useUser';
+import { useToast } from '@common/hooks/useToast';
+import { BankCardDecrypted } from '@common/core/types/items.types';
+import { pageStyles } from '@common/ui/design/layout';
+import { getColors, typography, spacing } from '@common/ui/design';
+import { HeaderTitle } from '@common/ui/components/HeaderTitle';
+import ItemBankCard from '@common/ui/components/ItemBankCard';
+import { InputEdit } from '@common/ui/components/InputEdit';
+import { ColorSelector } from '@common/ui/components/ColorSelector';
+import { Button } from '@common/ui/components/Buttons';
+import { ErrorBanner } from '@common/ui/components/ErrorBanner';
+import { Toast } from '@common/ui/components/Toast';
+import { Icon } from '@common/ui/components/Icon';
 
-const CARD_COLORS = ['#2bb6a3', '#5B8CA9', '#6c757d', '#c44545', '#b6d43a', '#a259e6'];
+const themeColors = getColors('light');
 
 interface ModifyBankCardPageProps {
   bankCard: BankCardDecrypted;
@@ -31,69 +27,70 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
   bankCard,
   onBack,
 }) => {
-  const { mode } = useThemeMode();
-  const themeColors = getColors(mode);
-  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
-  const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const user = useUserStore(state => state.user);
+  const { updateItem } = useItems();
+  const { user } = useUser();
+  const { showToast } = useToast();
 
-  const [color, setColor] = useState(bankCard?.color || CARD_COLORS[1]);
-  const [owner, setOwner] = useState(bankCard?.owner || '');
-  const [cardNumber, setCardNumber] = useState(bankCard?.cardNumber || '');
-  const [expirationDate, setExpirationDate] = useState(bankCard?.expirationDate ? 
-    `${bankCard.expirationDate.month.toString().padStart(2, '0')}/${bankCard.expirationDate.year.toString().slice(-2)}` : '');
-  const [cvv, setCvv] = useState(bankCard?.verificationNumber || '');
-  const [note, setNote] = useState(bankCard?.note || '');
+  // Form state
+  const [owner, setOwner] = useState(bankCard.owner || '');
+  const [cardNumber, setCardNumber] = useState(bankCard.cardNumber || '');
+  const [expirationDate, setExpirationDate] = useState(
+    `${bankCard.expirationDate.month.toString().padStart(2, '0')}/${bankCard.expirationDate.year.toString().slice(-2)}`
+  );
+  const [cvv, setCvv] = useState(bankCard.verificationNumber || '');
+  const [note, setNote] = useState(bankCard.note || '');
+  const [color, setColor] = useState(bankCard.color || '#007AFF');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const { toast, showToast } = useToast();
+  const [toast, _setToast] = useState<string | null>(null);
 
-  // Helper for web: generate month and year options
-  const monthOptions = getMonthOptions();
-  const yearOptions = getYearOptions();
-  const selectedMonth = expirationDate.split('/')[0] || '';
-  const selectedYear = expirationDate.split('/')[1] ? `20${expirationDate.split('/')[1]}` : '';
+  // Date picker state
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+
+  // Date options
+  const monthOptions = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
+  const yearOptions = Array.from({ length: 20 }, (_, i) => (new Date().getFullYear() + i).toString());
+  const [selectedMonth, setSelectedMonth] = useState(bankCard.expirationDate.month.toString().padStart(2, '0'));
+  const [selectedYear, setSelectedYear] = useState(bankCard.expirationDate.year.toString());
 
   const handleDateConfirm = (date: Date) => {
-    // Format as MM/YY
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const yy = String(date.getFullYear()).slice(-2);
-    setExpirationDate(`${mm}/${yy}`);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    setExpirationDate(`${month}/${year.slice(-2)}`);
+    setSelectedMonth(month);
+    setSelectedYear(year);
     setDatePickerVisible(false);
   };
 
   const handleSubmit = async () => {
-    if (!bankCard || !user) {
-      setError('Utilisateur non connecté ou carte introuvable');
-      return;
-    }
+    if (!user) return;
+    
     setLoading(true);
     setError(null);
+    
     try {
-      const userSecretKey = await getUserSecretKey();
-      if (!userSecretKey) {
-        throw new Error('Clé de sécurité utilisateur introuvable');
-      }
-      // Parse expiration date
       const [month, year] = expirationDate.split('/');
-      const expDate = {
-        month: parseInt(month, 10),
-        year: parseInt(`20${year}`, 10)
-      };
-      const updates: Partial<BankCardDecrypted> = {
-        title: bankCard.title,
+      const updates = {
         owner,
         cardNumber,
-        expirationDate: expDate,
+        expirationDate: {
+          month: parseInt(month, 10),
+          year: parseInt(`20${year}`, 10)
+        },
         verificationNumber: cvv,
         note,
         color,
         lastUseDateTime: new Date(),
       };
-      await updateItemInDatabase(user.id, bankCard.id, userSecretKey, updates as any);
-      showToast('Carte modifiée avec succès');
-      onBack();
+      
+      const result = await updateItem(bankCard.id, 'bankCard', updates);
+      
+      if (result.success) {
+        showToast('Carte modifiée avec succès');
+        onBack();
+      } else {
+        setError(result.error || 'Erreur lors de la modification de la carte.');
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la modification de la carte.');
     } finally {
@@ -129,7 +126,7 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
   return (
     <View style={pageStyles.pageContainer}>
       {error && <ErrorBanner message={error} />}
-      <Toast message={toast} />
+      <Toast message={toast || ''} />
       <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
@@ -265,95 +262,84 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
   );
 };
 
-const getStyles = (mode: 'light' | 'dark') => {
-  const themeColors = getColors(mode);
-  
-  return StyleSheet.create({
-    dateSeparator: {
-      alignSelf: 'center',
-      color: themeColors.primary,
-      fontSize: typography.fontSize.sm,
-      fontWeight: typography.fontWeight.medium,
-    },
-    errorText: {
-      color: themeColors.error,
-      fontSize: typography.fontSize.md,
-      marginTop: spacing.xl,
-      textAlign: 'center',
-    },
-    inputColumn: {
-      flex: 1,
-    },
-    inputContainer: {
-      flexDirection: 'row',
-      gap: spacing.xs,
-      paddingHorizontal: spacing.sm,
-    },
-    inputDate: {
-      backgroundColor: themeColors.secondaryBackground,
-      borderColor: themeColors.borderColor,
-      borderRadius: radius.xl,
-      borderWidth: 1,
-      color: themeColors.blackText,
-      paddingHorizontal: spacing.md,
-      paddingVertical: spacing.sm,
-    },
-    inputDateColumn: {
-      flex: 1,
-      borderWidth: 1,
-      borderColor: themeColors.borderColor,
-      borderRadius: radius.md + 4,
-      padding: spacing.sm,
-      backgroundColor: themeColors.secondaryBackground,
-    },
-    inputDateLabel: {
-      color: themeColors.tertiaryText,
-      fontSize: typography.fontSize.xs,
-      fontWeight: typography.fontWeight.regular,
-      paddingBottom: spacing.xs,
-    },
-    inputDatePlaceholder: {
-      color: themeColors.tertiary,
-      fontSize: typography.fontSize.xs,
-      fontWeight: typography.fontWeight.regular,
-    },
-    inputDateSelect: {
-      backgroundColor: 'transparent',
-      border: 'none',
-      color: 'transparent',
-      fontSize: typography.fontSize.sm,
-      fontWeight: typography.fontWeight.medium,
-      height: 40,
-      justifyContent: 'center',
-      left: 0,
-      paddingHorizontal: spacing.md,
-      placeholderTextColor: themeColors.tertiary,
-      position: 'absolute',
-      top: 0,
-      width: '100%',
-      zIndex: 1,
-    },
-    inputDateSelectText: {
-      color: themeColors.primary,
-      fontSize: typography.fontSize.sm,
-      fontWeight: typography.fontWeight.regular,
-    },
-    row2col: {
-      flexDirection: 'row',
-      gap: spacing.xl,
-    },
-    selectContainer: {
-      alignItems: 'flex-start',
-      flex: 1,
-      justifyContent: 'center',
-      position: 'relative',
-    },
-    selectContent: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      gap: spacing.xs,
-      justifyContent: 'center',
-      width: '100%',
-    },
-  });
-}; 
+const styles = StyleSheet.create({
+  dateSeparator: {
+    alignSelf: 'center',
+    color: themeColors.primary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
+  },
+  errorText: {
+    color: themeColors.error,
+    fontSize: typography.fontSize.md,
+    marginTop: spacing.xl,
+    textAlign: 'center',
+  },
+  inputColumn: {
+    flex: 1,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+    alignItems: 'center',
+  },
+  inputDate: {
+    backgroundColor: themeColors.primaryBackground,
+    borderColor: themeColors.borderColor,
+    borderRadius: spacing.sm,
+    borderWidth: 1,
+    color: themeColors.blackText,
+    fontSize: typography.fontSize.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  inputDateColumn: {
+    flex: 1,
+  },
+  inputDateLabel: {
+    color: themeColors.blackText,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
+    marginBottom: spacing.xs,
+  },
+  inputDatePlaceholder: {
+    color: themeColors.tertiary,
+    fontSize: typography.fontSize.md,
+  },
+  inputDateSelect: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: themeColors.blackText,
+    fontSize: typography.fontSize.md,
+    height: '100%',
+    left: 0,
+    opacity: 0,
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+  },
+  inputDateSelectText: {
+    color: themeColors.blackText,
+    fontSize: typography.fontSize.md,
+  },
+  row2col: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  selectContainer: {
+    backgroundColor: themeColors.primaryBackground,
+    borderColor: themeColors.borderColor,
+    borderRadius: spacing.sm,
+    borderWidth: 1,
+    flex: 1,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  selectContent: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+}); 

@@ -1,5 +1,5 @@
 /**
- * Cryptography Service - Layer 2: Business Logic
+ * Cryptography Service - Layer 2 Business Logic
  * 
  * Handles encryption and decryption operations for items.
  * Orchestrates cryptographic operations between hooks and libraries.
@@ -11,7 +11,7 @@ import {
   SecureNoteDecrypted,
   ItemEncrypted,
 } from '../types/items.types';
-import { encryptData, decryptData, generateItemKey } from '@common/utils/crypto';
+import { encryptData, decryptData } from '@common/utils/crypto';
 import { CryptographyError } from '../types/errors.types';
 
 // ===== Encryption/Decryption Functions =====
@@ -115,113 +115,18 @@ export async function decryptAllItems(userSecretKey: string, itemsList: ItemEncr
   return decryptedItems;
 }
 
-export async function encryptCredential(userSecretKey: string, itemToEncrypt: CredentialDecrypted): Promise<any> {
-  const contentDict = {
-    title: itemToEncrypt.title,
-    username: itemToEncrypt.username || '',
-    password: itemToEncrypt.password,
-    note: itemToEncrypt.note || '',
-    url: itemToEncrypt.url || '',
-    itemType: 'credential',
-  };
-  const contentString = JSON.stringify(contentDict);
-  // Generate a random item key for encryption
-  const itemKey = generateItemKey();
-  const content_encrypted = await encryptData(itemKey, contentString);
-  const item_key_encrypted = await encryptData(userSecretKey, itemKey);
+export async function encryptItem(userSecretKey: string, itemToEncrypt: DecryptedItem): Promise<any> {
+  // Simply stringify the entire item object - no need to create contentDict
+  const contentString = JSON.stringify(itemToEncrypt);
+  
+  const content_encrypted = await encryptData(itemToEncrypt.itemKey, contentString);
+  const item_key_encrypted = await encryptData(userSecretKey, itemToEncrypt.itemKey);
+  
   return {
     id: itemToEncrypt.id,
     created_at: itemToEncrypt.createdDateTime,
     content_encrypted,
     item_key_encrypted,
     last_used_at: itemToEncrypt.lastUseDateTime,
-    item_type: 'credential',
   };
-}
-
-export async function encryptBankCard(userSecretKey: string, itemToEncrypt: BankCardDecrypted): Promise<any> {
-  const contentDict = {
-    title: itemToEncrypt.title,
-    owner: itemToEncrypt.owner,
-    cardNumber: itemToEncrypt.cardNumber,
-    expirationDate: itemToEncrypt.expirationDate,
-    verificationNumber: itemToEncrypt.verificationNumber,
-    bankName: itemToEncrypt.bankName,
-    bankDomain: itemToEncrypt.bankDomain,
-    note: itemToEncrypt.note,
-    itemType: 'bank_card',
-  };
-  const contentString = JSON.stringify(contentDict);
-  // Generate a random item key for encryption
-  const itemKey = generateItemKey();
-  const content_encrypted = await encryptData(itemKey, contentString);
-  const item_key_encrypted = await encryptData(userSecretKey, itemKey);
-  return {
-    id: itemToEncrypt.id,
-    created_at: itemToEncrypt.createdDateTime,
-    content_encrypted,
-    item_key_encrypted,
-    last_used_at: itemToEncrypt.lastUseDateTime,
-    item_type: 'bank_card',
-  };
-}
-
-export async function encryptSecureNote(userSecretKey: string, itemToEncrypt: SecureNoteDecrypted): Promise<any> {
-  const contentDict = {
-    title: itemToEncrypt.title,
-    note: itemToEncrypt.note,
-    color: itemToEncrypt.color,
-    itemType: 'secure_note',
-  };
-  const contentString = JSON.stringify(contentDict);
-  // Generate a random item key for encryption
-  const itemKey = generateItemKey();
-  const content_encrypted = await encryptData(itemKey, contentString);
-  const item_key_encrypted = await encryptData(userSecretKey, itemKey);
-  return {
-    id: itemToEncrypt.id,
-    created_at: itemToEncrypt.createdDateTime,
-    content_encrypted,
-    item_key_encrypted,
-    last_used_at: itemToEncrypt.lastUseDateTime,
-    item_type: 'secure_note',
-  };
-}
-
-// ===== Device Fingerprint Functions =====
-
-/**
- * Encrypt data with device fingerprint key
- */
-export async function encryptWithDeviceFingerprintKey(data: string): Promise<string> {
-  try {
-    // Get device fingerprint key from secret service
-    const { generateDeviceFingerprintKey } = await import('./secret');
-    const deviceFingerprintKey = await generateDeviceFingerprintKey();
-    
-    // Encrypt data with the device fingerprint key
-    const encryptedData = await encryptData(deviceFingerprintKey, data);
-    
-    return encryptedData;
-  } catch (error) {
-    throw new CryptographyError('Failed to encrypt with device fingerprint key', error as Error);
-  }
-}
-
-/**
- * Decrypt data with device fingerprint key
- */
-export async function decryptWithDeviceFingerprintKey(encryptedData: string): Promise<string> {
-  try {
-    // Get device fingerprint key from secret service
-    const { generateDeviceFingerprintKey } = await import('./secret');
-    const deviceFingerprintKey = await generateDeviceFingerprintKey();
-    
-    // Decrypt data with the device fingerprint key
-    const decryptedData = await decryptData(deviceFingerprintKey, encryptedData);
-    
-    return decryptedData;
-  } catch (error) {
-    throw new CryptographyError('Failed to decrypt with device fingerprint key', error as Error);
-  }
 }

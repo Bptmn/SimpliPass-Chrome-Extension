@@ -2,9 +2,6 @@
 
 // Core functionality
 export {
-  loginUser,
-  isUserAuthenticated,
-  signOutUser,
   getUserSecretKey,
   storeUserSecretKey,
   deleteUserSecretKey,
@@ -19,9 +16,7 @@ export {
   clearAllStates,
   updateItemInStates,
   setAuthState,
-  addCredentialToDatabase,
-  addBankCardToDatabase,
-  addSecureNoteToDatabase,
+  addItemToDatabase,
   updateItemInDatabase,
   deleteItemFromDatabase,
   getAllItemsFromDatabase,
@@ -31,15 +26,13 @@ export {
 export {
   useLoginFlow,
   useRefreshData,
-  useCredentials,
+  useItems,
 } from './hooks';
 
 // States
 export {
+  useItemStates,
   useAuthStore,
-  useCredentialsStore,
-  useBankCardsStore,
-  useSecureNotesStore,
   useUserStore,
 } from './core';
 

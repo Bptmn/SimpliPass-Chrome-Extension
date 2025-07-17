@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, Alert } from 'react-native';
 import { Icon } from './Icon';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { radius, spacing } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';

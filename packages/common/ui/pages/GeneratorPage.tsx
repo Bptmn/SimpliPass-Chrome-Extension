@@ -10,7 +10,7 @@ import { typography } from '@ui/design/typography';
 import CopyButton from '../components/CopyButton';
 import { Button } from '../components/Buttons';
 import { Slider } from '../components/Slider';
-import { useThemeMode } from '@common/core/logic/theme';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 
 interface GeneratorPageProps {
