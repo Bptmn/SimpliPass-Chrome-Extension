@@ -1,10 +1,11 @@
 /**
  * Bridge utility for connecting extension autofill logic with core vault system
  * Provides safe access to decrypted vault data with proper session validation
+ * Uses centralized items service for data access
  */
 
-import { loadVaultIfNeeded } from './vaultLoader';
-import { useItemStates } from '@common/core/states/itemStates';
+import { loadItemsWithFallback } from '@common/core/services/items';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/types';
 
 /**
  * Extracts the root domain from a hostname, removing 'www.' and subdomains.
@@ -18,13 +19,30 @@ function getRootDomain(hostname: string): string {
 }
 
 /**
+ * Get items using centralized items service
+ */
+async function getItemsFromService(): Promise<(CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted)[]> {
+  try {
+    return await loadItemsWithFallback();
+  } catch (error) {
+    console.error('[AutofillBridge] Error getting items from service:', error);
+    return [];
+  }
+}
+
+/**
  * Check if autofill is available (valid session exists)
  * @returns true if autofill can be used, false otherwise
  */
-export function isAutofillAvailable(): boolean {
-  const itemStates = useItemStates.getState();
-  const credentials = itemStates.getItemsByTypeFromState('credential');
-  return credentials.length > 0;
+export async function isAutofillAvailable(): Promise<boolean> {
+  try {
+    const items = await getItemsFromService();
+    const credentials = items.filter(item => item.itemType === 'credential');
+    return credentials.length > 0;
+  } catch (error) {
+    console.error('[AutofillBridge] Error checking autofill availability:', error);
+    return false;
+  }
 }
 
 /**
@@ -32,25 +50,25 @@ export function isAutofillAvailable(): boolean {
  * @param domain The domain to match against
  * @returns Array of matching credentials (non-sensitive data only)
  */
-export function getMatchingCredentials(domain: string): Array<{
+export async function getMatchingCredentials(domain: string): Promise<Array<{
   id: string;
   title: string;
   username: string;
   url?: string;
-}> {
+}>> {
   try {
     // Check if session is valid before accessing decrypted data
-    if (!isAutofillAvailable()) {
+    if (!(await isAutofillAvailable())) {
       console.log('[AutofillBridge] No valid session for autofill');
       return [];
     }
 
-    const itemStates = useItemStates.getState();
-    const credentials = itemStates.getItemsByTypeFromState('credential');
+    const items = await getItemsFromService();
+    const credentials = items.filter(item => item.itemType === 'credential') as CredentialDecrypted[];
     const pageRootDomain = getRootDomain(domain);
     
     return credentials
-      .filter((credential: any) => {
+      .filter((credential) => {
         if (!credential.url) return false;
         
         const credRootDomain = getRootDomain(credential.url);
@@ -73,7 +91,7 @@ export function getMatchingCredentials(domain: string): Array<{
         
         return false;
       })
-      .map((credential: any) => ({
+      .map((credential) => ({
         id: credential.id,
         title: credential.title,
         username: credential.username,
@@ -90,23 +108,23 @@ export function getMatchingCredentials(domain: string): Array<{
  * @param credentialId The ID of the credential to retrieve
  * @returns Full credential data or null if not found
  */
-export function getCredentialForInjection(credentialId: string): {
+export async function getCredentialForInjection(credentialId: string): Promise<{
   id: string;
   title: string;
   username: string;
   password: string;
   url?: string;
-} | null {
+} | null> {
   try {
     // Check if session is valid before accessing decrypted data
-    if (!isAutofillAvailable()) {
+    if (!(await isAutofillAvailable())) {
       console.log('[AutofillBridge] No valid session for credential injection');
       return null;
     }
 
-    const itemStates = useItemStates.getState();
-    const credentials = itemStates.getItemsByTypeFromState('credential');
-    const credential = credentials.find((c: any) => c.id === credentialId);
+    const items = await getItemsFromService();
+    const credentials = items.filter(item => item.itemType === 'credential') as CredentialDecrypted[];
+    const credential = credentials.find((c) => c.id === credentialId);
     
     if (!credential || credential.itemType !== 'credential') {
       return null;
@@ -131,8 +149,9 @@ export function getCredentialForInjection(credentialId: string): {
  */
 export async function restoreVaultForAutofill(): Promise<boolean> {
   try {
-    await loadVaultIfNeeded();
-    return true;
+    // Use the centralized items service to check if vault is available
+    const items = await loadItemsWithFallback();
+    return items.length > 0;
   } catch (error) {
     console.error('[AutofillBridge] Error restoring vault:', error);
     return false;
@@ -143,20 +162,20 @@ export async function restoreVaultForAutofill(): Promise<boolean> {
  * Get all available credentials for current session
  * @returns Array of all credentials (non-sensitive data only)
  */
-export function getAllCredentials(): Array<{
+export async function getAllCredentials(): Promise<Array<{
   id: string;
   title: string;
   username: string;
   url?: string;
-}> {
+}>> {
   try {
-    if (!isAutofillAvailable()) {
+    if (!(await isAutofillAvailable())) {
       return [];
     }
 
-    const itemStates = useItemStates.getState();
-    const credentials = itemStates.getItemsByTypeFromState('credential');
-    return credentials.map((credential: any) => ({
+    const items = await getItemsFromService();
+    const credentials = items.filter(item => item.itemType === 'credential') as CredentialDecrypted[];
+    return credentials.map((credential) => ({
       id: credential.id,
       title: credential.title,
       username: credential.username,
@@ -172,20 +191,20 @@ export function getAllCredentials(): Array<{
  * Get all available bank cards for current session
  * @returns Array of all bank cards (non-sensitive data only)
  */
-export function getAllBankCards(): Array<{
+export async function getAllBankCards(): Promise<Array<{
   id: string;
   title: string;
   cardNumber: string;
   url?: string;
-}> {
+}>> {
   try {
-    if (!isAutofillAvailable()) {
+    if (!(await isAutofillAvailable())) {
       return [];
     }
 
-    const itemStates = useItemStates.getState();
-    const bankCards = itemStates.getItemsByTypeFromState('bankCard');
-    return bankCards.map((card: any) => ({
+    const items = await getItemsFromService();
+    const bankCards = items.filter(item => item.itemType === 'bankCard') as BankCardDecrypted[];
+    return bankCards.map((card) => ({
       id: card.id,
       title: card.title,
       cardNumber: card.cardNumber,
@@ -201,19 +220,19 @@ export function getAllBankCards(): Array<{
  * Get all available secure notes for current session
  * @returns Array of all secure notes (non-sensitive data only)
  */
-export function getAllSecureNotes(): Array<{
+export async function getAllSecureNotes(): Promise<Array<{
   id: string;
   title: string;
   url?: string;
-}> {
+}>> {
   try {
-    if (!isAutofillAvailable()) {
+    if (!(await isAutofillAvailable())) {
       return [];
     }
 
-    const itemStates = useItemStates.getState();
-    const secureNotes = itemStates.getItemsByTypeFromState('secureNote');
-    return secureNotes.map((note: any) => ({
+    const items = await getItemsFromService();
+    const secureNotes = items.filter(item => item.itemType === 'secureNote') as SecureNoteDecrypted[];
+    return secureNotes.map((note) => ({
       id: note.id,
       title: note.title,
       url: 'url' in note ? (note as any).url : '',
@@ -225,29 +244,15 @@ export function getAllSecureNotes(): Array<{
 }
 
 /**
- * Get vault data for autofill operations
- * @returns Promise<{credentials: any[], bankCards: any[], secureNotes: any[]}>
+ * Get vault data for autofill (for debugging/testing)
+ * @returns Promise with vault data or null
  */
 export async function getVaultForAutofill() {
   try {
-    await loadVaultIfNeeded();
-    
-    const itemStates = useItemStates.getState();
-    const credentials = itemStates.getItemsByTypeFromState('credential');
-    const bankCards = itemStates.getItemsByTypeFromState('bankCard');
-    const secureNotes = itemStates.getItemsByTypeFromState('secureNote');
-    
-    return {
-      credentials,
-      bankCards,
-      secureNotes,
-    };
+    const items = await getItemsFromService();
+    return { items };
   } catch (error) {
     console.error('[AutofillBridge] Error getting vault for autofill:', error);
-    return {
-      credentials: [],
-      bankCards: [],
-      secureNotes: [],
-    };
+    return null;
   }
 } 

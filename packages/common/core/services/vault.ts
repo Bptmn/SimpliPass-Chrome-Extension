@@ -42,13 +42,17 @@ export async function getLocalVault(): Promise<ItemDecrypted[]> {
     
     // Get vault
     const vault = await storage.getVaultFromSecureLocalStorage();
-    
     if (!vault) {
       return [];
     }
-    
-    // Parse the clear text data
-    return JSON.parse(vault.encryptedData);
+    // Handle both formats
+    if (vault.data) {
+      return JSON.parse(vault.data);
+    } else if (vault.items) {
+      return vault.items;
+    } else {
+      return [];
+    }
   } catch (error) {
     throw new Error(`Failed to get local vault: ${error}`);
   }

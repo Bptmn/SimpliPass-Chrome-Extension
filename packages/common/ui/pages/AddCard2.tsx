@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { View, Text, Pressable, StyleSheet, ScrollView, Platform } from 'react-native';
 import { Input } from '@ui/components/InputFields';
@@ -10,7 +10,7 @@ import { spacing, radius, getPageStyles } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { addItemToDatabase } from '@common/core/services/items';
 import { getUserSecretKey } from '@common/core/services/secret';
-import { useUserStore } from '@common/core/states/user';
+
 import { BankCardDecrypted } from '@common/core/types/items.types';
 import { createExpirationDate, parseExpirationDate } from '@common/utils/expirationDate';
 import { Button } from '@ui/components/Buttons';
@@ -20,19 +20,26 @@ import { ColorSelector } from '@ui/components/ColorSelector';
 import { getMonthOptions, getYearOptions } from '@common/utils/cards';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Toast } from '@ui/components/Toast';
+import { useToast } from '@common/hooks/useToast';
+import { storage } from '@common/core/adapters/platform.storage.adapter';
+import { User } from '@common/core/types/types';
 
 interface AddCard2Props {
   onBack?: () => void;
 }
 
-const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
+export const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useUserStore(state => state.user);
+  const [user, setUser] = useState<User | null>(null);
+  const [_userLoading, setUserLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { showToast: _showToast } = useToast();
   const { title, bankName, bankDomain } = location.state || {};
 
   const [selectedColor, setSelectedColor] = useState('#4f86a2');
@@ -41,10 +48,26 @@ const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
   const [expirationDate, setExpirationDate] = useState(''); // MM/YY
   const [cvv, setCvv] = useState('');
   const [note, setNote] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [toast] = useState<string | null>(null);
+
+  // Load user data from secure storage
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        setUserLoading(true);
+        const userData = await storage.getUserFromSecureLocalStorage();
+        setUser(userData);
+      } catch (err) {
+        console.error('[AddCard2] Failed to load user:', err);
+        setError('Failed to load user data');
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   // Helper for web: generate month and year options
 
@@ -342,6 +365,4 @@ const getStyles = (mode: 'light' | 'dark') => {
       width: '100%',
     },
   });
-};
-
-export { AddCard2 }; 
+}; 

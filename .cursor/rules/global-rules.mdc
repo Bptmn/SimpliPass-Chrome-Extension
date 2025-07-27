@@ -1,76 +1,6 @@
-
-# 📐 SimpliPass – Global Cursor Rules  
-*(Three-Layer Architecture – React Native / Manifest V3)*
-
-## 🧠 Architecture Foundations
-
-### ✅ Three-Layer Architecture
-- **Layer 1: Hooks** → UI state management and user interactions
-- **Layer 2: Services** → Business logic and orchestration
-- **Layer 3: Libraries & Adapters** → External APIs and platform integration
-
-### ✅ Single Source of Truth
-All UI data must come from memory (Zustand states). UI logic never fetches directly from storage or network.
-
-### ✅ Platform Separation
-- Shared UI and logic must remain platform-agnostic (in `app/` and `core/`)
-- Platform-specific logic must be isolated in `mobile/` or `extension/`
-- Use `core/adapters/platform.adapter.ts` to abstract all platform-specific implementations
-
-### ✅ Feature Verticalization
-Related business logic should be grouped by domain (e.g. credentials, auth) within `core/`.
-
-### ✅ Secure by Design
-- No decrypted data is ever persisted
-- All encryption/decryption handled via `core/services/cryptography` or `app/utils/crypto`
-- Platform-specific persistence must use encrypted local storage or secure keychain
-
 ---
-
-## 📁 Package Responsibilities
-
-```
-packages/
-├── app/        → Shared UI (popup + mobile)
-│   └── core/
-│       ├── hooks/         # Layer 1: UI Hooks
-│       ├── services/      # Layer 2: Business Logic
-│       ├── libraries/     # Layer 3: External Integrations
-│       ├── states/        # Zustand stores
-│       └── types/         # Type definitions
-├── mobile/     → Mobile-specific services, keychain access
-├── extension/  → Chrome-specific background, content, storage
-```
-
+alwaysApply: true
 ---
-
-## 🧩 Cursor Execution Strategy
-
-### ✅ Cursor Must Always
-- Think → Plan → Execute → Report
-- Follow three-layer architecture: Hooks → Services → Libraries
-- Organize changes by domain (update types → logic → UI)
-- Use `platform.adapter.ts` for cross-platform logic
-- Update related tests to reflect changes
-- Update related readme file to reflect changes
-- Validate tasks done with:
-```bash
-npm run lint && npm run build && npm run test
-```
-
-### 🧪 Testing
-- All business logic must have `*.test.ts`
-- All UI components must have `*.test.tsx` and `*.stories.tsx`
-- Include `testID` and `accessibilityLabel` for interactive UI
-- Test each layer independently (hooks, services, libraries)
-
-### 🎨 Design System
-- Use `@/app/design/tokens` for color, spacing, typography
-- Structure layout using `pageContainer`, `scrollView`, etc.
-- Never use inline styles or hardcoded values
-
----
-
 ## 🧱 Cursor Coding Constraints
 
 ### ✅ Layer 1: Hooks (UI Layer)
@@ -80,6 +10,7 @@ npm run lint && npm run build && npm run test
 - Return clear, predictable results
 - Handle loading states and errors
 - Ensure states are always accessible for UI
+- Steps must be numbered (Step 1, Step 2, Step 3...)
 
 ### ✅ Layer 2: Services (Business Logic Layer)
 - Contain complex business logic
@@ -100,7 +31,8 @@ npm run lint && npm run build && npm run test
 ### ✅ Always Use
 - React Native components (`<View>`, `<Text>`, etc.)
 - Zustand for all state access and updates
-- Absolute imports from `@app`, `@core`, `@mobile`, `@extension`, `@shared`
+- Platform adapter for secure local storage
+- Absolute imports from `@common`, `@core`, `@mobile`, `@extension`, `@shared`
 - Error boundaries and consistent return types in logic
 - Custom error classes with layer-specific error handling
 
@@ -109,7 +41,7 @@ npm run lint && npm run build && npm run test
 - `any`/`unknown` types unless explicitly justified
 - Direct Firestore/Storage SDKs in UI
 - Raw access to keychain, storage, or memory in `app/` or `core/services/`
-- Duplicate logic (always centralize in `core/services/`)
+- Duplicate logic (always centralize in `common/services/`)
 - `marginTop`/`marginBottom`: Use `gap` via layout classes only
 - Business logic in hooks (only UI state management)
 - External API calls in hooks (use services instead)
@@ -119,7 +51,7 @@ npm run lint && npm run build && npm run test
 
 ## 🧠 Cursor Memory Model
 
-- UI reads from Zustand only (no storage fallback)
+- UI reads from Zustand and secure local storage only (never directly for firestore)
 - Platform-specific adapters restore vault and hydrate state on launch
 - All decrypted values are ephemeral in RAM
 - `logout()` must clear all RAM + persistent user secret
@@ -127,20 +59,8 @@ npm run lint && npm run build && npm run test
 
 ---
 
-## 📚 Cursor File Naming & Import Conventions
+## 📚 Cursor Import Conventions
 
-### File Names
-```
-Components:      CredentialCard.tsx
-Hooks:          useLoginFlow.ts
-Services:       auth.ts
-Libraries:      cognito.ts
-Stores:         credentials.state.ts
-Utilities:      decryptVault.ts
-Types:          auth.types.ts
-Tests:          *.test.ts(x)
-Stories:        *.stories.tsx
-```
 
 ### Import Order
 ```ts
@@ -161,13 +81,10 @@ import type { LoginResult } from '@core/types';
 ## 🔐 Platform Secure Storage
 
 ### Mobile
-- Use `expo-secure-store` to persist `userSecretKey`
-- Decrypt on app launch → hydrate state
+- Use `expo-secure-store`
 
 ### Extension
-- Encrypt `userSecretKey` with `deviceFingerprintKey`
-- Store encrypted version in `chrome.storage.local`
-- Decrypt in background → load RAM vault
+- Use chrome.storage.session
 
 ---
 
@@ -217,7 +134,7 @@ Cursor must fix all errors and validate the code before considering the task don
 - Follow three-layer architecture: Hooks → Services → Libraries
 - Never bypass platformAdapter
 - Never persist decrypted data
-- Never write platform logic in `app/` or `core/services/`
+- Never write platform logic in `common/` or `core/services/`
 - Always validate types, tests, build
 - Only use Zustand for UI-bound data
 - Run full validation cycle after structural changes
@@ -225,7 +142,7 @@ Cursor must fix all errors and validate the code before considering the task don
 - Keep services business-logic focused
 - Keep libraries integration-focused
 
-- Never write platform logic in `app/` or `core/logic/`
+- Never write platform logic in `common/` or `core/logic/`
 - Always validate types, tests, build
 - Only use Zustand for UI-bound data
 - Run full validation cycle after structural changes

@@ -4,24 +4,24 @@ import { passwordGenerator } from '@common/utils/passwordGenerator';
 import { useToast } from './useToast';
 
 /**
- * Hook for GeneratorPage component business logic
+ * Hook for GeneratorPage component UI state management
  * Handles password generation, strength checking, and regeneration
  */
 export const useGeneratorPage = () => {
   const { showToast } = useToast();
 
-  // Password options
+  // Step 1: Initialize password options state
   const [hasUppercase, setHasUppercase] = useState(true);
   const [hasNumbers, setHasNumbers] = useState(true);
   const [hasSymbols, setHasSymbols] = useState(true);
   const [hasLowercase, setHasLowercase] = useState(true);
   const [length, setLength] = useState(16);
   
-  // Generated password and strength
+  // Step 2: Initialize password and strength state
   const [password, setPassword] = useState('');
   const [strength, setStrength] = useState<'weak' | 'average' | 'strong' | 'perfect'>('weak');
 
-  // Generate password and check strength when options change
+  // Step 3: Generate password and check strength when options change
   useEffect(() => {
     const pwd = passwordGenerator(
       hasNumbers,
@@ -34,7 +34,7 @@ export const useGeneratorPage = () => {
     setStrength(checkPasswordStrength(pwd));
   }, [hasNumbers, hasUppercase, hasLowercase, hasSymbols, length]);
 
-  // Handle password regeneration
+  // Step 4: Handle password regeneration
   const handleRegenerate = useCallback(() => {
     const pwd = passwordGenerator(
       hasNumbers,
@@ -47,7 +47,7 @@ export const useGeneratorPage = () => {
     setStrength(checkPasswordStrength(pwd));
   }, [hasNumbers, hasUppercase, hasLowercase, hasSymbols, length]);
 
-  // Handle copy password
+  // Step 5: Handle copy password
   const handleCopyPassword = useCallback(() => {
     showToast('Mot de passe copié !');
   }, [showToast]);

@@ -5,21 +5,20 @@
  * This page allows users to re-enter their master password to restore access
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Input } from '@ui/components/InputFields';
 import { Button } from '@ui/components/Buttons';
+import { Input } from '@ui/components/InputFields';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
-import { getPageStyles } from '@ui/design/layout';
-import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { spacing, radius } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
-import { deriveKey } from '@common/utils/crypto';
-import { storeUserSecretKey } from '@common/core/services/secret';
-import { fetchUserSaltCognito } from '@common/core/libraries/auth/cognito';
-import { useUserStore } from '@common/core/states/user';
+import { useThemeMode } from '@common/ui/design/theme';
+import { getPageStyles } from '@ui/design/layout';
+import { useReEnterPassword } from '@common/hooks/useReEnterPassword';
+import { storage } from '@common/core/adapters/platform.storage.adapter';
+import { User } from '@common/core/types/types';
 
 interface LocationState {
   reason?: 'expired' | 'fingerprint_mismatch' | 'decryption_failed' | 'not_found' | 'corrupted';
@@ -27,14 +26,32 @@ interface LocationState {
 
 export const ReUnlockPage: React.FC = () => {
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useUserStore((state) => state.user);
+  const [user, setUser] = useState<User | null>(null);
+  const [_userLoading, setUserLoading] = useState(true);
+  const { reEnterPassword, isLoading } = useReEnterPassword();
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
+
+  // Load user data from secure storage
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        setUserLoading(true);
+        const userData = await storage.getUserFromSecureLocalStorage();
+        setUser(userData);
+      } catch (err) {
+        console.error('[ReUnlockPage] Failed to load user:', err);
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   const state = location.state as LocationState;
   const reason = state?.reason;
@@ -65,37 +82,12 @@ export const ReUnlockPage: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
-
     try {
-      // Get user salt
-      const salt = await fetchUserSaltCognito();
-      if (!salt) {
-        Alert.alert('Erreur', 'Impossible de récupérer le sel utilisateur.');
-        return;
-      }
-
-      // Derive the secret key
-      const userSecretKey = await deriveKey(password, salt);
-      
-      // Store the secret key in memory
-      await storeUserSecretKey(userSecretKey);
-
-      // If user chose "Remember me", store persistently
-      if (rememberMe) {
-        await storeUserSecretKey(userSecretKey);
-        console.log('[ReUnlockPage] User secret key stored persistently');
-      }
-
-      console.log('[ReUnlockPage] Secret key derived and stored successfully');
-      
-      // Navigate back to home
-      navigate('/home');
-    } catch (error) {
-      console.error('[ReUnlockPage] Error deriving secret key:', error);
-      Alert.alert('Erreur', 'Mot de passe incorrect ou erreur lors de la dérivation de la clé.');
-    } finally {
-      setIsLoading(false);
+      await reEnterPassword(password);
+      // Navigation is handled by the hook
+    } catch (reEnterError) {
+      console.error('[ReUnlockPage] Error during password re-entry:', reEnterError);
+      // Error is handled by the hook
     }
   };
 

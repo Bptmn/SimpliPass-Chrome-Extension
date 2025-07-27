@@ -6,21 +6,67 @@
 
 import React from 'react';
 import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
+import { useNavigate } from 'react-router-dom';
 import { Icon } from './Icon';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { useHelperBar } from '@common/hooks/useHelperBar';
 
-export const HelperBar: React.FC = () => {
+type CurrentPage = 'home' | 'generator' | 'settings' | 'add-credential-1' | 'add-credential-2' | 'add-card-1' | 'add-card-2' | 'add-securenote';
+
+interface HelperBarProps {
+  currentPage?: CurrentPage;
+}
+
+export const HelperBar: React.FC<HelperBarProps> = ({ currentPage = 'home' }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const navigate = useNavigate();
   
   const {
     addButtonText,
-    handleAdd,
-    handleFAQ,
-    handleRefresh,
-  } = useHelperBar();
+  } = useHelperBar(currentPage);
+
+  // User interaction handlers - moved from hook to component
+  const handleAdd = React.useCallback(() => {
+    switch (currentPage) {
+      case 'add-card-1':
+      case 'add-card-2':
+        // Already on add card page, do nothing or go to next step
+        console.log('Already on add card page');
+        break;
+      case 'add-securenote':
+        // Already on add secure note page, do nothing
+        console.log('Already on add secure note page');
+        break;
+      case 'add-credential-1':
+      case 'add-credential-2':
+        // Already on add credential page, do nothing or go to next step
+        console.log('Already on add credential page');
+        break;
+      case 'home':
+      case 'generator':
+      case 'settings':
+      default:
+        // Navigate to add credential page (default behavior)
+        // TODO: Future enhancement - show a menu to choose between:
+        // - Add credential (/add-credential-1)
+        // - Add bank card (/add-card-1) 
+        // - Add secure note (/add-securenote)
+        navigate('/add-credential-1');
+        break;
+    }
+  }, [currentPage, navigate]);
+
+  const handleFAQ = React.useCallback(() => {
+    // Open FAQ or help page
+    console.log('Open FAQ');
+  }, []);
+
+  const handleRefresh = React.useCallback(() => {
+    // Refresh credentials - this could trigger a refresh of the current page data
+    console.log('Refresh credentials');
+  }, []);
 
   // Dynamic styles with useMemo
   const styles = React.useMemo(

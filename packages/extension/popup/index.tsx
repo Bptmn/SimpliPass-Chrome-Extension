@@ -1,24 +1,13 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { PopupApp } from './PopupApp';
-import { MemoryRouter } from 'react-router-dom';
-import { ThemeProvider } from '@common/ui/design/theme';
-import { initializePlatform } from '@common/core/adapters';
+import { initializeStorage } from '@common/core/adapters';
 
-const rootElement = document.getElementById('root');
+// Initialize storage before rendering
+initializeStorage();
 
-async function startApp() {
-  await initializePlatform();
-  if (rootElement) {
-    const root = createRoot(rootElement);
-    root.render(
-      <MemoryRouter>
-        <ThemeProvider>
-          <PopupApp />
-        </ThemeProvider>
-      </MemoryRouter>
-    );
-  }
-}
-
-startApp(); 
+const container = document.getElementById('root');
+if (container) {
+  const root = createRoot(container);
+  root.render(<PopupApp />);
+} 

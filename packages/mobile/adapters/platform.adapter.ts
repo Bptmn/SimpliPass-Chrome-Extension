@@ -8,23 +8,11 @@
  * - Network detection
  */
 
-import { PlatformAdapter } from '@common/core/types/platform.types';
+import { PlatformAdapter } from '@common/core/adapters/platform.adapter';
 
 export class MobilePlatformAdapter implements PlatformAdapter {
-  private config = {
-    storageKey: 'userSecretKey',
-    biometricKey: 'biometricEnabled',
-    sessionKey: 'sessionData',
-  };
 
   // ===== Storage Operations =====
-  // Removed getUserSecretKey, storeUserSecretKey, deleteUserSecretKey
-
-  // ===== Platform Information =====
-
-  getPlatformName(): 'mobile' | 'extension' {
-    return 'mobile';
-  }
 
   supportsBiometric(): boolean {
     return true;
@@ -85,29 +73,13 @@ export class MobilePlatformAdapter implements PlatformAdapter {
   async clearSession(): Promise<void> {
     try {
       const SecureStore = await this.getSecureStore();
-      // Clear all known keys manually since getAllKeysAsync is not available
       const knownKeys = [
-        this.config.storageKey,
         'remembered_email',
         'session_metadata',
-        this.config.biometricKey,
-        this.config.sessionKey
       ];
       await Promise.all(knownKeys.map((key: string) => SecureStore.deleteItemAsync(key)));
     } catch {
       throw new Error('Failed to clear session');
-    }
-  }
-
-  async getDeviceFingerprint(): Promise<string> {
-    try {
-      const Device = await this.getDevice();
-      // Use device name and type as fingerprint since getDeviceIdAsync is not available
-      const deviceName = Device.deviceName || 'unknown';
-      const deviceType = await Device.getDeviceTypeAsync();
-      return `mobile-${deviceName}-${deviceType}`;
-    } catch (_error) {
-      throw new Error('Failed to get device fingerprint');
     }
   }
 
@@ -208,14 +180,6 @@ export class MobilePlatformAdapter implements PlatformAdapter {
       return await import('expo-local-authentication');
     } catch {
       throw new Error('LocalAuthentication not available');
-    }
-  }
-
-  private async getDevice() {
-    try {
-      return await import('expo-device');
-    } catch {
-      throw new Error('Device not available');
     }
   }
 

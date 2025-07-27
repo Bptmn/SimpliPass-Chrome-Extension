@@ -8,8 +8,7 @@
 
 import { AuthenticationError } from '../../types/errors.types';
 import { loginWithCognito, signInWithFirebaseToken, getCurrentUserId, signOutFromFirebase, signOutCognito } from './index';
-import { platform } from '../../adapters';
-import { isSessionValid } from '../../services/session';
+import { initializeUserSecretKey } from '../../services/secret';
 
 /**
  * Step 1-3: Authenticate user and derive secret key
@@ -24,7 +23,10 @@ export async function loginUser(email: string, password: string): Promise<string
     // Step 1: Login with Cognito
     await loginWithCognito(email, password);
     
-    // Step 2: Sign in to Firebase
+    // Step 2: Initialize user secret key (fetch salt from Cognito, derive, store)
+    await initializeUserSecretKey(password);
+    
+    // Step 3: Sign in to Firebase
     const firebaseUser = await signInWithFirebaseToken();
     
     // Return the user ID from Firebase
@@ -60,22 +62,3 @@ export async function signOutUser(): Promise<void> {
     throw new AuthenticationError('Failed to sign out', new Error('Sign out failed'));
   }
 }
-
-
-// Store user secret key in platform adapter
-export async function storeUserSecretKey(userSecretKey: string): Promise<void> {
-  await platform.storeUserSecretKey(userSecretKey);
-}
-
-// Check authentication status (stub, should be replaced with real implementation if needed)
-export async function checkAuthenticationStatus(): Promise<any> {
-  const isUserConnected = await isUserAuthenticated();
-  const sessionValid = await isSessionValid();
-  
-  return {
-    isUserConnected,
-    isSessionValid: sessionValid,
-    user: getCurrentUserId(),
-    session: null,
-  };
-} 

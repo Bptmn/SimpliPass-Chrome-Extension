@@ -1,39 +1,74 @@
 /**
  * useUser Hook - Layer 1: UI Layer
  * 
- * Provides simple access to user data from auth state.
- * Re-exports the user selector from auth state for convenience.
+ * Provides simple access to user data from secure storage.
+ * Handles UI state management for user data.
  */
 
-import { useUserStore } from '../core/states/user';
+import { useState, useEffect } from 'react';
 import { User } from '../core/types/auth.types';
-import { getDocument } from '../core/libraries/database/firestore';
+import { getCurrentUser, refreshUserInfo } from '../core/services/user';
 
-export const useUser = useUserStore;
+export const useUser = () => {
+  // Step 1: Initialize UI state
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export async function getFirestoreUserDocument(userId: string) {
-  // Assumes users are stored in a 'users' collection
-  return await getDocument(`users/${userId}`);
-}
-
-export async function refreshUserInfo(userId: string) {
-
-  // 1. Fetch user document from Firestore
-  const userDoc = await getFirestoreUserDocument(userId);
-  if (!userDoc) {
-    throw new Error('User document not found in Firestore');
-  }
-
-  // 2. Create User object
-  const user: User = {
-    id: userDoc.id,
-    email: userDoc.email,
-    username: userDoc.username || userDoc.email,
-    createdAt: userDoc.createdAt ? new Date(userDoc.createdAt) : new Date(),
-    updatedAt: userDoc.updatedAt ? new Date(userDoc.updatedAt) : new Date(),
+  // Step 2: Load user data
+  const loadUser = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const userData = await getCurrentUser();
+      setUser(userData);
+      
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load user data';
+      setError(errorMessage);
+      console.error('[useUser] Failed to load user:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // 3. Store user object in state
-  useUserStore.getState().setUser(user);
-} 
+  // Step 3: Load user data on mount
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  // Step 4: Refresh user data
+  const refreshUser = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      // Get current user ID from auth adapter (if needed)
+      // For now, we'll refresh the current user from storage
+      await loadUser();
+      
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to refresh user data';
+      setError(errorMessage);
+      console.error('[useUser] Failed to refresh user:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Step 5: Clear user state
+  const clearUser = () => {
+    setUser(null);
+    setError(null);
+  };
+
+  return {
+    user,
+    isLoading,
+    error,
+    refreshUser,
+    clearUser,
+  };
+}; 
 

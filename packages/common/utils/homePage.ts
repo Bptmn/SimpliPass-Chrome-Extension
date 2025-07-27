@@ -15,9 +15,16 @@ export function handleCardClick(
   setSelected(cred);
 }
 
-export function handleOtherItemClick(item: ItemType) {
-  console.log('Item clicked:', item);
-  // TODO: Implement detail pages for bank cards and secure notes
+export function handleOtherItemClick(
+  item: unknown,
+  setSelected: (cred: CredentialDecrypted | null) => void
+) {
+  if (item && typeof item === 'object' && 'id' in item && 'username' in item && 'password' in item) {
+    setSelected(item as CredentialDecrypted);
+  } else {
+    // TODO: handle other item types or log a warning
+    console.warn('handleOtherItemClick: item is not a CredentialDecrypted', item);
+  }
 }
 
 export function getSuggestions(credentials: CredentialDecrypted[], url: string) {
@@ -26,4 +33,17 @@ export function getSuggestions(credentials: CredentialDecrypted[], url: string) 
   return credentials.filter(
     (cred) => cred.url && cred.url.toLowerCase().includes(domain)
   ).slice(0, 3);
+}
+
+export function shouldShowLoading(itemsLoading: boolean, itemsLength: number, user: any): boolean {
+  return itemsLoading || (itemsLength === 0 && user !== null);
+}
+
+export function getItemCounts(items: ItemType[], credentials: CredentialDecrypted[], bankCards: BankCardDecrypted[], secureNotes: SecureNoteDecrypted[]) {
+  return {
+    total: items.length,
+    credentials: credentials.length,
+    bankCards: bankCards.length,
+    secureNotes: secureNotes.length
+  };
 } 

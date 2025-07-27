@@ -5,7 +5,6 @@ export {
   getUserSecretKey,
   storeUserSecretKey,
   deleteUserSecretKey,
-  getDeviceFingerprint,
   hasUserSecretKey,
   decryptItem,
   decryptAllItems,
@@ -29,12 +28,10 @@ export * from './libraries/database';
 
 // Platform adapters
 export { platform } from './adapters';
-export type { PlatformAdapter } from './types/platform.types';
+export type { PlatformAdapter } from './adapters/platform.adapter';
 
 // States (specific exports to avoid conflicts)
-export { useItemStates } from './states/itemStates';
-export { useAuthStore } from './states/auth';
-export { useUserStore } from './states/user';
+export { useCategoryStore } from './states/category';
 
 // Types (specific exports to avoid conflicts)
 export type { User, UserSession } from './types/auth.types';

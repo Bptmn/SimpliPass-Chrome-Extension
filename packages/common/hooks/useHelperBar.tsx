@@ -1,27 +1,34 @@
 import { useCallback } from 'react';
 
-export const useHelperBar = () => {
-  const handleAdd = useCallback(() => {
-    // Navigate to add credential page
-    console.log('Add credential');
-  }, []);
+type CurrentPage = 'home' | 'generator' | 'settings' | 'add-credential-1' | 'add-credential-2' | 'add-card-1' | 'add-card-2' | 'add-securenote';
 
-  const handleFAQ = useCallback(() => {
-    // Open FAQ or help page
-    console.log('Open FAQ');
-  }, []);
+/**
+ * Hook for HelperBar component UI state management
+ * Handles button text based on current page only
+ * User interactions should be handled in the component
+ */
+export const useHelperBar = (currentPage: CurrentPage = 'home') => {
+  // Step 1: Get add button text based on current page
+  const getAddButtonText = useCallback(() => {
+    switch (currentPage) {
+      case 'add-card-1':
+      case 'add-card-2':
+        return 'Ajouter une carte';
+      case 'add-securenote':
+        return 'Ajouter une note';
+      case 'add-credential-1':
+      case 'add-credential-2':
+      case 'home':
+      case 'generator':
+      case 'settings':
+      default:
+        return 'Ajouter un identifiant';
+    }
+  }, [currentPage]);
 
-  const handleRefresh = useCallback(() => {
-    // Refresh credentials
-    console.log('Refresh credentials');
-  }, []);
-
-  const addButtonText = 'Ajouter';
+  const addButtonText = getAddButtonText();
 
   return {
     addButtonText,
-    handleAdd,
-    handleFAQ,
-    handleRefresh,
   };
 }; 

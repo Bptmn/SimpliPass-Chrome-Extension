@@ -6,93 +6,44 @@
  */
 
 import { useCallback, useRef } from 'react';
-import { useItemStates } from '../core/states/itemStates';
 import { getAllItemsFromDatabase } from '../core/services/items';
-// import { setDataInStates } from '../core/services/states';
 import { setLocalVault } from '../core/services/vault';
 
 export const useRefreshData = () => {
-  const itemStates = useItemStates();
-  const allItems = itemStates.getAllItemsFromState();
-  const isLoading = itemStates.isLoading;
+  // Step 1: Initialize UI state
   const isRefreshingRef = useRef(false);
-  const hasAttemptedRefreshRef = useRef(false);
 
+  // Step 2: Handle data refresh
   const refreshData = useCallback(async () => {
-    // Prevent multiple simultaneous refreshes
+    // Step 2.1: Prevent multiple simultaneous refreshes
     if (isRefreshingRef.current) {
       console.log('[useRefreshData] Refresh already in progress, skipping');
       return;
     }
 
-    // If we've already attempted to refresh and have empty data, don't try again
-    if (hasAttemptedRefreshRef.current && allItems.length === 0) {
-      console.log('[useRefreshData] Already attempted refresh with empty data, skipping');
-      return;
-    }
-
     try {
       isRefreshingRef.current = true;
-      hasAttemptedRefreshRef.current = true;
       
-      // Check if we have data in memory
-      if (allItems.length === 0 && !isLoading) {
-        console.log('[useRefreshData] No data in memory, fetching from Firestore...');
-        
-        try {
-          // Get all items from Database
-          console.log('[useRefreshData] Calling getAllItems to fetch and decrypt user items...');
-          const fetchedItems = await getAllItemsFromDatabase();
-          console.log(`[useRefreshData] getAllItems returned ${fetchedItems.length} items`, fetchedItems);
-          
-          // Set data in unified state
-          itemStates.setItemsInState(fetchedItems);
-          
-          // Store in local vault (even if empty)
-          try {
-            await setLocalVault(fetchedItems);
-          } catch (vaultError) {
-            console.warn('[useRefreshData] Failed to store local vault, continuing:', vaultError);
-          }
-          
-          console.log(`[useRefreshData] Data refreshed successfully: ${fetchedItems.length} total items`);
-        } catch (decryptionError) {
-          // If decryption fails (expected for new users or password changes), just continue with empty data
-          console.error('[useRefreshData] Decryption failed, continuing with empty data:', decryptionError);
-          if (typeof window !== 'undefined' && window.alert) {
-            window.alert('Warning: Failed to decrypt your data. Your vault appears empty. Please check your credentials or contact support if this persists.');
-          }
-          // Set empty data in states
-          itemStates.setItemsInState([]);
-          
-          // Store empty vault
-          try {
-            await setLocalVault([]);
-          } catch (vaultError) {
-            console.warn('[useRefreshData] Failed to store empty local vault, continuing:', vaultError);
-          }
-          
-          console.log('[useRefreshData] Set empty data and continued login flow (decryption failure path)');
-        }
-      } else {
-        console.log('[useRefreshData] Data already in memory, skipping refresh');
-        // Reset the flag if we have data, so future refreshes can work
-        if (allItems.length > 0) {
-          hasAttemptedRefreshRef.current = false;
-        }
-      }
+      console.log('[useRefreshData] Fetching items from database...');
+      // Step 2.2: Fetch items from database
+      const fetchedItems = await getAllItemsFromDatabase();
+      console.log(`[useRefreshData] Retrieved ${fetchedItems.length} items from database`);
+      
+      // Step 2.3: Store in local vault
+      await setLocalVault(fetchedItems);
+      console.log('[useRefreshData] Successfully stored items in local vault');
+      
     } catch (error) {
       console.error('[useRefreshData] Failed to refresh data:', error);
-      // Don't throw the error - just log it and continue
-      // This allows the login flow to complete even if data refresh fails
+      throw error;
     } finally {
       isRefreshingRef.current = false;
     }
-  }, [allItems.length, isLoading, itemStates]);
+  }, []);
 
   return { 
     refreshData, 
     refresh: refreshData, // Alias for backward compatibility
-    isLoading 
+    isLoading: isRefreshingRef.current
   };
 }; 

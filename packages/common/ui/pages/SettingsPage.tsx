@@ -2,13 +2,14 @@
 // This page displays the user's profile and settings.
 // It also allows the user to logout.
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
-import { useUserStore } from '@common/core/states/user';
 import { auth } from '@common/core/adapters/auth.adapter';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { useToast } from '@common/hooks/useToast';
+import { useManualRefresh } from '@common/hooks/useManualRefresh';
+import { storage } from '@common/core/adapters/platform.storage.adapter';
 import { getPageStyles, spacing, radius } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
@@ -16,6 +17,7 @@ import { ModeSwitch } from '@ui/components/ModeSwitch';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { Toast } from '@ui/components/Toast';
+import { User } from '@common/core/types/types';
 
 // MenuList component to avoid defining components during render
 const MenuList: React.FC<{ themeColors: any; styles: any }> = ({ themeColors, styles }) => (
@@ -72,12 +74,40 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const user = useUserStore((state) => state.user);
+  const [user, setUser] = useState<User | null>(null);
+  const [_userLoading, setUserLoading] = useState(true);
   console.log('[SettingsPage] user:', user);
   const [error, setError] = useState<string | null>(null);
   const { toast, showToast } = useToast();
+  const { 
+    refreshAllData, 
+    refreshUserOnly, 
+    refreshVaultOnly, 
+    restartListeners,
+    isRefreshing, 
+    error: refreshError, 
+    clearError 
+  } = useManualRefresh();
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
+
+  // Load user data from secure storage
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        setUserLoading(true);
+        const userData = await storage.getUserFromSecureLocalStorage();
+        setUser(userData);
+      } catch (err) {
+        console.error('[SettingsPage] Failed to load user:', err);
+        setError('Failed to load user data');
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -91,7 +121,49 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     }
   };
 
+  const handleRefreshAll = async () => {
+    try {
+      await refreshAllData();
+      showToast('Données actualisées avec succès');
+    } catch (_err) {
+      setError('Erreur lors de l\'actualisation des données');
+    }
+  };
 
+  const handleRefreshUser = async () => {
+    try {
+      await refreshUserOnly();
+      showToast('Informations utilisateur actualisées');
+    } catch (_err) {
+      setError('Erreur lors de l\'actualisation des informations utilisateur');
+    }
+  };
+
+  const handleRefreshVault = async () => {
+    try {
+      await refreshVaultOnly();
+      showToast('Coffre-fort actualisé');
+    } catch (_err) {
+      setError('Erreur lors de l\'actualisation du coffre-fort');
+    }
+  };
+
+  const handleRestartListeners = async () => {
+    try {
+      await restartListeners();
+      showToast('Synchronisation redémarrée');
+    } catch (_err) {
+      setError('Erreur lors du redémarrage de la synchronisation');
+    }
+  };
+
+  // Clear refresh error when component mounts or error changes
+  React.useEffect(() => {
+    if (refreshError) {
+      setError(refreshError);
+      clearError();
+    }
+  }, [refreshError, clearError]);
 
   return (
     <View style={pageStyles.pageContainer}>
@@ -113,6 +185,54 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               </View>
             </View>
           </View>
+          
+          {/* Manual Refresh Section */}
+          <View style={styles.pageSection}>
+            <Text style={styles.sectionTitle}>Synchronisation</Text>
+            <View style={styles.refreshButtons}>
+              <Button
+                text={isRefreshing ? "Actualisation..." : "Actualiser tout"}
+                color={themeColors.secondary}
+                width="full"
+                height="full"
+                onPress={handleRefreshAll}
+                disabled={isRefreshing}
+                testID="refresh-all-btn"
+                accessibilityLabel="Actualiser toutes les données"
+              />
+              <Button
+                text="Actualiser utilisateur"
+                color={themeColors.secondary}
+                width="full"
+                height="full"
+                onPress={handleRefreshUser}
+                disabled={isRefreshing}
+                testID="refresh-user-btn"
+                accessibilityLabel="Actualiser les informations utilisateur"
+              />
+              <Button
+                text="Actualiser coffre-fort"
+                color={themeColors.secondary}
+                width="full"
+                height="full"
+                onPress={handleRefreshVault}
+                disabled={isRefreshing}
+                testID="refresh-vault-btn"
+                accessibilityLabel="Actualiser le coffre-fort"
+              />
+              <Button
+                text="Redémarrer synchronisation"
+                color={themeColors.secondary}
+                width="full"
+                height="full"
+                onPress={handleRestartListeners}
+                disabled={isRefreshing}
+                testID="restart-listeners-btn"
+                accessibilityLabel="Redémarrer la synchronisation en temps réel"
+              />
+            </View>
+          </View>
+          
           <View style={styles.pageSection}>
             <View style={styles.modeSwitchWrapper}>
               <ModeSwitch />
@@ -156,7 +276,21 @@ const getStyles = (mode: 'light' | 'dark') => {
       gap: spacing.sm,
       marginTop: spacing.sm,
     },
-
+    refreshButtons: {
+      backgroundColor: themeColors.secondaryBackground,
+      borderColor: themeColors.borderColor,
+      borderRadius: radius.lg,
+      borderWidth: 1,
+      flexDirection: 'column',
+      gap: spacing.sm,
+      padding: spacing.sm,
+    },
+    sectionTitle: {
+      color: themeColors.primary,
+      fontSize: typography.fontSize.md,
+      fontWeight: typography.fontWeight.medium,
+      marginBottom: spacing.sm,
+    },
     menuArrow: {},
     menuIcon: {
       alignItems: 'center',

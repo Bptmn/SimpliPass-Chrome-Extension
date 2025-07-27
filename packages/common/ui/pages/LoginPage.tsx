@@ -7,7 +7,7 @@ import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
 import { Input } from '@ui/components/InputFields';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
-import { useLoginFlow } from '@common/hooks/useLoginFlow';
+import { useLoginPage } from '@common/hooks/useLoginPage';
 import logo from '../../../../assets/logo/logo_simplify_long.png';
 
 const LoginPage: React.FC = () => {
@@ -16,7 +16,7 @@ const LoginPage: React.FC = () => {
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   
-  const { login, isLoading, error } = useLoginFlow();
+  const { login, isLoading, error } = useLoginPage();
 
   // Form state
   const [email, setEmail] = React.useState('');
@@ -63,7 +63,7 @@ const LoginPage: React.FC = () => {
     try {
       await login(email, password);
     } catch (loginError: unknown) {
-      // Error is handled by useLoginFlow hook
+      // Error is handled by useLoginPage hook
       console.error('Login error:', loginError);
     }
   }, [email, password, login]);

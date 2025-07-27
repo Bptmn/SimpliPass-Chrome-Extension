@@ -62,63 +62,9 @@ export const LongContentDark = () => (
   </DarkThemeProvider>
 );
 
-export const NoNote = () => {
-  const credentialWithoutNote = { ...mockCredential, note: '' };
-  return (
-    <LightThemeProvider>
-      <CredentialCard credential={credentialWithoutNote} onPress={() => console.log('Card pressed')} />
-    </LightThemeProvider>
-  );
-};
-
-export const NoNoteDark = () => {
-  const credentialWithoutNote = { ...mockCredential, note: '' };
-  return (
-    <DarkThemeProvider>
-      <CredentialCard credential={credentialWithoutNote} onPress={() => console.log('Card pressed')} />
-    </DarkThemeProvider>
-  );
-};
-
-export const NoUrl = () => {
-  const credentialWithoutUrl = { ...mockCredential, url: '' };
-  return (
-    <LightThemeProvider>
-      <CredentialCard credential={credentialWithoutUrl} onPress={() => console.log('Card pressed')} />
-    </LightThemeProvider>
-  );
-};
-
-export const NoUrlDark = () => {
-  const credentialWithoutUrl = { ...mockCredential, url: '' };
-  return (
-    <DarkThemeProvider>
-      <CredentialCard credential={credentialWithoutUrl} onPress={() => console.log('Card pressed')} />
-    </DarkThemeProvider>
-  );
-};
-
-export const CustomColor = () => {
-  const credentialWithCustomColor = { ...mockCredential };
-  return (
-    <LightThemeProvider>
-      <CredentialCard credential={credentialWithCustomColor} onPress={() => console.log('Card pressed')} />
-    </LightThemeProvider>
-  );
-};
-
-export const CustomColorDark = () => {
-  const credentialWithCustomColor = { ...mockCredential };
-  return (
-    <DarkThemeProvider>
-      <CredentialCard credential={credentialWithCustomColor} onPress={() => console.log('Card pressed')} />
-    </DarkThemeProvider>
-  );
-};
-
 export const MultipleCards = () => (
   <LightThemeProvider>
-    <View style={{ gap: 16 }}>
+    <View style={{ gap: 4 }}>
       <CredentialCard credential={mockCredential} onPress={() => console.log('Card 1 pressed')} />
       <CredentialCard credential={mockCredentialWithLongData} onPress={() => console.log('Card 2 pressed')} />
       <CredentialCard credential={mockCredential} onPress={() => console.log('Card 3 pressed')} />
@@ -128,7 +74,7 @@ export const MultipleCards = () => (
 
 export const MultipleCardsDark = () => (
   <DarkThemeProvider>
-    <View style={{ gap: 16 }}>
+    <View style={{ gap: 4 }}>
       <CredentialCard credential={mockCredential} onPress={() => console.log('Card 1 pressed')} />
       <CredentialCard credential={mockCredentialWithLongData} onPress={() => console.log('Card 2 pressed')} />
       <CredentialCard credential={mockCredential} onPress={() => console.log('Card 3 pressed')} />

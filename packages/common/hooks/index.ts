@@ -1,14 +1,17 @@
 // Layer 1: UI Hooks
-export * from './useLoginFlow';
-export * from './useRefreshData';
-export * from './useItems';
-export * from './useLogoutFlow';
-
-// Existing hooks
-export * from './useDebouncedValue';
-export * from './useInputLogic';
-export * from './useLazyCredentialIcon';
-export * from './useSecretKeyCheck';
-export * from './useToast';
+export { useAppInitialization } from './useAppInitialization';
+export { useAppState } from './useAppState';
+export { useDebouncedValue } from './useDebouncedValue';
 export { useGeneratorPage } from './useGeneratorPage';
-export { useHomePage } from './useHomePage'; 
+export { useHelperBar } from './useHelperBar';
+export { useHomePage } from './useHomePage';
+export { useInputLogic } from './useInputLogic';
+export { useItems } from './useItems';
+export { useLazyCredentialIcon } from './useLazyCredentialIcon';
+export { useLoginPage } from './useLoginPage';
+export { useLogoutFlow } from './useLogoutFlow';
+export { useManualRefresh } from './useManualRefresh';
+export { useRefreshData } from './useRefreshData';
+export { useReEnterPassword } from './useReEnterPassword';
+export { useToast } from './useToast';
+export { useUser } from './useUser'; 

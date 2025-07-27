@@ -12,7 +12,6 @@ import {
   ItemEncrypted,
 } from '../types/items.types';
 import { encryptData, decryptData } from '@common/utils/crypto';
-import { CryptographyError } from '../types/errors.types';
 
 // ===== Encryption/Decryption Functions =====
 
@@ -20,16 +19,10 @@ type DecryptedItem = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypt
 
 export async function decryptItem(userSecretKey: string, itemToDecrypt: ItemEncrypted): Promise<DecryptedItem | null> {
   try {
-    console.log('[Cryptography] Decrypting item:', itemToDecrypt.id);
-    
     const itemKey = await decryptData(userSecretKey, itemToDecrypt.item_key_encrypted);
-    console.log('[Cryptography] Item key decrypted successfully, length:', itemKey.length);
-    
     const decryptedContent = await decryptData(itemKey, itemToDecrypt.content_encrypted);
-    console.log('[Cryptography] Content decrypted successfully, length:', decryptedContent.length);
-    
     const contentJson = JSON.parse(decryptedContent);
-    console.log('[Cryptography] Content parsed as JSON, itemType:', contentJson.itemType);
+    
     const itemType = contentJson.itemType;
     switch (itemType) {
       case 'credential':
@@ -76,24 +69,23 @@ export async function decryptItem(userSecretKey: string, itemToDecrypt: ItemEncr
           itemKey,
         } as SecureNoteDecrypted;
       default:
-        console.error('Unknown item type:', itemType);
+        console.error('[Cryptography] Unknown item type:', itemType);
         return null;
     }
   } catch (error) {
-    console.error('❌ Decryption failed for item', itemToDecrypt.id, error);
-    console.error('🔐 Encrypted content:', itemToDecrypt.content_encrypted);
-    console.error('🔑 Encrypted item key:', itemToDecrypt.item_key_encrypted);
+    console.error('[Cryptography] Decryption failed for item', itemToDecrypt.id, error);
     throw error;
   }
 }
 
 export async function decryptAllItems(userSecretKey: string, itemsList: ItemEncrypted[]): Promise<DecryptedItem[]> {
-  console.log('[Cryptography] Decrypting all items:', itemsList.length, 'items');
+  console.log('[Cryptography] Decrypting', itemsList.length, 'items');
   const decryptedItems: DecryptedItem[] = [];
+  
   if (!itemsList.length) {
-    console.debug('No items provided.');
     return decryptedItems;
   }
+  
   for (const item of itemsList) {
     try {
       if (
@@ -108,10 +100,11 @@ export async function decryptAllItems(userSecretKey: string, itemsList: ItemEncr
         decryptedItems.push(decryptedItem);
       }
     } catch (e) {
-      console.debug(`[Cryptography] Error processing item:`, e);
+      console.error('[Cryptography] Error processing item:', e);
     }
   }
-  console.log('[Cryptography] decryptAllItems success:', decryptedItems.length, 'items decrypted');
+  
+  console.log('[Cryptography] Successfully decrypted', decryptedItems.length, 'items');
   return decryptedItems;
 }
 

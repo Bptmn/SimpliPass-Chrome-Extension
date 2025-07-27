@@ -6,11 +6,13 @@
  * - Extension-specific vault storage
  */
 
-import { StorageAdapter } from '@common/core/types/storage.types';
+import { StorageAdapter } from '@common/core/adapters/platform.storage.adapter';
+import { User } from '@common/core/types/auth.types';
 
 export class ExtensionStorageAdapter implements StorageAdapter {
   private config = {
     userSecretKeyStorageKey: 'userSecretKey',
+    userStorageKey: 'user',
     vaultStorageKey: 'encryptedVault',
   };
 
@@ -18,7 +20,7 @@ export class ExtensionStorageAdapter implements StorageAdapter {
 
   async storeUserSecretKeyToSecureLocalStorage(key: string): Promise<void> {
     try {
-      await chrome.storage.local.set({ [this.config.userSecretKeyStorageKey]: key });
+      await chrome.storage.session.set({ [this.config.userSecretKeyStorageKey]: key });
     } catch (error) {
       throw new Error(`Failed to store user secret key: ${error}`);
     }
@@ -26,7 +28,7 @@ export class ExtensionStorageAdapter implements StorageAdapter {
 
   async updateUserSecretKeyInSecureLocalStorage(key: string): Promise<void> {
     try {
-      await chrome.storage.local.set({ [this.config.userSecretKeyStorageKey]: key });
+      await chrome.storage.session.set({ [this.config.userSecretKeyStorageKey]: key });
     } catch (error) {
       throw new Error(`Failed to update user secret key: ${error}`);
     }
@@ -34,7 +36,7 @@ export class ExtensionStorageAdapter implements StorageAdapter {
 
   async deleteUserSecretKeyFromSecureLocalStorage(): Promise<void> {
     try {
-      await chrome.storage.local.remove(this.config.userSecretKeyStorageKey);
+      await chrome.storage.session.remove(this.config.userSecretKeyStorageKey);
     } catch (error) {
       throw new Error(`Failed to delete user secret key: ${error}`);
     }
@@ -42,10 +44,46 @@ export class ExtensionStorageAdapter implements StorageAdapter {
 
   async getUserSecretKeyFromSecureLocalStorage(): Promise<string | null> {
     try {
-      const result = await chrome.storage.local.get(this.config.userSecretKeyStorageKey);
+      const result = await chrome.storage.session.get(this.config.userSecretKeyStorageKey);
       return result[this.config.userSecretKeyStorageKey] || null;
     } catch (error) {
       console.error('Failed to get user secret key:', error);
+      return null;
+    }
+  }
+
+  // ===== User Object Storage Operations =====
+
+  async storeUserToSecureLocalStorage(user: User): Promise<void> {
+    try {
+      await chrome.storage.session.set({ [this.config.userStorageKey]: user });
+    } catch (error) {
+      throw new Error(`Failed to store user: ${error}`);
+    }
+  }
+
+  async updateUserInSecureLocalStorage(user: User): Promise<void> {
+    try {
+      await chrome.storage.session.set({ [this.config.userStorageKey]: user });
+    } catch (error) {
+      throw new Error(`Failed to update user: ${error}`);
+    }
+  }
+
+  async deleteUserFromSecureLocalStorage(): Promise<void> {
+    try {
+      await chrome.storage.session.remove(this.config.userStorageKey);
+    } catch (error) {
+      throw new Error(`Failed to delete user: ${error}`);
+    }
+  }
+
+  async getUserFromSecureLocalStorage(): Promise<User | null> {
+    try {
+      const result = await chrome.storage.session.get(this.config.userStorageKey);
+      return result[this.config.userStorageKey] || null;
+    } catch (error) {
+      console.error('Failed to get user:', error);
       return null;
     }
   }
@@ -55,7 +93,7 @@ export class ExtensionStorageAdapter implements StorageAdapter {
   async storeVaultToSecureLocalStorage(vault: any): Promise<void> {
     try {
       const vaultString = JSON.stringify(vault);
-      await chrome.storage.local.set({ [this.config.vaultStorageKey]: vaultString });
+      await chrome.storage.session.set({ [this.config.vaultStorageKey]: vaultString });
     } catch (error) {
       throw new Error(`Failed to store vault: ${error}`);
     }
@@ -64,7 +102,7 @@ export class ExtensionStorageAdapter implements StorageAdapter {
   async updateVaultInSecureLocalStorage(vault: any): Promise<void> {
     try {
       const vaultString = JSON.stringify(vault);
-      await chrome.storage.local.set({ [this.config.vaultStorageKey]: vaultString });
+      await chrome.storage.session.set({ [this.config.vaultStorageKey]: vaultString });
     } catch (error) {
       throw new Error(`Failed to update vault: ${error}`);
     }
@@ -72,7 +110,7 @@ export class ExtensionStorageAdapter implements StorageAdapter {
 
   async deleteVaultFromSecureLocalStorage(): Promise<void> {
     try {
-      await chrome.storage.local.remove(this.config.vaultStorageKey);
+      await chrome.storage.session.remove(this.config.vaultStorageKey);
     } catch (error) {
       throw new Error(`Failed to delete vault: ${error}`);
     }
@@ -80,7 +118,7 @@ export class ExtensionStorageAdapter implements StorageAdapter {
 
   async getVaultFromSecureLocalStorage(): Promise<any | null> {
     try {
-      const result = await chrome.storage.local.get(this.config.vaultStorageKey);
+      const result = await chrome.storage.session.get(this.config.vaultStorageKey);
       const vaultString = result[this.config.vaultStorageKey];
       if (!vaultString) {
         return null;
@@ -89,6 +127,14 @@ export class ExtensionStorageAdapter implements StorageAdapter {
     } catch (error) {
       console.error('Failed to get vault:', error);
       return null;
+    }
+  }
+
+  async clearAllSecureLocalStorage(): Promise<void> {
+    try {
+      await chrome.storage.session.clear();
+    } catch (error) {
+      throw new Error(`Failed to clear all secure local storage: ${error}`);
     }
   }
 } 

@@ -2,34 +2,31 @@
  * ReEnterPasswordPage.tsx
  * 
  * This page allows users to re-enter their master password to derive the secret key
- * without logging out. This is used when the secret key is lost from memory but
+ * without logging out. This is used when the secret key is lost from secure storage but
  * the user is still authenticated.
  */
 
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import { useNavigate } from 'react-router-dom';
 import { Input } from '@ui/components/InputFields';
 import { Button } from '@ui/components/Buttons';
 import { getColors } from '@ui/design/colors';
 import { spacing } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
-import { deriveKey } from '@common/utils/crypto';
-import { storeUserSecretKey } from '@common/core/services/secret';
-import { fetchUserSaltCognito } from '@common/core/libraries/auth/cognito';
-import { initializeUserSession } from '@common/core/services/session';
-import { useUserStore } from '@common/core/states/user';
 import { useThemeMode } from '@common/ui/design/theme';
+import { useReEnterPassword } from '@common/hooks/useReEnterPassword';
 import { useLogoutFlow } from '@common/hooks/useLogoutFlow';
 
-export const ReEnterPasswordPage: React.FC = () => {
+interface ReEnterPasswordPageProps {
+  onSecretKeyStored?: () => void;
+}
+
+export const ReEnterPasswordPage: React.FC<ReEnterPasswordPageProps> = ({ onSecretKeyStored }) => {
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const user = useUserStore((state) => state.user);
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const { logout, isLoading: isLogoutLoading } = useLogoutFlow();
+  const { reEnterPassword, isLoading, error, clearError } = useReEnterPassword();
+  const { logout } = useLogoutFlow();
 
   const handleSubmit = async () => {
     if (!password.trim()) {
@@ -37,47 +34,24 @@ export const ReEnterPasswordPage: React.FC = () => {
       return;
     }
 
-    if (!user) {
-      Alert.alert('Erreur', 'Utilisateur non trouvé.');
-      return;
-    }
-
-    setIsLoading(true);
-
     try {
-      console.log('[ReEnterPasswordPage] Starting password re-entry process...');
-      
-      // Get user salt
-      const salt = await fetchUserSaltCognito();
-      if (!salt) {
-        Alert.alert('Erreur', 'Impossible de récupérer le sel utilisateur.');
-        return;
+      await reEnterPassword(password);
+      // Call the callback to trigger PopupApp re-check
+      if (onSecretKeyStored) {
+        console.log('[ReEnterPasswordPage] Calling onSecretKeyStored callback...');
+        onSecretKeyStored();
       }
-
-      console.log('[ReEnterPasswordPage] Salt retrieved, deriving key...');
-
-      // Derive the secret key
-      const userSecretKey = await deriveKey(password, salt);
-      
-      console.log('[ReEnterPasswordPage] Key derived, storing in memory...');
-
-      // Store the secret key in memory
-      await storeUserSecretKey(userSecretKey);
-      
-      console.log('[ReEnterPasswordPage] Key stored, initializing session...');
-
-      // Initialize user session with the new secret key
-      await initializeUserSession(user.id, userSecretKey);
-
-      console.log('[ReEnterPasswordPage] Session initialized successfully');
-      
-      // Navigate back to home
-      navigate('/home');
     } catch (error) {
+      // Error is handled by the hook and displayed via the error state
       console.error('[ReEnterPasswordPage] Error during password re-entry:', error);
-      Alert.alert('Erreur', 'Mot de passe incorrect ou erreur lors de la dérivation de la clé.');
-    } finally {
-      setIsLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('[ReEnterPasswordPage] Error during logout:', error);
     }
   };
 
@@ -142,9 +116,9 @@ export const ReEnterPasswordPage: React.FC = () => {
           <Button
             text="Annuler"
             color={themeColors.tertiary}
-            onPress={logout}
+            onPress={handleCancel}
             style={styles.cancelButton}
-            disabled={isLoading || isLogoutLoading}
+            disabled={isLoading}
           />
           <Button
             text={isLoading ? "Déverrouillage..." : "Déverrouiller"}

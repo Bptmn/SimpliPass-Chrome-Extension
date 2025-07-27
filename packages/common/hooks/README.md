@@ -17,63 +17,221 @@ UI Components → Hooks → Services → Libraries
 - ✅ **Error Handling**: Provide clear error messages to users
 - ✅ **Data Abstraction**: Return data from memory (Zustand states)
 - ✅ **Platform Agnostic**: Work across mobile, extension, and web platforms
+- ✅ **Numbered Steps**: Complex operations follow Step 1, Step 2, Step 3... pattern
 
 ## Available Hooks
 
 ### Authentication Hooks
 
-#### `useLoginFlow`
-Handles the complete login flow with error handling and loading states.
+#### `useAppInitialization`
+Handles app initialization and authentication state management with 5 steps.
 
 ```typescript
-const { login, isLoading, error, clearError } = useLoginFlow();
+const { 
+  user, 
+  isLoading, 
+  isUserFullyInitialized, 
+  error, 
+  handleSecretKeyStored, 
+  clearError 
+} = useAppInitialization();
+```
+
+#### `useAppState`
+Reads current app state without triggering initialization (4 steps).
+
+```typescript
+const { 
+  state, 
+  user, 
+  vault, 
+  refreshState, 
+  clearError 
+} = useAppState();
+```
+
+#### `useLoginPage`
+Handles login page UI state and user interactions (3 steps).
+
+```typescript
+const { login, isLoading, error, clearError } = useLoginPage();
 
 const handleLogin = async () => {
   await login(email, password);
 };
 ```
 
-#### `useSecretKeyCheck`
-Checks if the user has a valid secret key for authentication.
+#### `useLogoutFlow`
+Handles logout process with 4 steps.
 
 ```typescript
-const { hasSecretKey, isLoading } = useSecretKeyCheck();
+const { logout, isLoading, error } = useLogoutFlow();
+```
+
+#### `useReEnterPassword`
+Handles password re-entry flow with 4 steps.
+
+```typescript
+const { reEnterPassword, isLoading, error, clearError } = useReEnterPassword();
 ```
 
 ### Data Management Hooks
 
-#### `useRefreshData`
-Refreshes data from external sources and updates local state.
-
-```typescript
-const { refresh, isLoading } = useRefreshData();
-
-const handleRefresh = async () => {
-  await refresh();
-};
-```
-
-#### `useCredentials`
-Manages credential operations (add, update, delete, copy).
+#### `useItems`
+Provides real-time access to items data with automatic UI updates (3 steps).
 
 ```typescript
 const { 
-  addCredential, 
-  updateCredential, 
-  deleteCredential, 
-  copyPassword 
-} = useCredentials();
+  items, 
+  credentials, 
+  bankCards, 
+  secureNotes, 
+  loading, 
+  error 
+} = useItems();
+```
 
-const handleAddCredential = async (credential) => {
-  await addCredential(credential);
-};
+#### `useUser`
+Provides simple access to user data from secure storage (5 steps).
+
+```typescript
+const { 
+  user, 
+  isLoading, 
+  error, 
+  refreshUser, 
+  clearUser 
+} = useUser();
+```
+
+#### `useRefreshData`
+Provides simple interface for data refresh operations (2 steps).
+
+```typescript
+const { refreshData, refresh, isLoading } = useRefreshData();
+```
+
+#### `useManualRefresh`
+Provides manual refresh functionality for UI components (5 steps).
+
+```typescript
+const { 
+  refreshAllData, 
+  refreshUserOnly, 
+  refreshVaultOnly, 
+  isRefreshing, 
+  error, 
+  clearError 
+} = useManualRefresh();
+```
+
+### UI State Hooks
+
+#### `useHomePage`
+Handles HomePage component UI state management (5 steps).
+
+```typescript
+const { 
+  user, 
+  items, 
+  credentials, 
+  bankCards, 
+  secureNotes, 
+  filter, 
+  selected, 
+  error, 
+  loading, 
+  setFilter, 
+  setSelected, 
+  refreshData, 
+  handleCardClick, 
+  handleOtherItemClick, 
+  handleCopyCredential, 
+  handleCopyOther, 
+  handleAddSuggestion 
+} = useHomePage();
+```
+
+#### `useGeneratorPage`
+Handles password generation, strength checking, and regeneration (5 steps).
+
+```typescript
+const { 
+  hasUppercase, 
+  hasNumbers, 
+  hasSymbols, 
+  hasLowercase, 
+  length, 
+  password, 
+  strength, 
+  setHasUppercase, 
+  setHasNumbers, 
+  setHasSymbols, 
+  setHasLowercase, 
+  setLength, 
+  handleRegenerate, 
+  handleCopyPassword 
+} = useGeneratorPage();
+```
+
+#### `useHelperBar`
+Handles navigation and button text based on current page (4 steps).
+
+```typescript
+const { 
+  addButtonText, 
+  handleAdd, 
+  handleFAQ, 
+  handleRefresh 
+} = useHelperBar(currentPage);
+```
+
+#### `useInputLogic`
+Handles password visibility, content size, and strength calculations (4 steps).
+
+```typescript
+const { 
+  showPassword, 
+  inputHeight, 
+  togglePasswordVisibility, 
+  handleContentSizeChange, 
+  getStrengthColor 
+} = useInputLogic(type);
+```
+
+#### `useLazyCredentialIcon`
+Handles favicon loading, domain parsing, and fallback logic (6 steps).
+
+```typescript
+const { 
+  faviconUrl, 
+  isFaviconLoaded, 
+  showFavicon, 
+  placeholderLetter, 
+  handleFaviconLoad, 
+  handleFaviconError 
+} = useLazyCredentialIcon(url, title);
+```
+
+#### `useToast`
+Provides access to toast notifications.
+
+```typescript
+const { showToast } = useToast();
+```
+
+#### `useDebouncedValue`
+Debounces a value by a given delay for search inputs.
+
+```typescript
+const debouncedValue = useDebouncedValue(value, 300);
 ```
 
 ## Usage Guidelines
 
 ### 1. Always Handle Loading States
 ```typescript
-const { login, isLoading, error } = useLoginFlow();
+const { login, isLoading, error } = useLoginPage();
 
 if (isLoading) {
   return <LoadingSpinner />;
@@ -82,7 +240,7 @@ if (isLoading) {
 
 ### 2. Provide Clear Error Messages
 ```typescript
-const { login, error } = useLoginFlow();
+const { login, error } = useLoginPage();
 
 if (error) {
   return <ErrorMessage message={error} />;
@@ -92,11 +250,11 @@ if (error) {
 ### 3. Use Destructuring for Clean Code
 ```typescript
 // ✅ Good
-const { login, isLoading, error } = useLoginFlow();
+const { login, isLoading, error } = useLoginPage();
 
 // ❌ Avoid
-const loginFlow = useLoginFlow();
-const login = loginFlow.login;
+const loginPage = useLoginPage();
+const login = loginPage.login;
 ```
 
 ### 4. Handle Async Operations Properly
@@ -111,16 +269,19 @@ const handleLogin = async () => {
 };
 ```
 
+### 5. Follow Numbered Steps Pattern
+All hooks with complex operations follow Step 1, Step 2, Step 3... pattern for clarity.
+
 ## Testing Hooks
 
 ### Example Test
 ```typescript
 import { renderHook, act } from '@testing-library/react-hooks';
-import { useLoginFlow } from './useLoginFlow';
+import { useLoginPage } from './useLoginPage';
 
-describe('useLoginFlow', () => {
+describe('useLoginPage', () => {
   it('should handle successful login', async () => {
-    const { result } = renderHook(() => useLoginFlow());
+    const { result } = renderHook(() => useLoginPage());
     
     await act(async () => {
       await result.current.login('test@example.com', 'password');
@@ -134,46 +295,39 @@ describe('useLoginFlow', () => {
 
 ## Error Handling
 
-Hooks should provide clear error messages and handle errors gracefully:
+Hooks provide clear error messages and handle errors gracefully:
 
 ```typescript
-const { login, error } = useLoginFlow();
+const { login, error } = useLoginPage();
 
-// Error messages should be user-friendly
+// Error messages are user-friendly
 if (error) {
-  switch (error.type) {
-    case 'AUTH_ERROR':
-      return 'Invalid email or password';
-    case 'NETWORK_ERROR':
-      return 'Network connection failed';
-    default:
-      return 'An unexpected error occurred';
-  }
+  return <ErrorMessage message={error} />;
 }
 ```
 
 ## State Management
 
-Hooks should work with Zustand states for data persistence:
+Hooks work with centralized state managers:
 
 ```typescript
-// Hooks read from states
-const credentials = useCredentialsStore(state => state.credentials);
+// Hooks read from state managers
+const { items, loading } = useItems();
 
 // Hooks update states through services
-const { addCredential } = useCredentials();
-await addCredential(newCredential); // Updates state automatically
+const { refreshData } = useHomePage();
+await refreshData(); // Updates state automatically
 ```
 
 ## Platform Considerations
 
-Hooks should be platform-agnostic and work across:
+Hooks are platform-agnostic and work across:
 
 - **Mobile** (React Native)
 - **Extension** (Chrome Extension)
 - **Web** (React)
 
-Platform-specific logic should be handled in the libraries layer.
+Platform-specific logic is handled in the libraries layer.
 
 ## Development Guidelines
 
@@ -182,6 +336,8 @@ Platform-specific logic should be handled in the libraries layer.
 3. **Provide Clear APIs**: Easy to understand and use
 4. **Test Thoroughly**: Each hook should have comprehensive tests
 5. **Document Usage**: Clear examples and documentation
+6. **Follow Numbered Steps**: Complex operations use Step 1, Step 2, Step 3...
+7. **Layer Separation**: Only UI logic, business logic goes to services
 
 ## Integration with Other Layers
 
@@ -189,20 +345,19 @@ Platform-specific logic should be handled in the libraries layer.
 Hooks call services for business logic:
 
 ```typescript
-const { login } = useLoginFlow();
-// Internally calls loginUser service
+const { login } = useLoginPage();
+// Internally calls auth.login service
 ```
 
-### Hooks → States
-Hooks read from and update Zustand states:
+### Hooks → State Managers
+Hooks read from and update state managers:
 
 ```typescript
-const credentials = useCredentialsStore(state => state.credentials);
-// Reads from state
+const { items } = useItems();
+// Reads from itemsStateManager
 
-const { addCredential } = useCredentials();
-await addCredential(credential);
-// Updates state through service
+const { refreshData } = useHomePage();
+await refreshData(); // Updates state through service
 ```
 
 ### Hooks → Components
@@ -210,7 +365,7 @@ Components use hooks for data and interactions:
 
 ```typescript
 const MyComponent = () => {
-  const { login, isLoading, error } = useLoginFlow();
+  const { login, isLoading, error } = useLoginPage();
   
   return (
     <LoginForm 
@@ -220,4 +375,46 @@ const MyComponent = () => {
     />
   );
 };
+```
+
+## Testing Requirements
+
+All hooks must have comprehensive tests covering:
+
+1. **Initial State**: Verify correct initial state
+2. **Loading States**: Test loading state transitions
+3. **Error Handling**: Test error scenarios
+4. **Success Scenarios**: Test successful operations
+5. **Cleanup**: Test proper cleanup on unmount
+6. **Async Operations**: Test async function calls
+7. **State Updates**: Test state changes
+8. **Event Handlers**: Test user interactions
+
+### Test Structure
+```typescript
+describe('useHookName', () => {
+  describe('initial state', () => {
+    it('should have correct initial state', () => {
+      // Test initial state
+    });
+  });
+
+  describe('loading states', () => {
+    it('should handle loading state correctly', () => {
+      // Test loading states
+    });
+  });
+
+  describe('error handling', () => {
+    it('should handle errors gracefully', () => {
+      // Test error scenarios
+    });
+  });
+
+  describe('success scenarios', () => {
+    it('should handle successful operations', async () => {
+      // Test success scenarios
+    });
+  });
+});
 ``` 

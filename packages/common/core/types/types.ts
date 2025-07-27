@@ -4,6 +4,7 @@ export interface HomePageProps {
   user: unknown;
   pageState: PageState | null;
   onInjectCredential: (credentialId: string) => void;
+  refreshTrigger?: number;
 }
 
 export interface PageState {
@@ -23,13 +24,6 @@ export type {
   User,
   UserSession,
 } from './auth.types';
-
-export type {
-  PlatformAdapter,
-  EncryptedVault,
-  DeviceInfo,
-  NetworkStatus,
-} from './platform.types';
 
 export type {
   SimpliPassError,

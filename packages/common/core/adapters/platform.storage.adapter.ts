@@ -1,15 +1,28 @@
 import { MobileStorageAdapter } from '@mobile/adapters/platform.storage.adapter';
 import { ExtensionStorageAdapter } from '@extension/adapters/platform.storage.adapter';
+import { User } from '../types/auth.types';
 
 export interface StorageAdapter {
+  // User Secret Key Storage
   storeUserSecretKeyToSecureLocalStorage(key: string): Promise<void>;
   updateUserSecretKeyInSecureLocalStorage(key: string): Promise<void>;
   deleteUserSecretKeyFromSecureLocalStorage(): Promise<void>;
   getUserSecretKeyFromSecureLocalStorage(): Promise<string | null>;
+  
+  // User Object Storage
+  storeUserToSecureLocalStorage(user: User): Promise<void>;
+  updateUserInSecureLocalStorage(user: User): Promise<void>;
+  deleteUserFromSecureLocalStorage(): Promise<void>;
+  getUserFromSecureLocalStorage(): Promise<User | null>;
+  
+  // Vault Storage
   storeVaultToSecureLocalStorage(vault: any): Promise<void>;
   updateVaultInSecureLocalStorage(vault: any): Promise<void>;
   deleteVaultFromSecureLocalStorage(): Promise<void>;
   getVaultFromSecureLocalStorage(): Promise<any | null>;
+  
+  // General
+  clearAllSecureLocalStorage(): Promise<void>;
 }
 
 export const detectPlatform = (): 'mobile' | 'extension' => {
@@ -58,6 +71,7 @@ const getAdapter = (): StorageAdapter => {
 };
 
 export const storage: StorageAdapter = {
+  // User Secret Key Storage
   async storeUserSecretKeyToSecureLocalStorage(key: string): Promise<void> {
     return getAdapter().storeUserSecretKeyToSecureLocalStorage(key);
   },
@@ -70,6 +84,22 @@ export const storage: StorageAdapter = {
   async getUserSecretKeyFromSecureLocalStorage(): Promise<string | null> {
     return getAdapter().getUserSecretKeyFromSecureLocalStorage();
   },
+  
+  // User Object Storage
+  async storeUserToSecureLocalStorage(user: User): Promise<void> {
+    return getAdapter().storeUserToSecureLocalStorage(user);
+  },
+  async updateUserInSecureLocalStorage(user: User): Promise<void> {
+    return getAdapter().updateUserInSecureLocalStorage(user);
+  },
+  async deleteUserFromSecureLocalStorage(): Promise<void> {
+    return getAdapter().deleteUserFromSecureLocalStorage();
+  },
+  async getUserFromSecureLocalStorage(): Promise<User | null> {
+    return getAdapter().getUserFromSecureLocalStorage();
+  },
+  
+  // Vault Storage
   async storeVaultToSecureLocalStorage(vault: any): Promise<void> {
     return getAdapter().storeVaultToSecureLocalStorage(vault);
   },
@@ -81,5 +111,10 @@ export const storage: StorageAdapter = {
   },
   async getVaultFromSecureLocalStorage(): Promise<any | null> {
     return getAdapter().getVaultFromSecureLocalStorage();
+  },
+  
+  // General
+  async clearAllSecureLocalStorage(): Promise<void> {
+    return getAdapter().clearAllSecureLocalStorage();
   },
 }; 

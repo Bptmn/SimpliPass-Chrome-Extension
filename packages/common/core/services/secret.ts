@@ -4,21 +4,14 @@
  * Handles user secret key operations (storage, retrieval, deletion).
  */
 
-import { AuthenticationError } from '../types/errors.types';
-import { platform } from '../adapters';
 import { storage } from '../adapters/platform.storage.adapter';
-import { useAuthStore } from '../states/auth';
 import { deriveKey } from '../../utils/crypto';
 import { auth } from '../adapters/auth.adapter';
 
 /**
- * Get user secret key from state or platform storage
+ * Get user secret key from platform secure storage
  */
 export async function getUserSecretKey(): Promise<string | null> {
-  const session = useAuthStore.getState().session;
-  if (!session) {
-    throw new AuthenticationError('User not authenticated');
-  }
   try {
     const userSecretKey = await storage.getUserSecretKeyFromSecureLocalStorage();
     return userSecretKey;
@@ -29,7 +22,7 @@ export async function getUserSecretKey(): Promise<string | null> {
 }
 
 /**
- * Store user secret key in state and platform storage
+ * Store user secret key in platform secure storage
  */
 export async function storeUserSecretKey(key: string): Promise<void> {
   try {
@@ -41,8 +34,6 @@ export async function storeUserSecretKey(key: string): Promise<void> {
     // 2. Store in secure local storage (clear text)
     await storage.storeUserSecretKeyToSecureLocalStorage(key);
     
-    // 3. Update Zustand state
-    useAuthStore.getState().setUserSecretKey(key);
     console.log('[Secret] User secret key stored successfully');
   } catch (error) {
     console.error('[Secret] Failed to store user secret key:', error);
@@ -51,12 +42,10 @@ export async function storeUserSecretKey(key: string): Promise<void> {
 }
 
 /**
- * Delete user secret key from state and platform storage
+ * Delete user secret key from platform secure storage
  */
 export async function deleteUserSecretKey(): Promise<void> {
   try {
-    // Clear from Zustand state
-    useAuthStore.getState().clearUserSecretKey();
     await storage.deleteUserSecretKeyFromSecureLocalStorage();
     console.log('[Secret] User secret key deleted successfully');
   } catch (error) {
@@ -82,6 +71,6 @@ export async function initializeUserSecretKey(password: string): Promise<void> {
   const userSalt = await auth.fetchUserSalt();
   // 2. Derive user secret key
   const userSecretKey = await deriveKey(password, userSalt);
-  // 3. Store in state and local storage
+  // 3. Store in local storage
   await storeUserSecretKey(userSecretKey);
 } 

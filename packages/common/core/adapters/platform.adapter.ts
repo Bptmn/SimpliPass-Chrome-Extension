@@ -1,8 +1,5 @@
 
 export interface PlatformAdapter {
-  getSessionMetadata(): Promise<any>;
-  storeSessionMetadata(metadata: any): Promise<void>;
-  deleteSessionMetadata(): Promise<void>;
   supportsBiometric(): boolean;
   supportsOfflineVault(): boolean;
   authenticateWithBiometrics?(): Promise<boolean>;
@@ -70,17 +67,6 @@ const getAdapter = (): PlatformAdapter => {
 };
 
 export const platform: PlatformAdapter = {
-  async getSessionMetadata(): Promise<any> {
-    return getAdapter().getSessionMetadata();
-  },
-
-  async storeSessionMetadata(metadata: any): Promise<void> {
-    return getAdapter().storeSessionMetadata(metadata);
-  },
-
-  async deleteSessionMetadata(): Promise<void> {
-    return getAdapter().deleteSessionMetadata();
-  },
 
   supportsBiometric(): boolean {
     return getAdapter().supportsBiometric();

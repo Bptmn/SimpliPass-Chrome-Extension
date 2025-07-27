@@ -17,8 +17,33 @@ export const cognitoConfig = {
 
 export function validateFirebaseConfig() {
   // Mock validation
+  return true;
 }
 
 export function validateCognitoConfig() {
   // Mock validation
+  return true;
+}
+
+export async function getFirebaseConfig() {
+  return firebaseConfig;
+}
+
+export async function getCognitoConfig() {
+  return cognitoConfig;
+}
+
+export function getPlatformConfig() {
+  return {
+    storageKey: 'userSecretKey',
+    vaultKey: 'encryptedVault',
+    deviceFingerprintKey: 'deviceFingerprint',
+    sessionTimeout: 30 * 60 * 1000,
+    maxRetryAttempts: 3,
+    encryptionAlgorithm: 'AES-256-GCM',
+    firebaseConfig,
+    cognitoConfig,
+    validateFirebaseConfig,
+    validateCognitoConfig
+  };
 } 

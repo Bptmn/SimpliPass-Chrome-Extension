@@ -1,15 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 
 /**
- * Hook for LazyCredentialIcon component business logic
+ * Hook for LazyCredentialIcon component UI state management
  * Handles favicon loading, domain parsing, and fallback logic
  */
 export const useLazyCredentialIcon = (url: string, title: string) => {
+  // Step 1: Initialize UI state
   const [faviconUrl, setFaviconUrl] = useState<string | null>(null);
   const [isFaviconLoaded, setIsFaviconLoaded] = useState(false);
   const [showFavicon, setShowFavicon] = useState(false);
 
-  // Parse domain and generate favicon URL
+  // Step 2: Parse domain and generate favicon URL
   const parseDomainAndSetFavicon = useCallback((inputUrl: string) => {
     if (!inputUrl || inputUrl.trim() === '') {
       setFaviconUrl(null);
@@ -34,23 +35,23 @@ export const useLazyCredentialIcon = (url: string, title: string) => {
     }
   }, []);
 
-  // Handle favicon load success
+  // Step 3: Handle favicon load success
   const handleFaviconLoad = useCallback(() => {
     setIsFaviconLoaded(true);
   }, []);
 
-  // Handle favicon load error
+  // Step 4: Handle favicon load error
   const handleFaviconError = useCallback(() => {
     setIsFaviconLoaded(false);
     setShowFavicon(false);
   }, []);
 
-  // Get placeholder letter from title
+  // Step 5: Get placeholder letter from title
   const getPlaceholderLetter = useCallback(() => {
     return title ? title[0].toUpperCase() : '?';
   }, [title]);
 
-  // Effect to update favicon when URL changes
+  // Step 6: Update favicon when URL changes
   useEffect(() => {
     parseDomainAndSetFavicon(url);
   }, [url, parseDomainAndSetFavicon]);

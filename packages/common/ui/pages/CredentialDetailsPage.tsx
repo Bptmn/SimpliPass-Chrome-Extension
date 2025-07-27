@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { CredentialDecrypted } from '@common/core/types/types';
 import { deleteItemFromDatabase } from '@common/core/services/items';
-import { useUserStore } from '@common/core/states/user';
+
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { LazyCredentialIcon } from '@ui/components/LazyCredentialIcon';
@@ -16,6 +16,8 @@ import { Button } from '@ui/components/Buttons';
 import CopyButton from '@ui/components/CopyButton';
 import { MoreInfo } from '@ui/components/MoreInfo';
 import DetailField from '@ui/components/DetailField';
+import { storage } from '@common/core/adapters/platform.storage.adapter';
+import { User } from '@common/core/types/types';
 
 interface CredentialDetailsPageProps {
   credential: CredentialDecrypted;
@@ -29,7 +31,8 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const navigate = useNavigate();
-  const user = useUserStore(state => state.user);
+  const [user, setUser] = useState<User | null>(null);
+  const [_userLoading, setUserLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -37,6 +40,23 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const { showToast } = useToast();
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
+
+  // Load user data from secure storage
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        setUserLoading(true);
+        const userData = await storage.getUserFromSecureLocalStorage();
+        setUser(userData);
+      } catch (err) {
+        console.error('[CredentialDetailsPage] Failed to load user:', err);
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   const handleLaunch = (url: string) => {
     try {

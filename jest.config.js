@@ -30,6 +30,14 @@ module.exports = {
     // Mock config files that use import.meta
     '^@common/core/auth/config$': '<rootDir>/__mocks__/configMock.js',
     '^@extension/config/config$': '<rootDir>/__mocks__/configMock.js',
+    '^@common/config/platform$': '<rootDir>/__mocks__/configMock.js',
+    '^@common/config/platform.ts$': '<rootDir>/__mocks__/configMock.js',
+    '^@common/config/platform/index$': '<rootDir>/__mocks__/configMock.js',
+    '^@common/config/platform/index.ts$': '<rootDir>/__mocks__/configMock.js',
+    '^@common/config/platform.ts$': '<rootDir>/__mocks__/configMock.js',
+    '^@common/config/platform/index.ts$': '<rootDir>/__mocks__/configMock.js',
+    '^packages/common/config/platform$': '<rootDir>/__mocks__/configMock.js',
+    '^packages/common/config/platform.ts$': '<rootDir>/__mocks__/configMock.js',
   },
   testMatch: [
     '**/__tests__/**/*.(ts|tsx|js)',

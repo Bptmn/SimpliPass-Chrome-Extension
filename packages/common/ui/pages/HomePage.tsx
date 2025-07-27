@@ -4,6 +4,12 @@ import { getPageStyles, spacing, radius } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@common/hooks/useToast';
+import { 
+  handleCardClick as handleCardClickUtil, 
+  handleOtherItemClick as handleOtherItemClickUtil 
+} from '@common/utils/homePage';
 
 import { CredentialDetailsPage } from './CredentialDetailsPage';
 import {
@@ -20,6 +26,8 @@ import { BankCardDetailsPage } from './BankCardDetailsPage';
 import { SecureNoteDetailsPage } from './SecureNoteDetailsPage';
 import { CredentialDecrypted } from '@common/core/types/types';
 
+type Category = 'credentials' | 'bankCards' | 'secureNotes';
+
 /**
  * HomePage component displays the main vault UI:
  * - Shows all credentials and domain suggestions
@@ -27,7 +35,7 @@ import { CredentialDecrypted } from '@common/core/types/types';
  * - Handles credential decryption and detail view
  */
 export const HomePage: React.FC<HomePageProps> = ({
-  user: _userProp, // ignore this prop, use context
+  user, // now required, passed from PopupApp
   pageState: _pageState,
   onInjectCredential: _onInjectCredential,
 }) => {
@@ -35,9 +43,18 @@ export const HomePage: React.FC<HomePageProps> = ({
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+  
+  // Category state management
+  const [category, setCategory] = React.useState<Category>('credentials');
+  
   const {
-    user,
-    category,
+    user: _user, // ignore this prop, use context
+    items,
+    credentials,
+    bankCards,
+    secureNotes,
     filter,
     selected,
     selectedBankCard,
@@ -45,21 +62,57 @@ export const HomePage: React.FC<HomePageProps> = ({
     error,
     loading,
     setFilter,
-    setCategory,
     setSelected,
     setSelectedBankCard,
     setSelectedSecureNote,
-    getFilteredItems,
-    getSuggestions,
-    handleCardClick,
-    handleOtherItemClick,
-    handleCopyCredential,
-    handleCopyOther,
-    handleAddSuggestion,
+    refreshData,
   } = useHomePage(_pageState || undefined);
+
+  // User interaction handlers - moved from hook to component
+  const handleCardClick = React.useCallback((cred: CredentialDecrypted) => {
+    handleCardClickUtil(cred, setSelected);
+  }, [setSelected]);
+
+  const handleOtherItemClick = React.useCallback((item: unknown) => {
+    handleOtherItemClickUtil(item, setSelected);
+  }, [setSelected]);
+
+  const handleCopyCredential = React.useCallback(() => {
+    showToast('Mot de passe copié !');
+  }, [showToast]);
+
+  const handleCopyOther = React.useCallback(() => {
+    showToast('Contenu copié !');
+  }, [showToast]);
+
+  const handleAddSuggestion = React.useCallback(() => {
+    navigate('/add-credential-2', { state: { link: _pageState?.url } });
+  }, [navigate, _pageState?.url]);
 
   // Debug logging
   console.log('[HomePage] Render', { user, loading });
+
+  // Filter items by search input based on category
+  const getFilteredItems = () => {
+    const items = category === 'credentials' ? credentials : 
+                 category === 'bankCards' ? bankCards : 
+                 secureNotes;
+    
+    return items.filter((item) =>
+      item.title?.toLowerCase().includes(filter.toLowerCase()),
+    );
+  };
+
+  // Generate suggestions based on current URL
+  const getSuggestions = () => {
+    if (category === 'credentials' && _pageState?.url && credentials.length > 0) {
+      const domain = _pageState.url.replace(/^https?:\/\//, '').split('/')[0].toLowerCase();
+      return credentials.filter(
+        (cred) => cred.url && cred.url.toLowerCase().includes(domain)
+      ).slice(0, 3);
+    }
+    return [];
+  };
 
   // If a credential is selected, show the detail page
   if (selected) {

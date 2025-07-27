@@ -6,11 +6,13 @@
  * - Mobile-specific vault storage
  */
 
-import { StorageAdapter } from '@common/core/types/storage.types';
+import { StorageAdapter } from '@common/core/adapters/platform.storage.adapter';
+import { User } from '@common/core/types/auth.types';
 
 export class MobileStorageAdapter implements StorageAdapter {
   private config = {
     userSecretKeyStorageKey: 'userSecretKey',
+    userStorageKey: 'user',
     vaultStorageKey: 'encryptedVault',
   };
 
@@ -49,6 +51,51 @@ export class MobileStorageAdapter implements StorageAdapter {
       return await SecureStore.getItemAsync(this.config.userSecretKeyStorageKey);
     } catch (error) {
       console.error('Failed to get user secret key:', error);
+      return null;
+    }
+  }
+
+  // ===== User Object Storage Operations =====
+
+  async storeUserToSecureLocalStorage(user: User): Promise<void> {
+    try {
+      const SecureStore = await this.getSecureStore();
+      const userString = JSON.stringify(user);
+      await SecureStore.setItemAsync(this.config.userStorageKey, userString);
+    } catch (error) {
+      throw new Error(`Failed to store user: ${error}`);
+    }
+  }
+
+  async updateUserInSecureLocalStorage(user: User): Promise<void> {
+    try {
+      const SecureStore = await this.getSecureStore();
+      const userString = JSON.stringify(user);
+      await SecureStore.setItemAsync(this.config.userStorageKey, userString);
+    } catch (error) {
+      throw new Error(`Failed to update user: ${error}`);
+    }
+  }
+
+  async deleteUserFromSecureLocalStorage(): Promise<void> {
+    try {
+      const SecureStore = await this.getSecureStore();
+      await SecureStore.deleteItemAsync(this.config.userStorageKey);
+    } catch (error) {
+      throw new Error(`Failed to delete user: ${error}`);
+    }
+  }
+
+  async getUserFromSecureLocalStorage(): Promise<User | null> {
+    try {
+      const SecureStore = await this.getSecureStore();
+      const userString = await SecureStore.getItemAsync(this.config.userStorageKey);
+      if (!userString) {
+        return null;
+      }
+      return JSON.parse(userString);
+    } catch (error) {
+      console.error('Failed to get user:', error);
       return null;
     }
   }
@@ -95,6 +142,17 @@ export class MobileStorageAdapter implements StorageAdapter {
     } catch (error) {
       console.error('Failed to get vault:', error);
       return null;
+    }
+  }
+
+  async clearAllSecureLocalStorage(): Promise<void> {
+    try {
+      const SecureStore = await this.getSecureStore();
+      await SecureStore.deleteItemAsync(this.config.userSecretKeyStorageKey);
+      await SecureStore.deleteItemAsync(this.config.userStorageKey);
+      await SecureStore.deleteItemAsync(this.config.vaultStorageKey);
+    } catch (error) {
+      throw new Error(`Failed to clear all secure local storage: ${error}`);
     }
   }
 
