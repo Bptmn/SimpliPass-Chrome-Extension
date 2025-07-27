@@ -7,10 +7,10 @@
 
 import { useState } from 'react';
 import { deriveKey } from '../utils/crypto';
-import { storeUserSecretKey } from '../core/services/secret';
+import { storeUserSecretKey } from '../core/services/secretsService';
 import { auth } from '../core/adapters/auth.adapter';
 import { db } from '../core/adapters/database.adapter';
-import { decryptItem } from '../core/services/cryptography';
+import { decryptItem } from '../core/services/cryptoService';
 import { ItemEncrypted } from '../core/types/items.types';
 
 export const useReEnterPassword = () => {

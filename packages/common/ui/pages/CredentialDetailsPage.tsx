@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { CredentialDecrypted } from '@common/core/types/types';
-import { deleteItemFromDatabase } from '@common/core/services/items';
+import { deleteItem } from '@common/core/services/itemsService';
 
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
@@ -16,7 +16,7 @@ import { Button } from '@ui/components/Buttons';
 import CopyButton from '@ui/components/CopyButton';
 import { MoreInfo } from '@ui/components/MoreInfo';
 import DetailField from '@ui/components/DetailField';
-import { storage } from '@common/core/adapters/platform.storage.adapter';
+import { getCurrentUser } from '@common/core/services/userService';
 import { User } from '@common/core/types/types';
 
 interface CredentialDetailsPageProps {
@@ -46,7 +46,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
     const loadUser = async () => {
       try {
         setUserLoading(true);
-        const userData = await storage.getUserFromSecureLocalStorage();
+        const userData = await getCurrentUser();
         setUser(userData);
       } catch (err) {
         console.error('[CredentialDetailsPage] Failed to load user:', err);
@@ -85,7 +85,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
     setError(null);
     setShowDeleteConfirm(false);
     try {
-      await deleteItemFromDatabase(credential.id);
+      await deleteItem(credential.id);
       showToast('Identifiant supprimé avec succès');
       setTimeout(() => {
         onBack();

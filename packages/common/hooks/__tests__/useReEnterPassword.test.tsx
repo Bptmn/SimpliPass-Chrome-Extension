@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useReEnterPassword } from '../useReEnterPassword';
 import { getUserSecretKey } from '@common/core/services/secret';
 import { storage } from '@common/core/adapters/platform.storage.adapter';

@@ -9,7 +9,7 @@ import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { useToast } from '@common/hooks/useToast';
 import { useManualRefresh } from '@common/hooks/useManualRefresh';
-import { storage } from '@common/core/adapters/platform.storage.adapter';
+import { getCurrentUser } from '@common/core/services/userService';
 import { getPageStyles, spacing, radius } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
@@ -83,7 +83,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     refreshAllData, 
     refreshUserOnly, 
     refreshVaultOnly, 
-    restartListeners,
     isRefreshing, 
     error: refreshError, 
     clearError 
@@ -96,7 +95,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     const loadUser = async () => {
       try {
         setUserLoading(true);
-        const userData = await storage.getUserFromSecureLocalStorage();
+        const userData = await getCurrentUser();
         setUser(userData);
       } catch (err) {
         console.error('[SettingsPage] Failed to load user:', err);
@@ -148,14 +147,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     }
   };
 
-  const handleRestartListeners = async () => {
-    try {
-      await restartListeners();
-      showToast('Synchronisation redémarrée');
-    } catch (_err) {
-      setError('Erreur lors du redémarrage de la synchronisation');
-    }
-  };
+
 
   // Clear refresh error when component mounts or error changes
   React.useEffect(() => {
@@ -225,7 +217,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 color={themeColors.secondary}
                 width="full"
                 height="full"
-                onPress={handleRestartListeners}
+                onPress={() => {}}
                 disabled={isRefreshing}
                 testID="restart-listeners-btn"
                 accessibilityLabel="Redémarrer la synchronisation en temps réel"

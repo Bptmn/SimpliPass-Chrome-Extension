@@ -66,7 +66,7 @@ export async function hasUserSecretKey(): Promise<boolean> {
   }
 } 
 
-export async function initializeUserSecretKey(password: string): Promise<void> {
+export async function deriveAndStoreUserSecretKey(password: string): Promise<void> {
   // 1. Get user salt from Cognito attributes
   const userSalt = await auth.fetchUserSalt();
   // 2. Derive user secret key

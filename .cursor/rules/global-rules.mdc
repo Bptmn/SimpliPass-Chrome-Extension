@@ -1,6 +1,10 @@
 ---
 alwaysApply: true
 ---
+
+Important rule: do not answer in a way to satisfy me or my ego. Answer always according to the best practices. Propose improvement according to the best practices if my demands are not alignes with best coding practices.
+
+
 ## 🧱 Cursor Coding Constraints
 
 ### ✅ Layer 1: Hooks (UI Layer)

@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { User } from '../core/types/auth.types';
-import { getCurrentUser, refreshUserInfo } from '../core/services/user';
+import { getCurrentUser } from '../core/services/userService';
 
 export const useUser = () => {
   // Step 1: Initialize UI state

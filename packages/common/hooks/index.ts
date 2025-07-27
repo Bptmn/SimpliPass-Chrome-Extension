@@ -1,17 +1,33 @@
 // Layer 1: UI Hooks
-export { useAppInitialization } from './useAppInitialization';
+
+// Authentication Hooks
+
 export { useAppState } from './useAppState';
-export { useDebouncedValue } from './useDebouncedValue';
-export { useGeneratorPage } from './useGeneratorPage';
-export { useHelperBar } from './useHelperBar';
-export { useHomePage } from './useHomePage';
-export { useInputLogic } from './useInputLogic';
-export { useItems } from './useItems';
-export { useLazyCredentialIcon } from './useLazyCredentialIcon';
-export { useLoginPage } from './useLoginPage';
-export { useLogoutFlow } from './useLogoutFlow';
-export { useManualRefresh } from './useManualRefresh';
-export { useRefreshData } from './useRefreshData';
+export { useAuth } from './useAuth';
 export { useReEnterPassword } from './useReEnterPassword';
+export { useUser } from './useUser';
+
+// Data Management Hooks
+export { useItems } from './useItems';
+export { useRefreshData } from './useRefreshData';
+export { useManualRefresh } from './useManualRefresh';
+
+// Listener Hooks
+export { useListeners } from './useListeners';
+
+// UI State Hooks
+export { usePasswordGenerator } from './usePasswordGenerator';
+export { useHelperBar } from './useHelperBar';
+export { useInputLogic } from './useInputLogic';
+export { useLazyCredentialIcon } from './useLazyCredentialIcon';
+
+// Utility Hooks
+
 export { useToast } from './useToast';
-export { useUser } from './useUser'; 
+
+// Settings Hooks
+export { useSettings } from './useSettings';
+
+// Chrome Extension Specific Hooks
+export { useCurrentTabDomain } from './useCurrentTabDomain';
+export { useAutofill } from './useAutofill'; 

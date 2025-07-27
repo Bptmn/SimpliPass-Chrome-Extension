@@ -11,6 +11,8 @@ import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { ColorSelector } from '@ui/components/ColorSelector';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
+import { SecureNoteDecrypted } from '@common/core/types/items.types';
+import { generateItemKey } from '@common/utils/crypto';
 
 interface AddSecureNoteProps {
   onCancel?: () => void;
@@ -22,7 +24,7 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
   const themeColors = getColors(mode);
   const navigate = useNavigate();
   const { user } = useUser();
-  const { addSecureNote, isLoading } = useItems();
+  const { addItem, isActionLoading } = useItems();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedColor, setSelectedColor] = useState('#4f86a2');
@@ -32,19 +34,19 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
     if (!user) return;
     setError(null);
     try {
-      const newNote = {
+      const newNote: SecureNoteDecrypted = {
+        id: crypto.randomUUID(),
         title: title || '',
         note: content,
         color: selectedColor,
-        itemType: 'secureNote' as const,
+        itemType: 'secureNote',
+        createdDateTime: new Date(),
+        lastUseDateTime: new Date(),
+        itemKey: generateItemKey(),
       };
       
-      const result = await addSecureNote(newNote);
-      if (result.success) {
-        navigate('/');
-      } else {
-        setError(result.error || 'Erreur lors de la création de la note.');
-      }
+      await addItem(newNote);
+      navigate('/');
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la création de la note.');
     }
@@ -88,7 +90,7 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
             width="full"
             height="full"
             onPress={handleConfirm}
-            disabled={isLoading}
+            disabled={isActionLoading}
           />
         </View>
       </ScrollView>

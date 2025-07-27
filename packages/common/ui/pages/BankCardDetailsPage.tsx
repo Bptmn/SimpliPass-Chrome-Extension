@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { BankCardDecrypted } from '@common/core/types/types';
 import { ExpirationDate, formatExpirationDate } from '@common/utils';
-import { deleteItemFromDatabase } from '@common/core/services/items';
+import { deleteItem } from '@common/core/services/itemsService';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { LazyCredentialIcon } from '@ui/components/LazyCredentialIcon';
@@ -15,7 +15,7 @@ import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
 import { DetailField } from '@ui/components/DetailField';
 import { MoreInfo } from '@ui/components/MoreInfo';
-import { storage } from '@common/core/adapters/platform.storage.adapter';
+import { getCurrentUser } from '@common/core/services/userService';
 import { User } from '@common/core/types/types';
 
 interface BankCardDetailsPageProps {
@@ -44,7 +44,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
     const loadUser = async () => {
       try {
         setUserLoading(true);
-        const userData = await storage.getUserFromSecureLocalStorage();
+        const userData = await getCurrentUser();
         setUser(userData);
       } catch (err) {
         console.error('[BankCardDetailsPage] Failed to load user:', err);
@@ -74,7 +74,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
     setError(null);
     setShowDeleteConfirm(false);
     try {
-      await deleteItemFromDatabase(card.id);
+      await deleteItem(card.id);
       showToast('Carte supprimée avec succès');
       onBack();
     } catch (e) {

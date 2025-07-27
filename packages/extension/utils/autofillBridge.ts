@@ -4,7 +4,7 @@
  * Uses centralized items service for data access
  */
 
-import { loadItemsWithFallback } from '@common/core/services/items';
+import { loadItemsWithFallback } from '@common/core/services/itemsService';
 import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/types';
 
 /**

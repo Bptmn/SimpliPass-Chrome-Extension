@@ -8,8 +8,8 @@ import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { spacing, radius, getPageStyles } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
-import { addItemToDatabase } from '@common/core/services/items';
-import { getUserSecretKey } from '@common/core/services/secret';
+import { addItem } from '@common/core/services/itemsService';
+import { getUserSecretKey } from '@common/core/services/secretsService';
 
 import { BankCardDecrypted } from '@common/core/types/items.types';
 import { createExpirationDate, parseExpirationDate } from '@common/utils/expirationDate';
@@ -21,7 +21,7 @@ import { getMonthOptions, getYearOptions } from '@common/utils/cards';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Toast } from '@ui/components/Toast';
 import { useToast } from '@common/hooks/useToast';
-import { storage } from '@common/core/adapters/platform.storage.adapter';
+import { getCurrentUser } from '@common/core/services/userService';
 import { User } from '@common/core/types/types';
 
 interface AddCard2Props {
@@ -56,7 +56,7 @@ export const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
     const loadUser = async () => {
       try {
         setUserLoading(true);
-        const userData = await storage.getUserFromSecureLocalStorage();
+        const userData = await getCurrentUser();
         setUser(userData);
       } catch (err) {
         console.error('[AddCard2] Failed to load user:', err);
@@ -105,7 +105,7 @@ export const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
         bankName: bankName || '',
         bankDomain: bankDomain || '',
       };
-      await addItemToDatabase(newCard);
+      await addItem(newCard);
       navigate('/')    } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la création de la carte.');
     } finally {

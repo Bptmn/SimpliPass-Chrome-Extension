@@ -4,10 +4,10 @@ import { passwordGenerator } from '@common/utils/passwordGenerator';
 import { useToast } from './useToast';
 
 /**
- * Hook for GeneratorPage component UI state management
+ * Hook for password generator UI state management
  * Handles password generation, strength checking, and regeneration
  */
-export const useGeneratorPage = () => {
+export const usePasswordGenerator = () => {
   const { showToast } = useToast();
 
   // Step 1: Initialize password options state

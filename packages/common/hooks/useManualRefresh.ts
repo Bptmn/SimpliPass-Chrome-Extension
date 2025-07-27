@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { useRefreshData } from './useRefreshData';
-import { refreshUserInfo } from '../core/services/user';
+import { refreshUserInfo } from '../core/services/userService';
 import { auth } from '../core/adapters/auth.adapter';
 
 export const useManualRefresh = () => {
@@ -31,8 +31,8 @@ export const useManualRefresh = () => {
       }
 
       // Step 2.2: Refresh user info
-      await refreshUserInfo(currentUser.uid);
-      console.log('[useManualRefresh] User info refreshed');
+      const refreshedUser = await refreshUserInfo(currentUser.uid);
+      console.log('[useManualRefresh] User info refreshed:', refreshedUser ? 'success' : 'failed');
 
       // Step 2.3: Refresh vault data
       await refreshData();
@@ -63,8 +63,8 @@ export const useManualRefresh = () => {
         throw new Error('No authenticated user found');
       }
 
-      await refreshUserInfo(currentUser.uid);
-      console.log('[useManualRefresh] User info refreshed');
+      const refreshedUser = await refreshUserInfo(currentUser.uid);
+      console.log('[useManualRefresh] User info refreshed:', refreshedUser ? 'success' : 'failed');
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'User refresh failed';

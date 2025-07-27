@@ -17,16 +17,16 @@ import { SettingsPage } from '@common/ui/pages/SettingsPage';
 import { GeneratorPage } from '@common/ui/pages/GeneratorPage';
 import { ToastProvider } from '@common/ui/components/Toast';
 import NavBar from '@common/ui/components/NavBar';
-import { HelperBar } from '@common/ui/components/HelperBar';
 import { getColors } from '@common/ui/design/colors';
+import { layout } from '@common/ui/design/layout';
 import AddCard1 from '@common/ui/pages/AddCard1';
 import { AddCard2 } from '@common/ui/pages/AddCard2';
 import { AddSecureNote } from '@common/ui/pages/AddSecureNote';
 import AddCredential1 from '@common/ui/pages/AddCredential1';
 import { AddCredential2 } from '@common/ui/pages/AddCredential2';
 import { PageState } from '@common/core/types/types';
-import { ReEnterPasswordPage } from '@common/ui/pages/ReEnterPasswordPage';
-import { useAppInitialization } from '@common/hooks/useAppInitialization';
+import { LockPage } from '@common/ui/pages/LockPage';
+import { useListeners } from '@common/hooks/useListeners';
 import { injectCredentialIntoCurrentTab } from '../services/credentialInjection';
 
 // Helper component to track current page and pass it to HelperBar
@@ -90,10 +90,6 @@ const AppContent: React.FC<{
         </ScrollView>
       </View>
       
-      {/* Footer - HelperBar */}
-      <View style={styles.footer}>
-        <HelperBar currentPage={getCurrentPage()} />
-      </View>
     </View>
   );
 };
@@ -102,15 +98,16 @@ export const PopupApp: React.FC = () => {
   const [pageState] = useState<PageState | null>(null);
   const [theme] = useState<'light' | 'dark'>('light');
 
-  // Use the centralized app initialization hook
+  // Use the centralized listeners hook
   const {
     user,
-    isLoading,
     isUserFullyInitialized,
-    error,
-    handleSecretKeyStored,
-    clearError
-  } = useAppInitialization();
+    listenersError,
+  } = useListeners();
+  
+  // Compute loading state based on user state
+  const isLoading = user === null && !listenersError;
+  const error = listenersError;
 
   // Handler to inject a credential into the current tab
   const handleInjectCredential = (credentialId: string) => {
@@ -160,7 +157,7 @@ export const PopupApp: React.FC = () => {
               </Routes>
             ) : !isUserFullyInitialized ? (
               <Routes>
-                <Route path="*" element={<ReEnterPasswordPage onSecretKeyStored={handleSecretKeyStored} />} />
+                <Route path="*" element={<LockPage />} />
               </Routes>
             ) : (
               <AppContent
@@ -193,33 +190,20 @@ const createStyles = (theme: 'light' | 'dark') => {
       minHeight: 0,
       position: 'relative',
     },
-    footer: {
-      backgroundColor: colors.primaryBackground,
-      bottom: 0,
-      left: 0,
-      position: 'absolute',
-      right: 0,
-      zIndex: 10,
-    },
+
     header: {
       backgroundColor: colors.primaryBackground,
       borderBottomColor: colors.borderColor,
       borderBottomWidth: 1,
-      left: 0,
-      position: 'absolute',
-      right: 0,
-      top: 0,
+      height: layout.navbarHeight, // Use layout constant
       zIndex: 10,
     },
     mainContent: {
       backgroundColor: colors.primaryBackground,
       flex: 1,
-      marginBottom: 60, // Space for footer
-      marginTop: 60, // Space for header
     },
     scrollContent: {
       flexGrow: 1,
-      padding: 16,
     },
     scrollView: {
       flex: 1,

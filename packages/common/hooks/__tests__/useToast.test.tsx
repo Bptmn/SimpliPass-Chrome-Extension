@@ -8,7 +8,7 @@ describe('useToast', () => {
     }).toThrow('useToast must be used within a ToastProvider');
   });
 
-  it('should return context when used within ToastProvider', () => {
+  it('should return context when used within ToastProvider', async () => {
     const mockContext = {
       showToast: jest.fn(),
       hideToast: jest.fn(),
@@ -20,7 +20,7 @@ describe('useToast', () => {
     }));
 
     // Re-import the hook to get the mocked version
-    const { useToast: useToastMocked } = require('../useToast');
+    const { useToast: useToastMocked } = await import('../useToast');
     
     const { result } = renderHook(() => useToastMocked());
 

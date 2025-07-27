@@ -7,9 +7,9 @@
 
 import { useState, useEffect } from 'react';
 import { auth } from '../core/adapters/auth.adapter';
-import { storage } from '../core/adapters/platform.storage.adapter';
-import { getLocalVault } from '../core/services/vault';
-import { getUserSecretKey } from '../core/services/secret';
+import { getCurrentUser } from '../core/services/userService';
+import { getLocalVault } from '../core/services/vaultService';
+import { getUserSecretKey } from '../core/services/secretsService';
 
 export interface AppState {
   isInitialized: boolean;
@@ -73,7 +73,7 @@ export const useAppState = (): UseAppStateReturn => {
       // Step 2.2: Load data from secure storage
       const [userSecretKey, userData, vaultData] = await Promise.all([
         getUserSecretKey(),
-        storage.getUserFromSecureLocalStorage(),
+        getCurrentUser(),
         getLocalVault(),
       ]);
 

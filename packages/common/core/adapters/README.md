@@ -45,7 +45,7 @@ interface DatabaseAdapter {
   addDocument<T>(collectionPath: string, data: T): Promise<string>;
   updateDocument<T>(docPath: string, data: Partial<T>): Promise<void>;
   deleteDocument(docPath: string): Promise<void>;
-  generateItemId(): string;
+  generateItemDatabaseId(): string;
 }
 ```
 

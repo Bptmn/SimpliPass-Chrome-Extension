@@ -10,7 +10,10 @@ import {
   QuerySnapshot,
   DocumentSnapshot,
   DocumentReference,
-  setDoc
+  setDoc,
+  onSnapshot,
+  query,
+  Unsubscribe
 } from 'firebase/firestore';
 import { firestore } from '@common/core/libraries/auth/firebase';
 
@@ -94,3 +97,186 @@ export function generateItemDatabaseId(): string {
   }
   return autoId;
 }
+
+// ===== Firestore Listeners =====
+
+export interface FirestoreListenersState {
+  isListening: boolean;
+  userListener: Unsubscribe | null;
+  itemsListener: Unsubscribe | null;
+  error: string | null;
+}
+
+export interface FirestoreListenersCallbacks {
+  onUserUpdate?: (userData: any) => Promise<void>;
+  onItemsUpdate?: () => Promise<void>;
+}
+
+class FirestoreListenersService {
+  private state: FirestoreListenersState = {
+    isListening: false,
+    userListener: null,
+    itemsListener: null,
+    error: null,
+  };
+
+  private callbacks: FirestoreListenersCallbacks = {};
+
+  /**
+   * Set callbacks for listener events
+   */
+  setCallbacks(callbacks: FirestoreListenersCallbacks): void {
+    this.callbacks = callbacks;
+  }
+
+  /**
+   * Start listening to user collection changes
+   */
+  private startUserListener(userId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        const userDocRef = doc(getSafeFirestore(), `users/${userId}`);
+        
+        this.state.userListener = onSnapshot(
+          userDocRef,
+          async (snapshot) => {
+            if (snapshot.exists()) {
+              const userData = snapshot.data();
+              console.log('[FirestoreListeners] User data updated:', userData);
+              
+              // Call the callback if provided
+              if (this.callbacks.onUserUpdate) {
+                await this.callbacks.onUserUpdate({
+                  id: snapshot.id,
+                  ...userData
+                });
+              }
+            }
+          },
+          (error) => {
+            console.error('[FirestoreListeners] User listener error:', error);
+            this.state.error = error.message;
+          }
+        );
+
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  /**
+   * Start listening to items collection changes
+   */
+  private startItemsListener(userId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        // Query the user's items subcollection
+        const itemsQuery = query(
+          collection(getSafeFirestore(), `users/${userId}/my_items`)
+        );
+        
+        this.state.itemsListener = onSnapshot(
+          itemsQuery,
+          async (_snapshot) => {
+            try {
+              console.log('[FirestoreListeners] Items collection changed');
+              
+              // Call the callback if provided
+              if (this.callbacks.onItemsUpdate) {
+                await this.callbacks.onItemsUpdate();
+              }
+            } catch (error) {
+              console.error('[FirestoreListeners] Error processing items update:', error);
+              this.state.error = error instanceof Error ? error.message : 'Failed to process items';
+            }
+          },
+          (error) => {
+            console.error('[FirestoreListeners] Items listener error:', error);
+            this.state.error = error.message;
+          }
+        );
+
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  /**
+   * Start all listeners
+   */
+  async startListeners(userId: string): Promise<void> {
+    try {
+      console.log('[FirestoreListeners] Starting listeners...');
+      
+      // Start user listener
+      await this.startUserListener(userId);
+      
+      // Start items listener
+      await this.startItemsListener(userId);
+      
+      this.state.isListening = true;
+      this.state.error = null;
+      
+      console.log('[FirestoreListeners] All listeners started successfully');
+    } catch (error) {
+      console.error('[FirestoreListeners] Failed to start listeners:', error);
+      this.state.error = error instanceof Error ? error.message : 'Failed to start listeners';
+      throw error;
+    }
+  }
+
+  /**
+   * Stop all listeners
+   */
+  stopListeners(): void {
+    console.log('[FirestoreListeners] Stopping listeners...');
+    
+    if (this.state.userListener) {
+      this.state.userListener();
+      this.state.userListener = null;
+    }
+    
+    if (this.state.itemsListener) {
+      this.state.itemsListener();
+      this.state.itemsListener = null;
+    }
+    
+    this.state.isListening = false;
+    console.log('[FirestoreListeners] All listeners stopped');
+  }
+
+  /**
+   * Get current listener state
+   */
+  getState(): FirestoreListenersState {
+    return { ...this.state };
+  }
+
+  /**
+   * Check if listeners are active
+   */
+  isListening(): boolean {
+    return this.state.isListening;
+  }
+
+  /**
+   * Get current error
+   */
+  getError(): string | null {
+    return this.state.error;
+  }
+
+  /**
+   * Clear error
+   */
+  clearError(): void {
+    this.state.error = null;
+  }
+}
+
+// Export singleton instance
+export const firestoreListeners = new FirestoreListenersService();

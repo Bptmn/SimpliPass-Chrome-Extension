@@ -23,19 +23,7 @@ UI Components → Hooks → Services → Libraries
 
 ### Authentication Hooks
 
-#### `useAppInitialization`
-Handles app initialization and authentication state management with 5 steps.
 
-```typescript
-const { 
-  user, 
-  isLoading, 
-  isUserFullyInitialized, 
-  error, 
-  handleSecretKeyStored, 
-  clearError 
-} = useAppInitialization();
-```
 
 #### `useAppState`
 Reads current app state without triggering initialization (4 steps).
@@ -91,6 +79,51 @@ const {
 } = useItems();
 ```
 
+#### `useItems`
+Provides comprehensive items functionality including data access, CRUD operations, search, and user management (13 steps).
+
+```typescript
+const { 
+  // Data
+  items, 
+  credentials, 
+  bankCards, 
+  secureNotes,
+  
+  // User data
+  user,
+  
+  // Search and filtering
+  searchValue,
+  filteredItems,
+  filteredCredentials,
+  filteredBankCards,
+  filteredSecureNotes,
+  
+  // Selection state
+  selected,
+  selectedBankCard,
+  selectedSecureNote,
+  
+  // State
+  loading,
+  error,
+  isActionLoading,
+  
+  // Actions
+  addItem,
+  editItem,
+  deleteItem,
+  setSearchValue,
+  clearSearch,
+  setSelected,
+  setSelectedBankCard,
+  setSelectedSecureNote,
+  refreshData,
+  clearError,
+} = useItems();
+```
+
 #### `useUser`
 Provides simple access to user data from secure storage (5 steps).
 
@@ -102,6 +135,20 @@ const {
   refreshUser, 
   clearUser 
 } = useUser();
+```
+
+#### `useAccount`
+Provides account management functionality including logout and session management (4 steps).
+
+```typescript
+const { 
+  user, 
+  isLoading, 
+  error, 
+  logout, 
+  getCurrentUser, 
+  clearError 
+} = useAccount();
 ```
 
 #### `useRefreshData`
@@ -127,32 +174,9 @@ const {
 
 ### UI State Hooks
 
-#### `useHomePage`
-Handles HomePage component UI state management (5 steps).
 
-```typescript
-const { 
-  user, 
-  items, 
-  credentials, 
-  bankCards, 
-  secureNotes, 
-  filter, 
-  selected, 
-  error, 
-  loading, 
-  setFilter, 
-  setSelected, 
-  refreshData, 
-  handleCardClick, 
-  handleOtherItemClick, 
-  handleCopyCredential, 
-  handleCopyOther, 
-  handleAddSuggestion 
-} = useHomePage();
-```
 
-#### `useGeneratorPage`
+#### `usePasswordGenerator`
 Handles password generation, strength checking, and regeneration (5 steps).
 
 ```typescript
@@ -171,7 +195,7 @@ const {
   setLength, 
   handleRegenerate, 
   handleCopyPassword 
-} = useGeneratorPage();
+} = usePasswordGenerator();
 ```
 
 #### `useHelperBar`
@@ -220,11 +244,60 @@ Provides access to toast notifications.
 const { showToast } = useToast();
 ```
 
+
+
+#### `useSettings`
+Provides settings management functionality (5 steps).
+
+```typescript
+const { 
+  settings, 
+  isLoading, 
+  error, 
+  updateSettings, 
+  toggleDarkMode, 
+  setLockTimeout, 
+  toggleAutoLock, 
+  toggleBiometric, 
+  clearError 
+} = useSettings();
+```
+
 #### `useDebouncedValue`
 Debounces a value by a given delay for search inputs.
 
 ```typescript
 const debouncedValue = useDebouncedValue(value, 300);
+```
+
+### Chrome Extension Specific Hooks
+
+#### `useCurrentTabDomain`
+Provides current tab domain functionality for Chrome extension (5 steps).
+
+```typescript
+const { 
+  currentDomain, 
+  isLoading, 
+  error, 
+  refreshDomain, 
+  clearError 
+} = useCurrentTabDomain();
+```
+
+#### `useAutofill`
+Provides comprehensive autofill functionality for Chrome extension (8 steps).
+
+```typescript
+const { 
+  isAutofilling,
+  suggestions,
+  isLoading,
+  error, 
+  autofillCredential,
+  refreshSuggestions,
+  clearError 
+} = useAutofill();
 ```
 
 ## Usage Guidelines

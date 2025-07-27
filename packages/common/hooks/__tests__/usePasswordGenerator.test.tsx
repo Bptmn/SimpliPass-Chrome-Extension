@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { useGeneratorPage } from '../useGeneratorPage';
+import { usePasswordGenerator } from '../usePasswordGenerator';
 import { checkPasswordStrength } from '@common/utils/checkPasswordStrength';
 import { passwordGenerator } from '@common/utils/passwordGenerator';
 
@@ -15,7 +15,7 @@ jest.mock('../useToast', () => ({
 const mockCheckPasswordStrength = checkPasswordStrength as jest.MockedFunction<typeof checkPasswordStrength>;
 const mockPasswordGenerator = passwordGenerator as jest.MockedFunction<typeof passwordGenerator>;
 
-describe('useGeneratorPage', () => {
+describe('usePasswordGenerator', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockPasswordGenerator.mockReturnValue('TestPassword123!');
@@ -24,7 +24,7 @@ describe('useGeneratorPage', () => {
 
   describe('initial state', () => {
     it('should have correct initial state', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       expect(result.current.hasUppercase).toBe(true);
       expect(result.current.hasNumbers).toBe(true);
@@ -45,14 +45,14 @@ describe('useGeneratorPage', () => {
 
   describe('password generation', () => {
     it('should generate password with default options', () => {
-      renderHook(() => useGeneratorPage());
+      renderHook(() => usePasswordGenerator());
 
       expect(mockPasswordGenerator).toHaveBeenCalledWith(true, true, true, true, 16);
       expect(mockCheckPasswordStrength).toHaveBeenCalledWith('TestPassword123!');
     });
 
     it('should regenerate password when options change', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       act(() => {
         result.current.setLength(20);
@@ -63,7 +63,7 @@ describe('useGeneratorPage', () => {
     });
 
     it('should update password when uppercase option changes', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       act(() => {
         result.current.setHasUppercase(false);
@@ -73,7 +73,7 @@ describe('useGeneratorPage', () => {
     });
 
     it('should update password when numbers option changes', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       act(() => {
         result.current.setHasNumbers(false);
@@ -83,7 +83,7 @@ describe('useGeneratorPage', () => {
     });
 
     it('should update password when symbols option changes', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       act(() => {
         result.current.setHasSymbols(false);
@@ -93,7 +93,7 @@ describe('useGeneratorPage', () => {
     });
 
     it('should update password when lowercase option changes', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       act(() => {
         result.current.setHasLowercase(false);
@@ -105,7 +105,7 @@ describe('useGeneratorPage', () => {
 
   describe('password regeneration', () => {
     it('should regenerate password when handleRegenerate is called', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       // Clear previous calls
       jest.clearAllMocks();
@@ -127,7 +127,7 @@ describe('useGeneratorPage', () => {
     it('should calculate strength for weak password', () => {
       mockCheckPasswordStrength.mockReturnValue('weak');
       
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       expect(result.current.strength).toBe('weak');
     });
@@ -135,7 +135,7 @@ describe('useGeneratorPage', () => {
     it('should calculate strength for average password', () => {
       mockCheckPasswordStrength.mockReturnValue('average');
       
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       expect(result.current.strength).toBe('average');
     });
@@ -143,7 +143,7 @@ describe('useGeneratorPage', () => {
     it('should calculate strength for strong password', () => {
       mockCheckPasswordStrength.mockReturnValue('strong');
       
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       expect(result.current.strength).toBe('strong');
     });
@@ -151,7 +151,7 @@ describe('useGeneratorPage', () => {
     it('should calculate strength for perfect password', () => {
       mockCheckPasswordStrength.mockReturnValue('perfect');
       
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       expect(result.current.strength).toBe('perfect');
     });
@@ -159,7 +159,7 @@ describe('useGeneratorPage', () => {
 
   describe('copy password', () => {
     it('should handle copy password action', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       act(() => {
         result.current.handleCopyPassword();
@@ -172,7 +172,7 @@ describe('useGeneratorPage', () => {
 
   describe('option toggles', () => {
     it('should toggle uppercase option', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       act(() => {
         result.current.setHasUppercase(false);
@@ -182,7 +182,7 @@ describe('useGeneratorPage', () => {
     });
 
     it('should toggle numbers option', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       act(() => {
         result.current.setHasNumbers(false);
@@ -192,7 +192,7 @@ describe('useGeneratorPage', () => {
     });
 
     it('should toggle symbols option', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       act(() => {
         result.current.setHasSymbols(false);
@@ -202,7 +202,7 @@ describe('useGeneratorPage', () => {
     });
 
     it('should toggle lowercase option', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       act(() => {
         result.current.setHasLowercase(false);
@@ -212,7 +212,7 @@ describe('useGeneratorPage', () => {
     });
 
     it('should change length', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       act(() => {
         result.current.setLength(24);
@@ -224,7 +224,7 @@ describe('useGeneratorPage', () => {
 
   describe('dependencies', () => {
     it('should regenerate password when any option changes', () => {
-      const { result } = renderHook(() => useGeneratorPage());
+      const { result } = renderHook(() => usePasswordGenerator());
 
       // Clear previous calls
       jest.clearAllMocks();

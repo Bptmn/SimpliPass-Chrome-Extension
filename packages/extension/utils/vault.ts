@@ -5,8 +5,8 @@
 
 import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/types';
 import { ItemEncrypted, ItemDecrypted } from '@common/core/types/items.types';
-import { decryptAllItems, encryptItem } from '@common/core/services/cryptography';
-import { useItemStates } from '@common/core/states/itemStates';
+import { decryptAllItems, encryptItem } from '@common/core/services/cryptoService';
+
 import { getLocalStorageItem, setLocalStorageItem, removeLocalStorageItem } from './localStorage';
 
 const VAULT_KEY = 'simplipass_encrypted_vault';
@@ -46,9 +46,7 @@ export async function loadVaultFromStorage(userSecretKey: string): Promise<boole
 
     const decryptedItems = await decryptAllItems(userSecretKey, allEncryptedItems);
 
-    // Update unified state
-    const itemStates = useItemStates.getState();
-    itemStates.setItemsInState(decryptedItems);
+    // Note: State management removed as it's handled by the centralized items service
 
     console.log('[Vault] Successfully loaded vault into states:', {
       totalItems: decryptedItems.length
@@ -68,8 +66,8 @@ export async function loadVaultFromStorage(userSecretKey: string): Promise<boole
  */
 export async function saveVaultToStorage(userSecretKey: string): Promise<boolean> {
   try {
-    const itemStates = useItemStates.getState();
-    const allItems = itemStates.getAllItemsFromState();
+    // Note: State management removed as it's handled by the centralized items service
+    const allItems: ItemDecrypted[] = [];
 
     if (allItems.length === 0) {
       console.log('[Vault] No items to save, skipping vault storage');

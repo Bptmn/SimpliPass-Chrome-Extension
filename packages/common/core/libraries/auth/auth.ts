@@ -8,7 +8,7 @@
 
 import { AuthenticationError } from '../../types/errors.types';
 import { loginWithCognito, signInWithFirebaseToken, getCurrentUserId, signOutFromFirebase, signOutCognito } from './index';
-import { initializeUserSecretKey } from '../../services/secret';
+import { deriveAndStoreUserSecretKey } from '../../services/secretsService';
 
 /**
  * Step 1-3: Authenticate user and derive secret key
@@ -16,20 +16,20 @@ import { initializeUserSecretKey } from '../../services/secret';
  */ 
 export async function loginUser(email: string, password: string): Promise<string> {
   try {
-    // Always sign out before login to avoid UserAlreadyAuthenticatedException
+    // 1. Always sign out before login to avoid UserAlreadyAuthenticatedException
     await signOutFromFirebase();
     await signOutCognito();
 
-    // Step 1: Login with Cognito
+    // 2. Login with Cognito
     await loginWithCognito(email, password);
     
-    // Step 2: Initialize user secret key (fetch salt from Cognito, derive, store)
-    await initializeUserSecretKey(password);
+    // 3. Derive and store user secret key (fetch salt from Cognito, derive, store)
+    await deriveAndStoreUserSecretKey(password);
     
-    // Step 3: Sign in to Firebase
+    // 4. Sign in to Firebase
     const firebaseUser = await signInWithFirebaseToken();
     
-    // Return the user ID from Firebase
+    // 5. Return the user ID from Firebase
     return firebaseUser.uid;
   } catch {
     console.error('[Auth] Login failed');

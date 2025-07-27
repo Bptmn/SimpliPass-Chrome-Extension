@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import NavBar from './NavBar';
-import { HelperBar } from './HelperBar';
 
 interface PopupLayoutProps {
   children: React.ReactNode;
@@ -12,7 +11,6 @@ const PopupLayout: React.FC<PopupLayoutProps> = ({ children }) => {
     <View style={styles.container}>
       <NavBar />
       <View style={styles.content}>{children}</View>
-      {Platform.OS === 'web' && <HelperBar />}
     </View>
   );
 };

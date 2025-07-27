@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useManualRefresh } from '../useManualRefresh';
 import { loadUserProfile } from '@common/core/services/user';
 import { fetchAndStoreItems } from '@common/core/services/items';

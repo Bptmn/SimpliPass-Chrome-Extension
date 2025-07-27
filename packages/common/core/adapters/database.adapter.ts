@@ -3,13 +3,31 @@ import { DocumentData } from 'firebase/firestore';
 
 type DocumentId = string;
 
+export interface DatabaseListenersCallbacks {
+  onUserUpdate?: (userData: any) => Promise<void>;
+  onItemsUpdate?: () => Promise<void>;
+}
+
+export interface DatabaseListenersState {
+  isListening: boolean;
+  error: string | null;
+}
+
 export interface DatabaseAdapter {
   getCollection<T extends DocumentData = DocumentData>(collectionPath: string): Promise<T[]>;
   getDocument<T extends DocumentData = DocumentData>(docPath: string): Promise<T | null>;
   addDocument<T extends DocumentData = DocumentData>(collectionPath: string, data: T): Promise<DocumentId>;
   updateDocument<T extends DocumentData = DocumentData>(docPath: string, data: Partial<T>): Promise<void>;
   deleteDocument(docPath: string): Promise<void>;
-  generateItemId(): string;
+  generateItemDatabaseId(): string;
+  
+  // Listeners functionality
+  startListeners(userId: string, callbacks: DatabaseListenersCallbacks): Promise<void>;
+  stopListeners(): void;
+  getListenersState(): DatabaseListenersState;
+  isListening(): boolean;
+  getListenersError(): string | null;
+  clearListenersError(): void;
 }
 
 // 🔌 Current implementation using Firebase
@@ -20,5 +38,16 @@ export const db: DatabaseAdapter = {
   addDocument: firebaseDb.addDocument,
   updateDocument: firebaseDb.updateDocument,
   deleteDocument: firebaseDb.deleteDocument,
-  generateItemId: firebaseDb.generateItemDatabaseId,
+  generateItemDatabaseId: firebaseDb.generateItemDatabaseId,
+  
+  // Listeners functionality
+  startListeners: async (userId: string, callbacks: DatabaseListenersCallbacks) => {
+    firebaseDb.firestoreListeners.setCallbacks(callbacks);
+    await firebaseDb.firestoreListeners.startListeners(userId);
+  },
+  stopListeners: () => firebaseDb.firestoreListeners.stopListeners(),
+  getListenersState: () => firebaseDb.firestoreListeners.getState(),
+  isListening: () => firebaseDb.firestoreListeners.isListening(),
+  getListenersError: () => firebaseDb.firestoreListeners.getError(),
+  clearListenersError: () => firebaseDb.firestoreListeners.clearError(),
 }; 

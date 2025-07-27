@@ -7,7 +7,7 @@ import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
 import { Input } from '@ui/components/InputFields';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
-import { useLoginPage } from '@common/hooks/useLoginPage';
+import { useAuth } from '@common/hooks/useAuth';
 import logo from '../../../../assets/logo/logo_simplify_long.png';
 
 const LoginPage: React.FC = () => {
@@ -16,7 +16,7 @@ const LoginPage: React.FC = () => {
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   
-  const { login, isLoading, error } = useLoginPage();
+  const { login, isLoading, error } = useAuth();
 
   // Form state
   const [email, setEmail] = React.useState('');

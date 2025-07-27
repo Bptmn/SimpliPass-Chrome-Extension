@@ -1,45 +1,35 @@
 // ===== Service Layer Exports =====
 
 // Secret Management Services
-export { getUserSecretKey, storeUserSecretKey, deleteUserSecretKey, hasUserSecretKey } from './secret';
+export { getUserSecretKey, storeUserSecretKey, deleteUserSecretKey, hasUserSecretKey } from './secretsService';
 
 // Cryptography Services
-export { decryptItem, decryptAllItems } from './cryptography';
+export { decryptItem, decryptAllItems } from './cryptoService';
 
 // Vault Services
-export { setLocalVault, getLocalVault, clearLocalVault } from './vault';
+export { setLocalVault, getLocalVault, clearLocalVault } from './vaultService';
 
 // User Services
 export { 
-  fetchAndStoreUserProfile,
   getCurrentUser,
   checkUserSecretKey,
   getCurrentUserId,
   initializeUserData,
   clearUserData,
   getFirestoreUserDocument,
-  refreshUserInfo,
-  loadUserProfile
-} from './user';
-
-// App Initialization Services
-export {
-  initializeAppData,
-  loadDataAndStartListeners,
-  handleAuthStateChange,
-  checkUserNeedsPasswordReEntry,
-  handleSecretKeyReEntry
-} from './appInitialization';
+  refreshUserInfo
+} from './userService';
 
 // Items Services - Centralized data hub
 export { 
-  addItemToDatabase, 
-  updateItemInDatabase, 
-  deleteItemFromDatabase, 
-  getAllItemsFromDatabase,
+  addItem, 
+  updateItem, 
+  deleteItem, 
+  getAllItems,
   fetchAndStoreItems,
   loadItemsWithFallback,
   itemsStateManager
-} from './items';
+} from './itemsService';
 
-// Session Services - Removed as session management is now handled by platform adapters 
+// Database Listeners Services
+export { databaseListeners } from './listenerService'; 

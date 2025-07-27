@@ -11,14 +11,21 @@ import { storage } from '../adapters/platform.storage.adapter';
 import { auth } from '../adapters/auth.adapter';
 
 /**
- * Fetch user profile from database and store in secure storage
+ * Get current user from database
  */
-export async function fetchAndStoreUserProfile(userId: string): Promise<User | null> {
+export async function getCurrentUser(): Promise<User | null> {
   try {
-    console.log('[UserService] Fetching user profile for:', userId);
+    console.log('[UserService] Getting current user from database...');
     
+    // Get current user ID from auth
+    const currentUser = auth.getCurrentUser();
+    if (!currentUser) {
+      console.log('[UserService] No authenticated user found');
+      return null;
+    }
+
     // Fetch user document from database via adapter
-    const userDoc = await db.getDocument(`users/${userId}`);
+    const userDoc = await db.getDocument(`users/${currentUser.uid}`);
     
     if (!userDoc) {
       console.warn('[UserService] User document not found in database');
@@ -27,49 +34,19 @@ export async function fetchAndStoreUserProfile(userId: string): Promise<User | n
 
     // Create User object
     const user: User = {
-      id: userId,
+      id: currentUser.uid,
       email: userDoc.email,
       username: userDoc.username || userDoc.email,
       createdAt: userDoc.createdAt ? new Date(userDoc.createdAt) : new Date(),
       updatedAt: userDoc.updatedAt ? new Date(userDoc.updatedAt) : new Date(),
     };
 
-    // Store user in secure storage
-    await storage.storeUserToSecureLocalStorage(user);
-    
-    console.log('[UserService] User profile stored successfully');
+    console.log('[UserService] Current user retrieved successfully');
     return user;
     
   } catch (error) {
-    console.error('[UserService] Failed to fetch and store user profile:', error);
-    throw error;
-  }
-}
-
-/**
- * Get current user from secure storage
- */
-export async function getCurrentUser(): Promise<User | null> {
-  try {
-    return await storage.getUserFromSecureLocalStorage();
-  } catch (error) {
     console.error('[UserService] Failed to get current user:', error);
     return null;
-  }
-}
-
-/**
- * Load user profile from secure storage
- */
-export async function loadUserProfile(): Promise<User | null> {
-  try {
-    console.log('[UserService] Loading user profile from secure storage...');
-    const userData = await storage.getUserFromSecureLocalStorage();
-    console.log('[UserService] User profile loaded:', userData);
-    return userData;
-  } catch (error) {
-    console.error('[UserService] Failed to load user profile:', error);
-    throw error;
   }
 }
 
@@ -107,8 +84,8 @@ export async function initializeUserData(userId: string): Promise<{
   try {
     console.log('[UserService] Initializing user data for:', userId);
     
-    // Fetch and store user profile
-    const user = await fetchAndStoreUserProfile(userId);
+    // Get user from database
+    const user = await getCurrentUser();
     
     // Check if user has secret key
     const hasSecretKey = await checkUserSecretKey();
@@ -127,7 +104,7 @@ export async function initializeUserData(userId: string): Promise<{
 }
 
 /**
- * Clear all user data from secure storage
+ * Clear all user data from secure storage (except user object)
  */
 export async function clearUserData(): Promise<void> {
   try {
@@ -154,19 +131,19 @@ export async function getFirestoreUserDocument(userId: string): Promise<any> {
 }
 
 /**
- * Refresh user info from Firestore and store in secure storage
+ * Refresh user info from Firestore (no longer stores in secure storage)
  */
-export async function refreshUserInfo(userId: string): Promise<void> {
+export async function refreshUserInfo(userId: string): Promise<User | null> {
   try {
     console.log('[UserService] Refreshing user info for:', userId);
     
-    // 1. Fetch user document from Firestore via database adapter
+    // Fetch user document from Firestore via database adapter
     const userDoc = await getFirestoreUserDocument(userId);
     if (!userDoc) {
       throw new Error('User document not found in Firestore');
     }
 
-    // 2. Create User object
+    // Create User object
     const user: User = {
       id: userId,
       email: userDoc.email,
@@ -175,10 +152,8 @@ export async function refreshUserInfo(userId: string): Promise<void> {
       updatedAt: userDoc.updatedAt ? new Date(userDoc.updatedAt) : new Date(),
     };
 
-    // 3. Store user object in secure storage
-    await storage.storeUserToSecureLocalStorage(user);
-    
     console.log('[UserService] User info refreshed successfully');
+    return user;
   } catch (error) {
     console.error('[UserService] Failed to refresh user info:', error);
     throw error;

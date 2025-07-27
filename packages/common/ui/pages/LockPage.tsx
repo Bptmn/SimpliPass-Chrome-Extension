@@ -1,6 +1,7 @@
 /**
- * ReEnterPasswordPage.tsx
+ * LockPage.tsx
  * 
+ * Unified page for handling password re-entry when the secret key is lost from secure storage.
  * This page allows users to re-enter their master password to derive the secret key
  * without logging out. This is used when the secret key is lost from secure storage but
  * the user is still authenticated.
@@ -8,6 +9,7 @@
 
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
+import { useLocation } from 'react-router-dom';
 import { Input } from '@ui/components/InputFields';
 import { Button } from '@ui/components/Buttons';
 import { getColors } from '@ui/design/colors';
@@ -15,18 +17,41 @@ import { spacing } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { useThemeMode } from '@common/ui/design/theme';
 import { useReEnterPassword } from '@common/hooks/useReEnterPassword';
-import { useLogoutFlow } from '@common/hooks/useLogoutFlow';
+import { useAuth } from '@common/hooks/useAuth';
 
-interface ReEnterPasswordPageProps {
+interface LocationState {
+  reason?: 'expired' | 'fingerprint_mismatch' | 'decryption_failed' | 'not_found' | 'corrupted';
+}
+
+interface LockPageProps {
   onSecretKeyStored?: () => void;
 }
 
-export const ReEnterPasswordPage: React.FC<ReEnterPasswordPageProps> = ({ onSecretKeyStored }) => {
+export const LockPage: React.FC<LockPageProps> = ({ onSecretKeyStored }) => {
   const [password, setPassword] = useState('');
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const { reEnterPassword, isLoading, error, clearError } = useReEnterPassword();
-  const { logout } = useLogoutFlow();
+  const { reEnterPassword, isLoading } = useReEnterPassword();
+  const { logout } = useAuth();
+  const location = useLocation();
+
+  const state = location.state as LocationState;
+  const reason = state?.reason;
+
+  const getReasonMessage = () => {
+    switch (reason) {
+      case 'expired':
+        return 'Votre session a expiré. Veuillez entrer votre mot de passe maître pour continuer.';
+      case 'fingerprint_mismatch':
+        return 'Votre appareil a changé. Veuillez entrer votre mot de passe maître pour continuer.';
+      case 'decryption_failed':
+        return 'Impossible de déverrouiller votre coffre-fort. Veuillez entrer votre mot de passe maître.';
+      case 'corrupted':
+        return 'Les données de session sont corrompues. Veuillez entrer votre mot de passe maître.';
+      default:
+        return 'Veuillez entrer votre mot de passe maître pour accéder à vos données.';
+    }
+  };
 
   const handleSubmit = async () => {
     if (!password.trim()) {
@@ -38,12 +63,12 @@ export const ReEnterPasswordPage: React.FC<ReEnterPasswordPageProps> = ({ onSecr
       await reEnterPassword(password);
       // Call the callback to trigger PopupApp re-check
       if (onSecretKeyStored) {
-        console.log('[ReEnterPasswordPage] Calling onSecretKeyStored callback...');
+        console.log('[LockPage] Calling onSecretKeyStored callback...');
         onSecretKeyStored();
       }
     } catch (error) {
       // Error is handled by the hook and displayed via the error state
-      console.error('[ReEnterPasswordPage] Error during password re-entry:', error);
+      console.error('[LockPage] Error during password re-entry:', error);
     }
   };
 
@@ -51,7 +76,7 @@ export const ReEnterPasswordPage: React.FC<ReEnterPasswordPageProps> = ({ onSecr
     try {
       await logout();
     } catch (error) {
-      console.error('[ReEnterPasswordPage] Error during logout:', error);
+      console.error('[LockPage] Error during logout:', error);
     }
   };
 
@@ -97,7 +122,7 @@ export const ReEnterPasswordPage: React.FC<ReEnterPasswordPageProps> = ({ onSecr
       <View style={styles.header}>
         <Text style={styles.title}>Déverrouiller le coffre-fort</Text>
         <Text style={styles.subtitle}>
-          Veuillez entrer votre mot de passe maître pour accéder à vos données.
+          {getReasonMessage()}
         </Text>
       </View>
 

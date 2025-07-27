@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useItems } from '../useItems';
 import { itemsStateManager } from '../../core/services/items';
 import { ItemDecrypted, CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../../core/types/items.types';
@@ -202,7 +202,7 @@ describe('useItems', () => {
       await act(async () => {
         try {
           itemsChangedCallback(mockItems);
-        } catch (error) {
+        } catch (_error) {
           // Error should be handled gracefully
         }
       });

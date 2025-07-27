@@ -6,8 +6,8 @@
  */
 
 import { useCallback, useRef } from 'react';
-import { getAllItemsFromDatabase } from '../core/services/items';
-import { setLocalVault } from '../core/services/vault';
+import { getAllItems } from '../core/services/itemsService';
+import { setLocalVault } from '../core/services/vaultService';
 
 export const useRefreshData = () => {
   // Step 1: Initialize UI state
@@ -26,7 +26,7 @@ export const useRefreshData = () => {
       
       console.log('[useRefreshData] Fetching items from database...');
       // Step 2.2: Fetch items from database
-      const fetchedItems = await getAllItemsFromDatabase();
+      const fetchedItems = await getAllItems();
       console.log(`[useRefreshData] Retrieved ${fetchedItems.length} items from database`);
       
       // Step 2.3: Store in local vault

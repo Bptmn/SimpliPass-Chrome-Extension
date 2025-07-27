@@ -21,7 +21,6 @@ export { ModifySecureNotePage } from './ModifySecureNotePage';
 export { SettingsPage } from './SettingsPage';
 export { HomePage } from './HomePage';
 export { default as LoginPage } from './LoginPage';
-export { ReEnterPasswordPage } from './ReEnterPasswordPage';
-export { ReUnlockPage } from './ReUnlockPage';
+export { LockPage } from './LockPage';
 export { EmailConfirmationPage } from './EmailConfirmationPage';
 export { GeneratorPage } from './GeneratorPage'; 

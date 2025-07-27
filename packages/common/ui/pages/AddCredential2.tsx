@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { View, ScrollView } from 'react-native';
 import { useUser } from '@common/hooks/useUser';
 import { passwordGenerator } from '@common/utils/passwordGenerator';
+import { generateItemKey } from '@common/utils/crypto';
 
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import Toast from '@ui/components/Toast';
 import { useToast } from '@common/hooks/useToast';
 import { useItems } from '@common/hooks/useItems';
+import { CredentialDecrypted } from '@common/core/types/items.types';
 import { Input, InputPasswordStrength } from '@ui/components/InputFields';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
@@ -29,7 +31,7 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
   const themeColors = getColors(mode);
   const { user } = useUser();
   const navigate = useNavigate();
-  const { addCredential, isLoading } = useItems();
+  const { addItem, isActionLoading } = useItems();
   const [title, setTitle] = useState(initialTitle);
   const [username, setUsername] = useState(user?.email || '');
   const [password, setPassword] = useState(passwordGenerator(true, true, true, true, 16));
@@ -60,23 +62,23 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
 
     setError(null);
     try {
-      const newCredential = {
+      const newCredential: CredentialDecrypted = {
+        id: crypto.randomUUID(),
         title,
         username,
         password,
         note,
         url,
-        itemType: 'credential' as const,
+        itemType: 'credential',
+        createdDateTime: new Date(),
+        lastUseDateTime: new Date(),
+        itemKey: generateItemKey(),
       };
 
-      const result = await addCredential(newCredential);
-      if (result.success) {
-        showToast('Identifiant ajouté avec succès');
-        if (onSuccess) onSuccess();
-        navigate('/');
-      } else {
-        setError(result.error || 'Erreur lors de l\'ajout de l\'identifiant.');
-      }
+      await addItem(newCredential);
+      showToast('Identifiant ajouté avec succès');
+      if (onSuccess) onSuccess();
+      navigate('/');
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de l\'ajout de l\'identifiant.');
     }
@@ -152,7 +154,7 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
               text="Ajouter"
               color={themeColors.secondary}
               onPress={handleSubmit}
-              disabled={isLoading}
+              disabled={isActionLoading}
             />
           </View>
         </View>

@@ -2,20 +2,24 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { HomePage } from '@ui/pages/HomePage';
 import LoginPage from '@ui/pages/LoginPage';
-import { ReEnterPasswordPage } from '@ui/pages/ReEnterPasswordPage';
+import { LockPage } from '@ui/pages/LockPage';
 import { ThemeProvider } from '@common/ui/design/theme';
 import { initializePlatform } from '@common/core/adapters';
-import { useAppInitialization } from '@common/hooks/useAppInitialization';
+import { useListeners } from '@common/hooks/useListeners';
 
 export default function App() {
-  const { state, user, vault: _vault } = useAppInitialization();
+  const { user, isUserFullyInitialized, listenersError } = useListeners();
+  
+  // Compute loading state based on user state
+  const isLoading = user === null && !listenersError;
+  const error = listenersError;
 
   useEffect(() => {
     initializePlatform();
   }, []);
 
   // Render loading state
-  if (!state.isInitialized) {
+  if (isLoading) {
     return (
       <ThemeProvider>
         <View style={styles.container}>
@@ -28,12 +32,12 @@ export default function App() {
   }
 
   // Render error state
-  if (state.error) {
+  if (error) {
     return (
       <ThemeProvider>
         <View style={styles.container}>
           <View style={styles.error}>
-            <Text>Error: {state.error}</Text>
+            <Text>Error: {error}</Text>
           </View>
         </View>
       </ThemeProvider>
@@ -41,7 +45,7 @@ export default function App() {
   }
 
   // Render login page
-  if (state.shouldShowLogin) {
+  if (!user) {
     return (
       <ThemeProvider>
         <LoginPage />
@@ -50,16 +54,16 @@ export default function App() {
   }
 
   // Render re-enter password page
-  if (state.shouldShowReEnterPassword) {
+  if (user && !isUserFullyInitialized) {
     return (
       <ThemeProvider>
-        <ReEnterPasswordPage />
+        <LockPage />
       </ThemeProvider>
     );
   }
 
   // Render main app
-  if (state.shouldRenderApp) {
+  if (user && isUserFullyInitialized) {
     return (
       <ThemeProvider>
         <View style={styles.container}>

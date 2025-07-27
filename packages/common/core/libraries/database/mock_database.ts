@@ -1,5 +1,5 @@
 import { DocumentData } from 'firebase/firestore';
-import type { DatabaseAdapter } from '../../adapters/database.adapter';
+import type { DatabaseAdapter, DatabaseListenersCallbacks } from '../../adapters/database.adapter';
 
 type DocumentId = string;
 
@@ -48,5 +48,25 @@ export const mockDb: DatabaseAdapter = {
     // Mock implementation - does nothing
   },
 
-  generateItemId: () => 'mock-id-123',
+  generateItemDatabaseId: () => 'mock-id-123',
+  
+  // Mock listeners functionality
+  startListeners: async (userId: string, callbacks: DatabaseListenersCallbacks) => {
+    console.log('[Mock DB] Starting listeners for user:', userId);
+    // Mock implementation - does nothing
+  },
+  stopListeners: () => {
+    console.log('[Mock DB] Stopping listeners');
+    // Mock implementation - does nothing
+  },
+  getListenersState: () => ({
+    isListening: false,
+    error: null,
+  }),
+  isListening: () => false,
+  getListenersError: () => null,
+  clearListenersError: () => {
+    console.log('[Mock DB] Clearing listeners error');
+    // Mock implementation - does nothing
+  },
 }; 

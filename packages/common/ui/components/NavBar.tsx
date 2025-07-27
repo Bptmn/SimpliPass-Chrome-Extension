@@ -5,6 +5,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Icon } from './Icon';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
+import { layout } from '@ui/design/layout';
 
 interface NavItem {
   path: string;
@@ -46,10 +47,10 @@ const Navbar: React.FC = () => {
           borderBottomColor: themeColors.borderColor,
           borderBottomWidth: 1,
           flexDirection: 'row',
-          height: 56,
+          height: layout.navbarHeight,
           justifyContent: 'space-around',
-          maxHeight: 56,
-          minHeight: 56,
+          maxHeight: layout.navbarHeight,
+          minHeight: layout.navbarHeight,
           paddingHorizontal: 16,
           paddingVertical: 4,
           width: '100%',

@@ -15,10 +15,10 @@ export {
   clearAllStates,
   updateItemInStates,
   setAuthState,
-  addItemToDatabase,
-  updateItemInDatabase,
-  deleteItemFromDatabase,
-  getAllItemsFromDatabase,
+  addItem,
+  updateItem,
+  deleteItem,
+  getAllItems,
 } from './services';
 
 // Libraries Layer (Layer 3)

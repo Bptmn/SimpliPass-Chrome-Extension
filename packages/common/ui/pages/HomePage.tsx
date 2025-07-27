@@ -19,12 +19,13 @@ import { CredentialCard } from '@ui/components/CredentialCard';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { SkeletonCard } from '@ui/components/SkeletonCard';
-import { useHomePage } from '@common/hooks/useHomePage';
+import { useItems } from '@common/hooks/useItems';
 import ItemBankCard from '@ui/components/ItemBankCard';
 import ItemSecureNote from '@ui/components/ItemSecureNote';
 import { BankCardDetailsPage } from './BankCardDetailsPage';
 import { SecureNoteDetailsPage } from './SecureNoteDetailsPage';
 import { CredentialDecrypted } from '@common/core/types/types';
+import { HelperBar } from '@ui/components/HelperBar';
 
 type Category = 'credentials' | 'bankCards' | 'secureNotes';
 
@@ -51,22 +52,20 @@ export const HomePage: React.FC<HomePageProps> = ({
   
   const {
     user: _user, // ignore this prop, use context
-    items,
     credentials,
     bankCards,
     secureNotes,
-    filter,
+    searchValue: filter,
     selected,
     selectedBankCard,
     selectedSecureNote,
     error,
     loading,
-    setFilter,
+    setSearchValue: setFilter,
     setSelected,
     setSelectedBankCard,
     setSelectedSecureNote,
-    refreshData,
-  } = useHomePage(_pageState || undefined);
+  } = useItems();
 
   // User interaction handlers - moved from hook to component
   const handleCardClick = React.useCallback((cred: CredentialDecrypted) => {
@@ -285,6 +284,9 @@ export const HomePage: React.FC<HomePageProps> = ({
           </View>
         )}
       </View>
+
+      {/* HelperBar - only on HomePage */}
+      <HelperBar currentPage="home" />
     </View>
   );
 };
