@@ -7,4 +7,7 @@ export * from './components';
 export * from './design';
 
 // Export pages
-export * from './pages'; 
+export * from './pages';
+
+// Export router
+export * from './router'; 

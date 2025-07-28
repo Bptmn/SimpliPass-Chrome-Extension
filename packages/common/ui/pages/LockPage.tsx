@@ -9,7 +9,6 @@
 
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import { useLocation } from 'react-router-dom';
 import { Input } from '@ui/components/InputFields';
 import { Button } from '@ui/components/Buttons';
 import { getColors } from '@ui/design/colors';
@@ -18,25 +17,22 @@ import { typography } from '@ui/design/typography';
 import { useThemeMode } from '@common/ui/design/theme';
 import { useReEnterPassword } from '@common/hooks/useReEnterPassword';
 import { useAuth } from '@common/hooks/useAuth';
+import { useListeners } from '@common/hooks/useListeners';
 
-interface LocationState {
-  reason?: 'expired' | 'fingerprint_mismatch' | 'decryption_failed' | 'not_found' | 'corrupted';
-}
+type LockReason = 'expired' | 'fingerprint_mismatch' | 'decryption_failed' | 'not_found' | 'corrupted';
 
 interface LockPageProps {
   onSecretKeyStored?: () => void;
+  reason?: LockReason;
 }
 
-export const LockPage: React.FC<LockPageProps> = ({ onSecretKeyStored }) => {
+export const LockPage: React.FC<LockPageProps> = ({ onSecretKeyStored, reason }) => {
   const [password, setPassword] = useState('');
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const { reEnterPassword, isLoading } = useReEnterPassword();
   const { logout } = useAuth();
-  const location = useLocation();
-
-  const state = location.state as LocationState;
-  const reason = state?.reason;
+  const { recheckUserInitialization } = useListeners();
 
   const getReasonMessage = () => {
     switch (reason) {
@@ -60,12 +56,21 @@ export const LockPage: React.FC<LockPageProps> = ({ onSecretKeyStored }) => {
     }
 
     try {
+      // Re-enter password to derive and store secret key
       await reEnterPassword(password);
-      // Call the callback to trigger PopupApp re-check
+      
+      console.log('[LockPage] Password re-entry successful, rechecking user initialization...');
+      
+      // Re-check user initialization status to trigger navigation
+      await recheckUserInitialization();
+      
+      // Call the callback to trigger PopupApp re-check (if provided)
       if (onSecretKeyStored) {
         console.log('[LockPage] Calling onSecretKeyStored callback...');
         onSecretKeyStored();
       }
+      
+      console.log('[LockPage] Lock page flow completed successfully');
     } catch (error) {
       // Error is handled by the hook and displayed via the error state
       console.error('[LockPage] Error during password re-entry:', error);

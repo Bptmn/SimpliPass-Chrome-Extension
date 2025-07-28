@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { View, Text, Pressable, StyleSheet, ScrollView, Platform } from 'react-native';
 import { Input } from '@ui/components/InputFields';
 import ItemBankCard from '@ui/components/ItemBankCard';
@@ -25,28 +24,28 @@ import { getCurrentUser } from '@common/core/services/userService';
 import { User } from '@common/core/types/types';
 
 interface AddCard2Props {
-  onBack?: () => void;
+  title?: string;
+  cardNumber?: string;
+  expiryDate?: string;
+  cvv?: string;
 }
 
-export const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
+export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, cardNumber: initialCardNumber, expiryDate: initialExpiryDate, cvv: initialCvv }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const navigate = useNavigate();
-  const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [_userLoading, setUserLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { showToast: _showToast } = useToast();
-  const { title, bankName, bankDomain } = location.state || {};
 
   const [selectedColor, setSelectedColor] = useState('#4f86a2');
   const [owner, setOwner] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [expirationDate, setExpirationDate] = useState(''); // MM/YY
-  const [cvv, setCvv] = useState('');
+  const [cardNumber, setCardNumber] = useState(initialCardNumber || '');
+  const [expirationDate, setExpirationDate] = useState(initialExpiryDate || ''); // MM/YY
+  const [cvv, setCvv] = useState(initialCvv || '');
   const [note, setNote] = useState('');
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [toast] = useState<string | null>(null);
@@ -94,7 +93,7 @@ export const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
         itemType: 'bankCard',
         createdDateTime: new Date(),
         lastUseDateTime: new Date(),
-        title: title || '',
+        title: initialTitle || '',
         owner,
         note,
         color: selectedColor,
@@ -102,11 +101,12 @@ export const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
         cardNumber,
         expirationDate: expDate,
         verificationNumber: cvv,
-        bankName: bankName || '',
-        bankDomain: bankDomain || '',
+        bankName: '',
+        bankDomain: '',
       };
       await addItem(newCard);
-      navigate('/')    } catch (e: unknown) {
+      // Optionally: router.navigateTo('home')
+    } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la création de la carte.');
     } finally {
       setLoading(false);
@@ -125,7 +125,7 @@ export const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
   const previewCard: BankCardDecrypted = {
     id: 'preview',
     itemType: 'bankCard',
-    title: title || 'Titre',
+    title: initialTitle || 'Titre',
     owner: owner || 'Owner',
     note: note || '',
     color: selectedColor,
@@ -133,8 +133,8 @@ export const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
     cardNumber: cardNumber || '0000000000000000',
     expirationDate: parseExpirationDate(expirationDate) || createExpirationDate(1, new Date().getFullYear() + 1),
     verificationNumber: cvv || '',
-    bankName: bankName || '',
-    bankDomain: bankDomain || '',
+    bankName: '',
+    bankDomain: '',
     createdDateTime: new Date(),
     lastUseDateTime: new Date(),
   };
@@ -145,7 +145,7 @@ export const AddCard2: React.FC<AddCard2Props> = ({ onBack }) => {
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Ajouter une carte" 
-            onBackPress={onBack || (() => {})} 
+            onBackPress={() => { /* router.goBack() if available */ }} 
           />
           <ItemBankCard cred={previewCard} />
           <ColorSelector

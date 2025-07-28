@@ -30,4 +30,5 @@ export { useSettings } from './useSettings';
 
 // Chrome Extension Specific Hooks
 export { useCurrentTabDomain } from './useCurrentTabDomain';
-export { useAutofill } from './useAutofill'; 
+export { useAutofill } from './useAutofill';
+ 

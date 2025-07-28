@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { View } from 'react-native';
 import { Input } from '@ui/components/InputFields';
 import { getPageStyles } from '@ui/design/layout';
@@ -7,12 +6,17 @@ import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
+import type { UseAppRouterReturn } from '@common/ui/router';
+import { ROUTES } from '@common/ui/router';
 
-const AddCard1: React.FC = () => {
+interface AddCard1Props {
+  router: UseAppRouterReturn;
+}
+
+const AddCard1: React.FC<AddCard1Props> = ({ router }) => {
   const { mode } = useThemeMode();
   const styles = getPageStyles(mode);
   const themeColors = getColors(mode);
-  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, _setExpiryDate] = useState('');
@@ -20,14 +24,14 @@ const AddCard1: React.FC = () => {
 
   const handleNext = () => {
     if (!title || !cardNumber || !expiryDate || !cvv) return;
-    navigate('/add-card-2', { state: { title, cardNumber, expiryDate, cvv } });
+    router.navigateTo(ROUTES.ADD_CARD_2, { title, cardNumber, expiryDate, cvv });
   };
 
   return (
     <View style={styles.pageContainer}>
       <HeaderTitle 
         title="Ajouter une carte" 
-        onBackPress={() => navigate(-1)} 
+        onBackPress={router.goBack} 
       />
       <View style={styles.formContainer}>
         <Input

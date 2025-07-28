@@ -1,37 +1,40 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 import { Icon } from './Icon';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { layout } from '@ui/design/layout';
+import type { UseAppRouterReturn, AppRoute } from '@common/ui/router';
+import { ROUTES } from '@common/ui/router';
 
 interface NavItem {
-  path: string;
+  route: AppRoute;
   icon: React.ReactNode;
   label: string;
 }
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  router: UseAppRouterReturn;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ router }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const navItems: NavItem[] = [
     {
-      path: '/home',
+      route: ROUTES.HOME,
       icon: <Icon name="home" size={25} color={themeColors.primary} />,
       label: 'Accueil',
     },
     {
-      path: '/generator',
+      route: ROUTES.GENERATOR,
       icon: <Icon name="loop" size={25} color={themeColors.primary} />,
       label: 'Générateur',
     },
     {
-      path: '/settings',
+      route: ROUTES.SETTINGS,
       icon: <Icon name="settings" size={25} color={themeColors.primary} />,
       label: 'Paramètres',
     },
@@ -92,12 +95,12 @@ const Navbar: React.FC = () => {
     <View style={styles.navbar}>
       {navItems.map((item) => (
         <Pressable
-          key={item.path}
+          key={item.route}
           style={[
             styles.navItem,
-            location.pathname === item.path ? styles.active : null,
+            router.currentRoute === item.route ? styles.active : null,
           ]}
-          onPress={() => navigate(item.path)}
+          onPress={() => router.navigateTo(item.route)}
           accessibilityRole="button"
           accessibilityLabel={item.label}
         >
@@ -105,7 +108,7 @@ const Navbar: React.FC = () => {
             {item.icon}
             <Text style={[
               styles.navLabel,
-              location.pathname === item.path ? { color: themeColors.primary } : null,
+              router.currentRoute === item.route ? { color: themeColors.primary } : null,
             ]}>
               {item.label}
             </Text>

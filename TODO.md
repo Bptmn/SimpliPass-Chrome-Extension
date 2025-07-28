@@ -1,4 +1,5 @@
 Faire step by step pour s'assurer que ça marche:
+- Avoir des entrypoints et routings avec la même logique pour toutes les plateformes
 - Auth persistence
 - User info across the whole app
 - Data for home page

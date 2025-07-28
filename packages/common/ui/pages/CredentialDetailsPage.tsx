@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { useNavigate } from 'react-router-dom';
 import { CredentialDecrypted } from '@common/core/types/types';
 import { deleteItem } from '@common/core/services/itemsService';
-
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { LazyCredentialIcon } from '@ui/components/LazyCredentialIcon';
@@ -13,24 +11,29 @@ import { getColors } from '@ui/design/colors';
 import { getPageStyles, spacing, radius, padding } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
-import CopyButton from '@ui/components/CopyButton';
+import { DetailField } from '@ui/components/DetailField';
 import { MoreInfo } from '@ui/components/MoreInfo';
-import DetailField from '@ui/components/DetailField';
+import CopyButton from '@ui/components/CopyButton';
 import { getCurrentUser } from '@common/core/services/userService';
 import { User } from '@common/core/types/types';
+import type { UseAppRouterReturn } from '@common/ui/router';
+import { ROUTES } from '@common/ui/router';
 
 interface CredentialDetailsPageProps {
   credential: CredentialDecrypted;
   onBack: () => void;
+  router?: UseAppRouterReturn;
 }
 
 export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   credential,
   onBack,
+  router,
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const navigate = useNavigate();
+  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
+  const styles = React.useMemo(() => getStyles(mode), [mode]);
   const [user, setUser] = useState<User | null>(null);
   const [_userLoading, setUserLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,8 +41,6 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { showToast } = useToast();
-  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
-  const styles = React.useMemo(() => getStyles(mode), [mode]);
 
   // Load user data from secure storage
   useEffect(() => {
@@ -58,6 +59,12 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
     loadUser();
   }, []);
 
+  const handleEdit = () => {
+    if (router) {
+      router.navigateTo(ROUTES.MODIFY_CREDENTIAL, { credential });
+    }
+  };
+
   const handleLaunch = (url: string) => {
     try {
       const normalizedUrl = url.match(/^https?:\/\//i) ? url : `https://${url}`;
@@ -65,10 +72,6 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
     } catch {
       setError("Erreur lors de l'ouverture du lien.");
     }
-  };
-
-  const handleEdit = () => {
-    navigate('/modify-credential', { state: { credential } });
   };
 
   const handleDelete = async () => {

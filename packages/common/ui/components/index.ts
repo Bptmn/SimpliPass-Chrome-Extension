@@ -1,4 +1,5 @@
 // Re-export all components
+export { AppContent } from './AppContent';
 export { CredentialCard } from './CredentialCard';
 export { DetailField } from './DetailField';
 export { ErrorBanner } from './ErrorBanner';

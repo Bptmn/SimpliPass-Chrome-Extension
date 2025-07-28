@@ -6,22 +6,22 @@
 
 import React from 'react';
 import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
-import { useNavigate } from 'react-router-dom';
 import { Icon } from './Icon';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { useHelperBar } from '@common/hooks/useHelperBar';
+import type { UseAppRouterReturn } from '@common/ui/router';
 
 type CurrentPage = 'home' | 'generator' | 'settings' | 'add-credential-1' | 'add-credential-2' | 'add-card-1' | 'add-card-2' | 'add-securenote';
 
 interface HelperBarProps {
   currentPage?: CurrentPage;
+  router?: UseAppRouterReturn;
 }
 
-export const HelperBar: React.FC<HelperBarProps> = ({ currentPage = 'home' }) => {
+export const HelperBar: React.FC<HelperBarProps> = ({ currentPage = 'home', router }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const navigate = useNavigate();
   
   const {
     addButtonText,
@@ -29,6 +29,8 @@ export const HelperBar: React.FC<HelperBarProps> = ({ currentPage = 'home' }) =>
 
   // User interaction handlers - moved from hook to component
   const handleAdd = React.useCallback(() => {
+    if (!router) return;
+    
     switch (currentPage) {
       case 'add-card-1':
       case 'add-card-2':
@@ -53,10 +55,10 @@ export const HelperBar: React.FC<HelperBarProps> = ({ currentPage = 'home' }) =>
         // - Add credential (/add-credential-1)
         // - Add bank card (/add-card-1) 
         // - Add secure note (/add-securenote)
-        navigate('/add-credential-1');
+        router.navigateTo('add-credential-1');
         break;
     }
-  }, [currentPage, navigate]);
+  }, [currentPage, router]);
 
   const handleFAQ = React.useCallback(() => {
     // Open FAQ or help page

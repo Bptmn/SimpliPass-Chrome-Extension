@@ -1,28 +1,32 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { View } from 'react-native';
 import { Input } from '@ui/components/InputFields';
 import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { getPageStyles } from '@ui/design/layout';
 import { useThemeMode } from '@common/ui/design/theme';
+import type { UseAppRouterReturn } from '@common/ui/router';
+import { ROUTES } from '@common/ui/router';
 
-const AddCredential1: React.FC = () => {
-  const navigate = useNavigate();
+interface AddCredential1Props {
+  router: UseAppRouterReturn;
+}
+
+const AddCredential1: React.FC<AddCredential1Props> = ({ router }) => {
   const [title, setTitle] = useState('');
   const { mode } = useThemeMode();
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
 
   const handleNext = () => {
     if (title.trim()) {
-      navigate('/add-credential-2', { state: { title } });
+      router.navigateTo(ROUTES.ADD_CREDENTIAL_2, { title });
     }
   };
 
   return (
     <View style={pageStyles.pageContainer}>
       <View style={pageStyles.pageContent}>
-        <HeaderTitle title="Ajouter un identifiant" onBackPress={() => navigate(-1)} />
+        <HeaderTitle title="Ajouter un identifiant" onBackPress={router.goBack} />
         <View style={pageStyles.formContainer}>
           <Input
             label="Nom de l'identifiant"

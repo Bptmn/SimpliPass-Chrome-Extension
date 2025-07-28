@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { View, ScrollView } from 'react-native';
 import { Input } from '@ui/components/InputFields';
 import { getPageStyles } from '@ui/design/layout';
@@ -13,16 +12,18 @@ import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { SecureNoteDecrypted } from '@common/core/types/items.types';
 import { generateItemKey } from '@common/utils/crypto';
+import type { UseAppRouterReturn } from '@common/ui/router';
+import { ROUTES } from '@common/ui/router';
 
 interface AddSecureNoteProps {
   onCancel?: () => void;
+  router?: UseAppRouterReturn;
 }
 
-const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
+const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel, router }) => {
   const { mode } = useThemeMode();
   const styles = React.useMemo(() => getPageStyles(mode), [mode]);
   const themeColors = getColors(mode);
-  const navigate = useNavigate();
   const { user } = useUser();
   const { addItem, isActionLoading } = useItems();
   const [title, setTitle] = useState('');
@@ -46,7 +47,9 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
       };
       
       await addItem(newNote);
-      navigate('/');
+      if (router) {
+        router.navigateTo(ROUTES.HOME);
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la création de la note.');
     }
@@ -59,7 +62,7 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
         <View style={styles.formContainer}>
           <HeaderTitle 
             title="Ajouter une note" 
-            onBackPress={onCancel || (() => navigate(-1))} 
+            onBackPress={onCancel || (router ? router.goBack : () => {})} 
           />
           <Input
             label="Nom de la note sécurisée"

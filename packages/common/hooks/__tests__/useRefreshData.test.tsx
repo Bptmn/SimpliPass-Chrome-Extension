@@ -1,9 +1,9 @@
 import { renderHook, act } from '@testing-library/react';
 import { useRefreshData } from '../useRefreshData';
-import { fetchAndStoreItems } from '@common/core/services/items';
+import { fetchAndStoreItems } from '@common/core/services/itemsService';
 
 // Mock dependencies
-jest.mock('@common/core/services/items');
+jest.mock('@common/core/services/itemsService');
 jest.mock('@common/config/platform', () => ({
   getFirebaseConfig: jest.fn().mockResolvedValue({
     apiKey: 'test-api-key',
@@ -56,8 +56,8 @@ describe('useRefreshData', () => {
       await act(async () => {
         try {
           await result.current.refreshData();
-        } catch (error) {
-          // Expected to throw
+        } catch (_error) {
+          // Expected error
         }
       });
 
@@ -94,8 +94,8 @@ describe('useRefreshData', () => {
       await act(async () => {
         try {
           await result.current.refreshData();
-        } catch (error) {
-          // Expected to throw
+        } catch (_error) {
+          // Expected error
         }
       });
 
@@ -110,8 +110,8 @@ describe('useRefreshData', () => {
       await act(async () => {
         try {
           await result.current.refreshData();
-        } catch (error) {
-          // Expected to throw
+        } catch (_error) {
+          // Expected error
         }
       });
 

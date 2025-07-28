@@ -16,7 +16,6 @@ import { itemsStateManager } from '@common/core/services/itemsService';
 import { addItem, updateItem, deleteItem, fetchAndStoreItems } from '@common/core/services/itemsService';
 import { useListeners } from './useListeners';
 import { 
-  shouldShowLoading,
   getItemCounts
 } from '@common/utils/homePage';
 import type { 
@@ -116,6 +115,9 @@ export const useItems = (): UseItemsReturn => {
   const credentials = items.filter(item => item.itemType === 'credential') as CredentialDecrypted[];
   const bankCards = items.filter(item => item.itemType === 'bankCard') as BankCardDecrypted[];
   const secureNotes = items.filter(item => item.itemType === 'secureNote') as SecureNoteDecrypted[];
+
+  // Derive loading state from items state
+  const _shouldShowLoading = loading && items.length === 0;
 
   // Filter items based on search value
   const filteredItems = useMemo(() => {

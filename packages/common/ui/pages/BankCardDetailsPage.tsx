@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { useNavigate } from 'react-router-dom';
 import { BankCardDecrypted } from '@common/core/types/types';
 import { ExpirationDate, formatExpirationDate } from '@common/utils';
 import { deleteItem } from '@common/core/services/itemsService';
@@ -17,21 +16,24 @@ import { DetailField } from '@ui/components/DetailField';
 import { MoreInfo } from '@ui/components/MoreInfo';
 import { getCurrentUser } from '@common/core/services/userService';
 import { User } from '@common/core/types/types';
+import type { UseAppRouterReturn } from '@common/ui/router';
+import { ROUTES } from '@common/ui/router';
 
 interface BankCardDetailsPageProps {
   card: BankCardDecrypted;
   onBack: () => void;
+  router?: UseAppRouterReturn;
 }
 
 export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   card,
   onBack,
+  router,
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [_userLoading, setUserLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +59,9 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   }, []);
 
   const handleEdit = () => {
-    navigate('/modify-bank-card', { state: { card } });
+    if (router) {
+      router.navigateTo(ROUTES.MODIFY_BANK_CARD, { card });
+    }
   };
 
   const handleDelete = async () => {

@@ -4,7 +4,6 @@ import { getPageStyles, spacing, radius } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '@common/hooks/useToast';
 import { 
   handleCardClick as handleCardClickUtil, 
@@ -26,8 +25,14 @@ import { BankCardDetailsPage } from './BankCardDetailsPage';
 import { SecureNoteDetailsPage } from './SecureNoteDetailsPage';
 import { CredentialDecrypted } from '@common/core/types/types';
 import { HelperBar } from '@ui/components/HelperBar';
+import type { UseAppRouterReturn } from '@common/ui/router';
+import { ROUTES } from '@common/ui/router';
 
 type Category = 'credentials' | 'bankCards' | 'secureNotes';
+
+interface ExtendedHomePageProps extends HomePageProps {
+  router?: UseAppRouterReturn;
+}
 
 /**
  * HomePage component displays the main vault UI:
@@ -35,16 +40,16 @@ type Category = 'credentials' | 'bankCards' | 'secureNotes';
  * - Handles search, error, and loading states
  * - Handles credential decryption and detail view
  */
-export const HomePage: React.FC<HomePageProps> = ({
+export const HomePage: React.FC<ExtendedHomePageProps> = ({
   user, // now required, passed from PopupApp
   pageState: _pageState,
   onInjectCredential: _onInjectCredential,
+  router,
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const navigate = useNavigate();
   const { showToast } = useToast();
   
   // Category state management
@@ -56,25 +61,25 @@ export const HomePage: React.FC<HomePageProps> = ({
     bankCards,
     secureNotes,
     searchValue: filter,
-    selected,
+    selectedCredential,
     selectedBankCard,
     selectedSecureNote,
     error,
     loading,
     setSearchValue: setFilter,
-    setSelected,
+    setSelectedCredential,
     setSelectedBankCard,
     setSelectedSecureNote,
   } = useItems();
 
   // User interaction handlers - moved from hook to component
   const handleCardClick = React.useCallback((cred: CredentialDecrypted) => {
-    handleCardClickUtil(cred, setSelected);
-  }, [setSelected]);
+    handleCardClickUtil(cred, setSelectedCredential);
+  }, [setSelectedCredential]);
 
   const handleOtherItemClick = React.useCallback((item: unknown) => {
-    handleOtherItemClickUtil(item, setSelected);
-  }, [setSelected]);
+    handleOtherItemClickUtil(item, setSelectedCredential);
+  }, [setSelectedCredential]);
 
   const handleCopyCredential = React.useCallback(() => {
     showToast('Mot de passe copié !');
@@ -85,8 +90,10 @@ export const HomePage: React.FC<HomePageProps> = ({
   }, [showToast]);
 
   const handleAddSuggestion = React.useCallback(() => {
-    navigate('/add-credential-2', { state: { link: _pageState?.url } });
-  }, [navigate, _pageState?.url]);
+    if (router) {
+              router.navigateTo(ROUTES.ADD_CREDENTIAL_2, { link: _pageState?.url });
+    }
+  }, [router, _pageState?.url]);
 
   // Debug logging
   console.log('[HomePage] Render', { user, loading });
@@ -114,8 +121,8 @@ export const HomePage: React.FC<HomePageProps> = ({
   };
 
   // If a credential is selected, show the detail page
-  if (selected) {
-    return <CredentialDetailsPage credential={selected} onBack={() => setSelected(null)} />;
+  if (selectedCredential) {
+    return <CredentialDetailsPage credential={selectedCredential} onBack={() => setSelectedCredential(null)} />;
   }
   if (selectedBankCard) {
     return <BankCardDetailsPage card={selectedBankCard} onBack={() => setSelectedBankCard(null)} />;

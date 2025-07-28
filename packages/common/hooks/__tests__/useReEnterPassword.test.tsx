@@ -1,10 +1,10 @@
 import { renderHook, act } from '@testing-library/react';
 import { useReEnterPassword } from '../useReEnterPassword';
-import { getUserSecretKey } from '@common/core/services/secret';
+import { getUserSecretKey } from '@common/core/services/secretsService';
 import { storage } from '@common/core/adapters/platform.storage.adapter';
 
 // Mock dependencies
-jest.mock('@common/core/services/secret');
+jest.mock('@common/core/services/secretsService');
 jest.mock('@common/core/adapters/platform.storage.adapter');
 jest.mock('@common/config/platform', () => ({
   getFirebaseConfig: jest.fn().mockResolvedValue({
@@ -64,7 +64,7 @@ describe('useReEnterPassword', () => {
       await act(async () => {
         try {
           await result.current.reEnterPassword('wrongpassword');
-        } catch (error) {
+        } catch (_error) {
           // Expected to throw
         }
       });
@@ -111,7 +111,7 @@ describe('useReEnterPassword', () => {
       await act(async () => {
         try {
           await result.current.reEnterPassword('testpassword');
-        } catch (error) {
+        } catch (_error) {
           // Expected to throw
         }
       });
@@ -129,7 +129,7 @@ describe('useReEnterPassword', () => {
       await act(async () => {
         try {
           await result.current.reEnterPassword('testpassword');
-        } catch (error) {
+        } catch (_error) {
           // Expected to throw
         }
       });
@@ -145,7 +145,7 @@ describe('useReEnterPassword', () => {
       await act(async () => {
         try {
           await result.current.reEnterPassword('testpassword');
-        } catch (error) {
+        } catch (_error) {
           // Expected to throw
         }
       });
@@ -163,7 +163,7 @@ describe('useReEnterPassword', () => {
       await act(async () => {
         try {
           await result.current.reEnterPassword('testpassword');
-        } catch (error) {
+        } catch (_error) {
           // Expected to throw
         }
       });

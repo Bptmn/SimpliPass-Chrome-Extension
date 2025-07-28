@@ -51,9 +51,9 @@ export const mockDb: DatabaseAdapter = {
   generateItemDatabaseId: () => 'mock-id-123',
   
   // Mock listeners functionality
-  startListeners: async (userId: string, callbacks: DatabaseListenersCallbacks) => {
-    console.log('[Mock DB] Starting listeners for user:', userId);
-    // Mock implementation - does nothing
+  startListeners: async (_userId: string, _callbacks: DatabaseListenersCallbacks) => {
+    console.log('[MockDatabase] Starting listeners');
+    return Promise.resolve();
   },
   stopListeners: () => {
     console.log('[Mock DB] Stopping listeners');
