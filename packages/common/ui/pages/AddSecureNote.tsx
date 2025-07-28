@@ -12,18 +12,18 @@ import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { SecureNoteDecrypted } from '@common/core/types/items.types';
 import { generateItemKey } from '@common/utils/crypto';
-import type { UseAppRouterReturn } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 
 interface AddSecureNoteProps {
   onCancel?: () => void;
-  router?: UseAppRouterReturn;
 }
 
-const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel, router }) => {
+const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
   const { mode } = useThemeMode();
   const styles = React.useMemo(() => getPageStyles(mode), [mode]);
   const themeColors = getColors(mode);
+  const router = useAppRouterContext();
   const { user } = useUser();
   const { addItem, isActionLoading } = useItems();
   const [title, setTitle] = useState('');
@@ -47,9 +47,7 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel, router }) => {
       };
       
       await addItem(newNote);
-      if (router) {
-        router.navigateTo(ROUTES.HOME);
-      }
+      router.navigateTo(ROUTES.HOME);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la création de la note.');
     }
@@ -62,7 +60,7 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel, router }) => {
         <View style={styles.formContainer}>
           <HeaderTitle 
             title="Ajouter une note" 
-            onBackPress={onCancel || (router ? router.goBack : () => {})} 
+            onBackPress={onCancel || router.goBack} 
           />
           <Input
             label="Nom de la note sécurisée"
@@ -101,4 +99,4 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel, router }) => {
   );
 };
 
-export { AddSecureNote }; 
+export default AddSecureNote; 

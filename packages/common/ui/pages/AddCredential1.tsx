@@ -5,17 +5,14 @@ import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { getPageStyles } from '@ui/design/layout';
 import { useThemeMode } from '@common/ui/design/theme';
-import type { UseAppRouterReturn } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 
-interface AddCredential1Props {
-  router: UseAppRouterReturn;
-}
-
-const AddCredential1: React.FC<AddCredential1Props> = ({ router }) => {
+const AddCredential1: React.FC = () => {
   const [title, setTitle] = useState('');
   const { mode } = useThemeMode();
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
+  const router = useAppRouterContext();
 
   const handleNext = () => {
     if (title.trim()) {

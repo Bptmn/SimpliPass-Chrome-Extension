@@ -20,7 +20,7 @@ import { getColors } from '@common/ui/design/colors';
 import { layout } from '@common/ui/design/layout';
 import AddCard1 from '@common/ui/pages/AddCard1';
 import { AddCard2 } from '@common/ui/pages/AddCard2';
-import { AddSecureNote } from '@common/ui/pages/AddSecureNote';
+import AddSecureNote from '@common/ui/pages/AddSecureNote';
 import AddCredential1 from '@common/ui/pages/AddCredential1';
 import { AddCredential2 } from '@common/ui/pages/AddCredential2';
 import { LockPage } from '@common/ui/pages/LockPage';
@@ -120,7 +120,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
             <>
               {/* Navigation Header */}
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               
               {/* Main Content Area */}
@@ -134,7 +134,6 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
                     user={user}
                     pageState={pageState || null}
                     onInjectCredential={onInjectCredential || (() => {})}
-                    router={router}
                   />
                 </ScrollView>
               </View>
@@ -146,7 +145,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
             <>
               {/* Navigation Header */}
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               
               {/* Main Content Area */}
@@ -166,7 +165,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
             <>
               {/* Navigation Header */}
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               
               {/* Main Content Area */}
@@ -186,7 +185,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
           {router.currentRoute === ROUTES.ADD_CREDENTIAL_1 && user && (
             <>
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               <View style={styles.mainContent}>
                 <ScrollView 
@@ -194,7 +193,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
                   contentContainerStyle={styles.scrollContent}
                   showsVerticalScrollIndicator={false}
                 >
-                  <AddCredential1 router={router} />
+                  <AddCredential1 />
                 </ScrollView>
               </View>
             </>
@@ -202,7 +201,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
           {router.currentRoute === ROUTES.ADD_CREDENTIAL_2 && user && (
             <>
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               <View style={styles.mainContent}>
                 <ScrollView 
@@ -213,7 +212,6 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
                   <AddCredential2 
                     title={router.routeParams.title || ''} 
                     link={router.routeParams.link} 
-                    router={router}
                   />
                 </ScrollView>
               </View>
@@ -222,7 +220,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
           {router.currentRoute === ROUTES.ADD_CARD_1 && user && (
             <>
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               <View style={styles.mainContent}>
                 <ScrollView 
@@ -230,7 +228,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
                   contentContainerStyle={styles.scrollContent}
                   showsVerticalScrollIndicator={false}
                 >
-                  <AddCard1 router={router} />
+                  <AddCard1 />
                 </ScrollView>
               </View>
             </>
@@ -238,7 +236,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
           {router.currentRoute === ROUTES.ADD_CARD_2 && user && (
             <>
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               <View style={styles.mainContent}>
                 <ScrollView 
@@ -246,7 +244,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
                   contentContainerStyle={styles.scrollContent}
                   showsVerticalScrollIndicator={false}
                 >
-                  <AddCard2 {...router.routeParams} router={router} />
+                  <AddCard2 {...router.routeParams} />
                 </ScrollView>
               </View>
             </>
@@ -254,7 +252,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
           {router.currentRoute === ROUTES.ADD_SECURENOTE && user && (
             <>
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               <View style={styles.mainContent}>
                 <ScrollView 
@@ -262,7 +260,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
                   contentContainerStyle={styles.scrollContent}
                   showsVerticalScrollIndicator={false}
                 >
-                  <AddSecureNote router={router} />
+                  <AddSecureNote />
                 </ScrollView>
               </View>
             </>
@@ -272,7 +270,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
           {router.currentRoute === ROUTES.CREDENTIAL_DETAILS && user && (
             <>
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               <View style={styles.mainContent}>
                 <ScrollView 
@@ -283,7 +281,6 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
                   <CredentialDetailsPage 
                     credential={router.routeParams.credential}
                     onBack={router.goBack}
-                    router={router}
                   />
                 </ScrollView>
               </View>
@@ -292,7 +289,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
           {router.currentRoute === ROUTES.BANK_CARD_DETAILS && user && (
             <>
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               <View style={styles.mainContent}>
                 <ScrollView 
@@ -303,7 +300,6 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
                   <BankCardDetailsPage 
                     card={router.routeParams.card}
                     onBack={router.goBack}
-                    router={router}
                   />
                 </ScrollView>
               </View>
@@ -312,7 +308,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
           {router.currentRoute === ROUTES.SECURE_NOTE_DETAILS && user && (
             <>
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               <View style={styles.mainContent}>
                 <ScrollView 
@@ -323,7 +319,6 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
                   <SecureNoteDetailsPage 
                     note={router.routeParams.note}
                     onBack={router.goBack}
-                    router={router}
                   />
                 </ScrollView>
               </View>
@@ -334,7 +329,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
           {router.currentRoute === ROUTES.MODIFY_BANK_CARD && user && (
             <>
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               <View style={styles.mainContent}>
                 <ScrollView 
@@ -354,7 +349,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
           {router.currentRoute === ROUTES.MODIFY_CREDENTIAL && user && (
             <>
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               <View style={styles.mainContent}>
                 <ScrollView 
@@ -374,7 +369,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
           {router.currentRoute === ROUTES.MODIFY_SECURENOTE && user && (
             <>
               <View style={styles.header}>
-                <NavBar router={router} />
+                <NavBar />
               </View>
               <View style={styles.mainContent}>
                 <ScrollView 

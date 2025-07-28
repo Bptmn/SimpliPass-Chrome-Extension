@@ -16,19 +16,19 @@ import { getPageStyles, spacing } from '@ui/design/layout';
 import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { checkPasswordStrength } from '@common/utils/checkPasswordStrength';
-import type { UseAppRouterReturn } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 
 interface AddCredential2Props {
   title: string;
   link?: string;
-  router?: UseAppRouterReturn;
 }
 
-export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTitle, link = '', router }) => {
+export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTitle, link = '' }) => {
   const { mode } = useThemeMode();
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const themeColors = getColors(mode);
+  const router = useAppRouterContext();
   const { user } = useUser();
   const { addItem, isActionLoading } = useItems();
   const [title, setTitle] = useState(initialTitle);
@@ -76,9 +76,7 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
 
       await addItem(newCredential);
       showToast('Identifiant ajouté avec succès');
-      if (router) {
-        router.navigateTo(ROUTES.HOME);
-      }
+      router.navigateTo(ROUTES.HOME);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de l\'ajout de l\'identifiant.');
     }
@@ -94,12 +92,8 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
             title="Ajouter un identifiant" 
             onBackPress={() => {
               console.log('[AddCredential2] Back button pressed, router:', !!router);
-              if (router) {
-                console.log('[AddCredential2] Using router.goBack()');
-                router.goBack();
-              } else {
-                console.log('[AddCredential2] No router available');
-              }
+              console.log('[AddCredential2] Using router.goBack()');
+              router.goBack();
             }} 
           />
           <View style={pageStyles.formContainer}>

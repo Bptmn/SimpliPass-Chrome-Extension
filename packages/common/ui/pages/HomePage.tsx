@@ -25,16 +25,14 @@ import { BankCardDetailsPage } from './BankCardDetailsPage';
 import { SecureNoteDetailsPage } from './SecureNoteDetailsPage';
 import { CredentialDecrypted } from '@common/core/types/types';
 import { HelperBar } from '@ui/components/HelperBar';
-import type { UseAppRouterReturn } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import type { Category } from '@common/core/types/categories.types';
 import { CATEGORIES } from '@common/core/types/categories.types';
 
 
 
-interface ExtendedHomePageProps extends HomePageProps {
-  router?: UseAppRouterReturn;
-}
+
 
 /**
  * HomePage component displays the main vault UI:
@@ -42,16 +40,16 @@ interface ExtendedHomePageProps extends HomePageProps {
  * - Handles search, error, and loading states
  * - Handles credential decryption and detail view
  */
-export const HomePage: React.FC<ExtendedHomePageProps> = ({
+export const HomePage: React.FC<HomePageProps> = ({
   user: _user, // now required, passed from PopupApp
   pageState: _pageState,
   onInjectCredential: _onInjectCredential,
-  router,
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
+  const router = useAppRouterContext();
   const { showToast } = useToast();
   
   // Category state management
@@ -93,12 +91,8 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
 
   const handleAddSuggestion = React.useCallback(() => {
     console.log('[HomePage] handleAddSuggestion called, router:', !!router, 'pageState:', _pageState?.url);
-    if (router) {
-      console.log('[HomePage] Navigating to ADD_CREDENTIAL_2 with link:', _pageState?.url);
-      router.navigateTo(ROUTES.ADD_CREDENTIAL_2, { link: _pageState?.url });
-    } else {
-      console.log('[HomePage] No router available, cannot navigate');
-    }
+    console.log('[HomePage] Navigating to ADD_CREDENTIAL_2 with link:', _pageState?.url);
+    router.navigateTo(ROUTES.ADD_CREDENTIAL_2, { link: _pageState?.url });
   }, [router, _pageState?.url]);
 
 
@@ -127,13 +121,13 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
 
   // If a credential is selected, show the detail page
   if (selectedCredential) {
-    return <CredentialDetailsPage credential={selectedCredential} onBack={() => setSelectedCredential(null)} router={router} />;
+    return <CredentialDetailsPage credential={selectedCredential} onBack={() => setSelectedCredential(null)} />;
   }
   if (selectedBankCard) {
-    return <BankCardDetailsPage card={selectedBankCard} onBack={() => setSelectedBankCard(null)} router={router} />;
+    return <BankCardDetailsPage card={selectedBankCard} onBack={() => setSelectedBankCard(null)} />;
   }
   if (selectedSecureNote) {
-    return <SecureNoteDetailsPage note={selectedSecureNote} onBack={() => setSelectedSecureNote(null)} router={router} />;
+    return <SecureNoteDetailsPage note={selectedSecureNote} onBack={() => setSelectedSecureNote(null)} />;
   }
 
   const suggestions = getSuggestions();
@@ -301,7 +295,7 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
       </View>
 
       {/* HelperBar - only on HomePage */}
-      <HelperBar category={category} router={router} />
+      <HelperBar category={category} />
     </View>
   );
 };

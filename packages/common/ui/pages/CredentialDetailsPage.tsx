@@ -15,24 +15,23 @@ import { DetailField } from '@ui/components/DetailField';
 import { MoreInfo } from '@ui/components/MoreInfo';
 import CopyButton from '@ui/components/CopyButton';
 
-import type { UseAppRouterReturn } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 
 interface CredentialDetailsPageProps {
   credential: CredentialDecrypted;
   onBack: () => void;
-  router?: UseAppRouterReturn;
 }
 
 export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   credential,
   onBack,
-  router,
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
+  const router = useAppRouterContext();
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,9 +41,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
 
 
   const handleEdit = () => {
-    if (router) {
-      router.navigateTo(ROUTES.MODIFY_CREDENTIAL, { credential });
-    }
+    router.navigateTo(ROUTES.MODIFY_CREDENTIAL, { credential });
   };
 
   const handleLaunch = (url: string) => {
@@ -67,11 +64,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
     try {
       await deleteItem(credential.id);
       showToast('Identifiant supprimé avec succès');
-      if (router) {
-        router.navigateTo(ROUTES.HOME);
-      } else {
-        onBack();
-      }
+      router.navigateTo(ROUTES.HOME);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la suppression.');
     } finally {

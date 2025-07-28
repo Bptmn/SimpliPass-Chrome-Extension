@@ -10,19 +10,19 @@ import { Icon } from './Icon';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 
-import type { UseAppRouterReturn } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import type { Category } from '@common/core/types/categories.types';
 import { CATEGORIES } from '@common/core/types/categories.types';
 
 interface HelperBarProps {
   category: Category;
-  router?: UseAppRouterReturn;
 }
 
-export const HelperBar: React.FC<HelperBarProps> = ({ category, router }) => {
+export const HelperBar: React.FC<HelperBarProps> = ({ category }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const router = useAppRouterContext();
   
   // Get button text based on category
   const getAddButtonText = () => {
@@ -41,10 +41,6 @@ export const HelperBar: React.FC<HelperBarProps> = ({ category, router }) => {
   // User interaction handlers - simplified for category-based navigation
   const handleAdd = React.useCallback(() => {
     console.log('[HelperBar] handleAdd called, router:', !!router, 'category:', category);
-    if (!router) {
-      console.log('[HelperBar] No router available, cannot navigate');
-      return;
-    }
     
     // Navigate based on category
     switch (category) {

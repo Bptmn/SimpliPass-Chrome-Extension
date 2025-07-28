@@ -23,22 +23,22 @@ import { Toast } from '@ui/components/Toast';
 import { useToast } from '@common/hooks/useToast';
 import { getCurrentUser } from '@common/core/services/userService';
 import { User } from '@common/core/types/types';
-import type { UseAppRouterReturn } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 
 interface AddCard2Props {
   title?: string;
   bankName?: string;
   expiryDate?: string;
   cvv?: string;
-  router?: UseAppRouterReturn;
 }
 
-export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankName: initialBankName, expiryDate: initialExpiryDate, cvv: initialCvv, router }) => {
+export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankName: initialBankName, expiryDate: initialExpiryDate, cvv: initialCvv }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
+  const router = useAppRouterContext();
   const [user, setUser] = useState<User | null>(null);
   const [_userLoading, setUserLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

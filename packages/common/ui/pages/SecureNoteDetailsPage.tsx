@@ -13,24 +13,23 @@ import { getColors } from '@ui/design/colors';
 import { spacing, radius, getPageStyles } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { deleteItem } from '@common/core/services/itemsService';
-import type { UseAppRouterReturn } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 
 interface SecureNoteDetailsPageProps {
   note: SecureNoteDecrypted;
   onBack: () => void;
-  router?: UseAppRouterReturn;
 }
 
 export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
   note,
   onBack,
-  router,
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
+  const router = useAppRouterContext();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,9 +38,7 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
 
 
   const handleEdit = () => {
-    if (router) {
-      router.navigateTo(ROUTES.MODIFY_SECURENOTE, { secureNote: note });
-    }
+    router.navigateTo(ROUTES.MODIFY_SECURENOTE, { secureNote: note });
   };
 
   const handleDelete = async () => {
@@ -101,9 +98,7 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
             </View>
           </Pressable>
           <View style={styles.headerContent}>
-            <View style={styles.iconCenter}>
-              <View style={[styles.colorCircle, { backgroundColor: note.color }]} />
-            </View>
+            <View style={[styles.colorCircle, { backgroundColor: note.color }]} />
             <Text style={styles.title}>{note.title}</Text>
           </View>
         </View>

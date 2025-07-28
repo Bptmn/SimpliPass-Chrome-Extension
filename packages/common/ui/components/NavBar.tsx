@@ -5,8 +5,9 @@ import { Icon } from './Icon';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { layout } from '@ui/design/layout';
-import type { UseAppRouterReturn, AppRoute } from '@common/ui/router';
+import type { AppRoute } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 
 interface NavItem {
   route: AppRoute;
@@ -14,13 +15,10 @@ interface NavItem {
   label: string;
 }
 
-interface NavbarProps {
-  router: UseAppRouterReturn;
-}
-
-const Navbar: React.FC<NavbarProps> = ({ router }) => {
+const Navbar: React.FC = () => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const router = useAppRouterContext();
 
   const navItems: NavItem[] = [
     {

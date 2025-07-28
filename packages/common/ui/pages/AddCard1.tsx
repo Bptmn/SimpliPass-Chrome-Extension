@@ -6,17 +6,14 @@ import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
-import type { UseAppRouterReturn } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 
-interface AddCard1Props {
-  router: UseAppRouterReturn;
-}
-
-const AddCard1: React.FC<AddCard1Props> = ({ router }) => {
+const AddCard1: React.FC = () => {
   const { mode } = useThemeMode();
   const styles = getPageStyles(mode);
   const themeColors = getColors(mode);
+  const router = useAppRouterContext();
   const [title, setTitle] = useState('');
   const [bankName, setBankName] = useState('');
   const [_expiryDate, _setExpiryDate] = useState('');

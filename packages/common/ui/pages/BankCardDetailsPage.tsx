@@ -15,24 +15,23 @@ import { Button } from '@ui/components/Buttons';
 import { DetailField } from '@ui/components/DetailField';
 import { MoreInfo } from '@ui/components/MoreInfo';
 
-import type { UseAppRouterReturn } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 
 interface BankCardDetailsPageProps {
   card: BankCardDecrypted;
   onBack: () => void;
-  router?: UseAppRouterReturn;
 }
 
 export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   card,
   onBack,
-  router,
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
+  const router = useAppRouterContext();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -41,9 +40,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
 
 
   const handleEdit = () => {
-    if (router) {
-      router.navigateTo(ROUTES.MODIFY_BANK_CARD, { bankCard: card });
-    }
+    router.navigateTo(ROUTES.MODIFY_BANK_CARD, { bankCard: card });
   };
 
   const handleDelete = async () => {
@@ -57,11 +54,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
     try {
       await deleteItem(card.id);
       showToast('Carte supprimée avec succès');
-      if (router) {
-        router.navigateTo(ROUTES.HOME);
-      } else {
-        onBack();
-      }
+      router.navigateTo(ROUTES.HOME);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la suppression.');
     } finally {
