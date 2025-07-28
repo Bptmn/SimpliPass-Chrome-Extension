@@ -15,12 +15,9 @@ import { auth } from '../adapters/auth.adapter';
  */
 export async function getCurrentUser(): Promise<User | null> {
   try {
-    console.log('[UserService] Getting current user from database...');
-    
     // Get current user ID from auth
     const currentUser = auth.getCurrentUser();
     if (!currentUser) {
-      console.log('[UserService] No authenticated user found');
       return null;
     }
 
@@ -41,7 +38,6 @@ export async function getCurrentUser(): Promise<User | null> {
       updatedAt: userDoc.updatedAt ? new Date(userDoc.updatedAt) : new Date(),
     };
 
-    console.log('[UserService] Current user retrieved successfully');
     return user;
     
   } catch (error) {
@@ -55,11 +51,8 @@ export async function getCurrentUser(): Promise<User | null> {
  */
 export async function checkUserSecretKey(): Promise<boolean> {
   try {
-    console.log('[UserService] Checking if user secret key exists...');
     const userSecretKey = await storage.getUserSecretKeyFromSecureLocalStorage();
-    const hasSecretKey = !!userSecretKey;
-    console.log('[UserService] Secret key check result:', hasSecretKey);
-    return hasSecretKey;
+    return !!userSecretKey;
   } catch (error) {
     console.error('[UserService] Error checking user secret key:', error);
     return false;
@@ -77,23 +70,16 @@ export function getCurrentUserId(): string | null {
 /**
  * Initialize user data after authentication
  */
-export async function initializeUserData(userId: string): Promise<{
+export async function initializeUserData(_userId: string): Promise<{
   user: User | null;
   hasSecretKey: boolean;
 }> {
   try {
-    console.log('[UserService] Initializing user data for:', userId);
-    
     // Get user from database
     const user = await getCurrentUser();
     
     // Check if user has secret key
     const hasSecretKey = await checkUserSecretKey();
-    
-    console.log('[UserService] User data initialization complete:', {
-      user: !!user,
-      hasSecretKey
-    });
     
     return { user, hasSecretKey };
     

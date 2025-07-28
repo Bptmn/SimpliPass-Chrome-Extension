@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { SecureNoteDecrypted } from '@common/core/types/items.types';
-import { useItems } from '@common/hooks/useItems';
-import { useUser } from '@common/hooks/useUser';
+
 import { useToast } from '@common/hooks/useToast';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { DetailField } from '@ui/components/DetailField';
@@ -13,55 +12,50 @@ import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { spacing, radius, getPageStyles } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
+import { deleteItem } from '@common/core/services/itemsService';
+import type { UseAppRouterReturn } from '@common/ui/router';
+import { ROUTES } from '@common/ui/router';
 
 interface SecureNoteDetailsPageProps {
   note: SecureNoteDecrypted;
   onBack: () => void;
+  router?: UseAppRouterReturn;
 }
 
 export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
   note,
   onBack,
+  router,
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const { user } = useUser();
-  const { deleteItem } = useItems();
   const { showToast } = useToast();
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+
+
   const handleEdit = () => {
-    // Navigate to edit page - this would be handled by the parent component
-    console.log('Edit secure note');
+    if (router) {
+      router.navigateTo(ROUTES.MODIFY_SECURENOTE, { secureNote: note });
+    }
   };
 
   const handleDelete = async () => {
-    if (!user) {
-      setError('Utilisateur non connecté');
-      return;
-    }
     setShowDeleteConfirm(true);
   };
 
   const confirmDelete = async () => {
-    if (!user) return;
     setLoading(true);
     setError(null);
     setShowDeleteConfirm(false);
     try {
-      const result = await deleteItem(note.id, 'secureNote');
-      
-      if (result.success) {
-        showToast('Note supprimée avec succès');
-        onBack();
-      } else {
-        setError(result.error || 'Erreur lors de la suppression.');
-      }
+      await deleteItem(note.id);
+      showToast('Note supprimée avec succès');
+      onBack();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la suppression.');
     } finally {

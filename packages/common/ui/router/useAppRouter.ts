@@ -66,37 +66,42 @@ export const useAppRouter = ({
    * Priority: loading -> error -> login -> lock -> home
    */
   const determineRoute = useCallback((): AppRoute => {
-    console.log('[useAppRouter] Determining route with state:', {
-      user: !!user,
-      isUserFullyInitialized,
-      listenersError: !!listenersError,
-      currentRoute
-    });
-    
     if (user === null && !listenersError) return ROUTES.LOADING;
     if (listenersError) return ROUTES.ERROR;
     if (!user) return ROUTES.LOGIN;
     if (!isUserFullyInitialized) return ROUTES.LOCK;
     return ROUTES.HOME;
-  }, [user, isUserFullyInitialized, listenersError, currentRoute]);
+  }, [user, isUserFullyInitialized, listenersError]);
+
+  const getRouteChangeReason = useCallback((fromRoute: AppRoute, toRoute: AppRoute): string => {
+    if (fromRoute === toRoute) return '';
+    
+    switch (toRoute) {
+      case ROUTES.LOADING:
+        return 'Initial loading state';
+      case ROUTES.ERROR:
+        return `Error occurred: ${listenersError}`;
+      case ROUTES.LOGIN:
+        return 'User not authenticated';
+      case ROUTES.LOCK:
+        return 'User secret key missing - requires password re-entry';
+      case ROUTES.HOME:
+        return 'User fully initialized and authenticated';
+      default:
+        return 'Unknown route change';
+    }
+  }, [listenersError]);
 
   /**
    * Updates route when authentication state changes
    * Automatically navigates to appropriate route based on user state
    */
   useEffect(() => {
-    console.log('[useAppRouter] useEffect triggered with state:', {
-      user: !!user,
-      isUserFullyInitialized,
-      listenersError: !!listenersError,
-      currentRoute
-    });
-    
     const newRoute = determineRoute();
-    console.log('[useAppRouter] Determined new route:', newRoute);
     
     if (newRoute !== currentRoute) {
-      console.log('[useAppRouter] Route changed from', currentRoute, 'to', newRoute);
+      const reason = getRouteChangeReason(currentRoute, newRoute);
+      console.log('[useAppRouter] Route changed from', currentRoute, 'to', newRoute, '-', reason);
       setCurrentRoute(newRoute);
       setRouteHistory(prev => [...prev, { route: newRoute }]);
       setRouteParams({});
@@ -104,8 +109,6 @@ export const useAppRouter = ({
       if (newRoute !== ROUTES.LOCK) {
         setLockReason(undefined);
       }
-    } else {
-      console.log('[useAppRouter] Route unchanged, staying on', currentRoute);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isUserFullyInitialized, listenersError]);
@@ -115,6 +118,7 @@ export const useAppRouter = ({
    * Updates route history and clears lock reason if navigating away from lock
    */
   const navigateTo = useCallback((route: AppRoute, params?: Record<string, any>) => {
+    console.log('[useAppRouter] navigateTo called with route:', route, 'params:', params);
     setCurrentRoute(route);
     setRouteHistory(prev => [...prev, { route, params }]);
     setRouteParams(params || {});
@@ -140,9 +144,11 @@ export const useAppRouter = ({
    * Restores previous route parameters and clears lock reason if appropriate
    */
   const goBack = useCallback(() => {
+    console.log('[useAppRouter] goBack called, history length:', routeHistory.length);
     if (routeHistory.length > 1) {
       const newHistory = routeHistory.slice(0, -1);
       const previous = newHistory[newHistory.length - 1];
+      console.log('[useAppRouter] Going back from', currentRoute, 'to', previous.route, 'with params:', previous.params);
       setRouteHistory(newHistory);
       setCurrentRoute(previous.route);
       setRouteParams(previous.params || {});
@@ -150,8 +156,10 @@ export const useAppRouter = ({
       if (previous.route !== ROUTES.LOCK) {
         setLockReason(undefined);
       }
+    } else {
+      console.log('[useAppRouter] No history to go back to');
     }
-  }, [routeHistory]);
+  }, [routeHistory, currentRoute]);
 
   /**
    * Resets navigation to home screen

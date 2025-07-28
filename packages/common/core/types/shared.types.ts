@@ -6,6 +6,7 @@
  */
 
 import { ItemDecrypted } from "./types";
+import { CATEGORIES } from "./categories.types";
 
 // ===== Platform Types =====
 
@@ -43,7 +44,7 @@ export interface AuthState {
 
 // ===== Categories & Tags =====
 
-export interface Category {
+export interface CategoryEntity {
   id: string;
   name: string;
   color: string;
@@ -109,7 +110,7 @@ export interface SearchState {
     category: string | null;
     tags: string[];
     favorites: boolean;
-    type: 'all' | 'credentials' | 'cards' | 'notes';
+    type: 'all' | typeof CATEGORIES.CREDENTIALS | typeof CATEGORIES.BANK_CARDS | typeof CATEGORIES.SECURE_NOTES;
   };
   results: {
     credentials: any[];
@@ -253,7 +254,7 @@ export interface ExportData {
     credentials: any[];
     bankCards: any[];
     secureNotes: any[];
-    categories: Category[];
+    categories: CategoryEntity[];
     tags: Tag[];
     settings: UserSettings;
   };

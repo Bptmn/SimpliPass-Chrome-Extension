@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Platform, StyleSheet } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { useItems } from '@common/hooks/useItems';
-import { useUser } from '@common/hooks/useUser';
+import { updateItem } from '@common/core/services/itemsService';
 import { useToast } from '@common/hooks/useToast';
 import { BankCardDecrypted } from '@common/core/types/items.types';
 import { pageStyles } from '@common/ui/design/layout';
@@ -27,8 +26,7 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
   bankCard,
   onBack,
 }) => {
-  const { updateItem } = useItems();
-  const { user } = useUser();
+
   const { showToast } = useToast();
 
   // Form state
@@ -63,14 +61,13 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!user) return;
-    
     setLoading(true);
     setError(null);
     
     try {
       const [month, year] = expirationDate.split('/');
-      const updates = {
+      const updatedCard: BankCardDecrypted = {
+        ...bankCard,
         owner,
         cardNumber,
         expirationDate: {
@@ -83,14 +80,9 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
         lastUseDateTime: new Date(),
       };
       
-      const result = await updateItem(bankCard.id, 'bankCard', updates);
-      
-      if (result.success) {
-        showToast('Carte modifiée avec succès');
-        onBack();
-      } else {
-        setError(result.error || 'Erreur lors de la modification de la carte.');
-      }
+      await updateItem(bankCard.id, updatedCard);
+      showToast('Carte modifiée avec succès');
+      onBack();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la modification de la carte.');
     } finally {

@@ -38,7 +38,8 @@ export async function decryptItem(userSecretKey: string, itemToDecrypt: ItemEncr
           itemType: 'credential',
           itemKey,
         } as CredentialDecrypted;
-      case 'bank_card': {
+      case 'bank_card':
+      case 'bankCard': {
         const expirationDate = contentJson.expirationDate;
         return {
           id: itemToDecrypt.id || '',
@@ -58,6 +59,7 @@ export async function decryptItem(userSecretKey: string, itemToDecrypt: ItemEncr
         } as BankCardDecrypted;
       }
       case 'secure_note':
+      case 'secureNote':
         return {
           id: itemToDecrypt.id || '',
           createdDateTime: itemToDecrypt.created_at,

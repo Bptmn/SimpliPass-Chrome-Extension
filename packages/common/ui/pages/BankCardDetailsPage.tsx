@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { BankCardDecrypted } from '@common/core/types/types';
 import { ExpirationDate, formatExpirationDate } from '@common/utils';
@@ -14,8 +14,7 @@ import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
 import { DetailField } from '@ui/components/DetailField';
 import { MoreInfo } from '@ui/components/MoreInfo';
-import { getCurrentUser } from '@common/core/services/userService';
-import { User } from '@common/core/types/types';
+
 import type { UseAppRouterReturn } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
 
@@ -34,53 +33,35 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const [user, setUser] = useState<User | null>(null);
-  const [_userLoading, setUserLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { showToast } = useToast();
 
-  // Load user data from secure storage
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        setUserLoading(true);
-        const userData = await getCurrentUser();
-        setUser(userData);
-      } catch (err) {
-        console.error('[BankCardDetailsPage] Failed to load user:', err);
-      } finally {
-        setUserLoading(false);
-      }
-    };
 
-    loadUser();
-  }, []);
 
   const handleEdit = () => {
     if (router) {
-      router.navigateTo(ROUTES.MODIFY_BANK_CARD, { card });
+      router.navigateTo(ROUTES.MODIFY_BANK_CARD, { bankCard: card });
     }
   };
 
   const handleDelete = async () => {
-    if (!user) {
-      setError('Utilisateur non connecté');
-      return;
-    }
     setShowDeleteConfirm(true);
   };
 
   const confirmDelete = async () => {
-    if (!user) return;
     setLoading(true);
     setError(null);
     setShowDeleteConfirm(false);
     try {
       await deleteItem(card.id);
       showToast('Carte supprimée avec succès');
-      onBack();
+      if (router) {
+        router.navigateTo(ROUTES.HOME);
+      } else {
+        onBack();
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la suppression.');
     } finally {

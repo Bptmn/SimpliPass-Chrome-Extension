@@ -24,7 +24,6 @@ export interface UseListenersReturn {
   startListeners: (userId: string) => Promise<void>;
   stopListeners: () => Promise<void>;
   clearListenersError: () => void;
-  recheckUserInitialization: () => Promise<void>;
 }
 
 export const useListeners = (): UseListenersReturn => {
@@ -73,53 +72,7 @@ export const useListeners = (): UseListenersReturn => {
     setListenersError(null);
   }, []);
 
-  /**
-   * Re-checks user initialization status after secret key is stored
-   * This is called after successful password re-entry to update the app state
-   */
-  const recheckUserInitialization = useCallback(async () => {
-    try {
-      console.log('[useListener] Re-checking user initialization status...');
-      console.log('[useListener] Current state before recheck:', {
-        user: !!user,
-        isUserFullyInitialized,
-        isListening
-      });
-      
-      const currentUser = auth.getCurrentUser();
-      if (!currentUser) {
-        console.log('[useListener] No authenticated user found during recheck');
-        return;
-      }
 
-      // Re-initialize user data to check if secret key is now available
-      const { user: authUser, hasSecretKey } = await initializeUserData(currentUser.uid);
-      
-      console.log('[useListener] Re-initialization result:', {
-        user: !!authUser,
-        hasSecretKey,
-        previousIsUserFullyInitialized: isUserFullyInitialized
-      });
-      
-      setUser(authUser);
-      setIsUserFullyInitialized(hasSecretKey);
-      
-      // Start listeners if user is now fully initialized
-      if (hasSecretKey && !isListening) {
-        console.log('[useListener] User now fully initialized, starting listeners...');
-        await startListeners(currentUser.uid);
-      }
-      
-      console.log('[useListener] User initialization recheck complete:', { hasSecretKey });
-      console.log('[useListener] State after recheck:', {
-        user: !!authUser,
-        isUserFullyInitialized: hasSecretKey,
-        isListening: hasSecretKey && !isListening ? 'will be true' : isListening
-      });
-    } catch (err) {
-      console.error('[useListener] Error during user initialization recheck:', err);
-    }
-  }, [isListening, startListeners, user, isUserFullyInitialized]);
 
   // Handle authentication state changes
   useEffect(() => {
@@ -128,8 +81,6 @@ export const useListeners = (): UseListenersReturn => {
         setListenersError(null);
         
         if (firebaseUser) {
-          console.log('[useListener] User authenticated:', firebaseUser.uid);
-          
           // Initialize user data
           const { user: authUser, hasSecretKey } = await initializeUserData(firebaseUser.uid);
           
@@ -137,12 +88,11 @@ export const useListeners = (): UseListenersReturn => {
           setIsUserFullyInitialized(hasSecretKey);
           
           // Start listeners if user is fully initialized
-          if (hasSecretKey) {
+          if (hasSecretKey && !isListening) {
             console.log('[useListener] User fully initialized, starting listeners...');
             await startListeners(firebaseUser.uid);
           }
         } else {
-          console.log('[useListener] User signed out');
           setUser(null);
           setIsUserFullyInitialized(false);
           
@@ -158,7 +108,7 @@ export const useListeners = (): UseListenersReturn => {
     });
 
     return () => unsubscribe();
-  }, [startListeners, stopListeners]);
+  }, [startListeners, stopListeners, isListening]);
 
   return {
     // State
@@ -171,6 +121,5 @@ export const useListeners = (): UseListenersReturn => {
     startListeners,
     stopListeners,
     clearListenersError,
-    recheckUserInitialization,
   };
 }; 

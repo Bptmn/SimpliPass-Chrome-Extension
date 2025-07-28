@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, ScrollView, Text, StyleSheet } from 'react-native';
 import { CredentialDecrypted } from '@common/core/types/items.types';
-import { useItems } from '@common/hooks/useItems';
-import { useUser } from '@common/hooks/useUser';
+import { updateItem } from '@common/core/services/itemsService';
 import { useToast } from '@common/hooks/useToast';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Toast } from '@ui/components/Toast';
@@ -23,12 +22,11 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
   credential,
   onBack,
 }) => {
+
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const { user } = useUser();
-  const { updateItem } = useItems();
   const { showToast } = useToast();
   
   const [title, setTitle] = useState(credential?.title || '');
@@ -41,15 +39,16 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
   const [toast, _setToast] = useState<string | null>(null);
 
   const handleSubmit = async () => {
-    if (!credential || !user) {
-      setError('Utilisateur non connecté ou identifiant introuvable');
+    if (!credential) {
+      setError('Identifiant introuvable');
       return;
     }
     
     setLoading(true);
     setError(null);
     try {
-      const updates: Partial<CredentialDecrypted> = {
+      const updatedCredential: CredentialDecrypted = {
+        ...credential,
         title,
         username,
         password,
@@ -58,14 +57,9 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
         lastUseDateTime: new Date(),
       };
 
-      const result = await updateItem(credential.id, 'credential', updates);
-      
-      if (result.success) {
-        showToast('Identifiant modifié avec succès');
-        onBack();
-      } else {
-        setError(result.error || 'Erreur lors de la modification de l\'identifiant.');
-      }
+      await updateItem(credential.id, updatedCredential);
+      showToast('Identifiant modifié avec succès');
+      onBack();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la modification de l\'identifiant.');
     } finally {

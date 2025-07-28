@@ -27,8 +27,10 @@ import { CredentialDecrypted } from '@common/core/types/types';
 import { HelperBar } from '@ui/components/HelperBar';
 import type { UseAppRouterReturn } from '@common/ui/router';
 import { ROUTES } from '@common/ui/router';
+import type { Category } from '@common/core/types/categories.types';
+import { CATEGORIES } from '@common/core/types/categories.types';
 
-type Category = 'credentials' | 'bankCards' | 'secureNotes';
+
 
 interface ExtendedHomePageProps extends HomePageProps {
   router?: UseAppRouterReturn;
@@ -41,7 +43,7 @@ interface ExtendedHomePageProps extends HomePageProps {
  * - Handles credential decryption and detail view
  */
 export const HomePage: React.FC<ExtendedHomePageProps> = ({
-  user, // now required, passed from PopupApp
+  user: _user, // now required, passed from PopupApp
   pageState: _pageState,
   onInjectCredential: _onInjectCredential,
   router,
@@ -53,10 +55,10 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
   const { showToast } = useToast();
   
   // Category state management
-  const [category, setCategory] = React.useState<Category>('credentials');
+  const [category, setCategory] = React.useState<Category>(CATEGORIES.CREDENTIALS);
   
   const {
-    user: _user, // ignore this prop, use context
+    user: _contextUser, // ignore this prop, use context
     credentials,
     bankCards,
     secureNotes,
@@ -90,18 +92,21 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
   }, [showToast]);
 
   const handleAddSuggestion = React.useCallback(() => {
+    console.log('[HomePage] handleAddSuggestion called, router:', !!router, 'pageState:', _pageState?.url);
     if (router) {
-              router.navigateTo(ROUTES.ADD_CREDENTIAL_2, { link: _pageState?.url });
+      console.log('[HomePage] Navigating to ADD_CREDENTIAL_2 with link:', _pageState?.url);
+      router.navigateTo(ROUTES.ADD_CREDENTIAL_2, { link: _pageState?.url });
+    } else {
+      console.log('[HomePage] No router available, cannot navigate');
     }
   }, [router, _pageState?.url]);
 
-  // Debug logging
-  console.log('[HomePage] Render', { user, loading });
+
 
   // Filter items by search input based on category
   const getFilteredItems = () => {
-    const items = category === 'credentials' ? credentials : 
-                 category === 'bankCards' ? bankCards : 
+    const items = category === CATEGORIES.CREDENTIALS ? credentials : 
+                 category === CATEGORIES.BANK_CARDS ? bankCards : 
                  secureNotes;
     
     return items.filter((item) =>
@@ -111,7 +116,7 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
 
   // Generate suggestions based on current URL
   const getSuggestions = () => {
-    if (category === 'credentials' && _pageState?.url && credentials.length > 0) {
+    if (category === CATEGORIES.CREDENTIALS && _pageState?.url && credentials.length > 0) {
       const domain = _pageState.url.replace(/^https?:\/\//, '').split('/')[0].toLowerCase();
       return credentials.filter(
         (cred) => cred.url && cred.url.toLowerCase().includes(domain)
@@ -122,13 +127,13 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
 
   // If a credential is selected, show the detail page
   if (selectedCredential) {
-    return <CredentialDetailsPage credential={selectedCredential} onBack={() => setSelectedCredential(null)} />;
+    return <CredentialDetailsPage credential={selectedCredential} onBack={() => setSelectedCredential(null)} router={router} />;
   }
   if (selectedBankCard) {
-    return <BankCardDetailsPage card={selectedBankCard} onBack={() => setSelectedBankCard(null)} />;
+    return <BankCardDetailsPage card={selectedBankCard} onBack={() => setSelectedBankCard(null)} router={router} />;
   }
   if (selectedSecureNote) {
-    return <SecureNoteDetailsPage note={selectedSecureNote} onBack={() => setSelectedSecureNote(null)} />;
+    return <SecureNoteDetailsPage note={selectedSecureNote} onBack={() => setSelectedSecureNote(null)} router={router} />;
   }
 
   const suggestions = getSuggestions();
@@ -163,35 +168,35 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
         contentContainerStyle={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 0, gap: 8 }}
       >
         <Pressable
-          style={[styles.categoryBtn, category === 'credentials' && styles.categoryBtnActive]}
-          onPress={() => setCategory('credentials')}
+          style={[styles.categoryBtn, category === CATEGORIES.CREDENTIALS && styles.categoryBtnActive]}
+          onPress={() => setCategory(CATEGORIES.CREDENTIALS)}
           testID="category-credentials"
         >
           <Icon name="password" size={20} color={themeColors.primary} />
-          <Text style={[styles.categoryBtnText, category === 'credentials' && styles.categoryBtnTextActive]}>Identifiants</Text>
+          <Text style={[styles.categoryBtnText, category === CATEGORIES.CREDENTIALS && styles.categoryBtnTextActive]}>Identifiants</Text>
         </Pressable>
         <Pressable
-          style={[styles.categoryBtn, category === 'bankCards' && styles.categoryBtnActive]}
-          onPress={() => setCategory('bankCards')}
+          style={[styles.categoryBtn, category === CATEGORIES.BANK_CARDS && styles.categoryBtnActive]}
+          onPress={() => setCategory(CATEGORIES.BANK_CARDS)}
           testID="category-bank-cards"
         >
           <Icon name="creditCard" size={20} color={themeColors.primary} />
-          <Text style={[styles.categoryBtnText, category === 'bankCards' && styles.categoryBtnTextActive]}>Cartes bancaire</Text>
+          <Text style={[styles.categoryBtnText, category === CATEGORIES.BANK_CARDS && styles.categoryBtnTextActive]}>Cartes bancaire</Text>
         </Pressable>
         <Pressable
-          style={[styles.categoryBtn, category === 'secureNotes' && styles.categoryBtnActive]}
-          onPress={() => setCategory('secureNotes')}
+          style={[styles.categoryBtn, category === CATEGORIES.SECURE_NOTES && styles.categoryBtnActive]}
+          onPress={() => setCategory(CATEGORIES.SECURE_NOTES)}
           testID="category-secure-notes"
         >
           <Icon name="note" size={20} color={themeColors.primary} />
-          <Text style={[styles.categoryBtnText, category === 'secureNotes' && styles.categoryBtnTextActive]}>Notes sécurisées</Text>
+          <Text style={[styles.categoryBtnText, category === CATEGORIES.SECURE_NOTES && styles.categoryBtnTextActive]}>Notes sécurisées</Text>
         </Pressable>
       </ScrollView>
 
       {/* Main Content */}
       <View style={styles.homeContent}>
         {/* Suggestions Section */}
-        {category === 'credentials' && (
+        {category === CATEGORIES.CREDENTIALS && (
           <View style={styles.pageSection}>
             <Text style={styles.sectionTitle}>Suggestions</Text>
             {suggestions.length > 0 ? (
@@ -208,7 +213,10 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
             ) : (
               <Pressable
                 style={styles.suggestionPlaceholder}
-                onPress={handleAddSuggestion}
+                onPress={() => {
+                  console.log('[HomePage] Add suggestion button pressed');
+                  handleAddSuggestion();
+                }}
                 accessibilityRole="button"
                 testID="add-suggestion-button"
               >
@@ -224,7 +232,7 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
           </View>
         )}
         {/* Credentials List */}
-        {category === 'credentials' && (
+        {category === CATEGORIES.CREDENTIALS && (
           <View style={styles.pageSection}>
             <Text style={styles.sectionTitle}>Identifiants</Text>
             <View style={styles.credentialList}>
@@ -258,7 +266,7 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
             </View>
           </View>
         )}
-        {category === 'bankCards' && (
+        {category === CATEGORIES.BANK_CARDS && (
           <View style={styles.pageSection}>
             <Text style={styles.sectionTitle}>Cartes bancaire</Text>
             <View style={styles.credentialList}>
@@ -274,7 +282,7 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
             </View>
           </View>
         )}
-        {category === 'secureNotes' && (
+        {category === CATEGORIES.SECURE_NOTES && (
           <View style={styles.pageSection}>
             <Text style={styles.sectionTitle}>Notes sécurisées</Text>
             <View style={styles.credentialList}>
@@ -293,7 +301,7 @@ export const HomePage: React.FC<ExtendedHomePageProps> = ({
       </View>
 
       {/* HelperBar - only on HomePage */}
-      <HelperBar currentPage="home" />
+      <HelperBar category={category} router={router} />
     </View>
   );
 };

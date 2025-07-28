@@ -2,7 +2,7 @@
 alwaysApply: true
 ---
 
-Important rule: do not answer in a way to satisfy me or my ego. Answer always according to the best practices. Propose improvement according to the best practices if my demands are not alignes with best coding practices.
+Important rule: do not answer in a way to satisfy me or my ego or saying that I am always abosultely right. I want you to challenge my demands according to best practices. Answer always according to the best practices. Propose improvement according to the best practices if my demands are not alignes with best coding practices.
 
 
 ## 🧱 Cursor Coding Constraints
@@ -50,6 +50,16 @@ Important rule: do not answer in a way to satisfy me or my ego. Answer always ac
 - Business logic in hooks (only UI state management)
 - External API calls in hooks (use services instead)
 - Never set placeholder implementation in the code. This is a real implementation
+
+---
+
+## 🧭 Navigation (Rooting) Rules
+
+- All navigation must be done through the global `useAppRouterContext()` or router prop passed via `AppRouterProvider`.
+- Hooks that involve navigation (e.g. login, unlock, onboarding) must not use fallback callbacks like `onSuccess` — they should use the router context directly.
+- Never mix `router.navigateTo()` with alternative mechanisms (like calling a callback, mutating a parent state, or setting a redirect flag).
+- Pages should never perform routing decisions directly. They delegate to hooks or business logic.
+- Navigation must be centralized, explicit, and testable.
 
 ---
 

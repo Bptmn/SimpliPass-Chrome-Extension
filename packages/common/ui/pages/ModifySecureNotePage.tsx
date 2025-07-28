@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SecureNoteDecrypted } from '@common/core/types/items.types';
-import { useItems } from '@common/hooks/useItems';
-import { useUser } from '@common/hooks/useUser';
+import { updateItem } from '@common/core/services/itemsService';
 import { useToast } from '@common/hooks/useToast';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Toast } from '@ui/components/Toast';
@@ -24,12 +23,11 @@ export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
   secureNote,
   onBack,
 }) => {
+
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const { user } = useUser();
-  const { updateItem } = useItems();
   const { showToast } = useToast();
 
   const [title, setTitle] = useState(secureNote?.title || '');
@@ -40,28 +38,24 @@ export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
   const [toast, _setToast] = useState<string | null>(null);
 
   const handleSubmit = async () => {
-    if (!secureNote || !user) {
-      setError('Utilisateur non connecté ou note introuvable');
+    if (!secureNote) {
+      setError('Note introuvable');
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      const updates: Partial<SecureNoteDecrypted> = {
+      const updatedNote: SecureNoteDecrypted = {
+        ...secureNote,
         title,
         note: noteText,
         color,
         lastUseDateTime: new Date(),
       };
       
-      const result = await updateItem(secureNote.id, 'secureNote', updates);
-      
-      if (result.success) {
-        showToast('Note modifiée avec succès');
-        onBack();
-      } else {
-        setError(result.error || 'Erreur lors de la modification de la note.');
-      }
+      await updateItem(secureNote.id, updatedNote);
+      showToast('Note modifiée avec succès');
+      onBack();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la modification de la note.');
     } finally {

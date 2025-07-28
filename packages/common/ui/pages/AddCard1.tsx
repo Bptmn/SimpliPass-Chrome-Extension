@@ -18,13 +18,13 @@ const AddCard1: React.FC<AddCard1Props> = ({ router }) => {
   const styles = getPageStyles(mode);
   const themeColors = getColors(mode);
   const [title, setTitle] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, _setExpiryDate] = useState('');
-  const [cvv, _setCvv] = useState('');
+  const [bankName, setBankName] = useState('');
+  const [_expiryDate, _setExpiryDate] = useState('');
+  const [_cvv, _setCvv] = useState('');
 
   const handleNext = () => {
-    if (!title || !cardNumber || !expiryDate || !cvv) return;
-    router.navigateTo(ROUTES.ADD_CARD_2, { title, cardNumber, expiryDate, cvv });
+    if (!title || !bankName) return;
+    router.navigateTo(ROUTES.ADD_CARD_2, { title, bankName });
   };
 
   return (
@@ -45,10 +45,10 @@ const AddCard1: React.FC<AddCard1Props> = ({ router }) => {
         />
         <Input
           label="Nom de la banque"
-          _id="card-number"
+          _id="bank-name"
           type="text"
-          value={cardNumber}
-          onChange={setCardNumber}
+          value={bankName}
+          onChange={setBankName}
           placeholder="Entrez le nom de la banque"
           _required
         />
@@ -58,7 +58,7 @@ const AddCard1: React.FC<AddCard1Props> = ({ router }) => {
           width="full"
           height="full"
           onPress={handleNext}
-          disabled={!title || !cardNumber}
+          disabled={!title || !bankName}
         />
       </View>
     </View>

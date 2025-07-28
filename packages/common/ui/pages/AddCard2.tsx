@@ -9,6 +9,7 @@ import { spacing, radius, getPageStyles } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { addItem } from '@common/core/services/itemsService';
 import { getUserSecretKey } from '@common/core/services/secretsService';
+import { generateItemKey } from '@common/utils/crypto';
 
 import { BankCardDecrypted } from '@common/core/types/items.types';
 import { createExpirationDate, parseExpirationDate } from '@common/utils/expirationDate';
@@ -22,15 +23,18 @@ import { Toast } from '@ui/components/Toast';
 import { useToast } from '@common/hooks/useToast';
 import { getCurrentUser } from '@common/core/services/userService';
 import { User } from '@common/core/types/types';
+import type { UseAppRouterReturn } from '@common/ui/router';
+import { ROUTES } from '@common/ui/router';
 
 interface AddCard2Props {
   title?: string;
-  cardNumber?: string;
+  bankName?: string;
   expiryDate?: string;
   cvv?: string;
+  router?: UseAppRouterReturn;
 }
 
-export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, cardNumber: initialCardNumber, expiryDate: initialExpiryDate, cvv: initialCvv }) => {
+export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankName: initialBankName, expiryDate: initialExpiryDate, cvv: initialCvv, router }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
@@ -39,11 +43,11 @@ export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, cardNum
   const [_userLoading, setUserLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { showToast: _showToast } = useToast();
+  const { showToast } = useToast();
 
   const [selectedColor, setSelectedColor] = useState('#4f86a2');
   const [owner, setOwner] = useState('');
-  const [cardNumber, setCardNumber] = useState(initialCardNumber || '');
+  const [cardNumber, setCardNumber] = useState('');
   const [expirationDate, setExpirationDate] = useState(initialExpiryDate || ''); // MM/YY
   const [cvv, setCvv] = useState(initialCvv || '');
   const [note, setNote] = useState('');
@@ -97,15 +101,18 @@ export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, cardNum
         owner,
         note,
         color: selectedColor,
-        itemKey: '',
+        itemKey: generateItemKey(),
         cardNumber,
         expirationDate: expDate,
         verificationNumber: cvv,
-        bankName: '',
+        bankName: initialBankName || '',
         bankDomain: '',
       };
       await addItem(newCard);
-      // Optionally: router.navigateTo('home')
+      showToast('Carte ajoutée avec succès');
+      if (router) {
+        router.navigateTo(ROUTES.HOME);
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la création de la carte.');
     } finally {

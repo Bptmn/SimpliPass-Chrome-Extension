@@ -12,11 +12,16 @@ import { auth } from '../core/adapters/auth.adapter';
 import { db } from '../core/adapters/database.adapter';
 import { decryptItem } from '../core/services/cryptoService';
 import { ItemEncrypted } from '../core/types/items.types';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+import { ROUTES } from '@common/ui/router/ROUTES';
 
 export const useReEnterPassword = () => {
   // Step 1: Initialize UI state
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Get router context for navigation
+  const router = useAppRouterContext();
 
   // Step 2: Validate secret key by attempting to decrypt existing items
   const validateSecretKey = async (userSecretKey: string): Promise<boolean> => {
@@ -85,8 +90,9 @@ export const useReEnterPassword = () => {
       await storeUserSecretKey(userSecretKey);
       
       console.log('[useReEnterPassword] Re-enter password flow completed successfully');
-      
-      // Step 3.5: PopupApp will handle routing after the callback is triggered
+
+      // Step 3.5: Navigate to HOME
+      router.navigateTo(ROUTES.HOME);
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Password re-entry failed';

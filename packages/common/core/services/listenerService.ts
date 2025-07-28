@@ -27,26 +27,16 @@ class DatabaseListenersService {
    */
   async startListeners(userId: string): Promise<void> {
     try {
-      console.log('[DatabaseListeners] Starting listeners...');
-      
       // Set up callbacks for database events
       const callbacks = {
         onUserUpdate: async (userData: User) => {
-          console.log('[DatabaseListeners] User data updated:', userData);
-          
           // Update user in secure storage
           await storage.updateUserInSecureLocalStorage(userData);
-          
-          console.log('[DatabaseListeners] User data synced to local storage');
         },
         onItemsUpdate: async () => {
           try {
-            console.log('[DatabaseListeners] Items collection changed');
-            
             // Use the centralized function instead of duplicating logic
             await fetchAndStoreItems();
-            
-            console.log('[DatabaseListeners] Items synced via centralized service');
           } catch (error) {
             console.error('[DatabaseListeners] Error processing items update:', error);
             this.state.error = error instanceof Error ? error.message : 'Failed to process items';
@@ -59,8 +49,6 @@ class DatabaseListenersService {
       
       this.state.isListening = true;
       this.state.error = null;
-      
-      console.log('[DatabaseListeners] All listeners started successfully');
     } catch (error) {
       console.error('[DatabaseListeners] Failed to start listeners:', error);
       this.state.error = error instanceof Error ? error.message : 'Failed to start listeners';
@@ -72,13 +60,10 @@ class DatabaseListenersService {
    * Stop all listeners
    */
   stopListeners(): void {
-    console.log('[DatabaseListeners] Stopping listeners...');
-    
     // Stop listeners through the database adapter
     db.stopListeners();
     
     this.state.isListening = false;
-    console.log('[DatabaseListeners] All listeners stopped');
   }
 
   /**

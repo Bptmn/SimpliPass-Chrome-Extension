@@ -15,9 +15,7 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import { itemsStateManager } from '@common/core/services/itemsService';
 import { addItem, updateItem, deleteItem, fetchAndStoreItems } from '@common/core/services/itemsService';
 import { useListeners } from './useListeners';
-import { 
-  getItemCounts
-} from '@common/utils/homePage';
+
 import type { 
   ItemDecrypted, 
   CredentialDecrypted, 
@@ -89,6 +87,8 @@ export const useItems = (): UseItemsReturn => {
       setItems(newItems);
       setLoading(false);
       setError(null);
+      
+
     };
 
     // Listen for changes from the centralized state manager
@@ -181,7 +181,7 @@ export const useItems = (): UseItemsReturn => {
     [filteredItems]
   );
 
-  // CRUD Actions
+  // CRUD Actions - delegated to itemsService.ts
   const handleAddItem = useCallback(async (item: ItemDecrypted) => {
     try {
       setIsActionLoading(true);
@@ -250,11 +250,7 @@ export const useItems = (): UseItemsReturn => {
     setError(null);
   }, []);
 
-  // Debug logging
-  useEffect(() => {
-    const counts = getItemCounts(items, credentials, bankCards, secureNotes);
-    console.log('[useItems] Item counts:', counts);
-  }, [items, credentials, bankCards, secureNotes]);
+
 
   return {
     // Data

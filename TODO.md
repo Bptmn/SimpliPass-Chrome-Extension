@@ -1,9 +1,11 @@
 Faire step by step pour s'assurer que ça marche:
-- Avoir des entrypoints et routings avec la même logique pour toutes les plateformes
-- Auth persistence
-- User info across the whole app
-- Data for home page
 - CRUD items
+- Commencer à écrire les tests.
+    Voir avec chatGPT/Cursor la meilleur stratégie et plan à mettre en place
+    Changer du code (le rendre plus modulable par exemple) s'il ne permet pas un bon testing.
+    Le code et fonctions doivent être les plus modulaire possible. Les tests doivent commencer par les plus petites fonctions (utils) juqu'au plus haut niveau (hooks) et ensuite l'UI.
+    Il faut évaluer à quoi sert une fonction / fichier et être sur que c'est assez modulaire.
+    Voir avec chatGPT pour les autres bonnes pratiques
 
 Settings:
 - Faire les pages de settings (ou les enregistrer? persistent?)

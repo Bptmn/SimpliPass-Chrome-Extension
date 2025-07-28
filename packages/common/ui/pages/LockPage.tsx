@@ -17,22 +17,22 @@ import { typography } from '@ui/design/typography';
 import { useThemeMode } from '@common/ui/design/theme';
 import { useReEnterPassword } from '@common/hooks/useReEnterPassword';
 import { useAuth } from '@common/hooks/useAuth';
-import { useListeners } from '@common/hooks/useListeners';
 
 type LockReason = 'expired' | 'fingerprint_mismatch' | 'decryption_failed' | 'not_found' | 'corrupted';
 
 interface LockPageProps {
-  onSecretKeyStored?: () => void;
   reason?: LockReason;
 }
 
-export const LockPage: React.FC<LockPageProps> = ({ onSecretKeyStored, reason }) => {
+export const LockPage: React.FC<LockPageProps> = ({ reason }) => {
   const [password, setPassword] = useState('');
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const { reEnterPassword, isLoading } = useReEnterPassword();
   const { logout } = useAuth();
-  const { recheckUserInitialization } = useListeners();
+  
+
+  
+  const { reEnterPassword, isLoading } = useReEnterPassword();
 
   const getReasonMessage = () => {
     switch (reason) {
@@ -57,20 +57,8 @@ export const LockPage: React.FC<LockPageProps> = ({ onSecretKeyStored, reason })
 
     try {
       // Re-enter password to derive and store secret key
+      // The success callback will handle navigation
       await reEnterPassword(password);
-      
-      console.log('[LockPage] Password re-entry successful, rechecking user initialization...');
-      
-      // Re-check user initialization status to trigger navigation
-      await recheckUserInitialization();
-      
-      // Call the callback to trigger PopupApp re-check (if provided)
-      if (onSecretKeyStored) {
-        console.log('[LockPage] Calling onSecretKeyStored callback...');
-        onSecretKeyStored();
-      }
-      
-      console.log('[LockPage] Lock page flow completed successfully');
     } catch (error) {
       // Error is handled by the hook and displayed via the error state
       console.error('[LockPage] Error during password re-entry:', error);

@@ -9,56 +9,63 @@ import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
 import { Icon } from './Icon';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
-import { useHelperBar } from '@common/hooks/useHelperBar';
-import type { UseAppRouterReturn } from '@common/ui/router';
 
-type CurrentPage = 'home' | 'generator' | 'settings' | 'add-credential-1' | 'add-credential-2' | 'add-card-1' | 'add-card-2' | 'add-securenote';
+import type { UseAppRouterReturn } from '@common/ui/router';
+import { ROUTES } from '@common/ui/router';
+import type { Category } from '@common/core/types/categories.types';
+import { CATEGORIES } from '@common/core/types/categories.types';
 
 interface HelperBarProps {
-  currentPage?: CurrentPage;
+  category: Category;
   router?: UseAppRouterReturn;
 }
 
-export const HelperBar: React.FC<HelperBarProps> = ({ currentPage = 'home', router }) => {
+export const HelperBar: React.FC<HelperBarProps> = ({ category, router }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   
-  const {
-    addButtonText,
-  } = useHelperBar(currentPage);
-
-  // User interaction handlers - moved from hook to component
-  const handleAdd = React.useCallback(() => {
-    if (!router) return;
-    
-    switch (currentPage) {
-      case 'add-card-1':
-      case 'add-card-2':
-        // Already on add card page, do nothing or go to next step
-        console.log('Already on add card page');
-        break;
-      case 'add-securenote':
-        // Already on add secure note page, do nothing
-        console.log('Already on add secure note page');
-        break;
-      case 'add-credential-1':
-      case 'add-credential-2':
-        // Already on add credential page, do nothing or go to next step
-        console.log('Already on add credential page');
-        break;
-      case 'home':
-      case 'generator':
-      case 'settings':
+  // Get button text based on category
+  const getAddButtonText = () => {
+    switch (category) {
+      case CATEGORIES.CREDENTIALS:
+        return 'Ajouter un identifiant';
+      case CATEGORIES.BANK_CARDS:
+        return 'Ajouter une carte';
+      case CATEGORIES.SECURE_NOTES:
+        return 'Ajouter une note';
       default:
-        // Navigate to add credential page (default behavior)
-        // TODO: Future enhancement - show a menu to choose between:
-        // - Add credential (/add-credential-1)
-        // - Add bank card (/add-card-1) 
-        // - Add secure note (/add-securenote)
-        router.navigateTo('add-credential-1');
+        return 'Ajouter';
+    }
+  };
+
+  // User interaction handlers - simplified for category-based navigation
+  const handleAdd = React.useCallback(() => {
+    console.log('[HelperBar] handleAdd called, router:', !!router, 'category:', category);
+    if (!router) {
+      console.log('[HelperBar] No router available, cannot navigate');
+      return;
+    }
+    
+    // Navigate based on category
+    switch (category) {
+      case CATEGORIES.CREDENTIALS:
+        console.log('[HelperBar] Navigating to ADD_CREDENTIAL_1');
+        router.navigateTo(ROUTES.ADD_CREDENTIAL_1);
+        break;
+      case CATEGORIES.BANK_CARDS:
+        console.log('[HelperBar] Navigating to ADD_CARD_1');
+        router.navigateTo(ROUTES.ADD_CARD_1);
+        break;
+      case CATEGORIES.SECURE_NOTES:
+        console.log('[HelperBar] Navigating to ADD_SECURENOTE');
+        router.navigateTo(ROUTES.ADD_SECURENOTE);
+        break;
+      default:
+        console.log('[HelperBar] Unknown category, navigating to ADD_CREDENTIAL_1');
+        router.navigateTo(ROUTES.ADD_CREDENTIAL_1);
         break;
     }
-  }, [currentPage, router]);
+  }, [category, router]);
 
   const handleFAQ = React.useCallback(() => {
     // Open FAQ or help page
@@ -154,13 +161,16 @@ export const HelperBar: React.FC<HelperBarProps> = ({ currentPage = 'home', rout
       <View style={styles.helperBarLeft}>
         <Pressable
           style={styles.helperBtnAdd}
-          onPress={handleAdd}
+          onPress={() => {
+            console.log('[HelperBar] Add button pressed');
+            handleAdd();
+          }}
           accessibilityRole="button"
-          accessibilityLabel={addButtonText}
+          accessibilityLabel={getAddButtonText()}
           testID="helper-add-button"
         >
           <Icon name="addCircle" size={23} color={themeColors.white} />
-          <Text style={styles.helperBtnTextAdd}>{addButtonText}</Text>
+          <Text style={styles.helperBtnTextAdd}>{getAddButtonText()}</Text>
         </Pressable>
       </View>
       <View style={styles.helperBarRight}>

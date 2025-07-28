@@ -16,13 +16,16 @@ import { getPageStyles, spacing } from '@ui/design/layout';
 import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { checkPasswordStrength } from '@common/utils/checkPasswordStrength';
+import type { UseAppRouterReturn } from '@common/ui/router';
+import { ROUTES } from '@common/ui/router';
 
 interface AddCredential2Props {
   title: string;
   link?: string;
+  router?: UseAppRouterReturn;
 }
 
-export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTitle, link = '' }) => {
+export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTitle, link = '', router }) => {
   const { mode } = useThemeMode();
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const themeColors = getColors(mode);
@@ -73,7 +76,9 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
 
       await addItem(newCredential);
       showToast('Identifiant ajouté avec succès');
-      // Optionally: router.navigateTo('home')
+      if (router) {
+        router.navigateTo(ROUTES.HOME);
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de l\'ajout de l\'identifiant.');
     }
@@ -87,7 +92,15 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Ajouter un identifiant" 
-            onBackPress={() => { /* router.goBack() if available */ }} 
+            onBackPress={() => {
+              console.log('[AddCredential2] Back button pressed, router:', !!router);
+              if (router) {
+                console.log('[AddCredential2] Using router.goBack()');
+                router.goBack();
+              } else {
+                console.log('[AddCredential2] No router available');
+              }
+            }} 
           />
           <View style={pageStyles.formContainer}>
             <Input

@@ -109,7 +109,11 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
           
           {/* Public Routes - Accessible without authentication */}
           {router.currentRoute === ROUTES.LOGIN && <LoginPage />}
-          {router.currentRoute === ROUTES.LOCK && <LockPage reason={router.lockReason} />}
+          {router.currentRoute === ROUTES.LOCK && (
+            <LockPage 
+              reason={router.lockReason} 
+            />
+          )}
           
           {/* Private Routes - Require authentication */}
           {router.currentRoute === ROUTES.HOME && user && (
@@ -130,63 +134,262 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
                     user={user}
                     pageState={pageState || null}
                     onInjectCredential={onInjectCredential || (() => {})}
+                    router={router}
                   />
                 </ScrollView>
               </View>
             </>
           )}
           
-          {/* Feature Pages - Individual functionality pages */}
-          {router.currentRoute === ROUTES.GENERATOR && <GeneratorPage />}
-          {router.currentRoute === ROUTES.SETTINGS && <SettingsPage />}
+          {/* Feature Pages - Individual functionality pages with navbar */}
+          {router.currentRoute === ROUTES.GENERATOR && user && (
+            <>
+              {/* Navigation Header */}
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              
+              {/* Main Content Area */}
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <GeneratorPage />
+                </ScrollView>
+              </View>
+            </>
+          )}
+          
+          {router.currentRoute === ROUTES.SETTINGS && user && (
+            <>
+              {/* Navigation Header */}
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              
+              {/* Main Content Area */}
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <SettingsPage />
+                </ScrollView>
+              </View>
+            </>
+          )}
           
           {/* Add Item Pages - Multi-step forms for creating new items */}
-          {router.currentRoute === ROUTES.ADD_CREDENTIAL_1 && <AddCredential1 router={router} />}
-          {router.currentRoute === ROUTES.ADD_CREDENTIAL_2 && <AddCredential2 title={router.routeParams.title || ''} link={router.routeParams.link} />}
-          {router.currentRoute === ROUTES.ADD_CARD_1 && <AddCard1 router={router} />}
-          {router.currentRoute === ROUTES.ADD_CARD_2 && <AddCard2 {...router.routeParams} />}
-          {router.currentRoute === ROUTES.ADD_SECURENOTE && <AddSecureNote router={router} />}
+          {router.currentRoute === ROUTES.ADD_CREDENTIAL_1 && user && (
+            <>
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <AddCredential1 router={router} />
+                </ScrollView>
+              </View>
+            </>
+          )}
+          {router.currentRoute === ROUTES.ADD_CREDENTIAL_2 && user && (
+            <>
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <AddCredential2 
+                    title={router.routeParams.title || ''} 
+                    link={router.routeParams.link} 
+                    router={router}
+                  />
+                </ScrollView>
+              </View>
+            </>
+          )}
+          {router.currentRoute === ROUTES.ADD_CARD_1 && user && (
+            <>
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <AddCard1 router={router} />
+                </ScrollView>
+              </View>
+            </>
+          )}
+          {router.currentRoute === ROUTES.ADD_CARD_2 && user && (
+            <>
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <AddCard2 {...router.routeParams} router={router} />
+                </ScrollView>
+              </View>
+            </>
+          )}
+          {router.currentRoute === ROUTES.ADD_SECURENOTE && user && (
+            <>
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <AddSecureNote router={router} />
+                </ScrollView>
+              </View>
+            </>
+          )}
           
           {/* Detail Pages - Viewing specific items */}
-          {router.currentRoute === ROUTES.CREDENTIAL_DETAILS && (
-            <CredentialDetailsPage 
-              credential={router.routeParams.credential}
-              onBack={router.goBack}
-              router={router}
-            />
+          {router.currentRoute === ROUTES.CREDENTIAL_DETAILS && user && (
+            <>
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <CredentialDetailsPage 
+                    credential={router.routeParams.credential}
+                    onBack={router.goBack}
+                    router={router}
+                  />
+                </ScrollView>
+              </View>
+            </>
           )}
-          {router.currentRoute === ROUTES.BANK_CARD_DETAILS && (
-            <BankCardDetailsPage 
-              card={router.routeParams.card}
-              onBack={router.goBack}
-              router={router}
-            />
+          {router.currentRoute === ROUTES.BANK_CARD_DETAILS && user && (
+            <>
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <BankCardDetailsPage 
+                    card={router.routeParams.card}
+                    onBack={router.goBack}
+                    router={router}
+                  />
+                </ScrollView>
+              </View>
+            </>
           )}
-          {router.currentRoute === ROUTES.SECURE_NOTE_DETAILS && (
-            <SecureNoteDetailsPage 
-              note={router.routeParams.note}
-              onBack={router.goBack}
-            />
+          {router.currentRoute === ROUTES.SECURE_NOTE_DETAILS && user && (
+            <>
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <SecureNoteDetailsPage 
+                    note={router.routeParams.note}
+                    onBack={router.goBack}
+                    router={router}
+                  />
+                </ScrollView>
+              </View>
+            </>
           )}
           
           {/* Modify Pages - Editing existing items */}
-          {router.currentRoute === ROUTES.MODIFY_BANK_CARD && (
-            <ModifyBankCardPage 
-              bankCard={router.routeParams.bankCard}
-              onBack={router.goBack}
-            />
+          {router.currentRoute === ROUTES.MODIFY_BANK_CARD && user && (
+            <>
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+
+                  <ModifyBankCardPage 
+                    bankCard={router.routeParams.bankCard}
+                    onBack={router.goBack}
+                  />
+                </ScrollView>
+              </View>
+            </>
           )}
-          {router.currentRoute === ROUTES.MODIFY_CREDENTIAL && (
-            <ModifyCredentialPage 
-              credential={router.routeParams.credential}
-              onBack={router.goBack}
-            />
+          {router.currentRoute === ROUTES.MODIFY_CREDENTIAL && user && (
+            <>
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+
+                  <ModifyCredentialPage 
+                    credential={router.routeParams.credential}
+                    onBack={router.goBack}
+                  />
+                </ScrollView>
+              </View>
+            </>
           )}
-          {router.currentRoute === ROUTES.MODIFY_SECURENOTE && (
-            <ModifySecureNotePage 
-              secureNote={router.routeParams.secureNote}
-              onBack={router.goBack}
-            />
+          {router.currentRoute === ROUTES.MODIFY_SECURENOTE && user && (
+            <>
+              <View style={styles.header}>
+                <NavBar router={router} />
+              </View>
+              <View style={styles.mainContent}>
+                <ScrollView 
+                  style={styles.scrollView} 
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+
+                  <ModifySecureNotePage 
+                    secureNote={router.routeParams.secureNote}
+                    onBack={router.goBack}
+                  />
+                </ScrollView>
+              </View>
+            </>
           )}
           
           {/* Utility Pages - Special purpose pages */}
