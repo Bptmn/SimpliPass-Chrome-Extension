@@ -41,8 +41,28 @@ export interface RouteConfig {
 }
 
 // Route configurations
+// System-level routes (handled automatically by useAppRouter)
+// Business routes (must use navigateTo() explicitly)
 export const routeConfigs: RouteConfig[] = [
-  // Public Routes (no auth required, no layout)
+  // System Routes (handled automatically by useAppRouter)
+  {
+    path: ROUTES.LOADING,
+    title: 'Loading',
+    isPublic: true,
+    requiresAuth: false,
+    hasLayout: false,
+    category: CATEGORIES.CREDENTIALS,
+    component: () => null, // Handled by AppRouterView loading state
+  },
+  {
+    path: ROUTES.ERROR,
+    title: 'Error',
+    isPublic: true,
+    requiresAuth: false,
+    hasLayout: false,
+    category: CATEGORIES.CREDENTIALS,
+    component: () => null, // Handled by AppRouterView error state
+  },
   {
     path: ROUTES.LOGIN,
     title: 'Login',
@@ -81,7 +101,7 @@ export const routeConfigs: RouteConfig[] = [
     }),
   },
 
-  // Private Routes (auth required, with layout)
+  // Business Routes (require explicit navigateTo() calls)
   {
     path: ROUTES.HOME,
     title: 'Home',
@@ -115,7 +135,7 @@ export const routeConfigs: RouteConfig[] = [
     component: SettingsPage,
   },
 
-  // Add Item Routes
+  // Add Item Routes (business logic - require explicit navigation)
   {
     path: ROUTES.ADD_CREDENTIAL_1,
     title: 'Add Credential',
@@ -167,7 +187,7 @@ export const routeConfigs: RouteConfig[] = [
     component: AddSecureNote,
   },
 
-  // Detail Pages
+  // Detail Pages (business logic - require explicit navigation)
   {
     path: ROUTES.CREDENTIAL_DETAILS,
     title: 'Credential Details',
@@ -208,7 +228,7 @@ export const routeConfigs: RouteConfig[] = [
     }),
   },
 
-  // Modify Pages
+  // Modify Pages (business logic - require explicit navigation)
   {
     path: ROUTES.MODIFY_CREDENTIAL,
     title: 'Modify Credential',

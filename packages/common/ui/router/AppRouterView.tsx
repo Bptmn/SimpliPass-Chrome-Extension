@@ -23,6 +23,7 @@ import type { User } from '@common/core/types/auth.types';
 import type { PageState } from '@common/core/types/types';
 import { useAppRouterContext } from './AppRouterProvider';
 import { getRouteConfig, requiresAuth, hasLayout } from './routeConfig';
+import { ROUTES } from './ROUTES';
 
 // Props for the AppRouterView component
 interface AppRouterViewProps {
@@ -33,10 +34,11 @@ interface AppRouterViewProps {
 }
 
 /**
- * AppRouterView - Simplified router view using data-driven configuration
+ * AppRouterView - System-driven router view with explicit business navigation
  * 
- * This component uses a configuration-based approach to render routes.
- * Following React Router best practices for scalable, maintainable routing.
+ * This component renders routes based on system-level state from useAppRouter.
+ * System routes (LOADING, ERROR, LOGIN, LOCK) are handled automatically.
+ * Business routes require explicit navigateTo() calls from business logic.
  * 
  * @param user - Current user object (null if not authenticated)
  * @param pageState - State information for the current page
@@ -49,7 +51,7 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
   onInjectCredential,
   theme = 'light',
 }) => {
-  // Get router context from provider
+  // Get router context from provider - ONLY system-level state
   const router = useAppRouterContext();
   const styles = createStyles(theme);
 
@@ -57,14 +59,14 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
   const routeConfig = getRouteConfig(router.currentRoute);
 
   /**
-   * Authentication Guard: Redirect to login if accessing private route without authentication
+   * System-level authentication guard
+   * Only checks system state, business logic must use navigateTo() explicitly
    */
   if (requiresAuth(router.currentRoute) && !user) {
     return (
       <ThemeProvider>
         <ToastProvider>
           <View style={styles.container}>
-            {/* Redirect to login for unauthenticated users */}
             <View style={styles.loadingContainer}>
               <Text style={styles.loadingText}>Redirecting to login...</Text>
             </View>
@@ -74,28 +76,28 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
     );
   }
 
-  // Render the app
+  // Render based on system-level route state
   return (
     <ThemeProvider>
       <ToastProvider>
         <View style={styles.container}>
-          {/* Loading State */}
-          {router.isLoading && (
+          {/* System Loading State */}
+          {router.currentRoute === ROUTES.LOADING && (
             <View style={styles.loadingContainer}>
               <Text style={styles.loadingText}>Initializing SimpliPass...</Text>
               <Text style={styles.loadingSubtext}>Please wait while we check your authentication status</Text>
             </View>
           )}
           
-          {/* Error State */}
-          {router.error && (
+          {/* System Error State */}
+          {router.currentRoute === ROUTES.ERROR && (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>Error: {router.error}</Text>
             </View>
           )}
           
-          {/* Route Rendering */}
-          {routeConfig && (
+          {/* Business Route Rendering - requires explicit navigateTo() calls */}
+          {routeConfig && router.currentRoute !== ROUTES.LOADING && router.currentRoute !== ROUTES.ERROR && (
             <>
               {/* Layout for routes that need it */}
               {hasLayout(router.currentRoute) && user && (

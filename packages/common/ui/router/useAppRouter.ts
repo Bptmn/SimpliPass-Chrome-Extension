@@ -1,9 +1,12 @@
 /**
- * useAppRouter.ts - Core router hook for navigation and route management
+ * useAppRouter.ts - System-level router hook for navigation and route management
  * 
- * This hook manages the application's navigation state, route history, and
- * authentication-based routing logic. It provides a centralized way to handle
- * navigation, route parameters, and authentication state changes.
+ * This hook manages the application's navigation state based ONLY on system-level state:
+ * - user authentication status
+ * - user initialization status  
+ * - error states
+ * 
+ * Business logic (form steps, item details, etc.) must use navigateTo() explicitly.
  */
 
 import { useState, useCallback, useEffect } from 'react';
@@ -13,7 +16,7 @@ import { ROUTES, type AppRoute } from './ROUTES';
 // Different reasons why the app might be locked
 export type LockReason = 'expired' | 'fingerprint_mismatch' | 'decryption_failed' | 'not_found' | 'corrupted';
 
-// Props required to initialize the router hook
+// Props required to initialize the router hook - ONLY system-level state
 export interface UseAppRouterProps {
   user: User | null;
   isUserFullyInitialized: boolean;
@@ -21,7 +24,7 @@ export interface UseAppRouterProps {
   platform: 'extension' | 'mobile';
 }
 
-// Return type of the router hook with all navigation methods and state
+// Return type of the router hook - ONLY navigation methods and system state
 export interface UseAppRouterReturn {
   currentRoute: AppRoute;
   isLoading: boolean;
@@ -62,23 +65,27 @@ export const useAppRouter = ({
   const [lockReason, setLockReason] = useState<LockReason | undefined>();
 
   /**
-   * Determines the appropriate route based on authentication state
+   * Determines the appropriate route based on system-level state ONLY
    * Priority: loading -> error -> login -> lock -> home
+   * 
+   * This function must ONLY depend on:
+   * - user (authentication status)
+   * - isUserFullyInitialized (user key status)
+   * - listenersError (system error status)
+   * 
+   * Business logic (form steps, item details, etc.) must use navigateTo() explicitly.
    */
   const determineRoute = useCallback((): AppRoute => {
-    // If there's an error, show error page
+    // System error - show error page
     if (listenersError) return ROUTES.ERROR;
     
-    // If user is null and no error, show loading initially
-    if (user === null && !listenersError) return ROUTES.LOADING;
-    
-    // If no user after loading, show login
+    // No user authenticated - show login
     if (!user) return ROUTES.LOGIN;
     
-    // If user exists but not fully initialized, show lock
+    // User exists but not fully initialized (no secret key) - show lock
     if (!isUserFullyInitialized) return ROUTES.LOCK;
     
-    // User is fully authenticated and initialized
+    // User is fully authenticated and initialized - show home
     return ROUTES.HOME;
   }, [user, isUserFullyInitialized, listenersError]);
 
@@ -102,38 +109,35 @@ export const useAppRouter = ({
   }, [listenersError]);
 
   /**
-   * Updates route when authentication state changes
-   * Automatically navigates to appropriate route based on user state
-   * Forces route change when auth state changes to ensure proper navigation
+   * Updates route when system-level state changes
+   * Automatically navigates to appropriate route based on system state
+   * ONLY reacts to: user, isUserFullyInitialized, listenersError
    */
   useEffect(() => {
     const newRoute = determineRoute();
     
-    // Always change route when auth state changes to ensure proper navigation
-    // This prevents getting stuck in loading state when user becomes available
+    // Only change route when system state changes
     if (newRoute !== currentRoute) {
       const reason = getRouteChangeReason(currentRoute, newRoute);
-      console.log('[useAppRouter] Route changed from', currentRoute, 'to', newRoute, '-', reason);
+      console.log('[useAppRouter] System state change - route from', currentRoute, 'to', newRoute, '-', reason);
       setCurrentRoute(newRoute);
       setRouteHistory(prev => [...prev, { route: newRoute }]);
-      // Only clear params if not navigating to HOME (to preserve category params)
-      if (newRoute !== ROUTES.HOME) {
-        setRouteParams({});
-      }
+      // Clear params for system-level route changes
+      setRouteParams({});
       // Clear lock reason when not on lock page
       if (newRoute !== ROUTES.LOCK) {
         setLockReason(undefined);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, isUserFullyInitialized, listenersError]);
+  }, [user, isUserFullyInitialized, listenersError, determineRoute, currentRoute, getRouteChangeReason]);
 
   /**
    * Navigates to a specific route with optional parameters
-   * Updates route history and clears lock reason if navigating away from lock
+   * Used for explicit business logic navigation (form steps, item details, etc.)
+   * This is the ONLY way business logic should change routes
    */
   const navigateTo = useCallback((route: AppRoute, params?: Record<string, any>) => {
-    console.log('[useAppRouter] navigateTo called with route:', route, 'params:', params);
+    console.log('[useAppRouter] Explicit navigation to:', route, 'params:', params);
     setCurrentRoute(route);
     setRouteHistory(prev => [...prev, { route, params }]);
     setRouteParams(params || {});
