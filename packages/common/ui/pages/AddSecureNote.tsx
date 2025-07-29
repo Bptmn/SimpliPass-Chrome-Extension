@@ -14,6 +14,7 @@ import { SecureNoteDecrypted } from '@common/core/types/items.types';
 import { generateItemKey } from '@common/utils/crypto';
 import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+import { CATEGORIES } from '@common/core/types/categories.types';
 
 interface AddSecureNoteProps {
   onCancel?: () => void;
@@ -47,7 +48,7 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
       };
       
       await addItem(newNote);
-      router.navigateTo(ROUTES.HOME);
+      router.navigateTo(ROUTES.HOME, { category: CATEGORIES.SECURE_NOTES });
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la création de la note.');
     }

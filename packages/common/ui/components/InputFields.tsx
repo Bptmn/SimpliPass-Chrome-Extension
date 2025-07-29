@@ -20,6 +20,7 @@ interface InputProps {
   _required?: boolean;
   error?: string;
   disabled?: boolean;
+  onBlur?: () => void;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -33,6 +34,7 @@ export const Input: React.FC<InputProps> = ({
   _required = false,
   error,
   disabled = false,
+  onBlur,
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
@@ -119,6 +121,7 @@ export const Input: React.FC<InputProps> = ({
           ]}
           value={value}
           onChangeText={onChange}
+          onBlur={onBlur}
           editable={!disabled}
           secureTextEntry={type === 'password' && !showPassword}
           multiline={type === 'note'}

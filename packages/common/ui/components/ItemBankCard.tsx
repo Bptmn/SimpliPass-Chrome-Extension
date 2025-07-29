@@ -50,7 +50,9 @@ const ItemBankCard: React.FC<ItemBankCardProps> = ({ cred, onPress }) => {
       color: themeColors.whiteText,
       fontSize: typography.fontSize.sm,
       fontWeight: '500' as const,
-      letterSpacing: 2,
+      letterSpacing: 1,
+      flex: 1,
+      textAlign: 'left' as const,
     },
     bankCardOwner: {
       color: themeColors.whiteText,
@@ -81,7 +83,12 @@ const ItemBankCard: React.FC<ItemBankCardProps> = ({ cred, onPress }) => {
         <LazyCredentialIcon title={cred.bankName} url={cred.bankDomain} />
       </View>
       <View style={styles.bankCardMiddle}>
-        <Text style={styles.bankCardNumber}>
+        <Text 
+          style={styles.bankCardNumber}
+          numberOfLines={1}
+          adjustsFontSizeToFit={true}
+          minimumFontScale={0.5}
+        >
           {cred.cardNumber.replace(/(\d{4})/g, '$1 ').trim()}
         </Text>
       </View>

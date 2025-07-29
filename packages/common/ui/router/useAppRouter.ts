@@ -66,10 +66,19 @@ export const useAppRouter = ({
    * Priority: loading -> error -> login -> lock -> home
    */
   const determineRoute = useCallback((): AppRoute => {
-    if (user === null && !listenersError) return ROUTES.LOADING;
+    // If there's an error, show error page
     if (listenersError) return ROUTES.ERROR;
+    
+    // If user is null and no error, show loading initially
+    if (user === null && !listenersError) return ROUTES.LOADING;
+    
+    // If no user after loading, show login
     if (!user) return ROUTES.LOGIN;
+    
+    // If user exists but not fully initialized, show lock
     if (!isUserFullyInitialized) return ROUTES.LOCK;
+    
+    // User is fully authenticated and initialized
     return ROUTES.HOME;
   }, [user, isUserFullyInitialized, listenersError]);
 
@@ -95,16 +104,22 @@ export const useAppRouter = ({
   /**
    * Updates route when authentication state changes
    * Automatically navigates to appropriate route based on user state
+   * Forces route change when auth state changes to ensure proper navigation
    */
   useEffect(() => {
     const newRoute = determineRoute();
     
+    // Always change route when auth state changes to ensure proper navigation
+    // This prevents getting stuck in loading state when user becomes available
     if (newRoute !== currentRoute) {
       const reason = getRouteChangeReason(currentRoute, newRoute);
       console.log('[useAppRouter] Route changed from', currentRoute, 'to', newRoute, '-', reason);
       setCurrentRoute(newRoute);
       setRouteHistory(prev => [...prev, { route: newRoute }]);
-      setRouteParams({});
+      // Only clear params if not navigating to HOME (to preserve category params)
+      if (newRoute !== ROUTES.HOME) {
+        setRouteParams({});
+      }
       // Clear lock reason when not on lock page
       if (newRoute !== ROUTES.LOCK) {
         setLockReason(undefined);

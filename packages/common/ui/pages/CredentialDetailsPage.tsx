@@ -64,7 +64,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
     try {
       await deleteItem(credential.id);
       showToast('Identifiant supprimé avec succès');
-      router.navigateTo(ROUTES.HOME);
+      onBack();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la suppression.');
     } finally {

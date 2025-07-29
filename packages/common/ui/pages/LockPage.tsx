@@ -11,26 +11,29 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { Input } from '@ui/components/InputFields';
 import { Button } from '@ui/components/Buttons';
+import { useAuth } from '@common/hooks/useAuth';
+import { useReEnterPassword } from '@common/hooks/useReEnterPassword';
+import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { spacing } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
-import { useThemeMode } from '@common/ui/design/theme';
-import { useReEnterPassword } from '@common/hooks/useReEnterPassword';
-import { useAuth } from '@common/hooks/useAuth';
+import type { User } from '@common/core/types/auth.types';
 
 type LockReason = 'expired' | 'fingerprint_mismatch' | 'decryption_failed' | 'not_found' | 'corrupted';
 
 interface LockPageProps {
   reason?: LockReason;
+  user: User | null;
+  stopListeners: () => Promise<void>;
 }
 
-export const LockPage: React.FC<LockPageProps> = ({ reason }) => {
+export const LockPage: React.FC<LockPageProps> = ({ reason, user, stopListeners }) => {
   const [password, setPassword] = useState('');
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const { logout } = useAuth();
-  
+  const { logout } = useAuth({ user, stopListeners });
 
+  
   
   const { reEnterPassword, isLoading } = useReEnterPassword();
 
@@ -125,22 +128,24 @@ export const LockPage: React.FC<LockPageProps> = ({ reason }) => {
           _id="master-password"
           value={password}
           onChange={setPassword}
-          type="password"
           placeholder="Entrez votre mot de passe maître"
+          type="password"
+          _autoComplete="current-password"
           _required
+          disabled={isLoading}
         />
 
         <View style={styles.buttonContainer}>
           <Button
             text="Annuler"
-            color={themeColors.tertiary}
+            color={themeColors.secondary}
             onPress={handleCancel}
-            style={styles.cancelButton}
             disabled={isLoading}
+            style={styles.cancelButton}
           />
           <Button
-            text={isLoading ? "Déverrouillage..." : "Déverrouiller"}
-            color={themeColors.secondary}
+            text={isLoading ? 'Déverrouillage...' : 'Déverrouiller'}
+            color={themeColors.primary}
             onPress={handleSubmit}
             disabled={isLoading}
             style={styles.submitButton}

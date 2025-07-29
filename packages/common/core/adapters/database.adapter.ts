@@ -1,10 +1,11 @@
 import * as firebaseDb from '../libraries/database/firestore';
 import { DocumentData } from 'firebase/firestore';
+import { User } from '../types/auth.types';
 
 type DocumentId = string;
 
 export interface DatabaseListenersCallbacks {
-  onUserUpdate?: (userData: any) => Promise<void>;
+  onUserUpdate?: (userData: User) => Promise<void>;
   onItemsUpdate?: () => Promise<void>;
 }
 

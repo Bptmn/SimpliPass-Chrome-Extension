@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
-import { getPageStyles, spacing, radius } from '@ui/design/layout';
+import { spacing, radius, layout } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
@@ -28,7 +28,8 @@ import { HelperBar } from '@ui/components/HelperBar';
 import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import type { Category } from '@common/core/types/categories.types';
-import { CATEGORIES } from '@common/core/types/categories.types';
+import { CATEGORIES, isCategory } from '@common/core/types/categories.types';
+import type { User } from '@common/core/types/auth.types';
 
 
 
@@ -47,13 +48,19 @@ export const HomePage: React.FC<HomePageProps> = ({
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const router = useAppRouterContext();
   const { showToast } = useToast();
   
   // Category state management
   const [category, setCategory] = React.useState<Category>(CATEGORIES.CREDENTIALS);
+  
+  // Set initial category from router params if provided
+  React.useEffect(() => {
+    if (router.routeParams.category && isCategory(router.routeParams.category)) {
+      setCategory(router.routeParams.category as Category);
+    }
+  }, [router.routeParams]);
   
   const {
     user: _contextUser, // ignore this prop, use context
@@ -70,7 +77,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     setSelectedCredential,
     setSelectedBankCard,
     setSelectedSecureNote,
-  } = useItems();
+  } = useItems({ user: _user as User | null });
 
   // User interaction handlers - moved from hook to component
   const handleCardClick = React.useCallback((cred: CredentialDecrypted) => {
@@ -135,66 +142,73 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   // Main render: search, suggestions, all credentials, error, toast
   return (
-    <View style={pageStyles.pageContainer}>
+    <View style={styles.pageContainer}>
       {/* Error banner if any error occurs */}
       {error && <ErrorBanner message={error} />}
 
-      {/* Sticky Search Bar */}
-      <View style={styles.stickySearchBar}>
-        <View style={styles.searchBarIcon}>
-          <Icon name="search" size={22} color={themeColors.secondary} />
+      {/* Fixed Header Section */}
+      <View style={styles.fixedHeader}>
+        {/* Sticky Search Bar */}
+        <View style={styles.stickySearchBar}>
+          <View style={styles.searchBarIcon}>
+            <Icon name="search" size={22} color={themeColors.secondary} />
+          </View>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Recherche..."
+            value={filter}
+            onChangeText={setFilter}
+            accessibilityLabel="Search credentials"
+            testID="home-search-input"
+          />
         </View>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Recherche..."
-          value={filter}
-          onChangeText={setFilter}
-          accessibilityLabel="Search credentials"
-          testID="home-search-input"
-        />
+
+        {/* Category Row (Horizontal Scroll) */}
+        <ScrollView
+          horizontal
+          style={styles.categoryScrollView}
+          showsHorizontalScrollIndicator={true}
+          contentContainerStyle={styles.categoryScrollContent}
+        >
+          <Pressable
+            style={[styles.categoryBtn, category === CATEGORIES.CREDENTIALS && styles.categoryBtnActive]}
+            onPress={() => setCategory(CATEGORIES.CREDENTIALS)}
+            testID="category-credentials"
+          >
+            <Icon name="password" size={20} color={themeColors.primary} />
+            <Text style={[styles.categoryBtnText, category === CATEGORIES.CREDENTIALS && styles.categoryBtnTextActive]}>Identifiants</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.categoryBtn, category === CATEGORIES.BANK_CARDS && styles.categoryBtnActive]}
+            onPress={() => setCategory(CATEGORIES.BANK_CARDS)}
+            testID="category-bank-cards"
+          >
+            <Icon name="creditCard" size={20} color={themeColors.primary} />
+            <Text style={[styles.categoryBtnText, category === CATEGORIES.BANK_CARDS && styles.categoryBtnTextActive]}>Cartes bancaire</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.categoryBtn, category === CATEGORIES.SECURE_NOTES && styles.categoryBtnActive]}
+            onPress={() => setCategory(CATEGORIES.SECURE_NOTES)}
+            testID="category-secure-notes"
+          >
+            <Icon name="note" size={20} color={themeColors.primary} />
+            <Text style={[styles.categoryBtnText, category === CATEGORIES.SECURE_NOTES && styles.categoryBtnTextActive]}>Notes sécurisées</Text>
+          </Pressable>
+        </ScrollView>
       </View>
 
-      {/* Category Row (Horizontal Scroll) */}
-      <ScrollView
-        horizontal
-        style={{ flexGrow: 0 }}
-        showsHorizontalScrollIndicator={true}
-        contentContainerStyle={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 0, gap: 8 }}
+      {/* Scrollable Content Area */}
+      <ScrollView 
+        style={styles.scrollableContent}
+        contentContainerStyle={styles.scrollableContentContainer}
+        showsVerticalScrollIndicator={true}
       >
-        <Pressable
-          style={[styles.categoryBtn, category === CATEGORIES.CREDENTIALS && styles.categoryBtnActive]}
-          onPress={() => setCategory(CATEGORIES.CREDENTIALS)}
-          testID="category-credentials"
-        >
-          <Icon name="password" size={20} color={themeColors.primary} />
-          <Text style={[styles.categoryBtnText, category === CATEGORIES.CREDENTIALS && styles.categoryBtnTextActive]}>Identifiants</Text>
-        </Pressable>
-        <Pressable
-          style={[styles.categoryBtn, category === CATEGORIES.BANK_CARDS && styles.categoryBtnActive]}
-          onPress={() => setCategory(CATEGORIES.BANK_CARDS)}
-          testID="category-bank-cards"
-        >
-          <Icon name="creditCard" size={20} color={themeColors.primary} />
-          <Text style={[styles.categoryBtnText, category === CATEGORIES.BANK_CARDS && styles.categoryBtnTextActive]}>Cartes bancaire</Text>
-        </Pressable>
-        <Pressable
-          style={[styles.categoryBtn, category === CATEGORIES.SECURE_NOTES && styles.categoryBtnActive]}
-          onPress={() => setCategory(CATEGORIES.SECURE_NOTES)}
-          testID="category-secure-notes"
-        >
-          <Icon name="note" size={20} color={themeColors.primary} />
-          <Text style={[styles.categoryBtnText, category === CATEGORIES.SECURE_NOTES && styles.categoryBtnTextActive]}>Notes sécurisées</Text>
-        </Pressable>
-      </ScrollView>
-
-      {/* Main Content */}
-      <View style={styles.homeContent}>
         {/* Suggestions Section */}
         {category === CATEGORIES.CREDENTIALS && (
           <View style={styles.pageSection}>
             <Text style={styles.sectionTitle}>Suggestions</Text>
             {suggestions.length > 0 ? (
-              <View style={styles.credentialList}>
+              <View style={styles.itemList}>
                 {suggestions.map((item: any) => (
                   <CredentialCard
                     key={item.id}
@@ -229,7 +243,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         {category === CATEGORIES.CREDENTIALS && (
           <View style={styles.pageSection}>
             <Text style={styles.sectionTitle}>Identifiants</Text>
-            <View style={styles.credentialList}>
+            <View style={styles.itemList}>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
               ) : filteredItems.length === 0 ? (
@@ -260,10 +274,11 @@ export const HomePage: React.FC<HomePageProps> = ({
             </View>
           </View>
         )}
+        {/* Bank Cards List */}
         {category === CATEGORIES.BANK_CARDS && (
           <View style={styles.pageSection}>
             <Text style={styles.sectionTitle}>Cartes bancaire</Text>
-            <View style={styles.credentialList}>
+            <View style={styles.itemList}>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
               ) : filteredItems.length === 0 ? (
@@ -276,10 +291,11 @@ export const HomePage: React.FC<HomePageProps> = ({
             </View>
           </View>
         )}
+        {/* Secure Notes List */}
         {category === CATEGORIES.SECURE_NOTES && (
           <View style={styles.pageSection}>
             <Text style={styles.sectionTitle}>Notes sécurisées</Text>
-            <View style={styles.credentialList}>
+            <View style={styles.itemList}>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
               ) : filteredItems.length === 0 ? (
@@ -292,10 +308,12 @@ export const HomePage: React.FC<HomePageProps> = ({
             </View>
           </View>
         )}
-      </View>
+      </ScrollView>
 
-      {/* HelperBar - only on HomePage */}
-      <HelperBar category={category} />
+      {/* Fixed HelperBar */}
+      <View style={styles.fixedHelperBar}>
+        <HelperBar category={category} />
+      </View>
     </View>
   );
 };
@@ -304,6 +322,40 @@ const getStyles = (mode: 'light' | 'dark') => {
   const themeColors = getColors(mode);
   
   return StyleSheet.create({
+    pageContainer: {
+      backgroundColor: themeColors.primaryBackground,
+      flex: 1,
+      flexDirection: 'column',
+    },
+    fixedHeader: {
+      backgroundColor: themeColors.primaryBackground,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.lg,
+      paddingBottom: spacing.md,
+      gap: spacing.md,
+    },
+    scrollableContent: {
+      flex: 1,
+    },
+    scrollableContentContainer: {
+      paddingHorizontal: spacing.lg,
+      paddingBottom: layout.helperBarHeight + spacing.lg,
+      gap: spacing.lg,
+    },
+    fixedHelperBar: {
+      backgroundColor: themeColors.primaryBackground,
+      borderTopWidth: 1,
+      borderTopColor: themeColors.borderColor,
+    },
+    categoryScrollView: {
+      flexGrow: 0,
+    },
+    categoryScrollContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 0,
+      gap: 8,
+    },
     addSuggestionBtn: {
       alignItems: 'center',
       backgroundColor: themeColors.primaryBackground,
@@ -353,9 +405,15 @@ const getStyles = (mode: 'light' | 'dark') => {
     categoryBtnTextActive: {
       color: themeColors.primary,
     },
+    itemList: {
+      flexDirection: 'column',
+      width: '100%',
+      gap: spacing.sm,
+    },
     credentialList: {
       flexDirection: 'column',
       width: '100%',
+      gap: spacing.xs,
     },
     emptyState: {
       color: themeColors.tertiary,

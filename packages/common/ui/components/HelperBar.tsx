@@ -14,6 +14,7 @@ import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import type { Category } from '@common/core/types/categories.types';
 import { CATEGORIES } from '@common/core/types/categories.types';
+import { layout } from '@common/ui/design/layout';
 
 interface HelperBarProps {
   category: Category;
@@ -83,7 +84,7 @@ export const HelperBar: React.FC<HelperBarProps> = ({ category }) => {
           borderTopColor: themeColors.borderColor,
           borderTopWidth: 1,
           flexDirection: 'row',
-          height: 55,
+          height: layout.helperBarHeight,
           justifyContent: 'center',
           paddingHorizontal: 8,
           width: '100%',

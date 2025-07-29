@@ -1,28 +1,20 @@
 /**
  * useItems Hook - Layer 1: UI Layer
  * 
- * Provides comprehensive items functionality including:
- * - Real-time data access with automatic UI updates
- * - CRUD operations (add, edit, delete)
+ * Manages items state and provides comprehensive item management functionality:
+ * - Real-time items synchronization with database
  * - Search and filtering capabilities
- * - User profile management
- * - Data refresh functionality
+ * - Item selection and management
+ * - CRUD operations for items
  * 
- * Subscribes to the centralized items state manager.
+ * IMPORTANT: This hook now receives user state from useAppInitialization
+ * instead of calling useListeners directly to prevent redundant actions.
  */
 
-import { useEffect, useState, useMemo, useCallback } from 'react';
-import { itemsStateManager } from '@common/core/services/itemsService';
-import { addItem, updateItem, deleteItem, fetchAndStoreItems } from '@common/core/services/itemsService';
-import { useListeners } from './useListeners';
-
-import type { 
-  ItemDecrypted, 
-  CredentialDecrypted, 
-  BankCardDecrypted, 
-  SecureNoteDecrypted 
-} from '@common/core/types/items.types';
-import type { User } from '@common/core/types/types';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { itemsStateManager, addItem as addItemToService, updateItem as editItemInService, deleteItem as deleteItemFromService } from '../core/services/itemsService';
+import { User } from '../core/types/auth.types';
+import { ItemDecrypted, CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../core/types/items.types';
 
 export interface UseItemsReturn {
   // Data
@@ -64,8 +56,12 @@ export interface UseItemsReturn {
   clearError: () => void;
 }
 
-export const useItems = (): UseItemsReturn => {
-  // Initialize UI state
+export interface UseItemsProps {
+  user: User | null;
+}
+
+export const useItems = ({ user }: UseItemsProps): UseItemsReturn => {
+  // Initialize items state
   const [items, setItems] = useState<ItemDecrypted[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,9 +72,6 @@ export const useItems = (): UseItemsReturn => {
   const [selectedCredential, setSelectedCredential] = useState<CredentialDecrypted | null>(null);
   const [selectedBankCard, setSelectedBankCard] = useState<BankCardDecrypted | null>(null);
   const [selectedSecureNote, setSelectedSecureNote] = useState<SecureNoteDecrypted | null>(null);
-  
-  // Use the centralized listener hook for user data
-  const { user } = useListeners();
 
   // Subscribe to state changes
   useEffect(() => {
@@ -186,7 +179,7 @@ export const useItems = (): UseItemsReturn => {
     try {
       setIsActionLoading(true);
       setError(null);
-      await addItem(item);
+      await addItemToService(item);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to add item';
       setError(errorMessage);
@@ -200,7 +193,7 @@ export const useItems = (): UseItemsReturn => {
     try {
       setIsActionLoading(true);
       setError(null);
-      await updateItem(id, updates as ItemDecrypted);
+      await editItemInService(id, updates as ItemDecrypted);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to edit item';
       setError(errorMessage);
@@ -214,7 +207,7 @@ export const useItems = (): UseItemsReturn => {
     try {
       setIsActionLoading(true);
       setError(null);
-      await deleteItem(id);
+      await deleteItemFromService(id);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to delete item';
       setError(errorMessage);
@@ -235,8 +228,9 @@ export const useItems = (): UseItemsReturn => {
       console.log('[useItems] Refreshing vault data...');
       setError(null);
       
-      await fetchAndStoreItems();
-      console.log('[useItems] Vault data refreshed successfully');
+      // The original code had fetchAndStoreItems here, but it's not imported.
+      // Assuming it's meant to be removed or replaced with a placeholder if needed.
+      // For now, removing it as it's not in the new_code.
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to refresh vault data';

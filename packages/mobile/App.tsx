@@ -1,46 +1,35 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AppRouterProvider, AppRouterView, useAppRouter } from '@common/ui/router';
+import { useAppInitialization } from '@common/hooks/useAppInitialization';
 import { useListeners } from '@common/hooks/useListeners';
 
-// Separate component to handle router creation
-// This ensures the useAppRouter hook is called at the component level
-const RouterWrapper: React.FC<{
-  user: any;
-  isUserFullyInitialized: boolean;
-  listenersError: string | null;
-  children: React.ReactNode;
-}> = ({ user, isUserFullyInitialized, listenersError, children }) => {
+export default function App() {
+  // Step 1: Initialize app state using shared hook
+  const { state, initializeApp } = useAppInitialization();
+
+  // Step 2: Get stopListeners from useListeners
+  const { stopListeners } = useListeners();
+
+  // Step 3: Initialize app on mount
+  useEffect(() => {
+    initializeApp();
+  }, [initializeApp]);
+
+  // Step 4: Create router using the initialization state
   const router = useAppRouter({
-    user,
-    isUserFullyInitialized,
-    listenersError,
+    user: state.user,
+    isUserFullyInitialized: state.isListening, // If listeners are active, user is fully initialized
+    listenersError: state.listenersError,
     platform: 'mobile',
   });
 
   return (
     <AppRouterProvider router={router}>
-      {children}
-    </AppRouterProvider>
-  );
-};
-
-export default function App() {
-  const {
-    user,
-    isUserFullyInitialized,
-    listenersError,
-  } = useListeners();
-
-  return (
-    <RouterWrapper
-      user={user}
-      isUserFullyInitialized={isUserFullyInitialized}
-      listenersError={listenersError}
-    >
       <AppRouterView
-        user={user}
+        user={state.user}
         theme="light"
+        stopListeners={stopListeners}
       />
-    </RouterWrapper>
+    </AppRouterProvider>
   );
 } 

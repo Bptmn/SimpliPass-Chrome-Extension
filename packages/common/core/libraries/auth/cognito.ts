@@ -74,7 +74,7 @@ export async function confirmMfaWithCognito(code: string): Promise<CognitoUser> 
 /**
  * Fetch user attributes from Cognito
  */
-export async function fetchUserAttributesCognito(): Promise<Record<string, any>> {
+export async function fetchUserAttributesCognito(): Promise<Record<string, string | undefined>> {
   await initCognito();
   
   try {

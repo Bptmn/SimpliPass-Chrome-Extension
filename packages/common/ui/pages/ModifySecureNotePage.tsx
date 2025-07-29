@@ -13,6 +13,9 @@ import { getPageStyles } from '@ui/design/layout';
 import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { typography } from '@ui/design/typography';
+import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+import { CATEGORIES } from '@common/core/types/categories.types';
 
 interface ModifySecureNotePageProps {
   secureNote: SecureNoteDecrypted;
@@ -21,13 +24,14 @@ interface ModifySecureNotePageProps {
 
 export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
   secureNote,
-  onBack,
+  onBack: _onBack,
 }) => {
 
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
+  const router = useAppRouterContext();
   const { showToast } = useToast();
 
   const [title, setTitle] = useState(secureNote?.title || '');
@@ -55,7 +59,7 @@ export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
       
       await updateItem(secureNote.id, updatedNote);
       showToast('Note modifiée avec succès');
-      onBack();
+      router.navigateTo(ROUTES.HOME, { category: CATEGORIES.SECURE_NOTES });
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la modification de la note.');
     } finally {
@@ -79,7 +83,7 @@ export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Modifier une note" 
-            onBackPress={onBack} 
+            onBackPress={() => router.navigateTo(ROUTES.HOME, { category: CATEGORIES.SECURE_NOTES })} 
           />
           <View style={pageStyles.formContainer}>
             <InputEdit

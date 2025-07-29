@@ -6,13 +6,15 @@
  * - Logout with cleanup
  * - Account management (get current user, session management)
  * - Centralized auth state management
+ * 
+ * IMPORTANT: This hook now receives state from useAppInitialization
+ * instead of calling useListeners directly to prevent redundant actions.
  */
 
 import { useState, useCallback } from 'react';
 import { auth } from '../core/adapters/auth.adapter';
 import { storage } from '../core/adapters/platform.storage.adapter';
 import { getCurrentUser as getCurrentUserFromService } from '../core/services/userService';
-import { useListeners } from './useListeners';
 import { User } from '../core/types/auth.types';
 
 export interface UseAuthReturn {
@@ -28,13 +30,15 @@ export interface UseAuthReturn {
   clearError: () => void;
 }
 
-export const useAuth = (): UseAuthReturn => {
+export interface UseAuthProps {
+  user: User | null;
+  stopListeners: () => Promise<void>;
+}
+
+export const useAuth = ({ user, stopListeners }: UseAuthProps): UseAuthReturn => {
   // Initialize UI state
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Use centralized listener hook for user state
-  const { user, stopListeners } = useListeners();
 
   // Login function
   const login = useCallback(async (email: string, password: string) => {

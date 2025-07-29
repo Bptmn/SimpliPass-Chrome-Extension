@@ -110,7 +110,7 @@ export async function decryptAllItems(userSecretKey: string, itemsList: ItemEncr
   return decryptedItems;
 }
 
-export async function encryptItem(userSecretKey: string, itemToEncrypt: DecryptedItem): Promise<any> {
+export async function encryptItem(userSecretKey: string, itemToEncrypt: DecryptedItem): Promise<ItemEncrypted> {
   // Simply stringify the entire item object - no need to create contentDict
   const contentString = JSON.stringify(itemToEncrypt);
   
@@ -123,5 +123,6 @@ export async function encryptItem(userSecretKey: string, itemToEncrypt: Decrypte
     content_encrypted,
     item_key_encrypted,
     last_used_at: itemToEncrypt.lastUseDateTime,
+    item_type: itemToEncrypt.itemType,
   };
 }

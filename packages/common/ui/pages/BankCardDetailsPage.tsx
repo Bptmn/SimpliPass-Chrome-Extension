@@ -54,7 +54,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
     try {
       await deleteItem(card.id);
       showToast('Carte supprimée avec succès');
-      router.navigateTo(ROUTES.HOME);
+      onBack();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la suppression.');
     } finally {
@@ -111,6 +111,8 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
             <Text style={styles.title}>{card.title}</Text>
           </View>
         </View>
+        {/* Form fields */}
+        <View style={styles.detailsFieldsContainer}>
         {/* Owner */}
         <DetailField
           label="Titulaire :"
@@ -122,7 +124,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
         {/* Card Number */}
         <DetailField
           label="Numéro de carte :"
-          value={card.cardNumber}
+          value={card.cardNumber.replace(/(\d{4})/g, '$1 ').trim()}
           showCopyButton={!!card.cardNumber}
           onCopy={() => showToast('Numéro copié !')}
           ariaLabel="Copier le numéro de carte"
@@ -148,6 +150,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
           onCopy={() => showToast('Note copiée !')}
           ariaLabel="Copier la note"
         />
+        </View>
         {/* Actions */}
         <View style={styles.actionsRow}>
           <Button
@@ -184,6 +187,10 @@ const getStyles = (mode: 'light' | 'dark') => {
   const themeColors = getColors(mode);
   
   return StyleSheet.create({
+    detailsFieldsContainer: {
+      flex: 1,
+      gap: spacing.sm,
+    },
     actionsRow: {
       flexDirection: 'row',
       gap: spacing.md,

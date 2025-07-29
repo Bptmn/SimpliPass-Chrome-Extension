@@ -12,6 +12,9 @@ import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { InputEdit } from '@ui/components/InputEdit';
+import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+import { CATEGORIES } from '@common/core/types/categories.types';
 
 interface ModifyCredentialPageProps {
   credential: CredentialDecrypted;
@@ -27,6 +30,7 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
+  const router = useAppRouterContext();
   const { showToast } = useToast();
   
   const [title, setTitle] = useState(credential?.title || '');
@@ -59,7 +63,7 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
 
       await updateItem(credential.id, updatedCredential);
       showToast('Identifiant modifié avec succès');
-      onBack();
+      router.navigateTo(ROUTES.HOME, { category: CATEGORIES.CREDENTIALS });
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la modification de l\'identifiant.');
     } finally {

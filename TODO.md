@@ -1,5 +1,5 @@
 Faire step by step pour s'assurer que ça marche:
-- CRUD items
+- S'assurer que je comprenne et simplifie tout le flow depuis un entry points. Je dois maitriser l'ensemble du flow (cursor à fait beaucoup d'overcomplexity inutile et n'a pas bien respecté la simplicité et le rôle de chaque layer)
 - Commencer à écrire les tests.
     Voir avec chatGPT/Cursor la meilleur stratégie et plan à mettre en place
     Changer du code (le rendre plus modulable par exemple) s'il ne permet pas un bon testing.

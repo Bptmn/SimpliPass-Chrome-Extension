@@ -1,3 +1,9 @@
+/**
+ * Platform Adapter - Layer 3: Integration Layer
+ * 
+ * Centralized platform detection and platform-specific functionality.
+ * Provides a single source of truth for platform detection and state.
+ */
 
 export interface PlatformAdapter {
   supportsBiometric(): boolean;
@@ -12,13 +18,28 @@ export interface PlatformAdapter {
   getRememberedEmail?(): Promise<string | null>;
 }
 
+// Global platform state
+let currentPlatform: 'mobile' | 'extension' | null = null;
+
 export const detectPlatform = (): 'mobile' | 'extension' => {
   if (typeof chrome !== 'undefined' && chrome.storage) {
     return 'extension';
   }
-  if (typeof navigator !== 'undefined' && navigator.userAgent.includes('ReactNative')) {    return 'mobile';
+  if (typeof navigator !== 'undefined' && navigator.userAgent.includes('ReactNative')) {
+    return 'mobile';
   }
   return 'extension';
+};
+
+export const setPlatform = (platform: 'mobile' | 'extension'): void => {
+  currentPlatform = platform;
+};
+
+export const getPlatform = (): 'mobile' | 'extension' => {
+  if (!currentPlatform) {
+    currentPlatform = detectPlatform();
+  }
+  return currentPlatform;
 };
 
 let platformAdapter: PlatformAdapter | null = null;
@@ -27,7 +48,8 @@ const initializePlatformAdapter = async (): Promise<PlatformAdapter> => {
   if (platformAdapter) {
     return platformAdapter;
   }
-  const platform = detectPlatform();
+  
+  const platform = getPlatform();
   if (platform === 'mobile') {
     try {
       const { MobilePlatformAdapter } = await import('../../../mobile/adapters/platform.adapter');
@@ -51,6 +73,11 @@ const initializePlatformAdapter = async (): Promise<PlatformAdapter> => {
 
 export const initializePlatform = async (): Promise<void> => {
   try {
+    // Set the platform first
+    const platform = detectPlatform();
+    setPlatform(platform);
+    
+    // Then initialize the adapter
     await initializePlatformAdapter();
     console.log('[Platform] Platform adapter initialized successfully');
   } catch (error) {

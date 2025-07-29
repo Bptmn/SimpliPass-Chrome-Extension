@@ -3,7 +3,9 @@
  * 
  * This hook manages the authentication state and database listeners for the application.
  * It handles user authentication, secret key validation, and database synchronization.
- * Provides a centralized way to manage user state across the application.
+ * 
+ * IMPORTANT: This hook should only be called from useAppInitialization to ensure
+ * proper initialization flow and prevent multiple instances.
  */
 
 import { useState, useCallback, useEffect } from 'react';
@@ -26,6 +28,9 @@ export interface UseListenersReturn {
   clearListenersError: () => void;
 }
 
+// Module-level flag to prevent multiple instances
+let isHookInitialized = false;
+
 export const useListeners = (): UseListenersReturn => {
   // Initialize listener state
   const [user, setUser] = useState<User | null>(null);
@@ -36,34 +41,41 @@ export const useListeners = (): UseListenersReturn => {
   // Start database listeners
   const startListeners = useCallback(async (userId: string) => {
     try {
-      console.log('[useListener] Starting database listeners for user:', userId);
+      // Check if listeners are already active to prevent duplicate starts
+      if (databaseListeners.isListening()) {
+        console.log('[useListeners] Listeners already active, skipping start');
+        setIsListening(true);
+        return;
+      }
+      
+      console.log('[useListeners] Starting database listeners for user:', userId);
       setListenersError(null);
       
       await databaseListeners.startListeners(userId);
       setIsListening(true);
       
-      console.log('[useListener] Database listeners started successfully');
+      console.log('[useListeners] Database listeners started successfully');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to start listeners';
       setListenersError(errorMessage);
-      console.error('[useListener] Failed to start listeners:', err);
+      console.error('[useListeners] Failed to start listeners:', err);
     }
   }, []);
 
   // Stop database listeners
   const stopListeners = useCallback(async () => {
     try {
-      console.log('[useListener] Stopping database listeners...');
+      console.log('[useListeners] Stopping database listeners...');
       setListenersError(null);
       
       await databaseListeners.stopListeners();
       setIsListening(false);
       
-      console.log('[useListener] Database listeners stopped successfully');
+      console.log('[useListeners] Database listeners stopped successfully');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to stop listeners';
       setListenersError(errorMessage);
-      console.error('[useListener] Failed to stop listeners:', err);
+      console.error('[useListeners] Failed to stop listeners:', err);
     }
   }, []);
 
@@ -72,10 +84,17 @@ export const useListeners = (): UseListenersReturn => {
     setListenersError(null);
   }, []);
 
-
-
   // Handle authentication state changes
   useEffect(() => {
+    // Prevent multiple instances
+    if (isHookInitialized) {
+      console.warn('[useListeners] Hook already initialized. This hook should only be called from useAppInitialization.');
+      return;
+    }
+
+    isHookInitialized = true;
+    console.log('[useListeners] Initializing hook');
+
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       try {
         setListenersError(null);
@@ -88,9 +107,12 @@ export const useListeners = (): UseListenersReturn => {
           setIsUserFullyInitialized(hasSecretKey);
           
           // Start listeners if user is fully initialized
-          if (hasSecretKey && !isListening) {
-            console.log('[useListener] User fully initialized, starting listeners...');
+          if (hasSecretKey && !databaseListeners.isListening()) {
+            console.log('[useListeners] User fully initialized, starting listeners...');
             await startListeners(firebaseUser.uid);
+          } else if (hasSecretKey && databaseListeners.isListening()) {
+            // Sync local state with actual listener state
+            setIsListening(true);
           }
         } else {
           setUser(null);
@@ -103,12 +125,16 @@ export const useListeners = (): UseListenersReturn => {
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
         setListenersError(errorMessage);
-        console.error('[useListener] Auth state change error:', err);
+        console.error('[useListeners] Auth state change error:', err);
       }
     });
 
-    return () => unsubscribe();
-  }, [startListeners, stopListeners, isListening]);
+    return () => {
+      unsubscribe();
+      // Reset flag on cleanup
+      isHookInitialized = false;
+    };
+  }, [startListeners, stopListeners]);
 
   return {
     // State

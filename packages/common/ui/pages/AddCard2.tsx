@@ -25,6 +25,7 @@ import { getCurrentUser } from '@common/core/services/userService';
 import { User } from '@common/core/types/types';
 import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+import { CATEGORIES } from '@common/core/types/categories.types';
 
 interface AddCard2Props {
   title?: string;
@@ -54,6 +55,12 @@ export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankNam
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [toast] = useState<string | null>(null);
 
+  // Validation states
+  const [cardNumberError, setCardNumberError] = useState<string | null>(null);
+  const [cvvError, setCvvError] = useState<string | null>(null);
+  const [cardNumberTouched, setCardNumberTouched] = useState(false);
+  const [cvvTouched, setCvvTouched] = useState(false);
+
   // Load user data from secure storage
   useEffect(() => {
     const loadUser = async () => {
@@ -72,8 +79,79 @@ export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankNam
     loadUser();
   }, []);
 
-  // Helper for web: generate month and year options
+  // Card number formatting and validation
+  const formatCardNumber = (value: string) => {
+    // Remove all non-digits
+    const digits = value.replace(/\D/g, '');
+    
+    // Limit to 19 digits
+    const limitedDigits = digits.slice(0, 19);
+    
+    // Format with spaces every 4 digits
+    const formatted = limitedDigits.replace(/(\d{4})(?=\d)/g, '$1 ');
+    
+    return formatted;
+  };
 
+  const validateCardNumber = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length === 0) {
+      setCardNumberError(null);
+      return true;
+    }
+    if (digits.length < 13 || digits.length > 19) {
+      setCardNumberError('Le numéro de carte doit contenir entre 13 et 19 chiffres');
+      return false;
+    }
+    setCardNumberError(null);
+    return true;
+  };
+
+  const handleCardNumberChange = (value: string) => {
+    const formatted = formatCardNumber(value);
+    setCardNumber(formatted);
+    // Only validate if field has been touched
+    if (cardNumberTouched) {
+      validateCardNumber(formatted);
+    }
+  };
+
+  const handleCardNumberBlur = () => {
+    setCardNumberTouched(true);
+    validateCardNumber(cardNumber);
+  };
+
+  // CVV validation
+  const validateCvv = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length === 0) {
+      setCvvError(null);
+      return true;
+    }
+    if (digits.length !== 3 && digits.length !== 4) {
+      setCvvError('Le code CVV doit contenir 3 ou 4 chiffres');
+      return false;
+    }
+    setCvvError(null);
+    return true;
+  };
+
+  const handleCvvChange = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    const limitedDigits = digits.slice(0, 4);
+    setCvv(limitedDigits);
+    // Only validate if field has been touched
+    if (cvvTouched) {
+      validateCvv(limitedDigits);
+    }
+  };
+
+  const handleCvvBlur = () => {
+    setCvvTouched(true);
+    validateCvv(cvv);
+  };
+
+  // Helper for web: generate month and year options
   const monthOptions = getMonthOptions();
   const yearOptions = getYearOptions();
   const selectedMonth = expirationDate.split('/')[0] || '';
@@ -81,6 +159,15 @@ export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankNam
 
   const handleConfirm = async () => {
     if (!user) return;
+    
+    // Validate fields before submission
+    const isCardNumberValid = validateCardNumber(cardNumber);
+    const isCvvValid = validateCvv(cvv);
+    
+    if (!isCardNumberValid || !isCvvValid) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -90,8 +177,6 @@ export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankNam
       // Parse expiration date
       const expDate = parseExpirationDate(expirationDate) || createExpirationDate(1, new Date().getFullYear() + 1);
   
-
-
       const newCard: BankCardDecrypted = {
         id: '',
         itemType: 'bankCard',
@@ -102,7 +187,7 @@ export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankNam
         note,
         color: selectedColor,
         itemKey: generateItemKey(),
-        cardNumber,
+        cardNumber: cardNumber.replace(/\s/g, ''), // Remove spaces for storage
         expirationDate: expDate,
         verificationNumber: cvv,
         bankName: initialBankName || '',
@@ -111,7 +196,8 @@ export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankNam
       await addItem(newCard);
       showToast('Carte ajoutée avec succès');
       if (router) {
-        router.navigateTo(ROUTES.HOME);
+        // Navigate to home with bank card category
+        router.navigateTo(ROUTES.HOME, { category: CATEGORIES.BANK_CARDS });
       }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la création de la carte.');
@@ -128,19 +214,19 @@ export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankNam
     setDatePickerVisible(false);
   };
 
-  // Card preview object
+  // Card preview object - only show predefined values for title and bank name
   const previewCard: BankCardDecrypted = {
     id: 'preview',
     itemType: 'bankCard',
-    title: initialTitle || 'Titre',
-    owner: owner || 'Owner',
+    title: initialTitle || 'Titre de la carte',
+    owner: owner || 'Nom du titulaire',
     note: note || '',
     color: selectedColor,
     itemKey: '',
-    cardNumber: cardNumber || '0000000000000000',
+    cardNumber: cardNumber || '0000 0000 0000 0000',
     expirationDate: parseExpirationDate(expirationDate) || createExpirationDate(1, new Date().getFullYear() + 1),
-    verificationNumber: cvv || '',
-    bankName: '',
+    verificationNumber: cvv || '123',
+    bankName: initialBankName || 'Nom de la banque',
     bankDomain: '',
     createdDateTime: new Date(),
     lastUseDateTime: new Date(),
@@ -152,7 +238,11 @@ export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankNam
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Ajouter une carte" 
-            onBackPress={() => { /* router.goBack() if available */ }} 
+            onBackPress={() => {
+              console.log('[AddCard2] Back button pressed, router:', !!router);
+              console.log('[AddCard2] Using router.goBack()');
+              router.goBack();
+            }} 
           />
           <ItemBankCard cred={previewCard} />
           <ColorSelector
@@ -175,9 +265,11 @@ export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankNam
               _id="cardNumber"
               type="text"
               value={cardNumber}
-              onChange={setCardNumber}
-              placeholder="Entrez un numéro..."
+              onChange={handleCardNumberChange}
+              onBlur={handleCardNumberBlur}
+              placeholder="0000 0000 0000 0000"
               _required
+              error={cardNumberError || undefined}
             />
             <View style={styles.row2col}>
               <View style={styles.inputDateColumn}>
@@ -259,9 +351,11 @@ export const AddCard2: React.FC<AddCard2Props> = ({ title: initialTitle, bankNam
                   _id="cvv"
                   type="text"
                   value={cvv}
-                  onChange={val => setCvv(val.replace(/\D/g, ''))}
+                  onChange={handleCvvChange}
+                  onBlur={handleCvvBlur}
                   placeholder="123"
                   _required
+                  error={cvvError || undefined}
                 />
               </View>
             </View>

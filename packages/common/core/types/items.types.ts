@@ -124,12 +124,14 @@ export interface ItemsState {
 }
 
 export interface SearchFilters {
-  type?: 'credential' | 'bankCard' | 'secureNote';
-  tags?: string[];
-  dateRange?: {
-    start: Date;
-    end: Date;
-  };
+  query: string;
+  category?: 'credentials' | 'bankCards' | 'secureNotes' | 'all';
+}
+
+export interface LocalVault {
+  userId: string;
+  items: ItemDecrypted[];
+  lastModified: Date;
 }
 
 // ===== Form Types =====

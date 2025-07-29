@@ -106,7 +106,7 @@ export async function clearUserData(): Promise<void> {
 /**
  * Get user document from Firestore via database adapter
  */
-export async function getFirestoreUserDocument(userId: string): Promise<any> {
+export async function getFirestoreUserDocument(userId: string): Promise<User | null> {
   try {
     console.log('[UserService] Getting Firestore user document for:', userId);
     return await db.getDocument(`users/${userId}`);

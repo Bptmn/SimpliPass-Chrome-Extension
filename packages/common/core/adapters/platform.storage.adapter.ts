@@ -1,6 +1,8 @@
 import { MobileStorageAdapter } from '@mobile/adapters/platform.storage.adapter';
 import { ExtensionStorageAdapter } from '@extension/adapters/platform.storage.adapter';
 import { User } from '../types/auth.types';
+import { LocalVault } from '../types/items.types';
+import { getPlatform } from './platform.adapter';
 
 export interface StorageAdapter {
   // User Secret Key Storage
@@ -16,24 +18,14 @@ export interface StorageAdapter {
   getUserFromSecureLocalStorage(): Promise<User | null>;
   
   // Vault Storage
-  storeVaultToSecureLocalStorage(vault: any): Promise<void>;
-  updateVaultInSecureLocalStorage(vault: any): Promise<void>;
+  storeVaultToSecureLocalStorage(vault: LocalVault): Promise<void>;
+  updateVaultInSecureLocalStorage(vault: LocalVault): Promise<void>;
   deleteVaultFromSecureLocalStorage(): Promise<void>;
-  getVaultFromSecureLocalStorage(): Promise<any | null>;
+  getVaultFromSecureLocalStorage(): Promise<LocalVault | null>;
   
   // General
   clearAllSecureLocalStorage(): Promise<void>;
 }
-
-export const detectPlatform = (): 'mobile' | 'extension' => {
-  if (typeof chrome !== 'undefined' && chrome.storage) {
-    return 'extension';
-  }
-  if (typeof navigator !== 'undefined' && navigator.userAgent.includes('ReactNative')) {
-    return 'mobile';
-  }
-  return 'extension';
-};
 
 let storageAdapter: StorageAdapter | null = null;
 
@@ -41,7 +33,8 @@ const initializeStorageAdapter = async (): Promise<StorageAdapter> => {
   if (storageAdapter) {
     return storageAdapter;
   }
-  const platform = detectPlatform();
+  
+  const platform = getPlatform();
   if (platform === 'mobile') {
     storageAdapter = new MobileStorageAdapter();
   } else {
@@ -100,16 +93,16 @@ export const storage: StorageAdapter = {
   },
   
   // Vault Storage
-  async storeVaultToSecureLocalStorage(vault: any): Promise<void> {
+  async storeVaultToSecureLocalStorage(vault: LocalVault): Promise<void> {
     return getAdapter().storeVaultToSecureLocalStorage(vault);
   },
-  async updateVaultInSecureLocalStorage(vault: any): Promise<void> {
+  async updateVaultInSecureLocalStorage(vault: LocalVault): Promise<void> {
     return getAdapter().updateVaultInSecureLocalStorage(vault);
   },
   async deleteVaultFromSecureLocalStorage(): Promise<void> {
     return getAdapter().deleteVaultFromSecureLocalStorage();
   },
-  async getVaultFromSecureLocalStorage(): Promise<any | null> {
+  async getVaultFromSecureLocalStorage(): Promise<LocalVault | null> {
     return getAdapter().getVaultFromSecureLocalStorage();
   },
   

@@ -1,68 +1,65 @@
 // PopupApp.tsx
 // This file defines the main React application for the Chrome extension popup UI.
-// It handles authentication, page state, credential suggestions, and renders the main popup interface.
+// It uses the centralized useAppInitialization hook for clean, shared logic.
 // Responsibilities:
-// - Manage user authentication and listen for auth state changes
-// - Query the current tab for page info (domain, url, login form)
-// - Route between pages (home, generator, settings, login)
-// - Render the main UI (navbar, helper bar, etc.)
+// - Initialize app state using shared hook
+// - Handle credential injection (extension-specific)
+// - Render the main UI with proper routing
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppRouterProvider, AppRouterView, useAppRouter } from '@common/ui/router';
 import { PageState } from '@common/core/types/types';
+import { useAppInitialization } from '@common/hooks/useAppInitialization';
 import { useListeners } from '@common/hooks/useListeners';
+import { InitializationErrorBoundary } from '@common/ui/components/InitializationErrorBoundary';
 import { injectCredentialIntoCurrentTab } from '../services/credentialInjection';
-
-// Separate component to handle router creation
-// This ensures the useAppRouter hook is called at the component level
-const RouterWrapper: React.FC<{
-  user: any;
-  isUserFullyInitialized: boolean;
-  listenersError: string | null;
-  children: React.ReactNode;
-}> = ({ user, isUserFullyInitialized, listenersError, children }) => {
-  const router = useAppRouter({
-    user,
-    isUserFullyInitialized,
-    listenersError,
-    platform: 'extension',
-  });
-
-  return (
-    <AppRouterProvider router={router}>
-      {children}
-    </AppRouterProvider>
-  );
-};
 
 export const PopupApp: React.FC = () => {
   const [pageState] = useState<PageState | null>(null);
   const [theme] = useState<'light' | 'dark'>('light');
 
-  const {
-    user,
-    isUserFullyInitialized,
-    listenersError,
-  } = useListeners();
+  // Step 1: Initialize app state using shared hook
+  const { 
+    state, 
+    initializeApp
+  } = useAppInitialization();
 
-  // Handler to inject a credential into the current tab
+  // Step 2: Get stopListeners from useListeners
+  const { stopListeners } = useListeners();
+
+  // Step 3: Initialize app on mount
+  useEffect(() => {
+    initializeApp();
+  }, [initializeApp]);
+
+  // Step 4: Create router using the initialization state
+  const router = useAppRouter({
+    user: state.user,
+    isUserFullyInitialized: state.isListening, // If listeners are active, user is fully initialized
+    listenersError: state.listenersError,
+    platform: 'extension',
+  });
+
+  // Step 5: Handler for extension-specific functionality
   const handleInjectCredential = (credentialId: string) => {
     injectCredentialIntoCurrentTab(credentialId);
   };
 
   return (
-    <RouterWrapper
-      user={user}
-      isUserFullyInitialized={isUserFullyInitialized}
-      listenersError={listenersError}
+    <InitializationErrorBoundary
+      initializationError={state.initializationError}
+      onRetry={initializeApp}
     >
-      <AppRouterView
-        user={user}
-        pageState={pageState}
-        onInjectCredential={handleInjectCredential}
-        theme={theme}
-      />
-    </RouterWrapper>
+      <AppRouterProvider router={router}>
+        <AppRouterView
+          user={state.user}
+          pageState={pageState}
+          onInjectCredential={handleInjectCredential}
+          theme={theme}
+          stopListeners={stopListeners}
+        />
+      </AppRouterProvider>
+    </InitializationErrorBoundary>
   );
 };
 

@@ -5,10 +5,8 @@
  * Orchestrates vault operations between hooks and libraries.
  */
 
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/types';
+import { ItemDecrypted } from '@common/core/types/items.types';
 import { storage } from '../adapters/platform.storage.adapter';
-
-type ItemDecrypted = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted;
 
 /**
  * Store vault in local storage (clear text)
@@ -20,11 +18,11 @@ export async function setLocalVault(items: ItemDecrypted[]): Promise<void> {
     }
     
     // Store vault in clear text
+    const userId = 'current'; // This should be fetched from auth context
     await storage.storeVaultToSecureLocalStorage({
-      version: '1.0',
-      data: JSON.stringify(items),
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      userId,
+      items,
+      lastModified: new Date(),
     });
   } catch (error) {
     throw new Error(`Failed to store local vault: ${error}`);
@@ -45,14 +43,8 @@ export async function getLocalVault(): Promise<ItemDecrypted[]> {
     if (!vault) {
       return [];
     }
-    // Handle both formats
-    if (vault.data) {
-      return JSON.parse(vault.data);
-    } else if (vault.items) {
-      return vault.items;
-    } else {
-      return [];
-    }
+    // Return items from vault
+    return vault.items || [];
   } catch (error) {
     throw new Error(`Failed to get local vault: ${error}`);
   }

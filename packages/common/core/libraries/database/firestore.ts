@@ -16,6 +16,7 @@ import {
   Unsubscribe
 } from 'firebase/firestore';
 import { firestore } from '@common/core/libraries/auth/firebase';
+import { User } from '../../types/auth.types';
 
 const getSafeFirestore = () => {
   if (!firestore) throw new Error('Firestore is not initialized');
@@ -108,7 +109,7 @@ export interface FirestoreListenersState {
 }
 
 export interface FirestoreListenersCallbacks {
-  onUserUpdate?: (userData: any) => Promise<void>;
+  onUserUpdate?: (userData: User) => Promise<void>;
   onItemsUpdate?: () => Promise<void>;
 }
 
@@ -146,10 +147,14 @@ class FirestoreListenersService {
               
               // Call the callback if provided
               if (this.callbacks.onUserUpdate) {
-                await this.callbacks.onUserUpdate({
+                const user: User = {
                   id: snapshot.id,
-                  ...userData
-                });
+                  email: userData.email || '',
+                  username: userData.username || '',
+                  createdAt: userData.createdAt?.toDate() || new Date(),
+                  updatedAt: userData.updatedAt?.toDate() || new Date(),
+                };
+                await this.callbacks.onUserUpdate(user);
               }
             }
           },

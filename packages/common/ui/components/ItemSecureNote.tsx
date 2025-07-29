@@ -25,7 +25,7 @@ const ItemSecureNote: React.FC<ItemSecureNoteProps> = ({ note, onPress }) => {
         borderColor: colors.borderColor,
         borderRadius: 20,
         flexDirection: 'row',
-        height: 60,
+        height: 50,
         marginBottom: spacing.sm,
         maxWidth: 500,
         paddingLeft: spacing.md,

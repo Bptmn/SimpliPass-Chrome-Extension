@@ -61,7 +61,7 @@ export const getPageStyles = (mode: 'light' | 'dark') => {
   return StyleSheet.create({
     formContainer: {
       flex: 1,
-      gap: spacing.md,
+      gap: spacing.sm,
     },
     pageContainer: {
       backgroundColor: colors.primaryBackground,

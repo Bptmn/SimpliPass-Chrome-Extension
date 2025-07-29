@@ -9,14 +9,20 @@ import { Input } from '@ui/components/InputFields';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { useAuth } from '@common/hooks/useAuth';
 import logo from '../../../../assets/logo/logo_simplify_long.png';
+import type { User } from '@common/core/types/auth.types';
 
-const LoginPage: React.FC = () => {
+interface LoginPageProps {
+  user: User | null;
+  stopListeners: () => Promise<void>;
+}
+
+const LoginPage: React.FC<LoginPageProps> = ({ user, stopListeners }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   
-  const { login, isLoading, error } = useAuth();
+  const { login, isLoading, error } = useAuth({ user, stopListeners });
 
   // Form state
   const [email, setEmail] = React.useState('');

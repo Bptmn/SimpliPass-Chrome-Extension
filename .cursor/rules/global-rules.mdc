@@ -2,79 +2,72 @@
 alwaysApply: true
 ---
 
-Important rule: do not answer in a way to satisfy me or my ego or saying that I am always abosultely right. I want you to challenge my demands according to best practices. Answer always according to the best practices. Propose improvement according to the best practices if my demands are not alignes with best coding practices.
+# SimpliPass Cursor Rules
 
-
-## 🧱 Cursor Coding Constraints
-
-### ✅ Layer 1: Hooks (UI Layer)
-- Simple, readable functions
-- Handle UI state management
-- Abstract complexity from components
-- Return clear, predictable results
-- Handle loading states and errors
-- Ensure states are always accessible for UI
-- Steps must be numbered (Step 1, Step 2, Step 3...)
-
-### ✅ Layer 2: Services (Business Logic Layer)
-- Contain complex business logic
-- Orchestrate multiple operations
-- Handle data transformations
-- Manage business rules
-- Called only by hooks or other services
-- Platform-agnostic
-
-### ✅ Layer 3: Libraries, Adapters and utils (External Integration Layer)
-- Handle external API calls
-- Platform-specific implementations (via adapters)
-- Low-level operations (crypto, storage via utils)
-- Called only by services
-- Minimal business logic
-- Focus on integration
-
-### ✅ Always Use
-- React Native components (`<View>`, `<Text>`, etc.)
-- Zustand for all state access and updates
-- Platform adapter for secure local storage
-- Absolute imports from `@common`, `@core`, `@mobile`, `@extension`, `@shared`
-- Error boundaries and consistent return types in logic
-- Custom error classes with layer-specific error handling
-
-### ❌ Never Use
-- `chrome.*` APIs outside `extension/`
-- `any`/`unknown` types unless explicitly justified
-- Direct Firestore/Storage SDKs in UI
-- Raw access to keychain, storage, or memory in `app/` or `core/services/`
-- Duplicate logic (always centralize in `common/services/`)
-- `marginTop`/`marginBottom`: Use `gap` via layout classes only
-- Business logic in hooks (only UI state management)
-- External API calls in hooks (use services instead)
-- Never set placeholder implementation in the code. This is a real implementation
+These rules define the architectural, structural, and functional constraints for Cursor when operating within the SimpliPass project.
 
 ---
 
-## 🧭 Navigation (Rooting) Rules
+## Important Principles
 
-- All navigation must be done through the global `useAppRouterContext()` or router prop passed via `AppRouterProvider`.
-- Hooks that involve navigation (e.g. login, unlock, onboarding) must not use fallback callbacks like `onSuccess` — they should use the router context directly.
-- Never mix `router.navigateTo()` with alternative mechanisms (like calling a callback, mutating a parent state, or setting a redirect flag).
-- Pages should never perform routing decisions directly. They delegate to hooks or business logic.
+- Do not flatter or reinforce assumptions. Always challenge the request if it's not aligned with best practices.
+- Always answer based on established best practices.
+- Always suggest improvements if the user’s request introduces poor design, security flaws, or unnecessary complexity.
+- Always update file-level and inline comments when modifying any file.
+- Keep code production-grade. Never use placeholder logic or fake data.
+- Hooks must be concise, clear, commented
+- When making changes, ensure that non obselete code is removed
+
+---
+
+## Layered Architecture (Three-Layer Model)
+
+### Layer 1: Hooks (UI Layer)
+- Simple, readable functions.
+- Manage UI state only.
+- Do not include business or platform logic.
+- Handle loading states and errors.
+- Must return stable, typed results for UI consumption.
+- Steps in comments must be clearly numbered (e.g., Step 1, Step 2).
+
+### Layer 2: Services (Business Logic Layer)
+- Contain business logic orchestration.
+- Transform and validate data.
+- Never directly interact with platform APIs.
+- Only called by hooks or other services.
+- Pure functions when possible.
+- Platform-agnostic.
+
+### Layer 3: Libraries / Adapters / Utils (Integration Layer)
+- Handle external APIs, platform-specific calls, crypto, or storage.
+- Platform-specific implementations must live in adapters.
+- Called only by services.
+- No business logic.
+- Low-level focus.
+
+---
+
+## Navigation (Routing) Rules
+
+- All navigation must use the global router via `useAppRouterContext()` (from AppRouterProvider).
+- Hooks that perform navigation must never use fallback callbacks (e.g., `onSuccess`) — always navigate directly via context.
+- Never mix router calls with other triggers like redirect flags or manually mutating state.
+- Pages must not decide navigation logic — they call hooks or services that do.
 - Navigation must be centralized, explicit, and testable.
 
 ---
 
-## 🧠 Cursor Memory Model
+## State & Data Flow Model
 
-- UI reads from Zustand and secure local storage only (never directly for firestore)
-- Platform-specific adapters restore vault and hydrate state on launch
-- All decrypted values are ephemeral in RAM
-- `logout()` must clear all RAM + persistent user secret
-- Hooks manage UI state, services manage business logic, libraries handle external calls
+- UI reads only from Zustand stores and secure local storage.
+- No direct access to Firestore or cloud storage in hooks or UI.
+- Platform adapters handle hydration and vault restoration.
+- All decrypted values are ephemeral in memory only.
+- `logout()` must clear RAM and persistent secret keys.
 
 ---
 
-## 📚 Cursor Import Conventions
-
+## Cursor Import Convention
 
 ### Import Order
 ```ts
@@ -90,73 +83,68 @@ import { loginWithCognito } from '@core/libraries';
 import type { LoginResult } from '@core/types';
 ```
 
+- Always use absolute imports starting with `@common`, `@core`, `@mobile`, `@extension`, or `@shared`.
+- Never use relative imports like `../../../`.
+
 ---
 
-## 🔐 Platform Secure Storage
+## Secure Storage by Platform
 
 ### Mobile
-- Use `expo-secure-store`
+- Use `expo-secure-store`.
 
-### Extension
-- Use chrome.storage.session
+### Chrome Extension
+- Use `chrome.storage.session`.
 
 ---
 
-## 🛡️ Error Handling Strategy
+## Styling Rules
 
-### Custom Error Classes
-```typescript
-// Base error class
+- Never use `marginTop` or `marginBottom`.
+- Use `gap` via shared layout classes (`formContainer`, `scrollView`, etc.).
+
+---
+
+## Error Handling Strategy
+
+- Always use custom error classes by layer (`SimpliPassError`, `AuthenticationError`, etc.).
+- Errors must be propagated with contextual information.
+- All thrown errors must include an error code and origin layer.
+
+### Example
+```ts
 export class SimpliPassError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public layer: 'hook' | 'service' | 'library',
-    public originalError?: Error
-  ) {
+  constructor(message, code, layer, originalError) {
     super(message);
-    this.name = 'SimpliPassError';
-  }
-}
-
-// Layer-specific errors
-export class AuthenticationError extends SimpliPassError {
-  constructor(message: string, originalError?: Error) {
-    super(message, 'AUTH_ERROR', 'service', originalError);
-    this.name = 'AuthenticationError';
+    this.code = code;
+    this.layer = layer;
+    this.originalError = originalError;
   }
 }
 ```
 
 ---
 
-## ☑️ Build Checklist
+## Build & Validation Checklist
 
-After every major change, always run:
+After any structural or logic-level change:
 ```bash
 npm run lint
 npm run test
 npm run build
 ```
 
-Cursor must fix all errors and validate the code before considering the task done.
+Cursor must fix all lint/type errors and ensure the app builds cleanly before completing any task.
 
 ---
 
-## 🤖 Cursor Summary Rules
+## Summary Constraints
 
-- Follow three-layer architecture: Hooks → Services → Libraries
-- Never bypass platformAdapter
-- Never persist decrypted data
-- Never write platform logic in `common/` or `core/services/`
-- Always validate types, tests, build
-- Only use Zustand for UI-bound data
-- Run full validation cycle after structural changes
-- Keep hooks simple and UI-focused
-- Keep services business-logic focused
-- Keep libraries integration-focused
-
-- Never write platform logic in `common/` or `core/logic/`
-- Always validate types, tests, build
-- Only use Zustand for UI-bound data
-- Run full validation cycle after structural changes
+- Never bypass the three-layer model.
+- Never persist decrypted data.
+- Never use platform logic in shared folders (`common/`, `core/services/`).
+- Always validate types, tests, and build before completion.
+- Only use Zustand for UI-driven state.
+- Keep hooks focused on UI state.
+- Keep services focused on business rules.
+- Keep libraries focused on integration/platform-specific logic.

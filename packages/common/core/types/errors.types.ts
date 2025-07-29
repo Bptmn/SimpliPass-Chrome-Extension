@@ -77,19 +77,10 @@ export class PlatformError extends SimpliPassError {
   }
 }
 
-// Error handling utility
-export function withErrorHandling<T>(
-  operation: () => Promise<T>,
-  errorHandler: (error: SimpliPassError) => void
-): Promise<T> {
-  return operation().catch((error) => {
-    const simpliPassError = new SimpliPassError(
-      error.message,
-      'UNKNOWN_ERROR',
-      'library',
-      error
-    );
-    errorHandler(simpliPassError);
-    throw simpliPassError;
-  });
+// Simple error interface for basic error handling
+export interface AppError {
+  message: string;
+  code: string;
+  layer: 'hook' | 'service' | 'library';
+  originalError?: Error;
 } 

@@ -7,6 +7,7 @@
 
 import { ItemDecrypted } from "./types";
 import { CATEGORIES } from "./categories.types";
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from "./items.types";
 
 // ===== Platform Types =====
 
@@ -100,7 +101,7 @@ export interface UIState {
   modal: {
     isOpen: boolean;
     type: string | null;
-    data: any | null;
+    data: unknown | null;
   };
 }
 
@@ -113,9 +114,9 @@ export interface SearchState {
     type: 'all' | typeof CATEGORIES.CREDENTIALS | typeof CATEGORIES.BANK_CARDS | typeof CATEGORIES.SECURE_NOTES;
   };
   results: {
-    credentials: any[];
-    bankCards: any[];
-    secureNotes: any[];
+    credentials: CredentialDecrypted[];
+    bankCards: BankCardDecrypted[];
+    secureNotes: SecureNoteDecrypted[];
   };
 }
 
@@ -126,7 +127,7 @@ export interface SortOptions {
 
 // ===== API & Network =====
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -156,7 +157,7 @@ export interface PaginatedResponse<T> {
 
 export interface AppEvent {
   type: string;
-  payload: any;
+  payload: unknown;
   timestamp: Date;
   userId?: string;
 }
@@ -198,7 +199,7 @@ export interface UserSettings {
 export interface AppError {
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
   timestamp: Date;
   userId?: string;
 }
@@ -231,13 +232,13 @@ export interface FormField {
     pattern?: RegExp;
     minLength?: number;
     maxLength?: number;
-    custom?: (value: any) => string | null;
+    custom?: (value: unknown) => string | null;
   };
   options?: Array<{ value: string; label: string }>;
 }
 
 export interface FormState {
-  values: Record<string, any>;
+  values: Record<string, unknown>;
   errors: Record<string, string>;
   touched: Record<string, boolean>;
   isValid: boolean;
@@ -251,9 +252,9 @@ export interface ExportData {
   exportedAt: Date;
   userId: string;
   data: {
-    credentials: any[];
-    bankCards: any[];
-    secureNotes: any[];
+    credentials: CredentialDecrypted[];
+    bankCards: BankCardDecrypted[];
+    secureNotes: SecureNoteDecrypted[];
     categories: CategoryEntity[];
     tags: Tag[];
     settings: UserSettings;

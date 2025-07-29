@@ -53,7 +53,6 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
         borderWidth: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: spacing.xs,
         padding: 6,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
