@@ -24,14 +24,13 @@ type LockReason = 'expired' | 'fingerprint_mismatch' | 'decryption_failed' | 'no
 interface LockPageProps {
   reason?: LockReason;
   user: User | null;
-  stopListeners: () => Promise<void>;
 }
 
-export const LockPage: React.FC<LockPageProps> = ({ reason, user, stopListeners }) => {
+export const LockPage: React.FC<LockPageProps> = ({ reason, user }) => {
   const [password, setPassword] = useState('');
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const { logout } = useAuth({ user, stopListeners });
+  const { logout } = useAuth({ user });
 
   
   

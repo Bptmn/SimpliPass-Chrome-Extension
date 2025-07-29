@@ -10,6 +10,7 @@ import { Icon } from '@ui/components/Icon';
 import { useToast } from '@common/hooks/useToast';
 import { useManualRefresh } from '@common/hooks/useManualRefresh';
 import { getCurrentUser } from '@common/core/services/userService';
+import { databaseListeners, authListeners } from '@common/core/services/listenerService';
 import { getPageStyles, spacing, radius } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
@@ -110,7 +111,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
   const handleLogout = async () => {
     try {
+      // 1. Sign out from Firebase and Cognito
       await auth.signOut();
+      
+              // 2. Stop all listeners
+        databaseListeners.stop();
+        authListeners.stop();
+      
       showToast('Déconnexion réussie');
       setTimeout(() => {
         onLogout?.();

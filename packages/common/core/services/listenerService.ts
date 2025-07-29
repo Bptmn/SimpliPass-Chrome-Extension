@@ -1,32 +1,38 @@
 /**
- * Database Listeners Service - Layer 2: Business Logic
+ * Listeners Service - Layer 2: Business Logic
  * 
- * Handles real-time database listeners through the database adapter.
- * Updates local storage when changes occur in the database.
- * Uses centralized items service for data operations.
+ * Handles both authentication and database listeners through their respective adapters.
+ * Manages real-time updates for user authentication state and database changes.
+ * Updates local storage when changes occur.
  */
 
 import { db } from '../adapters/database.adapter';
+import { auth } from '../adapters/auth.adapter';
 import { storage } from '../adapters/platform.storage.adapter';
 import { fetchAndStoreItems } from './itemsService';
+import { initializeUserData } from './userService';
 import { User } from '../types/auth.types';
 
-export interface DatabaseListenersState {
-  isListening: boolean;
-  error: string | null;
+export interface ListenersState {
+  isDatabaseListening: boolean;
+  isAuthListening: boolean;
+  databaseError: string | null;
+  authError: string | null;
 }
 
-class DatabaseListenersService {
-  private state: DatabaseListenersState = {
-    isListening: false,
-    error: null,
-  };
+/**
+ * Database Listeners Class
+ * Handles all database-related real-time listeners
+ */
+class DatabaseListeners {
+  private isListening: boolean = false;
+  private error: string | null = null;
 
-  /**
-   * Start all listeners
-   */
-  async startListeners(userId: string): Promise<void> {
+  // Start database listeners
+  async start(userId: string): Promise<void> {
     try {
+      console.log('[DatabaseListeners] Starting database listeners for user:', userId);
+      
       // Set up callbacks for database events
       const callbacks = {
         onUserUpdate: async (userData: User) => {
@@ -39,7 +45,7 @@ class DatabaseListenersService {
             await fetchAndStoreItems();
           } catch (error) {
             console.error('[DatabaseListeners] Error processing items update:', error);
-            this.state.error = error instanceof Error ? error.message : 'Failed to process items';
+            this.error = error instanceof Error ? error.message : 'Failed to process items';
           }
         },
       };
@@ -47,53 +53,126 @@ class DatabaseListenersService {
       // Start listeners through the database adapter
       await db.startListeners(userId, callbacks);
       
-      this.state.isListening = true;
-      this.state.error = null;
+      this.isListening = true;
+      this.error = null;
+      console.log('[DatabaseListeners] Database listeners started successfully');
     } catch (error) {
-      console.error('[DatabaseListeners] Failed to start listeners:', error);
-      this.state.error = error instanceof Error ? error.message : 'Failed to start listeners';
+      console.error('[DatabaseListeners] Failed to start database listeners:', error);
+      this.error = error instanceof Error ? error.message : 'Failed to start database listeners';
       throw error;
     }
   }
 
-  /**
-   * Stop all listeners
-   */
-  stopListeners(): void {
-    // Stop listeners through the database adapter
+  // Stop database listeners
+  stop(): void {
+    console.log('[DatabaseListeners] Stopping database listeners');
     db.stopListeners();
-    
-    this.state.isListening = false;
+    this.isListening = false;
+    this.error = null;
   }
 
-  /**
-   * Get current listener state
-   */
-  getState(): DatabaseListenersState {
-    return { ...this.state };
+  // Check if database listeners are active
+  isActive(): boolean {
+    return this.isListening;
   }
 
-  /**
-   * Check if listeners are active
-   */
-  isListening(): boolean {
-    return this.state.isListening;
-  }
-
-  /**
-   * Get current error
-   */
+  // Get current error
   getError(): string | null {
-    return this.state.error;
+    return this.error;
   }
 
-  /**
-   * Clear error
-   */
+  // Clear error
   clearError(): void {
-    this.state.error = null;
+    this.error = null;
   }
 }
 
-// Export singleton instance
-export const databaseListeners = new DatabaseListenersService(); 
+/**
+ * Auth Listeners Class
+ * Handles all authentication-related real-time listeners
+ */
+class AuthListeners {
+  private isListening: boolean = false;
+  private error: string | null = null;
+  private unsubscribe: (() => void) | null = null;
+  private onAuthStateChange: ((user: User | null, isUserFullyInitialized: boolean) => void) | null = null;
+
+  // Set callback for auth state changes
+  setAuthStateChangeCallback(callback: (user: User | null, isUserFullyInitialized: boolean) => void): void {
+    this.onAuthStateChange = callback;
+  }
+
+  // Start authentication listeners
+  start(): void {
+    try {
+      console.log('[AuthListeners] Starting authentication listeners');
+      
+      // Set up auth state change handler
+      this.unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+        try {
+          this.error = null;
+          
+          if (firebaseUser) {
+            console.log('[AuthListeners] User authenticated:', firebaseUser.uid);
+            
+            // Initialize user data
+            const { user: authUser, hasSecretKey } = await initializeUserData(firebaseUser.uid);
+            
+            // Notify callback if set
+            if (this.onAuthStateChange) {
+              this.onAuthStateChange(authUser, hasSecretKey);
+            }
+          } else {
+            console.log('[AuthListeners] User signed out');
+            
+            // Notify callback if set
+            if (this.onAuthStateChange) {
+              this.onAuthStateChange(null, false);
+            }
+          }
+        } catch (error) {
+          console.error('[AuthListeners] Error in auth state change:', error);
+          this.error = error instanceof Error ? error.message : 'Auth state change error';
+        }
+      });
+      
+      this.isListening = true;
+      this.error = null;
+      console.log('[AuthListeners] Authentication listeners started successfully');
+    } catch (error) {
+      console.error('[AuthListeners] Failed to start auth listeners:', error);
+      this.error = error instanceof Error ? error.message : 'Failed to start auth listeners';
+      throw error;
+    }
+  }
+
+  // Stop authentication listeners
+  stop(): void {
+    console.log('[AuthListeners] Stopping authentication listeners');
+    if (this.unsubscribe) {
+      this.unsubscribe();
+      this.unsubscribe = null;
+    }
+    this.isListening = false;
+    this.error = null;
+  }
+
+  // Check if auth listeners are active
+  isActive(): boolean {
+    return this.isListening;
+  }
+
+  // Get current error
+  getError(): string | null {
+    return this.error;
+  }
+
+  // Clear error
+  clearError(): void {
+    this.error = null;
+  }
+}
+
+// Export singleton instances
+export const databaseListeners = new DatabaseListeners();
+export const authListeners = new AuthListeners();

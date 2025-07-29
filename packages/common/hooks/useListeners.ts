@@ -9,9 +9,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { auth } from '@common/core/adapters/auth.adapter';
-import { databaseListeners } from '@common/core/services/listenerService';
-import { initializeUserData } from '../core/services/userService';
+import { databaseListeners, authListeners } from '@common/core/services/listenerService';
 import type { User } from '@common/core/types/auth.types';
 
 // Return type for the useListeners hook
@@ -38,23 +36,27 @@ export const useListeners = (): UseListenersReturn => {
   const [isListening, setIsListening] = useState(false);
   const [listenersError, setListenersError] = useState<string | null>(null);
 
-  // Start database listeners
+  // Start listeners (calls both start functions from listenerService)
   const startListeners = useCallback(async (userId: string) => {
     try {
       // Check if listeners are already active to prevent duplicate starts
-      if (databaseListeners.isListening()) {
+      if (databaseListeners.isActive() || authListeners.isActive()) {
         console.log('[useListeners] Listeners already active, skipping start');
         setIsListening(true);
         return;
       }
       
-      console.log('[useListeners] Starting database listeners for user:', userId);
+      console.log('[useListeners] Starting all listeners for user:', userId);
       setListenersError(null);
       
-      await databaseListeners.startListeners(userId);
-      setIsListening(true);
+      // Start auth listeners first
+      authListeners.start();
       
-      console.log('[useListeners] Database listeners started successfully');
+      // Then start database listeners
+      await databaseListeners.start(userId);
+      
+      setIsListening(true);
+      console.log('[useListeners] All listeners started successfully');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to start listeners';
       setListenersError(errorMessage);
@@ -62,16 +64,18 @@ export const useListeners = (): UseListenersReturn => {
     }
   }, []);
 
-  // Stop database listeners
+  // Stop listeners (calls both stop functions from listenerService)
   const stopListeners = useCallback(async () => {
     try {
-      console.log('[useListeners] Stopping database listeners...');
+      console.log('[useListeners] Stopping all listeners...');
       setListenersError(null);
       
-      await databaseListeners.stopListeners();
-      setIsListening(false);
+      // Stop both database and auth listeners
+      databaseListeners.stop();
+      authListeners.stop();
       
-      console.log('[useListeners] Database listeners stopped successfully');
+      setIsListening(false);
+      console.log('[useListeners] All listeners stopped successfully');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to stop listeners';
       setListenersError(errorMessage);
@@ -95,22 +99,20 @@ export const useListeners = (): UseListenersReturn => {
     isHookInitialized = true;
     console.log('[useListeners] Initializing hook');
 
-    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+    // Set up auth state change callback
+    authListeners.setAuthStateChangeCallback(async (authUser: User | null, hasSecretKey: boolean) => {
       try {
         setListenersError(null);
         
-        if (firebaseUser) {
-          // Initialize user data
-          const { user: authUser, hasSecretKey } = await initializeUserData(firebaseUser.uid);
-          
+        if (authUser && hasSecretKey) {
           setUser(authUser);
-          setIsUserFullyInitialized(hasSecretKey);
+          setIsUserFullyInitialized(true);
           
-          // Start listeners if user is fully initialized
-          if (hasSecretKey && !databaseListeners.isListening()) {
+          // Start listeners if not already listening
+          if (!databaseListeners.isActive() && !authListeners.isActive()) {
             console.log('[useListeners] User fully initialized, starting listeners...');
-            await startListeners(firebaseUser.uid);
-          } else if (hasSecretKey && databaseListeners.isListening()) {
+            await startListeners(authUser.id);
+          } else {
             // Sync local state with actual listener state
             setIsListening(true);
           }
@@ -130,7 +132,6 @@ export const useListeners = (): UseListenersReturn => {
     });
 
     return () => {
-      unsubscribe();
       // Reset flag on cleanup
       isHookInitialized = false;
     };

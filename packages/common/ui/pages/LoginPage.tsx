@@ -13,16 +13,15 @@ import type { User } from '@common/core/types/auth.types';
 
 interface LoginPageProps {
   user: User | null;
-  stopListeners: () => Promise<void>;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ user, stopListeners }) => {
+const LoginPage: React.FC<LoginPageProps> = ({ user }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   
-  const { login, isLoading, error } = useAuth({ user, stopListeners });
+  const { login, isLoading, error } = useAuth({ user });
 
   // Form state
   const [email, setEmail] = React.useState('');

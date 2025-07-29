@@ -26,6 +26,7 @@ export interface AppInitializationState {
   // Initialization state
   isInitialized: boolean;
   initializationError: string | null;
+  listenersError: string | null;
 }
 
 export interface UseAppInitializationReturn {
@@ -44,7 +45,7 @@ export const useAppInitialization = (): UseAppInitializationReturn => {
   const [isListening, setIsListening] = useState(false);
 
   // Get listeners functionality
-  const { startListeners } = useListeners();
+  const { startListeners, listenersError } = useListeners();
 
   // Global initialization function with single try-catch
   const initializeApp = useCallback(async (): Promise<void> => {
@@ -98,6 +99,7 @@ export const useAppInitialization = (): UseAppInitializationReturn => {
     // Initialization state
     isInitialized,
     initializationError,
+    listenersError,
   };
 
   return {

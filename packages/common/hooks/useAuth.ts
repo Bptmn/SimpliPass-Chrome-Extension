@@ -15,6 +15,7 @@ import { useState, useCallback } from 'react';
 import { auth } from '../core/adapters/auth.adapter';
 import { storage } from '../core/adapters/platform.storage.adapter';
 import { getCurrentUser as getCurrentUserFromService } from '../core/services/userService';
+import { databaseListeners, authListeners } from '../core/services/listenerService';
 import { User } from '../core/types/auth.types';
 
 export interface UseAuthReturn {
@@ -32,10 +33,9 @@ export interface UseAuthReturn {
 
 export interface UseAuthProps {
   user: User | null;
-  stopListeners: () => Promise<void>;
 }
 
-export const useAuth = ({ user, stopListeners }: UseAuthProps): UseAuthReturn => {
+export const useAuth = ({ user }: UseAuthProps): UseAuthReturn => {
   // Initialize UI state
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,7 +72,8 @@ export const useAuth = ({ user, stopListeners }: UseAuthProps): UseAuthReturn =>
       await auth.signOut();
 
       // 2. Stop all listeners
-      await stopListeners();
+      databaseListeners.stop();
+      authListeners.stop();
 
       // 3. Clear all secure local storage (vault, user, secret key)
       await storage.clearAllSecureLocalStorage();
@@ -87,7 +88,7 @@ export const useAuth = ({ user, stopListeners }: UseAuthProps): UseAuthReturn =>
     } finally {
       setIsLoading(false);
     }
-  }, [stopListeners]);
+  }, []);
 
   // Get current user function
   const getCurrentUser = useCallback(async (): Promise<User | null> => {
