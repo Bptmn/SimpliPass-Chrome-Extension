@@ -34,6 +34,5 @@ export type { PlatformAdapter } from './adapters/platform.adapter';
 export { useCategoryStore } from './states/category';
 
 // Types (specific exports to avoid conflicts)
-export type { User, UserSession } from './types/auth.types';
-export type { Platform, NetworkStatus } from './types/shared.types';
+export type { User, UserSession, PageState } from './types/auth.types';
 export * from './types/errors.types'; 

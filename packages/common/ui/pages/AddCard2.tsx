@@ -23,7 +23,7 @@ import { Toast } from '@ui/components/Toast';
 import { useToast } from '@common/hooks/useToast';
 import { getCurrentUser } from '@common/core/services/userService';
 import { User } from '@common/core/types/types';
-import { ROUTES } from '@common/ui/router';
+
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { CATEGORIES } from '@common/core/types/categories.types';
 

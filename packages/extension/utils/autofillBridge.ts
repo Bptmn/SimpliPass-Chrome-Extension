@@ -5,7 +5,7 @@
  */
 
 import { loadItemsWithFallback } from '@common/core/services/itemsService';
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/types';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
 
 /**
  * Extracts the root domain from a hostname, removing 'www.' and subdomains.

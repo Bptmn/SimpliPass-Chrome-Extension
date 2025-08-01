@@ -5,7 +5,7 @@ export { default as AddCard1 } from './AddCard1';
 export { AddCard2 } from './AddCard2';
 export { default as AddCredential1 } from './AddCredential1';
 export { AddCredential2 } from './AddCredential2';
-export { AddSecureNote } from './AddSecureNote';
+export { default as AddSecureNote } from './AddSecureNote';
 
 // Detail screens
 export { BankCardDetailsPage } from './BankCardDetailsPage';

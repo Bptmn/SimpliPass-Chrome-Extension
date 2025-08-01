@@ -5,6 +5,12 @@
  * React Context. It allows any component in the app tree to access the router
  * without prop drilling. The provider wraps the app and makes router state
  * globally available.
+ * 
+ * The router state includes:
+ * - Current route and navigation methods
+ * - Route parameters and history
+ * - System state (loading, error, lock reason)
+ * - Platform detection (extension/mobile)
  */
 
 import React, { createContext, useContext } from 'react';
@@ -26,6 +32,9 @@ interface AppRouterProviderProps {
  * components through React Context. It should be placed at the top level
  * of the application, typically wrapping the main app component.
  * 
+ * The router object contains all navigation methods and system state,
+ * allowing any component to access routing functionality without prop drilling.
+ * 
  * @param router - The router object from useAppRouter hook
  * @param children - React components that will have access to router context
  */
@@ -46,6 +55,10 @@ export const AppRouterProvider: React.FC<AppRouterProviderProps> = ({
  * This hook allows any component within the AppRouterProvider to access
  * the router state and navigation methods. It throws an error if used
  * outside of the provider to help with debugging.
+ * 
+ * Usage:
+ * const router = useAppRouterContext();
+ * router.navigateTo(ROUTES.SETTINGS);
  * 
  * @returns The router object with all navigation methods and state
  * @throws Error if used outside of AppRouterProvider

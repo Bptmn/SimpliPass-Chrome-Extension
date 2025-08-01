@@ -1,14 +1,12 @@
 /**
- * AppRouterView.tsx - Simplified Router View Component
+ * AppRouterView.tsx - System-driven router view component
  * 
- * This component uses a data-driven approach to render routes based on configuration.
- * Following React Router best practices for scalable, maintainable routing.
+ * Renders routes based on system-level state from useAppRouter.
+ * System routes (LOADING, ERROR, LOGIN, LOCK) handled automatically.
+ * Business routes require explicit navigateTo() calls from business logic.
  * 
- * Responsibilities:
- * - Route-based authentication guards
- * - Layout management (navbar + helperbar)
- * - Loading and error states
- * - Page rendering delegation
+ * All route references use ROUTES constants to prevent string literals.
+ * Layout is applied based on route requirements (hasLayout function).
  */
 
 import React from 'react';
@@ -16,14 +14,17 @@ import { View, Text, StyleSheet } from 'react-native';
 import { ThemeProvider } from '@common/ui/design/theme';
 import { ToastProvider } from '@common/ui/components/Toast';
 import NavBar from '@common/ui/components/NavBar';
-import { HelperBar } from '@common/ui/components/HelperBar';
 import { getColors } from '@common/ui/design/colors';
 import { layout } from '@common/ui/design/layout';
 import type { User } from '@common/core/types/auth.types';
-import type { PageState } from '@common/core/types/types';
+import type { PageState } from '@common/core/types/auth.types';
 import { useAppRouterContext } from './AppRouterProvider';
-import { getRouteConfig, requiresAuth, hasLayout } from './routeConfig';
-import { ROUTES } from './ROUTES';
+import { 
+  ROUTES, 
+  routeComponents, 
+  requiresAuth, 
+  hasLayout
+} from './ROUTES';
 
 // Props for the AppRouterView component
 interface AppRouterViewProps {
@@ -34,16 +35,16 @@ interface AppRouterViewProps {
 }
 
 /**
- * AppRouterView - System-driven router view with explicit business navigation
+ * Main router view component
  * 
- * This component renders routes based on system-level state from useAppRouter.
- * System routes (LOADING, ERROR, LOGIN, LOCK) are handled automatically.
+ * Flow:
+ * 1. Get router context and route configuration
+ * 2. Check authentication guard for private routes
+ * 3. Render system states (loading, error) or business routes
+ * 4. Apply layout based on route requirements
+ * 
+ * System routes are rendered automatically based on system state.
  * Business routes require explicit navigateTo() calls from business logic.
- * 
- * @param user - Current user object (null if not authenticated)
- * @param pageState - State information for the current page
- * @param onInjectCredential - Callback for credential injection (extension only)
- * @param theme - Current theme setting
  */
 export const AppRouterView: React.FC<AppRouterViewProps> = ({
   user,
@@ -55,12 +56,13 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
   const router = useAppRouterContext();
   const styles = createStyles(theme);
 
-  // Get current route configuration
-  const routeConfig = getRouteConfig(router.currentRoute);
+  // Get current route component from routeComponents mapping
+  const RouteComponent = routeComponents[router.currentRoute];
 
   /**
-   * System-level authentication guard
+   * Step 1: System-level authentication guard
    * Only checks system state, business logic must use navigateTo() explicitly
+   * Private routes automatically redirect to login if user is not authenticated
    */
   if (requiresAuth(router.currentRoute) && !user) {
     return (
@@ -76,12 +78,16 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
     );
   }
 
-  // Render based on system-level route state
+  /**
+   * Step 2: Render based on system-level route state
+   * System routes (LOADING, ERROR) are rendered as full-page components
+   * Business routes are rendered with layout if required
+   */
   return (
     <ThemeProvider>
       <ToastProvider>
         <View style={styles.container}>
-          {/* System Loading State */}
+          {/* System Loading State - rendered as full page */}
           {router.currentRoute === ROUTES.LOADING && (
             <View style={styles.loadingContainer}>
               <Text style={styles.loadingText}>Initializing SimpliPass...</Text>
@@ -89,41 +95,38 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
             </View>
           )}
           
-          {/* System Error State */}
+          {/* System Error State - rendered as full page */}
           {router.currentRoute === ROUTES.ERROR && (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>Error: {router.error}</Text>
             </View>
           )}
           
-          {/* Business Route Rendering - requires explicit navigateTo() calls */}
-          {routeConfig && router.currentRoute !== ROUTES.LOADING && router.currentRoute !== ROUTES.ERROR && (
+          {/* Step 3: Business Route Rendering - requires explicit navigateTo() calls */}
+          {RouteComponent && router.currentRoute !== ROUTES.LOADING && router.currentRoute !== ROUTES.ERROR && (
             <>
-              {/* Layout for routes that need it */}
+              {/* Layout for routes that need it (navbar + helperbar) */}
               {hasLayout(router.currentRoute) && user && (
                 <>
                   <View style={styles.header}>
                     <NavBar />
                   </View>
                   <View style={styles.mainContent}>
-                    <RouteComponent 
-                      routeConfig={routeConfig}
+                    <RouteComponentWithProps 
+                      component={RouteComponent}
                       router={router}
                       user={user}
                       pageState={pageState}
                       onInjectCredential={onInjectCredential}
                     />
                   </View>
-                  <View style={styles.helperBar}>
-                    <HelperBar category={routeConfig.category as any} />
-                  </View>
                 </>
               )}
               
-              {/* Full page for routes without layout */}
+              {/* Full page for routes without layout (system routes) */}
               {!hasLayout(router.currentRoute) && (
-                <RouteComponent 
-                  routeConfig={routeConfig}
+                <RouteComponentWithProps 
+                  component={RouteComponent}
                   router={router}
                   user={user}
                   pageState={pageState}
@@ -139,19 +142,61 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({
 };
 
 /**
- * RouteComponent - Renders the appropriate component based on route configuration
+ * RouteComponentWithProps - Renders the appropriate component with inline props
+ * 
+ * Generates props for each route type based on router state and parameters.
+ * Ensures components receive the correct props for their specific route.
+ * 
+ * Flow:
+ * 1. Get component from route mapping
+ * 2. Generate props based on route type and router state
+ * 3. Render component with props
  */
-const RouteComponent: React.FC<{
-  routeConfig: any;
+const RouteComponentWithProps: React.FC<{
+  component: React.ComponentType<any>;
   router: any;
   user: User | null;
   pageState?: PageState | null;
   onInjectCredential?: (credentialId: string) => void;
-}> = ({ routeConfig, router, user, pageState, onInjectCredential }) => {
-  const Component = routeConfig.component;
-  const props = routeConfig.getProps 
-    ? routeConfig.getProps(router, user, pageState, onInjectCredential)
-    : {};
+}> = ({ component: Component, router, user, pageState, onInjectCredential }) => {
+  // Generate props based on route type and router state
+  const props = (() => {
+    switch (router.currentRoute) {
+      case ROUTES.LOGIN:
+        return { user };
+      case ROUTES.LOCK:
+        return { reason: router.lockReason, user };
+      case ROUTES.HOME:
+        return { user, pageState, onInjectCredential };
+      case ROUTES.ADD_CREDENTIAL_2:
+        return { 
+          title: router.routeParams.title || '',
+          link: router.routeParams.link,
+        };
+      case ROUTES.ADD_CARD_2:
+        return { ...router.routeParams };
+      case ROUTES.CREDENTIAL_DETAILS:
+        return { credential: router.routeParams.credential, onBack: router.goBack };
+      case ROUTES.BANK_CARD_DETAILS:
+        return { card: router.routeParams.card, onBack: router.goBack };
+      case ROUTES.SECURE_NOTE_DETAILS:
+        return { note: router.routeParams.note, onBack: router.goBack };
+      case ROUTES.MODIFY_CREDENTIAL:
+        return { credential: router.routeParams.credential, onBack: router.goBack };
+      case ROUTES.MODIFY_BANK_CARD:
+        return { bankCard: router.routeParams.bankCard, onBack: router.goBack };
+      case ROUTES.MODIFY_SECURENOTE:
+        return { secureNote: router.routeParams.secureNote, onBack: router.goBack };
+      case ROUTES.EMAIL_CONFIRMATION:
+        return {
+          email: router.routeParams.email,
+          onConfirm: router.routeParams.onConfirm,
+          onResend: router.routeParams.onResend,
+        };
+      default:
+        return {};
+    }
+  })();
   
   return <Component {...props} />;
 };
@@ -184,22 +229,12 @@ const createStyles = (theme: 'light' | 'dark') => {
       backgroundColor: colors.primaryBackground,
       flex: 1,
     },
-    helperBar: {
-      backgroundColor: colors.primaryBackground,
-      borderTopColor: colors.borderColor,
-      borderTopWidth: 1,
-      height: layout.helperBarHeight,
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      zIndex: 10,
-    },
+
     loadingContainer: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      paddingHorizontal: 20,
+      backgroundColor: colors.primaryBackground,
     },
     loadingText: {
       fontSize: 18,
@@ -217,11 +252,12 @@ const createStyles = (theme: 'light' | 'dark') => {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      paddingHorizontal: 20,
+      backgroundColor: colors.primaryBackground,
+      padding: 20, // Placeholder for spacing.medium
     },
     errorText: {
       fontSize: 16,
-      color: colors.error,
+      color: colors.alternate,
       textAlign: 'center',
     },
   });

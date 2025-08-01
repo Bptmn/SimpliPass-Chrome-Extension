@@ -1,57 +1,48 @@
 /**
- * useAppInitialization Hook - Executed at the entry point of the app
+ * useAppInitialization Hook - Layer 1: UI Layer
  * 
- * Simple and clean application initialization:
+ * Handles application initialization logic only.
+ * Uses Zustand store directly for all state management.
+ * 
+ * Responsibilities:
  * 1. Initialize platform detection
  * 2. Initialize storage
- * 3. Initialize Firebase
- * 4. Check for current user (via auth adapter)
- * 5. Start listeners if user exists
+ * 3. Initialize auth provider
+ * 4. Start auth listeners (which use Zustand store directly)
  * 
- * Returns initialization result for router to handle navigation.
+ * Note: Initialization happens automatically on mount
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { auth, initializeStorage } from '@common/core/adapters';
 import { initializePlatform } from '@common/core/adapters/platform.adapter';
-import { initFirebase } from '@common/core/libraries/auth/firebase';
-import { useListeners } from './useListeners';
-import type { User } from '@common/core/types/auth.types';
+import { authListeners } from '@common/core/services/listenerService';
+import { useAppStateStore } from './useAppState';
 
-export interface AppInitializationState {
-  // Core state
-  user: User | null;
-  isListening: boolean;
-  
-  // Initialization state
-  isInitialized: boolean;
-  initializationError: string | null;
-  listenersError: string | null;
-}
+export const useAppInitialization = (): void => {
+  // Get Zustand store methods directly
+  const { setInitializing } = useAppStateStore();
 
-export interface UseAppInitializationReturn {
-  // State
-  state: AppInitializationState;
-  
-  // Initialization actions
-  initializeApp: () => Promise<void>;
-}
-
-export const useAppInitialization = (): UseAppInitializationReturn => {
-  // Initialize state
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [initializationError, setInitializationError] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [isListening, setIsListening] = useState(false);
-
-  // Get listeners functionality
-  const { startListeners, listenersError } = useListeners();
-
-  // Global initialization function with single try-catch
+  // App initialization - single responsibility with singleton protection
   const initializeApp = useCallback(async (): Promise<void> => {
+    // Prevent multiple initialization calls using singleton
+    if (initializationState.isInitialized) {
+      console.log('[useAppInitialization] App already initialized (singleton), skipping');
+      return;
+    }
+
+    if (initializationState.isInitializing) {
+      console.log('[useAppInitialization] App is already initializing (singleton), skipping');
+      return;
+    }
+
     try {
       console.log('[useAppInitialization] Starting application initialization');
-      setInitializationError(null);
+      initializationState.isInitializing = true;
+      initializationState.initializationError = null;
+      
+      // Update global state through Zustand
+      setInitializing(true, null);
       
       // Step 1: Initialize platform detection
       await initializePlatform();
@@ -61,52 +52,57 @@ export const useAppInitialization = (): UseAppInitializationReturn => {
       await initializeStorage();
       console.log('[useAppInitialization] Storage initialized successfully');
       
-      // Step 3: Initialize Firebase // TO CHANGE TO USE ADAPTER
-      await initFirebase();
-      console.log('[useAppInitialization] Firebase initialized successfully');
+      // Step 3: Initialize auth provider
+      await auth.initialize();
+      console.log('[useAppInitialization] Auth provider initialized successfully');
       
-      // Step 4: Check for current user (via auth adapter)
-      console.log('[useAppInitialization] Checking for current user...');
-      const loggedInUser = auth.getCurrentUser();
-      if (!loggedInUser) {
-        console.log('[useAppInitialization] No user found, stopping initialization');
-        setUser(null);
-        setIsInitialized(true);
-        return;
-      }
+      // Step 4: Start auth listeners (uses Zustand store directly)
+      await authListeners.start();
+      console.log('[useAppInitialization] Auth listeners started successfully');
       
-      // Step 5: Start listeners with user ID
-      await startListeners(loggedInUser.uid);
-      setIsListening(true);
-      console.log('[useAppInitialization] Listeners started successfully for user:', loggedInUser.uid);
+      // Step 5: Mark initialization complete
+      initializationState.isInitializing = false;
+      initializationState.isInitialized = true;
+      
+      // Update global state through Zustand
+      setInitializing(false);
       
       console.log('[useAppInitialization] Application fully initialized');
-      setIsInitialized(true);
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Application initialization failed';
-      setInitializationError(errorMessage);
       console.error('[useAppInitialization] Initialization failed:', error);
+      initializationState.isInitializing = false;
+      initializationState.initializationError = errorMessage;
+      
+      // Update global state through Zustand
+      setInitializing(false, errorMessage);
     }
-  }, [startListeners]);
+  }, [setInitializing]);
 
-  // Combine state into single initialization state
-  const state: AppInitializationState = {
-    // Core state
-    user,
-    isListening,
-    
-    // Initialization state
-    isInitialized,
-    initializationError,
-    listenersError,
-  };
+  // Initialize app on mount only if not already initialized
+  useEffect(() => {
+    if (!initializationState.isInitialized && !initializationState.isInitializing) {
+      initializeApp();
+    } else {
+      console.log('[useAppInitialization] Skipping initialization - app already initialized or initializing');
+    }
+  }, [initializeApp]);
+};
 
-  return {
-    // State
-    state,
-    
-    // Initialization actions
-    initializeApp,
+// Singleton to prevent multiple initializations
+let initializationState = {
+  isInitialized: false,
+  isInitializing: false,
+  initializationError: null as string | null,
+};
+
+// Reset function for testing and edge cases
+export function resetInitializationState(): void {
+  console.log('[useAppInitialization] Resetting initialization state');
+  initializationState = {
+    isInitialized: false,
+    isInitializing: false,
+    initializationError: null,
   };
-}; 
+} 

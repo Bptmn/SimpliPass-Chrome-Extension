@@ -79,7 +79,7 @@ export const initializePlatform = async (): Promise<void> => {
     
     // Then initialize the adapter
     await initializePlatformAdapter();
-    console.log('[Platform] Platform adapter initialized successfully');
+  
   } catch (error) {
     console.error('[Platform] Failed to initialize platform adapter:', error);
     throw error;

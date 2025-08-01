@@ -1,26 +1,25 @@
 import { useCallback } from 'react';
-
-type CurrentPage = 'home' | 'generator' | 'settings' | 'add-credential-1' | 'add-credential-2' | 'add-card-1' | 'add-card-2' | 'add-securenote';
+import { ROUTES, type AppRoute } from '@common/ui/router/ROUTES';
 
 /**
  * Hook for HelperBar component UI state management
  * Handles button text based on current page only
  * User interactions should be handled in the component
  */
-export const useHelperBar = (currentPage: CurrentPage = 'home') => {
+export const useHelperBar = (currentPage: AppRoute = ROUTES.HOME) => {
   // Step 1: Get add button text based on current page
   const getAddButtonText = useCallback(() => {
     switch (currentPage) {
-      case 'add-card-1':
-      case 'add-card-2':
+      case ROUTES.ADD_CARD_1:
+      case ROUTES.ADD_CARD_2:
         return 'Ajouter une carte';
-      case 'add-securenote':
+      case ROUTES.ADD_SECURENOTE:
         return 'Ajouter une note';
-      case 'add-credential-1':
-      case 'add-credential-2':
-      case 'home':
-      case 'generator':
-      case 'settings':
+      case ROUTES.ADD_CREDENTIAL_1:
+      case ROUTES.ADD_CREDENTIAL_2:
+      case ROUTES.HOME:
+      case ROUTES.GENERATOR:
+      case ROUTES.SETTINGS:
       default:
         return 'Ajouter un identifiant';
     }

@@ -5,8 +5,18 @@
  * all router-related components, hooks, types, and utilities. It provides
  * a clean API for other parts of the application to import router functionality.
  * 
+ * All route references use ROUTES constants to prevent string literals.
+ * 
  * Usage:
  * import { useAppRouter, ROUTES, AppRouterProvider } from '@common/ui/router';
+ * 
+ * Exports:
+ * - ROUTES: Type-safe route constants (prevents string literals)
+ * - AppRoute: TypeScript type for route names
+ * - useAppRouter: System-level router hook
+ * - AppRouterProvider: Context provider for router state
+ * - AppRouterView: Router view component
+ * - Utility functions: Route validation and classification
  */
 
 // Export route constants and type safety utilities

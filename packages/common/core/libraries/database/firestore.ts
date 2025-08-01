@@ -215,7 +215,7 @@ class FirestoreListenersService {
    */
   async startListeners(userId: string): Promise<void> {
     try {
-      console.log('[FirestoreListeners] Starting listeners...');
+  
       
       // Start user listener
       await this.startUserListener(userId);
@@ -226,7 +226,7 @@ class FirestoreListenersService {
       this.state.isListening = true;
       this.state.error = null;
       
-      console.log('[FirestoreListeners] All listeners started successfully');
+      
     } catch (error) {
       console.error('[FirestoreListeners] Failed to start listeners:', error);
       this.state.error = error instanceof Error ? error.message : 'Failed to start listeners';

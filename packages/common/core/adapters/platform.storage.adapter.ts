@@ -49,7 +49,7 @@ const initializeStorageAdapter = async (): Promise<StorageAdapter> => {
 export const initializeStorage = async (): Promise<void> => {
   try {
     await initializeStorageAdapter();
-    console.log('[Storage] Storage adapter initialized successfully');
+
   } catch (error) {
     console.error('[Storage] Failed to initialize storage adapter:', error);
     throw error;

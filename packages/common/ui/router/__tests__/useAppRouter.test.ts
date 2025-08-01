@@ -7,6 +7,15 @@
  * - error states
  * 
  * Business logic must use navigateTo() explicitly.
+ * All route references use ROUTES constants to prevent string literals.
+ * 
+ * Test Coverage:
+ * - System-level route determination
+ * - Route transitions based on state changes
+ * - Explicit navigation for business routes
+ * - Navigation history management
+ * - Platform detection
+ * - Parameter management
  */
 
 import { renderHook, act } from '@testing-library/react';
@@ -26,40 +35,32 @@ const mockUser: User = {
 describe('useAppRouter', () => {
   const defaultProps = {
     user: null,
-    isUserFullyInitialized: false,
-    listenersError: null,
+    userSecretKeyExist: false,
+    isInitializing: false,
     platform: 'extension' as const,
   };
 
   describe('System-level route determination', () => {
-    it('should return LOGIN when user is null and no error', () => {
+    it('should return LOADING when app is initializing', () => {
+      const props = { ...defaultProps, isInitializing: true };
+      const { result } = renderHook(() => useAppRouter(props));
+      
+      expect(result.current.currentRoute).toBe(ROUTES.LOADING);
+      expect(result.current.isLoading).toBe(true);
+    });
+
+    it('should return LOGIN when user is null and not initializing', () => {
       const { result } = renderHook(() => useAppRouter(defaultProps));
       
       expect(result.current.currentRoute).toBe(ROUTES.LOGIN);
       expect(result.current.isLoading).toBe(false);
     });
 
-    it('should return ERROR when listenersError is present', () => {
-      const props = { ...defaultProps, listenersError: 'Connection failed' };
-      const { result } = renderHook(() => useAppRouter(props));
-      
-      expect(result.current.currentRoute).toBe(ROUTES.ERROR);
-      expect(result.current.error).toBe('Connection failed');
-    });
-
-    it('should return LOGIN when user is null and no error', () => {
-      const props = { ...defaultProps, user: null, listenersError: null };
-      const { result } = renderHook(() => useAppRouter(props));
-      
-      expect(result.current.currentRoute).toBe(ROUTES.LOGIN);
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    it('should return LOCK when user exists but not fully initialized', () => {
+    it('should return LOCK when user exists but no secret key', () => {
       const props = { 
         ...defaultProps, 
         user: mockUser, 
-        isUserFullyInitialized: false 
+        userSecretKeyExist: false 
       };
       const { result } = renderHook(() => useAppRouter(props));
       
@@ -70,7 +71,7 @@ describe('useAppRouter', () => {
       const props = { 
         ...defaultProps, 
         user: mockUser, 
-        isUserFullyInitialized: true 
+        userSecretKeyExist: true 
       };
       const { result } = renderHook(() => useAppRouter(props));
       
@@ -79,6 +80,19 @@ describe('useAppRouter', () => {
   });
 
   describe('Route transitions', () => {
+    it('should transition from LOADING to LOGIN when initialization completes', () => {
+      const { result, rerender } = renderHook(() => 
+        useAppRouter({ ...defaultProps, isInitializing: true })
+      );
+      
+      expect(result.current.currentRoute).toBe(ROUTES.LOADING);
+      
+      // Simulate initialization completing
+      rerender({ ...defaultProps, isInitializing: false });
+      
+      expect(result.current.currentRoute).toBe(ROUTES.LOGIN);
+    });
+
     it('should transition from LOGIN to LOCK when user authenticates but not initialized', () => {
       const { result, rerender } = renderHook(() => 
         useAppRouter({ ...defaultProps, user: null })
@@ -87,42 +101,29 @@ describe('useAppRouter', () => {
       expect(result.current.currentRoute).toBe(ROUTES.LOGIN);
       
       // Simulate user authenticating but not fully initialized
-      rerender({ ...defaultProps, user: mockUser, isUserFullyInitialized: false });
+      rerender({ ...defaultProps, user: mockUser, userSecretKeyExist: false });
       
       expect(result.current.currentRoute).toBe(ROUTES.LOCK);
     });
 
     it('should transition from LOCK to HOME when user becomes fully initialized', () => {
       const { result, rerender } = renderHook(() => 
-        useAppRouter({ ...defaultProps, user: mockUser, isUserFullyInitialized: false })
+        useAppRouter({ ...defaultProps, user: mockUser, userSecretKeyExist: false })
       );
       
       expect(result.current.currentRoute).toBe(ROUTES.LOCK);
       
       // Simulate user becoming fully initialized
-      rerender({ ...defaultProps, user: mockUser, isUserFullyInitialized: true });
+      rerender({ ...defaultProps, user: mockUser, userSecretKeyExist: true });
       
       expect(result.current.currentRoute).toBe(ROUTES.HOME);
-    });
-
-    it('should transition to ERROR when error occurs', () => {
-      const { result, rerender } = renderHook(() => 
-        useAppRouter({ ...defaultProps, user: mockUser, isUserFullyInitialized: true })
-      );
-      
-      expect(result.current.currentRoute).toBe(ROUTES.HOME);
-      
-      // Simulate error occurring
-      rerender({ ...defaultProps, user: mockUser, isUserFullyInitialized: true, listenersError: 'Network error' });
-      
-      expect(result.current.currentRoute).toBe(ROUTES.ERROR);
     });
   });
 
   describe('Explicit navigation', () => {
     it('should allow explicit navigation to business routes', () => {
       const { result } = renderHook(() => 
-        useAppRouter({ ...defaultProps, user: mockUser, isUserFullyInitialized: true })
+        useAppRouter({ ...defaultProps, user: mockUser, userSecretKeyExist: true })
       );
       
       expect(result.current.currentRoute).toBe(ROUTES.HOME);
@@ -137,7 +138,7 @@ describe('useAppRouter', () => {
 
     it('should preserve route parameters during explicit navigation', () => {
       const { result } = renderHook(() => 
-        useAppRouter({ ...defaultProps, user: mockUser, isUserFullyInitialized: true })
+        useAppRouter({ ...defaultProps, user: mockUser, userSecretKeyExist: true })
       );
       
       const testParams = { credential: { id: '123', title: 'Test' } };
@@ -152,7 +153,7 @@ describe('useAppRouter', () => {
 
     it('should allow navigation to lock with reason', () => {
       const { result } = renderHook(() => 
-        useAppRouter({ ...defaultProps, user: mockUser, isUserFullyInitialized: true })
+        useAppRouter({ ...defaultProps, user: mockUser, userSecretKeyExist: true })
       );
       
       act(() => {
@@ -167,7 +168,7 @@ describe('useAppRouter', () => {
   describe('Navigation history', () => {
     it('should maintain navigation history', () => {
       const { result } = renderHook(() => 
-        useAppRouter({ ...defaultProps, user: mockUser, isUserFullyInitialized: true })
+        useAppRouter({ ...defaultProps, user: mockUser, userSecretKeyExist: true })
       );
       
       expect(result.current.currentRoute).toBe(ROUTES.HOME);
@@ -189,7 +190,7 @@ describe('useAppRouter', () => {
 
     it('should reset to home correctly', () => {
       const { result } = renderHook(() => 
-        useAppRouter({ ...defaultProps, user: mockUser, isUserFullyInitialized: true })
+        useAppRouter({ ...defaultProps, user: mockUser, userSecretKeyExist: true })
       );
       
       // Navigate to settings
@@ -231,7 +232,7 @@ describe('useAppRouter', () => {
   describe('Parameter management', () => {
     it('should allow setting route parameters', () => {
       const { result } = renderHook(() => 
-        useAppRouter({ ...defaultProps, user: mockUser, isUserFullyInitialized: true })
+        useAppRouter({ ...defaultProps, user: mockUser, userSecretKeyExist: true })
       );
       
       const newParams = { category: 'credentials', search: 'test' };

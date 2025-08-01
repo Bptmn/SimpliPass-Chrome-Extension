@@ -15,14 +15,6 @@ let app: ReturnType<typeof initializeApp> | null = null;
 let auth: ReturnType<typeof getAuth> | null = null;
 let firestore: ReturnType<typeof getFirestore> | null = null;
 
-(async () => {
-  const firebaseConfig = await getFirebaseConfig();
-  console.log('[Firebase.ts] Final Firebase config:', firebaseConfig);
-  app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  firestore = getFirestore(app);
-})();
-
 export async function signInWithFirebaseToken(): Promise<FirebaseUser> {
   try {
     // Use Amplify v6+ fetchAuthSession to get the idToken
@@ -87,10 +79,10 @@ export { auth, firestore };
 export async function initFirebase() {
   if (!app || !auth || !firestore) {
     const firebaseConfig = await getFirebaseConfig();
-    console.log('[Firebase.ts] Initializing Firebase with config:', firebaseConfig);
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     firestore = getFirestore(app);
+    console.log('[Firebase.ts] Firebase initialized');
   }
   return { auth, db: firestore };
 } 

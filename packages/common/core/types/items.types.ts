@@ -1,15 +1,13 @@
+/**
+ * items.types.ts - Item-related type definitions
+ * 
+ * Core types for credentials, bank cards, secure notes, and vault management.
+ */
+
 import { Timestamp } from 'firebase/firestore';
 
-// ===== Encrypted Item Type =====
-export interface ItemEncrypted {
-  id: string;
-  content_encrypted: string;
-  item_key_encrypted: string;
-  created_at: Date;
-  last_used_at: Date;
-}
+// ===== Decrypted Item Types =====
 
-// ===== Decrypted Types =====
 export interface CredentialDecrypted {
   itemType: 'credential';
   createdDateTime: Date;
@@ -51,7 +49,19 @@ export interface SecureNoteDecrypted {
   id: string;
 }
 
-// Encrypted interfaces for Firestore storage
+export type ItemDecrypted = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted;
+
+// ===== Encrypted Item Types =====
+
+export interface ItemEncrypted {
+  id: string;
+  content_encrypted: string;
+  item_key_encrypted: string;
+  created_at: Date;
+  last_used_at: Date;
+  item_type: string;
+}
+
 export interface CredentialEncrypted {
   id: string;
   content_encrypted: string;
@@ -79,38 +89,13 @@ export interface SecureNoteEncrypted {
   item_type: 'secure_note';
 }
 
-/** Top‐level Firestore "users" document */
+// ===== Firestore Types =====
+
 export interface UserDocument {
   email: string;
   uid: string;
   created_time: Timestamp;
   salt: string;
-}
-
-/**
- * Represents an encrypted item stored in Firestore.
- * All fields are required for proper encryption/decryption operations.
- * 
- * @property id - Unique identifier for the item (required)
- * @property content_encrypted - Base64 encoded encrypted content (required)
- * @property item_key_encrypted - Base64url encoded encrypted item key (required)
- * @property created_at - Creation timestamp (required)
- * @property last_used_at - Last used timestamp (required)
- * @property item_type - Type of the item (required)
- */
-export interface ItemEncrypted {
-  /** Unique identifier for the item */
-  id: string;
-  /** Base64 encoded encrypted content - must not be empty */
-  content_encrypted: string;
-  /** Base64url encoded encrypted item key - must not be empty */
-  item_key_encrypted: string;
-  /** Creation timestamp */
-  created_at: Date;
-  /** Last used timestamp */
-  last_used_at: Date;
-  /** Type of the item (credential, bank_card, secure_note) */
-  item_type: string;
 }
 
 // ===== State Management Types =====
@@ -164,6 +149,4 @@ export interface SecureNoteForm {
   content: string;
   category: string;
   tags: string[];
-}
-
-export type ItemDecrypted = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted; 
+} 

@@ -55,30 +55,27 @@ export const itemsStateManager = new ItemsStateManager();
  * Centralized function to fetch, decrypt and store items
  * Used by both initial load and real-time listeners
  */
-export async function fetchAndStoreItems(): Promise<ItemDecrypted[]> {
+export async function fetchAndStoreItems(currentUserId: string): Promise<ItemDecrypted[]> {
   try {
     // 1. Get user secret key
     const userSecretKey = await getUserSecretKey();
     if (!userSecretKey) {
-      throw new Error('User not authenticated');
+      throw new Error('No user secret key found');
     }
 
-    // 2. Get user id
-    const userId = getCurrentUserId();
-    if (!userId) throw new Error('User not authenticated');
-
-    // 3. Fetch encrypted items from database
-    const encryptedItems = await db.getCollection<ItemEncrypted>(`users/${userId}/my_items`);
+    // 2. Fetch encrypted items from database
+    const encryptedItems = await db.getCollection<ItemEncrypted>(`users/${currentUserId}/my_items`);
     
     if (encryptedItems.length === 0) {
       console.log('[Items] No items found in database');
       const emptyItems: ItemDecrypted[] = [];
       
-      // 4a. Update secure storage (empty case)
-      await storage.updateVaultInSecureLocalStorage({
-        items: emptyItems,
-        lastSync: new Date().toISOString(),
-      });
+          // 4a. Update secure storage (empty case)
+    await storage.updateVaultInSecureLocalStorage({
+      userId: currentUserId,
+      items: emptyItems,
+      lastModified: new Date(),
+    });
       
       // 4b. Update state manager (empty case)
       itemsStateManager.setItems(emptyItems);
@@ -91,8 +88,9 @@ export async function fetchAndStoreItems(): Promise<ItemDecrypted[]> {
 
     // 5. Update secure storage
     await storage.updateVaultInSecureLocalStorage({
+      userId: currentUserId,
       items: decryptedItems,
-      lastSync: new Date().toISOString(),
+      lastModified: new Date(),
     });
 
     // 6. Update state manager
@@ -126,7 +124,9 @@ export async function loadItemsWithFallback(): Promise<ItemDecrypted[]> {
     
     // 2b. Fallback to database
     console.log('[Items] Local storage empty, fetching from database');
-    return await fetchAndStoreItems();
+    const currentUserId = getCurrentUserId();
+    if (!currentUserId) throw new Error('User not authenticated');
+    return await fetchAndStoreItems(currentUserId);
     
   } catch (error) {
     console.error('[Items] Failed to load items with fallback:', error);
@@ -241,5 +241,7 @@ export async function deleteItem(itemId: string): Promise<void> {
  * @deprecated Use fetchAndStoreItems() or loadItemsWithFallback() instead
  */
 export async function getAllItems(): Promise<ItemDecrypted[]> {
-  return fetchAndStoreItems();
+  const currentUserId = getCurrentUserId();
+  if (!currentUserId) throw new Error('User not authenticated');
+  return fetchAndStoreItems(currentUserId);
 }

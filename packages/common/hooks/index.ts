@@ -1,8 +1,10 @@
 // Layer 1: UI Hooks
 
-// Authentication Hooks
-
+// Centralized App State Management
 export { useAppState } from './useAppState';
+export { useAppInitialization } from './useAppInitialization';
+
+// Authentication Hooks
 export { useAuth } from './useAuth';
 export { useReEnterPassword } from './useReEnterPassword';
 export { useUser } from './useUser';
@@ -13,7 +15,7 @@ export { useRefreshData } from './useRefreshData';
 export { useManualRefresh } from './useManualRefresh';
 
 // Listener Hooks
-export { useListeners } from './useListeners';
+// Removed useListeners - now handled by service layer
 
 // UI State Hooks
 export { usePasswordGenerator } from './usePasswordGenerator';
@@ -22,7 +24,6 @@ export { useInputLogic } from './useInputLogic';
 export { useLazyCredentialIcon } from './useLazyCredentialIcon';
 
 // Utility Hooks
-
 export { useToast } from './useToast';
 
 // Settings Hooks

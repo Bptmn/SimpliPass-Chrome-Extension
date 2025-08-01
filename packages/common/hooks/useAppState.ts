@@ -1,146 +1,100 @@
 /**
- * useAppState Hook - Layer 1: UI Layer
+ * useAppState - Zustand Store for Global App State
  * 
- * React hook that reads the current app state without triggering initialization.
- * Used by components that need to access app state after initialization is complete.
+ * Follows Zustand best practices:
+ * - Simple, direct state management
+ * - No unnecessary wrappers
+ * - Clear separation of concerns
+ * - Only global states that impact routing
+ * 
+ * Responsibilities:
+ * 1. Manage global app state (initialization, user, secret key)
+ * 2. Provide simple state update methods
+ * 3. Handle state change detection
+ * 
+ * NO computed states - route determination handled by useAppRouter
+ * NO initialization logic - handled by useAppInitialization
+ * NO routing logic - handled by useAppRouter
  */
 
-import { useState, useEffect } from 'react';
-import { auth } from '../core/adapters/auth.adapter';
-import { getCurrentUser } from '../core/services/userService';
-import { getLocalVault } from '../core/services/vaultService';
-import { getUserSecretKey } from '../core/services/secretsService';
+import { create } from 'zustand';
+import { checkUserSecretKey } from '@common/core/services/userService';
+import type { User } from '@common/core/types/auth.types';
 
+// Global app state interface - only core states that impact routing
 export interface AppState {
-  isInitialized: boolean;
-  isAuthenticated: boolean;
-  hasLocalData: boolean;
-  shouldShowLogin: boolean;
-  shouldShowReEnterPassword: boolean;
-  shouldRenderApp: boolean;
-  error: string | null;
+  // Core states that impact routing
+  isInitializing: boolean;
+  initializationError: string | null;
+  user: User | null;
+  userSecretKeyExist: boolean;
 }
 
-export interface UseAppStateReturn {
-  // State
-  state: AppState;
-  user: any | null;
-  vault: any | null;
+// Zustand store interface
+interface AppStateStore extends AppState {
+  // Simple state update methods
+  setInitializing: (isInitializing: boolean, error?: string | null) => void;
+  setUser: (user: User | null) => void;
+  setSecretKey: (hasSecretKey: boolean) => void;
+  setUserAndSecretKey: (user: User | null, hasSecretKey: boolean) => void;
   
-  // Actions
-  refreshState: () => Promise<void>;
+  // Utility methods
+  refreshSecretKey: () => Promise<void>;
   clearError: () => void;
 }
 
-export const useAppState = (): UseAppStateReturn => {
-  // Step 1: Initialize UI state
-  const [state, setState] = useState<AppState>({
-    isInitialized: false,
-    isAuthenticated: false,
-    hasLocalData: false,
-    shouldShowLogin: false,
-    shouldShowReEnterPassword: false,
-    shouldRenderApp: false,
-    error: null,
-  });
+/**
+ * Zustand store for global app state
+ * Simple, direct state management following Zustand best practices
+ */
+export const useAppStateStore = create<AppStateStore>((set, _get) => ({
+  // Initial state
+  isInitializing: true,
+  initializationError: null,
+  user: null,
+  userSecretKeyExist: false,
 
-  const [user, setUser] = useState<any | null>(null);
-  const [vault, setVault] = useState<any | null>(null);
+  // Simple state update methods
+  setInitializing: (isInitializing: boolean, error?: string | null) => {
+    console.log('[useAppState] Setting initialization state:', { isInitializing, error });
+    set({ isInitializing, initializationError: error ?? null });
+  },
 
-  // Step 2: Refresh app state
-  const refreshState = async (): Promise<void> => {
+  setUser: (user: User | null) => {
+    console.log('[useAppState] Setting user:', { userId: user?.id });
+    set({ user });
+  },
+
+  setSecretKey: (hasSecretKey: boolean) => {
+    console.log('[useAppState] Setting secret key:', hasSecretKey);
+    set({ userSecretKeyExist: hasSecretKey });
+  },
+
+  setUserAndSecretKey: (user: User | null, hasSecretKey: boolean) => {
+    console.log('[useAppState] Setting user and secret key:', { 
+      userId: user?.id, 
+      hasSecretKey 
+    });
+    set({ user, userSecretKeyExist: hasSecretKey });
+  },
+
+  // Utility methods
+  refreshSecretKey: async () => {
     try {
-      console.log('[useAppState] Reading current app state...');
-      
-      // Step 2.1: Check authentication status
-      const isAuthenticated = await auth.isAuthenticated();
-      
-      if (!isAuthenticated) {
-        setState({
-          isInitialized: true,
-          isAuthenticated: false,
-          hasLocalData: false,
-          shouldShowLogin: true,
-          shouldShowReEnterPassword: false,
-          shouldRenderApp: false,
-          error: null,
-        });
-        setUser(null);
-        setVault(null);
-        return;
-      }
-
-      // Step 2.2: Load data from secure storage
-      const [userSecretKey, userData, vaultData] = await Promise.all([
-        getUserSecretKey(),
-        getCurrentUser(),
-        getLocalVault(),
-      ]);
-
-      const hasLocalData = userSecretKey && userData && vaultData && vaultData.length > 0;
-
-      if (hasLocalData) {
-        setState({
-          isInitialized: true,
-          isAuthenticated: true,
-          hasLocalData: true,
-          shouldShowLogin: false,
-          shouldShowReEnterPassword: false,
-          shouldRenderApp: true,
-          error: null,
-        });
-        setUser(userData);
-        setVault(vaultData);
-      } else {
-        setState({
-          isInitialized: true,
-          isAuthenticated: true,
-          hasLocalData: false,
-          shouldShowLogin: false,
-          shouldShowReEnterPassword: true,
-          shouldRenderApp: false,
-          error: null,
-        });
-        setUser(null);
-        setVault(null);
-      }
-      
-      console.log('[useAppState] State read successfully');
-      
+      console.log('[useAppState] Refreshing secret key state...');
+      const hasKey = await checkUserSecretKey();
+      console.log('[useAppState] Refreshed secret key state:', hasKey);
+      set({ userSecretKeyExist: hasKey });
     } catch (error) {
-      console.error('[useAppState] Failed to read state:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to read app state';
-      
-      setState({
-        isInitialized: true,
-        isAuthenticated: false,
-        hasLocalData: false,
-        shouldShowLogin: true,
-        shouldShowReEnterPassword: false,
-        shouldRenderApp: false,
-        error: errorMessage,
-      });
+      console.error('[useAppState] Error refreshing secret key state:', error);
+      set({ userSecretKeyExist: false });
     }
-  };
+  },
 
-  // Step 3: Clear error state
-  const clearError = () => {
-    setState(prev => ({ ...prev, error: null }));
-  };
+  clearError: () => {
+    console.log('[useAppState] Clearing initialization error');
+    set({ initializationError: null });
+  },
+}));
 
-  // Step 4: Read current state on mount
-  useEffect(() => {
-    refreshState();
-  }, []);
-
-  return {
-    // State
-    state,
-    user,
-    vault,
-    
-    // Actions
-    refreshState,
-    clearError,
-  };
-}; 
+// Export types for useAppRouter 

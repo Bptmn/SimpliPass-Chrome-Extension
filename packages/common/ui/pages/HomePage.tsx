@@ -11,9 +11,7 @@ import {
 } from '@common/utils/homePage';
 
 import { CredentialDetailsPage } from './CredentialDetailsPage';
-import {
-  HomePageProps,
-} from '@common/core/types/types';
+import type { HomePageProps } from '@common/core/types/auth.types';
 import { CredentialCard } from '@ui/components/CredentialCard';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
@@ -23,9 +21,9 @@ import ItemBankCard from '@ui/components/ItemBankCard';
 import ItemSecureNote from '@ui/components/ItemSecureNote';
 import { BankCardDetailsPage } from './BankCardDetailsPage';
 import { SecureNoteDetailsPage } from './SecureNoteDetailsPage';
-import { CredentialDecrypted } from '@common/core/types/types';
+import type { CredentialDecrypted } from '@common/core/types/items.types';
 import { HelperBar } from '@ui/components/HelperBar';
-import { ROUTES } from '@common/ui/router';
+import { ROUTES } from '@common/ui/router/ROUTES';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import type { Category } from '@common/core/types/categories.types';
 import { CATEGORIES, isCategory } from '@common/core/types/categories.types';
@@ -284,7 +282,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               ) : filteredItems.length === 0 ? (
                 <Text style={styles.emptyState}>Aucune carte trouvée.</Text>
               ) : (
-                (filteredItems as import('@common/core/types/types').BankCardDecrypted[]).map((item: any) => (
+                (filteredItems as import('@common/core/types/items.types').BankCardDecrypted[]).map((item: any) => (
                   <ItemBankCard key={item.id} cred={item} onPress={() => setSelectedBankCard(item)} />
                 ))
               )}
@@ -301,7 +299,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               ) : filteredItems.length === 0 ? (
                 <Text style={styles.emptyState}>Aucune note trouvée.</Text>
               ) : (
-                (filteredItems as import('@common/core/types/types').SecureNoteDecrypted[]).map((item: any) => (
+                (filteredItems as import('@common/core/types/items.types').SecureNoteDecrypted[]).map((item: any) => (
                   <ItemSecureNote key={item.id} note={item} onPress={() => setSelectedSecureNote(item)} />
                 ))
               )}

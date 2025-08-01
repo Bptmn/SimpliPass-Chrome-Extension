@@ -1,3 +1,9 @@
+/**
+ * auth.types.ts - Authentication and user type definitions
+ * 
+ * Core types for user authentication, sessions, and auth state management.
+ */
+
 export interface User {
   id: string;
   email: string;
@@ -66,4 +72,19 @@ export interface UserData {
   session: UserSession;
   password: string;
   salt: string;
+}
+
+// ===== Page State Types =====
+
+export interface PageState {
+  url: string;
+  domain: string;
+  hasLoginForm: boolean;
+}
+
+export interface HomePageProps {
+  user: unknown;
+  pageState: PageState | null;
+  onInjectCredential: (credentialId: string) => void;
+  refreshTrigger?: number;
 } 

@@ -1,4 +1,4 @@
-import { PageState } from '@common/core/types/types';
+import { PageState } from '@common/core/types/auth.types';
 
 /**
  * Stores page info per tab.
