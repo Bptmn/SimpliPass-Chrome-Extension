@@ -82,7 +82,6 @@ export async function initFirebase() {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     firestore = getFirestore(app);
-    console.log('[Firebase.ts] Firebase initialized');
   }
   return { auth, db: firestore };
 } 

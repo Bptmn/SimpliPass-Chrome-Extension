@@ -4,7 +4,7 @@ import { spacing, radius, layout } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
-import { useToast } from '@common/hooks/useToast';
+import { useToast } from '@common/ui/components/Toast';
 import { 
   handleCardClick as handleCardClickUtil, 
   handleOtherItemClick as handleOtherItemClickUtil 
@@ -27,7 +27,8 @@ import { ROUTES } from '@common/ui/router/ROUTES';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import type { Category } from '@common/core/types/categories.types';
 import { CATEGORIES, isCategory } from '@common/core/types/categories.types';
-import type { User } from '@common/core/types/auth.types';
+
+import { useAppStateStore } from '@common/hooks/useAppState';
 
 
 
@@ -49,6 +50,9 @@ export const HomePage: React.FC<HomePageProps> = ({
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const router = useAppRouterContext();
   const { showToast } = useToast();
+  
+  // ✅ Get user from global state instead of props
+  const user = useAppStateStore(state => state.user);
   
   // Category state management
   const [category, setCategory] = React.useState<Category>(CATEGORIES.CREDENTIALS);
@@ -75,7 +79,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     setSelectedCredential,
     setSelectedBankCard,
     setSelectedSecureNote,
-  } = useItems({ user: _user as User | null });
+  } = useItems({ user }); // ✅ Use user from global state
 
   // User interaction handlers - moved from hook to component
   const handleCardClick = React.useCallback((cred: CredentialDecrypted) => {

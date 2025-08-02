@@ -1,20 +1,14 @@
 /**
  * useAppState - Zustand Store for Global App State
  * 
- * Follows Zustand best practices:
- * - Simple, direct state management
- * - No unnecessary wrappers
- * - Clear separation of concerns
- * - Only global states that impact routing
- * 
  * Responsibilities:
- * 1. Manage global app state (initialization, user, secret key)
- * 2. Provide simple state update methods
- * 3. Handle state change detection
- * 
- * NO computed states - route determination handled by useAppRouter
- * NO initialization logic - handled by useAppInitialization
- * NO routing logic - handled by useAppRouter
+ * 1. Manage global app state (initialization, user, secret key, auth availability)
+ * 2. Provide simple state update methods (setInitializing, setUser, setSecretKey, setAuthIsAvailable)
+ * 3. Handle state change detection (refreshSecretKey)
+ * 4. Clear error (clearError)
+ * 5. NO computed states - route determination handled by useAppRouter
+ * 6. NO initialization logic - handled by useAppInitialization
+ * 7. NO routing logic - handled by useAppRouter
  */
 
 import { create } from 'zustand';
@@ -28,6 +22,7 @@ export interface AppState {
   initializationError: string | null;
   user: User | null;
   userSecretKeyExist: boolean;
+  authIsAvailable: boolean; // ✅ NEW: Auth state is available for routing
 }
 
 // Zustand store interface
@@ -37,6 +32,7 @@ interface AppStateStore extends AppState {
   setUser: (user: User | null) => void;
   setSecretKey: (hasSecretKey: boolean) => void;
   setUserAndSecretKey: (user: User | null, hasSecretKey: boolean) => void;
+  setAuthIsAvailable: (authIsAvailable: boolean) => void; // ✅ NEW
   
   // Utility methods
   refreshSecretKey: () => Promise<void>;
@@ -48,11 +44,12 @@ interface AppStateStore extends AppState {
  * Simple, direct state management following Zustand best practices
  */
 export const useAppStateStore = create<AppStateStore>((set, _get) => ({
-  // Initial state
-  isInitializing: true,
+  // Initial state - start with isInitializing: false, auth not available yet
+  isInitializing: false, // ✅ Start as false, will be set to true when initialization starts
   initializationError: null,
   user: null,
   userSecretKeyExist: false,
+  authIsAvailable: false, // ✅ NEW: Auth not available initially
 
   // Simple state update methods
   setInitializing: (isInitializing: boolean, error?: string | null) => {
@@ -76,6 +73,12 @@ export const useAppStateStore = create<AppStateStore>((set, _get) => ({
       hasSecretKey 
     });
     set({ user, userSecretKeyExist: hasSecretKey });
+  },
+
+  // ✅ NEW: Set auth availability
+  setAuthIsAvailable: (authIsAvailable: boolean) => {
+    console.log('[useAppState] Setting auth availability:', authIsAvailable);
+    set({ authIsAvailable });
   },
 
   // Utility methods

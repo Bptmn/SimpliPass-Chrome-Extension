@@ -20,11 +20,12 @@ import { ColorSelector } from '@ui/components/ColorSelector';
 import { getMonthOptions, getYearOptions } from '@common/utils/cards';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Toast } from '@ui/components/Toast';
-import { useToast } from '@common/hooks/useToast';
+import { useToast } from '@common/ui/components/Toast';
 import { getCurrentUser } from '@common/core/services/userService';
-import { User } from '@common/core/types/types';
+import { User } from '@common/core/types/auth.types';
 
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+import { ROUTES } from '@common/ui/router/ROUTES';
 import { CATEGORIES } from '@common/core/types/categories.types';
 
 interface AddCard2Props {

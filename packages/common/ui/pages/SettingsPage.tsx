@@ -7,7 +7,7 @@ import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { auth } from '@common/core/adapters/auth.adapter';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
-import { useToast } from '@common/hooks/useToast';
+import { useToast } from '@common/ui/components/Toast';
 import { useManualRefresh } from '@common/hooks/useManualRefresh';
 import { getCurrentUser } from '@common/core/services/userService';
 import { databaseListeners, authListeners } from '@common/core/services/listenerService';

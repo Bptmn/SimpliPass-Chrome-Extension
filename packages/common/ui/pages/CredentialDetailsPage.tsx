@@ -5,7 +5,7 @@ import { deleteItem } from '@common/core/services/itemsService';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { LazyCredentialIcon } from '@ui/components/LazyCredentialIcon';
-import { useToast } from '@common/hooks/useToast';
+import { useToast } from '@common/ui/components/Toast';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { getPageStyles, spacing, radius, padding } from '@ui/design/layout';

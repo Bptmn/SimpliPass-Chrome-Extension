@@ -30,11 +30,7 @@ jest.mock('@common/core/adapters/auth.adapter', () => ({
     })
   }
 }));
-jest.mock('../useRefreshData', () => ({
-  useRefreshData: () => ({
-    refreshData: jest.fn().mockResolvedValue()
-  })
-}));
+
 
 const mockLoadUserProfile = loadUserProfile as jest.MockedFunction<typeof loadUserProfile>;
 const mockFetchAndStoreItems = fetchAndStoreItems as jest.MockedFunction<typeof fetchAndStoreItems>;

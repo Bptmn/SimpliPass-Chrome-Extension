@@ -30,7 +30,6 @@ export async function initCognito(): Promise<void> {
     });
     
     isInitialized = true;
-    console.log('[Cognito] Initialized successfully');
   } catch (error) {
     console.error('[Cognito] Failed to initialize:', error);
     throw new NetworkError('Failed to initialize Cognito', error as Error);

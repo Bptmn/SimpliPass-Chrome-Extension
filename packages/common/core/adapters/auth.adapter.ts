@@ -1,6 +1,6 @@
 import * as authLib from '../libraries/auth/auth';
 import { fetchUserSaltCognito, initCognito } from '../libraries/auth/cognito';
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { User as FirebaseUser } from 'firebase/auth';
 import { auth as firebaseAuth } from '../libraries/auth/firebase';
 import { initFirebase } from '../libraries/auth/firebase';
 
@@ -19,10 +19,11 @@ export interface AuthAdapter {
   startAuthListeners(callback: AuthStateChangeCallback): Promise<void>;
   stopAuthListeners(): void;
   
-  // Legacy methods for backward compatibility
-  onAuthStateChanged(callback: (user: FirebaseUser | null) => void): () => void;
+  // Simple current user access - no business logic
   getCurrentUser(): FirebaseUser | null;
-  getCurrentUserAsync(): Promise<FirebaseUser | null>;
+  
+  // Simple auth state listener - no business logic
+  onAuthStateChanged(callback: (user: FirebaseUser | null) => void): Promise<() => void>;
 }
 
 export const auth: AuthAdapter = {
@@ -40,6 +41,7 @@ export const auth: AuthAdapter = {
   
   // Listeners functionality - consistent with database adapter
   startAuthListeners: async (callback: AuthStateChangeCallback) => {
+    const { onAuthStateChanged } = await import('firebase/auth');
     const unsubscribe = onAuthStateChanged(firebaseAuth!, async (user) => {
       await callback.onAuthStateChanged(user);
     });
@@ -54,14 +56,18 @@ export const auth: AuthAdapter = {
     }
   },
   
-  // Legacy methods for backward compatibility
-  onAuthStateChanged: (callback) => onAuthStateChanged(firebaseAuth!, callback),
-  getCurrentUser: () => firebaseAuth?.currentUser || null,
-  getCurrentUserAsync: async () => {
-    // Wait for auth to be ready
-    if (!firebaseAuth) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
+  // Simple current user access - no business logic
+  getCurrentUser: () => {
     return firebaseAuth?.currentUser || null;
+  },
+  
+  // Simple auth state listener - no business logic
+  onAuthStateChanged: (callback: (user: FirebaseUser | null) => void) => {
+    return new Promise<() => void>((resolve) => {
+      import('firebase/auth').then(({ onAuthStateChanged }) => {
+        const unsubscribe = onAuthStateChanged(firebaseAuth!, callback);
+        resolve(unsubscribe);
+      });
+    });
   },
 }; 

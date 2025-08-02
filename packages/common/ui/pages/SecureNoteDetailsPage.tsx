@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { SecureNoteDecrypted } from '@common/core/types/items.types';
 
-import { useToast } from '@common/hooks/useToast';
+import { useToast } from '@common/ui/components/Toast';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { DetailField } from '@ui/components/DetailField';
 import { Button } from '@ui/components/Buttons';

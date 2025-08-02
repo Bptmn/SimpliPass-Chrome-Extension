@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Platform, StyleSheet } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { updateItem } from '@common/core/services/itemsService';
-import { useToast } from '@common/hooks/useToast';
+import { useToast } from '@common/ui/components/Toast';
 import { BankCardDecrypted } from '@common/core/types/items.types';
 import { pageStyles } from '@common/ui/design/layout';
 import { getColors, typography, spacing, radius } from '@common/ui/design';

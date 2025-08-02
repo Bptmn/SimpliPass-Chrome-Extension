@@ -90,7 +90,7 @@ export const useAuth = ({ user }: UseAuthProps): UseAuthReturn => {
     }
   }, []);
 
-  // Get current user function
+  // Get current user
   const getCurrentUser = useCallback(async (): Promise<User | null> => {
     try {
       setIsLoading(true);
@@ -108,7 +108,7 @@ export const useAuth = ({ user }: UseAuthProps): UseAuthReturn => {
     }
   }, []);
 
-  // Clear error function
+  // Clear error
   const clearError = useCallback(() => {
     setError(null);
   }, []);

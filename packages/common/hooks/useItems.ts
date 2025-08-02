@@ -12,7 +12,7 @@
  */
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { itemsStateManager, addItem as addItemToService, updateItem as editItemInService, deleteItem as deleteItemFromService } from '../core/services/itemsService';
+import { itemsStateManager, addItem as addItemToService, updateItem as editItemInService, deleteItem as deleteItemFromService, loadItemsWithFallback } from '../core/services/itemsService';
 import { User } from '../core/types/auth.types';
 import { ItemDecrypted, CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../core/types/items.types';
 
@@ -73,6 +73,35 @@ export const useItems = ({ user }: UseItemsProps): UseItemsReturn => {
   const [selectedBankCard, setSelectedBankCard] = useState<BankCardDecrypted | null>(null);
   const [selectedSecureNote, setSelectedSecureNote] = useState<SecureNoteDecrypted | null>(null);
 
+  // ✅ NEW: Auto-fetch data when user is available
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      if (!user) {
+        console.log('[useItems] No user available, skipping data fetch');
+        return;
+      }
+
+      try {
+        console.log('[useItems] User available, fetching initial data...');
+        setLoading(true);
+        setError(null);
+        
+        // Fetch data using loadItemsWithFallback (handles local storage + database)
+        await loadItemsWithFallback();
+        
+        console.log('[useItems] Initial data fetch completed');
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch initial data';
+        setError(errorMessage);
+        console.error('[useItems] Failed to fetch initial data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitialData();
+  }, [user]);
+
   // Subscribe to state changes
   useEffect(() => {
     const handleItemsChanged = (newItems: ItemDecrypted[]) => {
@@ -80,8 +109,6 @@ export const useItems = ({ user }: UseItemsProps): UseItemsReturn => {
       setItems(newItems);
       setLoading(false);
       setError(null);
-      
-
     };
 
     // Listen for changes from the centralized state manager
@@ -222,20 +249,23 @@ export const useItems = ({ user }: UseItemsProps): UseItemsReturn => {
     setSearchValue('');
   }, []);
 
-  // Data refresh
+  // ✅ UPDATED: Data refresh using loadItemsWithFallback
   const refreshData = useCallback(async () => {
     try {
       console.log('[useItems] Refreshing vault data...');
       setError(null);
+      setLoading(true);
       
-      // The original code had fetchAndStoreItems here, but it's not imported.
-      // Assuming it's meant to be removed or replaced with a placeholder if needed.
-      // For now, removing it as it's not in the new_code.
+      // Use loadItemsWithFallback to refresh data
+      await loadItemsWithFallback();
       
+      console.log('[useItems] Vault data refreshed successfully');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to refresh vault data';
       setError(errorMessage);
       console.error('[useItems] Failed to refresh vault data:', err);
+    } finally {
+      setLoading(false);
     }
   }, []);
 

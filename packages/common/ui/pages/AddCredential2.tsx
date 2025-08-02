@@ -6,7 +6,7 @@ import { generateItemKey } from '@common/utils/crypto';
 
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import Toast from '@ui/components/Toast';
-import { useToast } from '@common/hooks/useToast';
+import { useToast } from '@common/ui/components/Toast';
 import { useItems } from '@common/hooks/useItems';
 import { CredentialDecrypted } from '@common/core/types/items.types';
 import { Input, InputPasswordStrength } from '@ui/components/InputFields';

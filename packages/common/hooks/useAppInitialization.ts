@@ -5,10 +5,11 @@
  * Uses Zustand store directly for all state management.
  * 
  * Responsibilities:
- * 1. Initialize platform detection
- * 2. Initialize storage
- * 3. Initialize auth provider
+ * 1. Initialize auth provider
+ * 2. Initialize platform detection
+ * 3. Initialize storage
  * 4. Start auth listeners (which use Zustand store directly)
+ * 5. Mark initialization complete via Zustand
  * 
  * Note: Initialization happens automatically on mount
  */
@@ -23,48 +24,38 @@ export const useAppInitialization = (): void => {
   // Get Zustand store methods directly
   const { setInitializing } = useAppStateStore();
 
-  // App initialization - single responsibility with singleton protection
+  // App initialization - single responsibility with Zustand state management
   const initializeApp = useCallback(async (): Promise<void> => {
-    // Prevent multiple initialization calls using singleton
-    if (initializationState.isInitialized) {
-      console.log('[useAppInitialization] App already initialized (singleton), skipping');
-      return;
-    }
-
-    if (initializationState.isInitializing) {
-      console.log('[useAppInitialization] App is already initializing (singleton), skipping');
+    // Prevent multiple initialization calls using Zustand state
+    const currentState = useAppStateStore.getState();
+    if (currentState.isInitializing) {
+      console.log('[useAppInitialization] App is already initializing, skipping');
       return;
     }
 
     try {
       console.log('[useAppInitialization] Starting application initialization');
-      initializationState.isInitializing = true;
-      initializationState.initializationError = null;
       
-      // Update global state through Zustand
+      // Step 1: Update global state through Zustand - start initialization
       setInitializing(true, null);
-      
-      // Step 1: Initialize platform detection
-      await initializePlatform();
-      console.log('[useAppInitialization] Platform initialized successfully');
-      
-      // Step 2: Initialize storage
-      await initializeStorage();
-      console.log('[useAppInitialization] Storage initialized successfully');
-      
-      // Step 3: Initialize auth provider
+
+      // Step 2: Initialize auth provider
       await auth.initialize();
       console.log('[useAppInitialization] Auth provider initialized successfully');
       
-      // Step 4: Start auth listeners (uses Zustand store directly)
+      // Step 3: Initialize platform detection
+      await initializePlatform();
+      console.log('[useAppInitialization] Platform initialized successfully');
+      
+      // Step 4: Initialize storage
+      await initializeStorage();
+      console.log('[useAppInitialization] Storage initialized successfully');
+      
+      // Step 5: Start auth listeners (they will handle auth state naturally)
       await authListeners.start();
       console.log('[useAppInitialization] Auth listeners started successfully');
       
-      // Step 5: Mark initialization complete
-      initializationState.isInitializing = false;
-      initializationState.isInitialized = true;
-      
-      // Update global state through Zustand
+      // Step 6: Mark initialization complete via Zustand
       setInitializing(false);
       
       console.log('[useAppInitialization] Application fully initialized');
@@ -72,37 +63,25 @@ export const useAppInitialization = (): void => {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Application initialization failed';
       console.error('[useAppInitialization] Initialization failed:', error);
-      initializationState.isInitializing = false;
-      initializationState.initializationError = errorMessage;
       
       // Update global state through Zustand
       setInitializing(false, errorMessage);
     }
   }, [setInitializing]);
 
-  // Initialize app on mount only if not already initialized
+  // Initialize app on mount only if not already initializing
   useEffect(() => {
-    if (!initializationState.isInitialized && !initializationState.isInitializing) {
+    const currentState = useAppStateStore.getState();
+    if (!currentState.isInitializing) {
       initializeApp();
     } else {
-      console.log('[useAppInitialization] Skipping initialization - app already initialized or initializing');
+      console.log('[useAppInitialization] Skipping initialization - app already initializing');
     }
   }, [initializeApp]);
-};
-
-// Singleton to prevent multiple initializations
-let initializationState = {
-  isInitialized: false,
-  isInitializing: false,
-  initializationError: null as string | null,
 };
 
 // Reset function for testing and edge cases
 export function resetInitializationState(): void {
   console.log('[useAppInitialization] Resetting initialization state');
-  initializationState = {
-    isInitialized: false,
-    isInitializing: false,
-    initializationError: null,
-  };
+  useAppStateStore.getState().setInitializing(false, null);
 } 

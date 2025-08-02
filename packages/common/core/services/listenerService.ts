@@ -10,9 +10,8 @@ import { db } from '../adapters/database.adapter';
 import { auth } from '../adapters/auth.adapter';
 import { storage } from '../adapters/platform.storage.adapter';
 import { fetchAndStoreItems } from './itemsService';
-import { initializeUserData } from './userService';
+import { handleUserAuthenticationState, getCurrentUserAsync } from './userService';
 import { useAppStateStore } from '../../hooks/useAppState';
-import { User } from '../types/auth.types';
 
 /**
  * Database Listeners Class
@@ -26,17 +25,31 @@ class DatabaseListeners {
       console.log('[DatabaseListeners] Starting database listeners for user:', userId);
       
       const callbacks = {
-        onUserUpdate: async (userData: User) => {
+        onUserUpdate: async (userData: any) => {
           await storage.updateUserInSecureLocalStorage(userData);
         },
         onItemsUpdate: async () => {
           try {
-            const currentUserId = auth.getCurrentUser()?.uid;
+            console.log('[DatabaseListeners] Items updated in database, checking if user has secret key...');
+            
+            // ✅ Check if user has secret key before processing updates
+            const appState = useAppStateStore.getState();
+            if (!appState.userSecretKeyExist) {
+              console.log('[DatabaseListeners] Skipping items update - user secret key not available yet');
+              return;
+            }
+            
+            const currentUser = await getCurrentUserAsync();
+            const currentUserId = currentUser?.uid;
             if (!currentUserId) {
               console.log('[DatabaseListeners] Skipping items update - auth not ready yet');
               return;
             }
+            
+            console.log('[DatabaseListeners] User has secret key, refreshing local storage and state...');
+            // ✅ Use fetchAndStoreItems to update local storage and global state
             await fetchAndStoreItems(currentUserId);
+            console.log('[DatabaseListeners] Items update processed successfully');
           } catch (error) {
             console.error('[DatabaseListeners] Error processing items update:', error);
           }
@@ -70,6 +83,7 @@ class DatabaseListeners {
  */
 class AuthListeners {
   private isListening: boolean = false;
+  private lastProcessedUserId: string | null = null;
 
   async start(): Promise<void> {
     try {
@@ -86,6 +100,10 @@ class AuthListeners {
               console.log('[AuthListeners] User signed out');
               await this.handleUserSignedOut();
             }
+            
+            // ✅ Set auth as available AFTER processing user state to avoid LOGIN flash
+            useAppStateStore.getState().setAuthIsAvailable(true);
+            console.log('[AuthListeners] Auth state available for routing');
           } catch (error) {
             console.error('[AuthListeners] Error in auth state change:', error);
           }
@@ -104,30 +122,32 @@ class AuthListeners {
 
   private async handleUserAuthenticated(userId: string): Promise<void> {
     try {
+      // Skip if we already processed this user (prevents duplicate work during initialization)
+      if (this.lastProcessedUserId === userId) {
+        console.log('[AuthListeners] Skipping duplicate user authentication for:', userId);
+        return;
+      }
+
       console.log('[AuthListeners] Handling user authentication:', userId);
       
-      // Step 1: Get user data and secret key status
-      const { user, hasSecretKey } = await initializeUserData(userId);
+      // Use common function to handle user authentication state
+      const { success } = await handleUserAuthenticationState(userId);
       
-      if (user) {
-        console.log('[AuthListeners] User authenticated with secret key:', hasSecretKey);
-        
-        // Step 2: Update global state directly via Zustand store
-        useAppStateStore.getState().setUserAndSecretKey(user, hasSecretKey);
-        
-        // Step 3: Start database listeners if user has secret key
-        if (hasSecretKey) {
-          try {
-            await databaseListeners.start(userId);
-          } catch (dbError) {
-            console.error('[AuthListeners] Failed to start database listeners:', dbError);
-          }
+      // ✅ Always start database listeners when user is authenticated
+      // The listeners will check userSecretKeyExist before processing updates
+      if (success) {
+        try {
+          await databaseListeners.start(userId);
+          console.log('[AuthListeners] Database listeners started for user:', userId);
+        } catch (dbError) {
+          console.error('[AuthListeners] Failed to start database listeners:', dbError);
         }
       }
+      
+      // Track processed user to avoid duplicates
+      this.lastProcessedUserId = userId;
     } catch (error) {
       console.error('[AuthListeners] Error handling user authentication:', error);
-      // On error, treat as sign out
-      useAppStateStore.getState().setUserAndSecretKey(null, false);
       throw error;
     }
   }
@@ -142,6 +162,9 @@ class AuthListeners {
       
       // Step 2: Update global state directly via Zustand store
       useAppStateStore.getState().setUserAndSecretKey(null, false);
+      
+      // Step 3: Reset processed user tracking
+      this.lastProcessedUserId = null;
     } catch (error) {
       console.error('[AuthListeners] Error handling user sign out:', error);
       throw error;
@@ -152,6 +175,7 @@ class AuthListeners {
     console.log('[AuthListeners] Stopping authentication listeners');
     auth.stopAuthListeners();
     this.isListening = false;
+    this.lastProcessedUserId = null;
   }
 
   isActive(): boolean {

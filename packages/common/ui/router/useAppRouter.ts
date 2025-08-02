@@ -20,7 +20,7 @@
  * 3. Provide business navigation methods
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useAppStateStore } from '@common/hooks/useAppState';
 import { ROUTES, type AppRoute } from './ROUTES';
 import type { User } from '@common/core/types/auth.types';
@@ -66,6 +66,7 @@ export const useAppRouter = ({
   const initializationError = useAppStateStore(state => state.initializationError);
   const user = useAppStateStore(state => state.user);
   const userSecretKeyExist = useAppStateStore(state => state.userSecretKeyExist);
+  const authIsAvailable = useAppStateStore(state => state.authIsAvailable); // ✅ NEW
 
   // System route state
   const [currentRoute, setCurrentRoute] = useState<AppRoute>(ROUTES.LOADING);
@@ -74,40 +75,45 @@ export const useAppRouter = ({
   const [routeHistory, setRouteHistory] = useState<{ route: AppRoute; params?: Record<string, any> }[]>([{ route: ROUTES.LOADING }]);
   const [routeParams, setRouteParams] = useState<Record<string, any>>({});
   const [lockReason, setLockReason] = useState<LockReason | undefined>();
-
-  // Track previous app state to prevent unnecessary updates
-  const previousAppStateRef = useRef<{
-    isInitializing: boolean;
-    user: User | null;
-    userSecretKeyExist: boolean;
-  } | null>(null);
+  
+  // ✅ NEW: Track if we're in business navigation mode
+  const [isBusinessNavigation, setIsBusinessNavigation] = useState(false);
 
   /**
    * Step 1: Determine system route based on core app states
    * This is automatic routing based on initialization and authentication state
    */
   const determineSystemRoute = useCallback((): AppRoute => {
+    // Get the latest state directly from Zustand to avoid stale closures
+    const latestState = useAppStateStore.getState();
+    
     console.log('[useAppRouter] Determining system route from core states:', {
-      isInitializing,
-      hasUser: !!user,
-      hasSecretKey: userSecretKeyExist,
-      userId: user?.id
+      isInitializing: latestState.isInitializing,
+      authIsAvailable: latestState.authIsAvailable, // ✅ NEW
+      hasUser: !!latestState.user,
+      hasSecretKey: latestState.userSecretKeyExist,
+      userId: latestState.user?.id
     });
     
-    // Priority 1: App is initializing
-    if (isInitializing) {
+    // Priority 1: App is initializing OR auth not available yet
+    if (latestState.isInitializing) {
       console.log('[useAppRouter] System route: LOADING (app initializing)');
       return ROUTES.LOADING;
     }
     
-    // Priority 2: No user authenticated
-    if (!user) {
+    if (!latestState.authIsAvailable) {
+      console.log('[useAppRouter] System route: LOADING (auth not available yet)');
+      return ROUTES.LOADING;
+    }
+    
+    // Priority 2: No user authenticated (after initialization is complete)
+    if (!latestState.user) {
       console.log('[useAppRouter] System route: LOGIN (no user)');
       return ROUTES.LOGIN;
     }
     
     // Priority 3: User exists but no secret key
-    if (!userSecretKeyExist) {
+    if (!latestState.userSecretKeyExist) {
       console.log('[useAppRouter] System route: LOCK (user secret key missing)');
       return ROUTES.LOCK;
     }
@@ -115,44 +121,31 @@ export const useAppRouter = ({
     // Priority 4: User fully authenticated with secret key
     console.log('[useAppRouter] System route: HOME (user fully authenticated)');
     return ROUTES.HOME;
-  }, [isInitializing, user, userSecretKeyExist]);
+  }, []); // No dependencies needed since we get state directly
 
   /**
-   * Step 2: Check if system state has changed
-   * Only update route if relevant system state changed
-   */
-  const hasSystemStateChanged = useCallback((currentState: {
-    isInitializing: boolean;
-    user: User | null;
-    userSecretKeyExist: boolean;
-  }, previousState: typeof currentState | null): boolean => {
-    if (!previousState) return true;
-    
-    // Check if any core state changed
-    return (
-      currentState.isInitializing !== previousState.isInitializing ||
-      currentState.user?.id !== previousState.user?.id ||
-      currentState.userSecretKeyExist !== previousState.userSecretKeyExist
-    );
-  }, []);
-
-  /**
-   * Step 3: Update system route when app state changes
+   * Step 2: Update system route when app state changes
    * This is automatic - no manual intervention needed
+   * Only runs when NOT in business navigation mode
    */
-  useEffect(() => {
-    const currentAppState = { isInitializing, user, userSecretKeyExist };
-    const hasChanged = hasSystemStateChanged(currentAppState, previousAppStateRef.current);
-    
-    if (!hasChanged) {
-      console.log('[useAppRouter] No system state change, skipping route update');
-      return;
-    }
-
-    console.log('[useAppRouter] System state changed, updating route');
-    previousAppStateRef.current = currentAppState;
-    
+  useEffect(() => {    
     const newSystemRoute = determineSystemRoute();
+    
+    // ✅ Exit business navigation mode if system state changes significantly
+    if (isBusinessNavigation) {
+      const latestState = useAppStateStore.getState();
+      const hasUserChanged = !latestState.user; // User logged out
+      const hasSecretKeyChanged = !latestState.userSecretKeyExist; // Secret key lost
+      const hasAuthChanged = !latestState.authIsAvailable; // Auth became unavailable
+      
+      if (hasUserChanged || hasSecretKeyChanged || hasAuthChanged) {
+        console.log('[useAppRouter] System state changed significantly, exiting business navigation mode');
+        setIsBusinessNavigation(false);
+      } else {
+        console.log('[useAppRouter] Skipping system route update - in business navigation mode');
+        return;
+      }
+    }
     
     // Only change route if system route actually changed
     if (newSystemRoute !== currentRoute) {
@@ -165,17 +158,19 @@ export const useAppRouter = ({
       if (newSystemRoute !== ROUTES.LOCK) {
         setLockReason(undefined);
       }
-    } else {
-      console.log('[useAppRouter] No system route change needed');
     }
-  }, [isInitializing, user, userSecretKeyExist, determineSystemRoute, currentRoute, hasSystemStateChanged]);
+  }, [isInitializing, authIsAvailable, user, userSecretKeyExist, currentRoute, determineSystemRoute, isBusinessNavigation]); // ✅ Added isBusinessNavigation
 
   /**
-   * Step 4: Business navigation methods
+   * Step 3: Business navigation methods
    * These are for explicit business logic navigation (forms, details, etc.)
    */
   const navigateTo = useCallback((route: AppRoute, params?: Record<string, any>) => {
     console.log('[useAppRouter] Business navigation to:', route, 'params:', params);
+    
+    // ✅ Set business navigation mode
+    setIsBusinessNavigation(true);
+    
     setCurrentRoute(route);
     setRouteHistory(prev => [...prev, { route, params }]);
     setRouteParams(params || {});
@@ -188,6 +183,10 @@ export const useAppRouter = ({
 
   const navigateToLock = useCallback((reason: LockReason) => {
     console.log('[useAppRouter] Business navigation to LOCK with reason:', reason);
+    
+    // ✅ Set business navigation mode
+    setIsBusinessNavigation(true);
+    
     setCurrentRoute(ROUTES.LOCK);
     setRouteHistory(prev => [...prev, { route: ROUTES.LOCK }]);
     setRouteParams({});
@@ -200,6 +199,10 @@ export const useAppRouter = ({
       const newHistory = routeHistory.slice(0, -1);
       const previous = newHistory[newHistory.length - 1];
       console.log('[useAppRouter] Going back to:', previous.route);
+      
+      // ✅ Set business navigation mode
+      setIsBusinessNavigation(true);
+      
       setRouteHistory(newHistory);
       setCurrentRoute(previous.route);
       setRouteParams(previous.params || {});
@@ -214,6 +217,10 @@ export const useAppRouter = ({
 
   const resetToHome = useCallback(() => {
     console.log('[useAppRouter] Business navigation: resetToHome');
+    
+    // ✅ Set business navigation mode
+    setIsBusinessNavigation(true);
+    
     setCurrentRoute(ROUTES.HOME);
     setRouteHistory([{ route: ROUTES.HOME }]);
     setRouteParams({});

@@ -151,13 +151,6 @@ const {
 } = useAccount();
 ```
 
-#### `useRefreshData`
-Provides simple interface for data refresh operations (2 steps).
-
-```typescript
-const { refreshData, refresh, isLoading } = useRefreshData();
-```
-
 #### `useManualRefresh`
 Provides manual refresh functionality for UI components (5 steps).
 
@@ -198,18 +191,6 @@ const {
 } = usePasswordGenerator();
 ```
 
-#### `useHelperBar`
-Handles navigation and button text based on current page (4 steps).
-
-```typescript
-const { 
-  addButtonText, 
-  handleAdd, 
-  handleFAQ, 
-  handleRefresh 
-} = useHelperBar(currentPage);
-```
-
 #### `useInputLogic`
 Handles password visibility, content size, and strength calculations (4 steps).
 
@@ -237,12 +218,7 @@ const {
 } = useLazyCredentialIcon(url, title);
 ```
 
-#### `useToast`
-Provides access to toast notifications.
 
-```typescript
-const { showToast } = useToast();
-```
 
 
 

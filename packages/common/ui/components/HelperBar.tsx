@@ -25,8 +25,8 @@ export const HelperBar: React.FC<HelperBarProps> = ({ category }) => {
   const themeColors = getColors(mode);
   const router = useAppRouterContext();
   
-  // Get button text based on category
-  const getAddButtonText = () => {
+  // Step 1: Get button text based on category (moved from useHelperBar hook)
+  const getAddButtonText = React.useCallback(() => {
     switch (category) {
       case CATEGORIES.CREDENTIALS:
         return 'Ajouter un identifiant';
@@ -37,7 +37,7 @@ export const HelperBar: React.FC<HelperBarProps> = ({ category }) => {
       default:
         return 'Ajouter';
     }
-  };
+  }, [category]);
 
   // User interaction handlers - simplified for category-based navigation
   const handleAdd = React.useCallback(() => {

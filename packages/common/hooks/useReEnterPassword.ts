@@ -13,6 +13,7 @@ import { db } from '../core/adapters/database.adapter';
 import { decryptItem } from '../core/services/cryptoService';
 import { ItemEncrypted } from '../core/types/items.types';
 import { useAppStateStore } from './useAppState';
+import { getCurrentUserAsync } from '@common/core/services/userService';
 
 export const useReEnterPassword = () => {
   // Initialize UI state
@@ -26,7 +27,7 @@ export const useReEnterPassword = () => {
   const validateSecretKey = async (userSecretKey: string): Promise<boolean> => {
     try {
       // Step 1.1: Get current user through auth adapter
-      const currentUser = auth.getCurrentUser();
+      const currentUser = await getCurrentUserAsync();
       if (!currentUser) {
         throw new Error('User not authenticated');
       }

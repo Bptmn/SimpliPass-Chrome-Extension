@@ -9,14 +9,16 @@ import { User } from '../types/auth.types';
 import { db } from '../adapters/database.adapter';
 import { storage } from '../adapters/platform.storage.adapter';
 import { auth } from '../adapters/auth.adapter';
+import { useAppStateStore } from '../../hooks/useAppState';
+import { User as FirebaseUser } from 'firebase/auth';
 
 /**
  * Get current user from database
  */
 export async function getCurrentUser(): Promise<User | null> {
   try {
-    // Get current user ID from auth
-    const currentUser = auth.getCurrentUser();
+    // Get current user ID from auth using async method
+    const currentUser = await getCurrentUserAsync();
     if (!currentUser) {
       return null;
     }
@@ -47,6 +49,35 @@ export async function getCurrentUser(): Promise<User | null> {
 }
 
 /**
+ * Get current authenticated user ID with async waiting for auth state
+ */
+export async function getCurrentUserAsync(): Promise<FirebaseUser | null> {
+  // Wait for auth state to be fully stable first
+  await waitForAuthStateStable();
+  
+  // Now get the current user
+  return auth.getCurrentUser();
+}
+
+/**
+ * Wait for auth state to be fully stable (business logic moved from adapter)
+ */
+export async function waitForAuthStateStable(): Promise<void> {
+  
+  // Use onAuthStateChanged to wait for auth state to be fully loaded - onAuthStateChanged only fires when Firebase has completed loading
+  await new Promise<void>((resolve) => {
+    auth.onAuthStateChanged((_user: FirebaseUser | null) => {
+      console.log('[UserService] onAuthStateChanged fired, auth state is now stable');
+      resolve();
+    }).then((unsubscribe) => {
+      // Store unsubscribe function for cleanup if needed
+      (waitForAuthStateStable as any)._unsubscribe = unsubscribe;
+    });
+  });
+  
+}
+
+/**
  * Check if user has secret key stored
  */
 export async function checkUserSecretKey(): Promise<boolean> {
@@ -62,8 +93,8 @@ export async function checkUserSecretKey(): Promise<boolean> {
 /**
  * Get current authenticated user ID
  */
-export function getCurrentUserId(): string | null {
-  const currentUser = auth.getCurrentUser();
+export async function getCurrentUserId(): Promise<string | null> {
+  const currentUser = await getCurrentUserAsync();
   return currentUser?.uid || null;
 }
 
@@ -86,6 +117,42 @@ export async function initializeUserData(_userId: string): Promise<{
   } catch (error) {
     console.error('[UserService] Failed to initialize user data:', error);
     throw error;
+  }
+}
+
+/**
+ * Common function to handle user authentication state updates
+ * Used by both useAppInitialization and AuthListeners to avoid code duplication
+ */
+export async function handleUserAuthenticationState(userId: string): Promise<{
+  user: User | null;
+  hasSecretKey: boolean;
+  success: boolean;
+}> {
+  try {
+    console.log('[UserService] Handling user authentication state for:', userId);
+    
+    // Step 1: Get user data and secret key status
+    const { user, hasSecretKey } = await initializeUserData(userId);
+    
+    if (user) {
+      console.log('[UserService] User authenticated with secret key:', hasSecretKey);
+      
+      // Step 2: Update global state directly via Zustand store
+      useAppStateStore.getState().setUserAndSecretKey(user, hasSecretKey);
+      
+      return { user, hasSecretKey, success: true };
+    } else {
+      console.log('[UserService] No user data found for:', userId);
+      useAppStateStore.getState().setUserAndSecretKey(null, false);
+      return { user: null, hasSecretKey: false, success: false };
+    }
+    
+  } catch (error) {
+    console.error('[UserService] Error handling user authentication state:', error);
+    // On error, treat as no user
+    useAppStateStore.getState().setUserAndSecretKey(null, false);
+    return { user: null, hasSecretKey: false, success: false };
   }
 }
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { checkPasswordStrength } from '@common/utils/checkPasswordStrength';
 import { passwordGenerator } from '@common/utils/passwordGenerator';
-import { useToast } from './useToast';
+import { useToast } from '@common/ui/components/Toast';
 
 /**
  * Hook for password generator UI state management

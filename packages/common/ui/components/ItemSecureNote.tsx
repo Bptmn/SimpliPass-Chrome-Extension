@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { SecureNoteDecrypted } from '@common/core/types/types';
+import { SecureNoteDecrypted } from '@common/core/types/items.types';
 import { getColors } from '@ui/design/colors';
 import { spacing } from '@ui/design/layout';
 import { useThemeMode } from '@common/ui/design/theme';
@@ -26,7 +26,6 @@ const ItemSecureNote: React.FC<ItemSecureNoteProps> = ({ note, onPress }) => {
         borderRadius: 20,
         flexDirection: 'row',
         height: 50,
-        marginBottom: spacing.sm,
         maxWidth: 500,
         paddingLeft: spacing.md,
         paddingRight: spacing.md,

@@ -6,71 +6,73 @@
  */
 
 import { useState } from 'react';
-import { useRefreshData } from './useRefreshData';
-import { refreshUserInfo } from '../core/services/userService';
-import { auth } from '../core/adapters/auth.adapter';
+import { refreshUserInfo, getCurrentUserAsync } from '@common/core/services/userService';
+import { fetchAndStoreItems } from '@common/core/services/itemsService';
+import { useAppStateStore } from './useAppState';
 
 export const useManualRefresh = () => {
-  // Step 1: Initialize UI state
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { refreshData } = useRefreshData();
+  const { user: _user } = useAppStateStore();
 
-  // Step 2: Refresh all data (user + vault)
   const refreshAllData = async () => {
     setIsRefreshing(true);
     setError(null);
-
+    
     try {
-      console.log('[useManualRefresh] Starting manual refresh...');
-
-      // Step 2.1: Get current user ID through auth adapter
-      const currentUser = auth.getCurrentUser();
+      // Step 1: Get current user ID through auth adapter
+      const currentUser = await getCurrentUserAsync();
       if (!currentUser) {
         throw new Error('No authenticated user found');
       }
-
-      // Step 2.2: Refresh user info
-      const refreshedUser = await refreshUserInfo(currentUser.uid);
-      console.log('[useManualRefresh] User info refreshed:', refreshedUser ? 'success' : 'failed');
-
-      // Step 2.3: Refresh vault data
-      await refreshData();
-      console.log('[useManualRefresh] Vault data refreshed');
-
-      console.log('[useManualRefresh] Manual refresh completed successfully');
-
+      
+      const userId = currentUser.uid;
+      console.log('[useManualRefresh] Refreshing all data for user:', userId);
+      
+      // Step 2: Refresh user info
+      const refreshedUser = await refreshUserInfo(userId);
+      if (!refreshedUser) {
+        throw new Error('Failed to refresh user info');
+      }
+      
+      // Step 3: Refresh items
+      await fetchAndStoreItems(userId);
+      
+      console.log('[useManualRefresh] All data refreshed successfully');
+      
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Manual refresh failed';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to refresh data';
+      console.error('[useManualRefresh] Refresh failed:', errorMessage);
       setError(errorMessage);
-      console.error('[useManualRefresh] Manual refresh failed:', err);
-      throw err;
     } finally {
       setIsRefreshing(false);
     }
   };
 
-  // Step 3: Refresh user data only
   const refreshUserOnly = async () => {
     setIsRefreshing(true);
     setError(null);
-
+    
     try {
-      console.log('[useManualRefresh] Starting user-only refresh...');
-
-      const currentUser = auth.getCurrentUser();
+      const currentUser = await getCurrentUserAsync();
       if (!currentUser) {
         throw new Error('No authenticated user found');
       }
-
-      const refreshedUser = await refreshUserInfo(currentUser.uid);
-      console.log('[useManualRefresh] User info refreshed:', refreshedUser ? 'success' : 'failed');
-
+      
+      const userId = currentUser.uid;
+      console.log('[useManualRefresh] Refreshing user info for user:', userId);
+      
+      const refreshedUser = await refreshUserInfo(userId);
+      if (!refreshedUser) {
+        throw new Error('Failed to refresh user info');
+      }
+      
+      console.log('[useManualRefresh] User info refreshed successfully');
+      
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'User refresh failed';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to refresh user info';
+      console.error('[useManualRefresh] User refresh failed:', errorMessage);
       setError(errorMessage);
-      console.error('[useManualRefresh] User refresh failed:', err);
-      throw err;
     } finally {
       setIsRefreshing(false);
     }
@@ -84,7 +86,7 @@ export const useManualRefresh = () => {
     try {
       console.log('[useManualRefresh] Starting vault-only refresh...');
 
-      await refreshData();
+      await refreshAllData();
       console.log('[useManualRefresh] Vault data refreshed');
 
     } catch (err) {

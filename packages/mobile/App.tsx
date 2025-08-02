@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { View, Text } from 'react-native';
 import { AppRouterProvider, AppRouterView, useAppRouter } from '@common/ui/router';
 import { useAppInitialization } from '@common/hooks/useAppInitialization';
 import { useAuthState } from '@common/hooks/useAuthState';
@@ -25,16 +26,16 @@ export default function App() {
   // Show loading state while initializing
   if (state.isInitializing) {
     return (
-      <div style={{ 
+      <View style={{ 
         display: 'flex', 
         justifyContent: 'center', 
         alignItems: 'center', 
         height: '100vh',
-        fontSize: '16px',
-        color: '#666'
       }}>
-        Initializing SimpliPass...
-      </div>
+        <Text style={{ fontSize: '16px', color: '#666' }}>
+          Initializing SimpliPass...
+        </Text>
+      </View>
     );
   }
 

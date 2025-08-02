@@ -17,6 +17,7 @@ These rules define the architectural, structural, and functional constraints for
 - Keep code production-grade. Never use placeholder logic or fake data.
 - Hooks must be concise, clear, commented
 - When making changes, ensure that non obselete code is removed
+- Always think about potential bad side effect a change could have
 
 ---
 
