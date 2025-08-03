@@ -1,8 +1,8 @@
 # SimpliPass Core Package
 
-This package contains the core business logic for SimpliPass, implementing a clean three-layer architecture pattern.
+This package contains the core business logic for SimpliPass, implementing a clean three-layer architecture pattern that ensures maximum code reuse and maintainability.
 
-## Architecture Overview
+## 🏗️ Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -14,45 +14,65 @@ This package contains the core business logic for SimpliPass, implementing a cle
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Layer Structure
+## 📁 Layer Structure
 
 ### Layer 1: Hooks (UI Layer)
-**Location**: `packages/app/core/hooks/`
-**Purpose**: Handle UI state and user interactions
+**Location**: `packages/common/hooks/`
+**Purpose**: Pure UI state management and user interactions
 
 **Characteristics**:
 - Simple, readable functions
-- Handle loading states and errors
+- Handle UI state only (no business logic)
 - Abstract complexity from components
-- Always return data from memory (Zustand states)
+- Always return stable, typed results for UI consumption
 
 **Key Hooks**:
-- `useLoginFlow` - Handle login flow with error handling
-- `useRefreshData` - Refresh data from external sources
-- `useCredentials` - Manage credential operations
-- `useSecretKeyCheck` - Check user authentication status
+- `useCardForm` - Card form orchestration with validation and formatting
+- `useCredentialForm` - Credential form orchestration with validation
+- `useClipboard` - Clipboard operations with toast integration
+- `usePasswordVisibility` - Password visibility toggle state
+- `useContentSize` - Dynamic input height management
+- `useFormState` - Generic form state management
+- `useFormValidation` - Validation integration with services
 
 ### Layer 2: Services (Business Logic Layer)
-**Location**: `packages/app/core/services/`
-**Purpose**: Orchestrate complex business logic
+**Location**: `packages/common/core/services/`
+**Purpose**: Business logic orchestration, validation, formatting, and data transformation
 
 **Characteristics**:
-- Handle complex operations
+- Handle complex business operations
+- Implement validation rules
+- Format and transform data
 - Coordinate between multiple libraries
-- Implement business rules
 - Handle error transformation
 
 **Key Services**:
-- `auth.ts` - Authentication operations
-- `cryptography.ts` - Encryption/decryption operations
-- `items.ts` - Item management (credentials, bank cards, notes)
-- `vault.ts` - Vault storage and synchronization
-- `states.ts` - State management operations
-- `session.ts` - Session management
+- `validationService.ts` - Comprehensive validation for all item types
+  - `cardValidationService` - Bank card validation (Luhn algorithm, CVV, expiration)
+  - `credentialValidationService` - Credential validation (email, password, URL)
+  - `secureNoteValidationService` - Secure note validation
+  - `commonValidationService` - Generic validation utilities
 
-### Layer 3: Libraries & Adapters (External Integration Layer)
-**Location**: `packages/app/core/libraries/`
-**Purpose**: Handle external APIs and platform-specific operations
+- `formattingService.ts` - Data formatting and transformation
+  - `cardFormattingService` - Card number formatting, masking, card type detection
+  - `dateFormattingService` - Date formatting utilities
+  - `textFormattingService` - Text formatting, capitalization, truncation
+  - `displayFormattingService` - Display utilities (file size, currency, password strength)
+
+- `formTransformationService.ts` - Form data transformation
+  - `cardFormTransformationService` - Card form to item transformation
+  - `credentialFormTransformationService` - Credential form to item transformation
+  - `secureNoteFormTransformationService` - Secure note form to item transformation
+
+- `itemsService.ts` - Item management operations
+- `userService.ts` - User management operations
+- `secretsService.ts` - Secret key management
+- `vaultService.ts` - Vault operations
+- `listenerService.ts` - Real-time data listeners
+
+### Layer 3: Libraries & Adapters (Integration Layer)
+**Location**: `packages/common/core/libraries/` and `packages/common/core/adapters/`
+**Purpose**: Low-level integration with external APIs, platform-specific calls, and utilities
 
 **Characteristics**:
 - Handle external API calls
@@ -62,107 +82,123 @@ This package contains the core business logic for SimpliPass, implementing a cle
 
 **Key Libraries**:
 - `auth/` - Authentication providers (Cognito, Firebase)
-- `crypto/` - Cryptographic operations
-- `database/` - Database operations (Firestore)
-- `platform/` - Platform adapters (mobile, extension)
+  - `auth.ts` - Authentication operations
+  - `cognito.ts` - AWS Cognito integration
+  - `firebase.ts` - Firebase authentication
+  - `config.ts` - Authentication configuration
 
-## State Management
+- `database/` - Database operations
+  - `firestore.ts` - Firestore database operations
+  - `mock_database.ts` - Mock database for testing
 
-**Location**: `packages/app/core/states/`
-**Purpose**: Centralized state management using Zustand
+- `crypto/` - Cryptographic utilities
+  - Built-in crypto operations for encryption/decryption
 
-**Key States**:
-- `auth.state.ts` - Authentication state
-- `credentials.state.ts` - Credentials state
-- `bankCards.state.ts` - Bank cards state
-- `secureNotes.state.ts` - Secure notes state
-- `user.state.ts` - User state
+**Key Adapters**:
+- `auth.adapter.ts` - Authentication adapter interface
+- `database.adapter.ts` - Database adapter interface
+- `platform.adapter.ts` - Platform-specific adapter interface
+- `platform.storage.adapter.ts` - Secure storage adapter interface
 
-## Type Definitions
+## 🔄 Data Flow Examples
 
-**Location**: `packages/app/core/types/`
-**Purpose**: TypeScript type definitions for the entire application
-
-**Key Types**:
-- `auth.types.ts` - Authentication types
-- `items.types.ts` - Item types (credentials, bank cards, notes)
-- `platform.types.ts` - Platform adapter types
-- `errors.types.ts` - Error handling types
-- `shared.types.ts` - Shared utility types
-
-## Data Flow
-
-### Authentication Flow
+### Card Form Flow
 ```
-UI Component → useLoginFlow → loginUser Service → Cognito/Firebase Libraries
+UI Component → useCardForm → validationService → formattingService → formTransformationService → itemsService → database.adapter
 ```
 
-### Data Refresh Flow
+### Credential Form Flow
 ```
-UI Component → useRefreshData → getAllItems Service → Firestore Library → States
-```
-
-### Item Management Flow
-```
-UI Component → useCredentials → addCredential Service → Crypto Library → Firestore Library
+UI Component → useCredentialForm → validationService → formTransformationService → itemsService → crypto → database.adapter
 ```
 
-## Error Handling
+### Copy Operation Flow
+```
+UI Component → useClipboard → platform.adapter → Toast notification
+```
+
+## 🛡️ Error Handling
 
 The core package implements a comprehensive error handling system:
 
-- **SimpliPassError** - Base error class
+- **SimpliPassError** - Base error class with layer information
 - **AuthenticationError** - Authentication-related errors
-- **CryptographyError** - Encryption/decryption errors
+- **ValidationError** - Form validation errors
+- **FormattingError** - Data formatting errors
+- **TransformationError** - Data transformation errors
 - **NetworkError** - Network-related errors
 - **VaultError** - Vault operation errors
 
-## Testing Strategy
+## 🧪 Testing Strategy
 
 Each layer has specific testing requirements:
 
 - **Hooks**: Test UI state management and error handling
-- **Services**: Test business logic orchestration
+- **Services**: Test business logic orchestration and validation
 - **Libraries**: Test external API integrations
-- **States**: Test state updates and persistence
+- **Adapters**: Test platform-specific implementations
 
-## Usage Examples
+## 📝 Usage Examples
 
-### Using a Hook
+### Using a Form Hook
 ```typescript
-import { useLoginFlow } from '@common/core/hooks/useLoginFlow';
+import { useCardForm } from '@common/hooks/useCardForm';
 
-const { login, isLoading, error } = useLoginFlow();
+const { 
+  formData, 
+  errors, 
+  isSubmitting, 
+  handleFieldChange, 
+  handleSubmit 
+} = useCardForm();
 
-const handleLogin = async () => {
-  await login(email, password);
+const handleCardNumberChange = (value: string) => {
+  handleFieldChange('cardNumber', value);
 };
 ```
 
 ### Using a Service
 ```typescript
-import { loginUser } from '@common/core/services/auth';
+import { cardValidationService } from '@common/core/services/validationService';
 
-const result = await loginUser(email, password);
+const validationResult = cardValidationService.validateCardNumber('4111111111111111');
+if (!validationResult.isValid) {
+  console.error(validationResult.error);
+}
 ```
 
-### Using a Library
+### Using a Formatting Service
 ```typescript
-import { getPlatformAdapter } from '@common/core/libraries/platform';
+import { cardFormattingService } from '@common/core/services/formattingService';
+
+const formattedNumber = cardFormattingService.formatCardNumber('4111111111111111');
+// Returns: "4111 1111 1111 1111"
+```
+
+### Using an Adapter
+```typescript
+import { getPlatformAdapter } from '@common/core/adapters/platform.adapter';
 
 const adapter = await getPlatformAdapter();
 const secretKey = await adapter.getUserSecretKey();
 ```
 
-## Development Guidelines
+## 🏛️ Architecture Principles
 
-1. **Layer Separation**: Never call libraries directly from hooks
-2. **Error Handling**: Always use custom error classes
-3. **Type Safety**: Use strict TypeScript types throughout
-4. **Testing**: Write tests for each layer independently
-5. **Documentation**: Document all public APIs
+### Design Principles
+- **Separation of Concerns**: Each layer has a single responsibility
+- **Dependency Inversion**: Higher layers depend on abstractions, not implementations
+- **Code Reuse**: Shared services and hooks across platforms
+- **Testability**: Isolated business logic for easy testing
+- **Maintainability**: Clear patterns and consistent structure
 
-## Platform Support
+### Layer Rules
+1. **Hooks**: Only manage UI state, call services for business logic
+2. **Services**: Contain business logic, call adapters for external operations
+3. **Libraries/Adapters**: Handle external APIs and platform-specific code
+4. **No Cross-Layer Dependencies**: Hooks never call libraries directly
+
+## 🌐 Platform Support
 
 The core package is designed to work across multiple platforms:
 
@@ -170,4 +206,17 @@ The core package is designed to work across multiple platforms:
 - **Extension** (Chrome Extension) - Browser extension
 - **Web** (React) - Web application
 
-Platform-specific code is isolated in the libraries layer through adapters. 
+Platform-specific code is isolated in the adapters layer, ensuring 90%+ code reuse across platforms.
+
+## 📚 Development Guidelines
+
+1. **Layer Separation**: Never call libraries directly from hooks
+2. **Business Logic**: Always place business logic in services
+3. **Error Handling**: Always use custom error classes with layer information
+4. **Type Safety**: Use strict TypeScript types throughout
+5. **Testing**: Write tests for each layer independently
+6. **Documentation**: Document all public APIs with clear examples
+
+---
+
+**SimpliPass Core**: The foundation of secure, cross-platform password management with clean architecture. 

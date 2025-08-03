@@ -1,3 +1,12 @@
+// CredentialDetailsPage.tsx
+// This component renders the details view for a credential.
+// Responsibilities:
+// - Display credential details in a readable format
+// - Use useClipboard hook for copy operations
+// - Use usePasswordVisibility hook for password display
+// - Handle edit and delete actions
+// - Display confirmation dialogs
+
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { CredentialDecrypted } from '@common/core/types/types';
@@ -14,9 +23,11 @@ import { Button } from '@ui/components/Buttons';
 import { DetailField } from '@ui/components/DetailField';
 import { MoreInfo } from '@ui/components/MoreInfo';
 import CopyButton from '@ui/components/CopyButton';
-
 import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+import { useClipboard } from '@common/hooks/useClipboard';
+import { usePasswordVisibility } from '@common/hooks/usePasswordVisibility';
+import { textFormattingService } from '@common/core/services/formattingService';
 
 interface CredentialDetailsPageProps {
   credential: CredentialDecrypted;
@@ -33,12 +44,11 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   const router = useAppRouterContext();
   const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { showToast } = useToast();
-
-
+  const { copyToClipboard } = useClipboard();
+  const { isPasswordVisible, togglePasswordVisibility } = usePasswordVisibility();
 
   const handleEdit = () => {
     router.navigateTo(ROUTES.MODIFY_CREDENTIAL, { credential });
@@ -46,7 +56,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
 
   const handleLaunch = (url: string) => {
     try {
-      const normalizedUrl = url.match(/^https?:\/\//i) ? url : `https://${url}`;
+      const normalizedUrl = textFormattingService.normalizeUrl(url);
       window.open(normalizedUrl, '_blank');
     } catch {
       setError("Erreur lors de l'ouverture du lien.");
@@ -70,6 +80,18 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCopyUsername = () => {
+    copyToClipboard(credential.username, "Nom d'utilisateur copié !");
+  };
+
+  const handleCopyPassword = () => {
+    copyToClipboard(credential.password, "Mot de passe copié !");
+  };
+
+  const handleCopyNote = () => {
+    copyToClipboard(credential.note, "Note copiée !");
   };
 
   return (
@@ -127,7 +149,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
               <CopyButton
                 textToCopy={credential.username}
                 ariaLabel="Copier le nom d'utilisateur"
-                onClick={() => showToast("Nom d'utilisateur copié !")}
+                onClick={handleCopyUsername}
               >
                 <Text>copier</Text>
               </CopyButton>
@@ -139,13 +161,13 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
             <View style={styles.fieldLeft}>
               <Text style={styles.fieldLabel}>Mot de passe :</Text>
               <View style={styles.passwordRow}>
-                <Text style={styles.fieldValue}>{showPassword ? credential.password : '••••••••'}</Text>
+                <Text style={styles.fieldValue}>{isPasswordVisible ? credential.password : '••••••••'}</Text>
                 <Pressable
                   style={styles.eyeBtn}
-                  onPress={() => setShowPassword((v) => !v)}
-                  accessibilityLabel={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                  onPress={togglePasswordVisibility}
+                  accessibilityLabel={isPasswordVisible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                 >
-                  <Icon name={showPassword ? 'visibilityOff' : 'visibility'} size={22} color={themeColors.tertiary} />
+                  <Icon name={isPasswordVisible ? 'visibilityOff' : 'visibility'} size={22} color={themeColors.tertiary} />
                 </Pressable>
               </View>
             </View>
@@ -153,7 +175,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
               <CopyButton
                 textToCopy={credential.password}
                 ariaLabel="Copier le mot de passe"
-                onClick={() => showToast("Mot de passe copié !")}
+                onClick={handleCopyPassword}
               >
                 <Text>copier</Text>
               </CopyButton>
@@ -174,7 +196,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
           label="Note :"
           value={credential.note}
           showCopyButton={true}
-          onCopy={() => showToast("Note copiée !")}
+          onCopy={handleCopyNote}
           ariaLabel="Copier la note"
         />
 
@@ -199,7 +221,6 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
             style={{ flex: 1, maxWidth: 135 }}
           />
         </View>
-
         {/* Expandable meta info */}
         <MoreInfo
           lastUseDateTime={credential.lastUseDateTime}

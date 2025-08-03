@@ -7,6 +7,7 @@ import { radius } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { Icon } from './Icon';
 import { useInputLogic } from '@common/hooks/useInputLogic';
+import { displayFormattingService } from '@common/core/services/formattingService';
 
 // --- Input classique ---
 interface InputProps {
@@ -188,17 +189,7 @@ export const InputPasswordStrength: React.FC<InputPasswordStrengthProps> = ({
   const themeColors = getColors(mode);
 
   const getStrengthColor = () => {
-    switch (strength) {
-      case 'weak':
-        return themeColors.error;
-      case 'average':
-        return themeColors.warning;
-      case 'strong':
-      case 'perfect':
-        return themeColors.secondary;
-      default:
-        return themeColors.secondary;
-    }
+    return displayFormattingService.getPasswordStrengthColor(strength, themeColors);
   };
 
   // Dynamic styles

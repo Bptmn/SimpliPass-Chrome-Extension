@@ -1,3 +1,10 @@
+// CopyButton.tsx
+// This component renders a copy button for copying text to clipboard.
+// Responsibilities:
+// - Display copy button with icon and text
+// - Use useClipboard hook for clipboard operations
+// - Handle copy feedback and errors
+
 import React from 'react';
 import { View, Text, Pressable, Alert } from 'react-native';
 import { Icon } from './Icon';
@@ -5,6 +12,7 @@ import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { radius, spacing } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
+import { useClipboard } from '@common/hooks/useClipboard';
 
 interface CopyButtonProps {
   textToCopy: string;
@@ -16,13 +24,12 @@ interface CopyButtonProps {
 const CopyButton: React.FC<CopyButtonProps> = ({ textToCopy, ariaLabel = 'Copier', children, onClick }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const { copyToClipboard } = useClipboard();
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(textToCopy);
+      await copyToClipboard(textToCopy, 'Copié !');
       if (onClick) onClick();
-      // Optionally, show a feedback (can be improved)
-      Alert.alert('Copié !');
     } catch {
       Alert.alert('Erreur lors de la copie');
     }

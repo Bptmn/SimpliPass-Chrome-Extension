@@ -1,3 +1,11 @@
+// BankCardDetailsPage.tsx
+// This component renders the details view for a bank card.
+// Responsibilities:
+// - Display card details in a readable format
+// - Use useClipboard hook for copy operations
+// - Handle edit and delete actions
+// - Display confirmation dialogs
+
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { BankCardDecrypted } from '@common/core/types/types';
@@ -14,9 +22,10 @@ import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
 import { DetailField } from '@ui/components/DetailField';
 import { MoreInfo } from '@ui/components/MoreInfo';
-
 import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+import { useClipboard } from '@common/hooks/useClipboard';
+import { cardFormattingService } from '@common/core/services/formattingService';
 
 interface BankCardDetailsPageProps {
   card: BankCardDecrypted;
@@ -36,8 +45,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { showToast } = useToast();
-
-
+  const { copyToClipboard } = useClipboard();
 
   const handleEdit = () => {
     router.navigateTo(ROUTES.MODIFY_BANK_CARD, { bankCard: card });
@@ -66,6 +74,24 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
     if (!expDate) return '';
     return formatExpirationDate(expDate);
   };
+
+  const handleCopyOwner = () => {
+    copyToClipboard(card.owner, 'Titulaire copié !');
+  };
+
+  const handleCopyCardNumber = () => {
+    copyToClipboard(card.cardNumber, 'Numéro copié !');
+  };
+
+  const handleCopyCVV = () => {
+    copyToClipboard(card.verificationNumber, 'CVV copié !');
+  };
+
+  const handleCopyNote = () => {
+    copyToClipboard(card.note, 'Note copiée !');
+  };
+
+  const displayCardNumber = cardFormattingService.formatCardNumber(card.cardNumber);
 
   return (
     <View style={pageStyles.pageContainer}>
@@ -118,15 +144,15 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
           label="Titulaire :"
           value={card.owner}
           showCopyButton={!!card.owner}
-          onCopy={() => showToast('Titulaire copié !')}
+          onCopy={handleCopyOwner}
           ariaLabel="Copier le titulaire"
         />
         {/* Card Number */}
         <DetailField
           label="Numéro de carte :"
-          value={card.cardNumber.replace(/(\d{4})/g, '$1 ').trim()}
+          value={displayCardNumber}
           showCopyButton={!!card.cardNumber}
-          onCopy={() => showToast('Numéro copié !')}
+          onCopy={handleCopyCardNumber}
           ariaLabel="Copier le numéro de carte"
         />
         {/* CVV */}
@@ -134,7 +160,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
           label="CVV :"
           value={card.verificationNumber}
           showCopyButton={!!card.verificationNumber}
-          onCopy={() => showToast('CVV copié !')}
+          onCopy={handleCopyCVV}
           ariaLabel="Copier le CVV"
         />
         {/* Expiration Date */}
@@ -147,7 +173,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
           label="Note :"
           value={card.note}
           showCopyButton={!!card.note}
-          onCopy={() => showToast('Note copiée !')}
+          onCopy={handleCopyNote}
           ariaLabel="Copier la note"
         />
         </View>

@@ -1,3 +1,10 @@
+// ItemBankCard.tsx
+// This component renders a bank card item with formatted display.
+// Responsibilities:
+// - Display bank card information in a card format
+// - Use cardFormattingService for card number formatting
+// - Handle card interactions
+
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { BankCardDecrypted } from '@common/core/types/types';
@@ -7,6 +14,7 @@ import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { spacing } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
+import { cardFormattingService } from '@common/core/services/formattingService';
 
 interface ItemBankCardProps {
   cred: BankCardDecrypted;
@@ -16,6 +24,9 @@ interface ItemBankCardProps {
 const ItemBankCard: React.FC<ItemBankCardProps> = ({ cred, onPress }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+
+  // Format card number using service
+  const displayCardNumber = cardFormattingService.formatCardNumber(cred.cardNumber);
 
   // Dynamic styles
   const styles = {
@@ -89,7 +100,7 @@ const ItemBankCard: React.FC<ItemBankCardProps> = ({ cred, onPress }) => {
           adjustsFontSizeToFit={true}
           minimumFontScale={0.5}
         >
-          {cred.cardNumber.replace(/(\d{4})/g, '$1 ').trim()}
+          {displayCardNumber}
         </Text>
       </View>
       <View style={styles.bankCardBottom}>

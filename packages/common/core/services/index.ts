@@ -32,4 +32,29 @@ export {
 } from './itemsService';
 
 // Database Listeners Services
-export { databaseListeners } from './listenerService'; 
+export { databaseListeners } from './listenerService';
+
+// Validation Services
+export {
+  cardValidationService,
+  credentialValidationService,
+  secureNoteValidationService,
+  commonValidationService
+} from './validationService';
+
+// Formatting Services
+export {
+  cardFormattingService,
+  dateFormattingService,
+  textFormattingService,
+  displayFormattingService,
+  validationFormattingService
+} from './formattingService';
+
+// Form Transformation Services
+export {
+  cardFormTransformationService,
+  credentialFormTransformationService,
+  secureNoteFormTransformationService,
+  genericFormTransformationService
+} from './formTransformationService'; 

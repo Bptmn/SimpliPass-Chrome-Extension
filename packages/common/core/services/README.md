@@ -1,397 +1,425 @@
 # Services Layer (Layer 2: Business Logic Layer)
 
-This directory contains business logic services that orchestrate complex operations. These services handle the coordination between different libraries and implement business rules.
+This directory contains the business logic services that orchestrate complex operations, implement validation rules, format data, and transform information. These services form the **Business Logic Layer** in our three-layer architecture.
 
-## Purpose
+## 🏗️ Purpose
 
 Services in this layer serve as the **Business Logic Layer** in our three-layer architecture:
 
 ```
-Hooks → Services → Libraries
+UI Components → Hooks → Services → Libraries/Adapters
 ```
 
-## Characteristics
+## ✨ Characteristics
 
-- ✅ **Business Logic**: Handle complex operations and business rules
-- ✅ **Orchestration**: Coordinate between multiple libraries
-- ✅ **Error Transformation**: Convert library errors to business errors
+- ✅ **Business Logic Orchestration**: Handle complex business operations
+- ✅ **Validation Rules**: Implement comprehensive validation logic
+- ✅ **Data Formatting**: Transform and format data for display
+- ✅ **Data Transformation**: Convert between different data formats
+- ✅ **Error Handling**: Provide meaningful error messages
 - ✅ **Platform Agnostic**: Work across all platforms
-- ✅ **Type Safety**: Strict TypeScript typing throughout
+- ✅ **Testable**: Isolated business logic for easy testing
+- ✅ **Reusable**: Shared across all platforms
 
-## Available Services
+## 📚 Available Services
 
-### Authentication Services
+### Validation Services
 
-#### `auth.ts`
-Handles user authentication operations including login, logout, and session management.
+#### `validationService.ts`
+Comprehensive validation for all item types with business rules.
 
 ```typescript
-import { loginUser, signOutUser, isUserAuthenticated } from '@common/core/services/auth';
+import { validationService } from '@common/core/services/validationService';
 
-// Login user
-const { user, userSecretKey } = await loginUser(email, password);
+// Card validation
+const cardResult = validationService.cardValidationService.validateCardNumber('4111111111111111');
+const cvvResult = validationService.cardValidationService.validateCVV('123');
 
-// Check authentication status
-const isAuthenticated = await isUserAuthenticated();
+// Credential validation
+const emailResult = validationService.credentialValidationService.validateEmail('user@example.com');
+const passwordResult = validationService.credentialValidationService.validatePassword('MyPassword123!');
 
-// Sign out user
-await signOutUser();
+// Secure note validation
+const titleResult = validationService.secureNoteValidationService.validateTitle('My Note');
+
+// Common validation
+const requiredResult = validationService.commonValidationService.validateRequired('value');
 ```
 
-#### `session.ts`
-Manages user session initialization and lifecycle.
+**Available Validation Services**:
+- `cardValidationService` - Bank card validation (Luhn algorithm, CVV, expiration)
+- `credentialValidationService` - Credential validation (email, password, URL)
+- `secureNoteValidationService` - Secure note validation
+- `commonValidationService` - Generic validation utilities
+
+### Formatting Services
+
+#### `formattingService.ts`
+Data formatting and transformation utilities.
 
 ```typescript
-import { initializeUserSession, clearUserSession } from '@common/core/services/session';
+import { formattingService } from '@common/core/services/formattingService';
 
-// Initialize session after login
-await initializeUserSession(userSecretKey);
+// Card formatting
+const formattedNumber = formattingService.cardFormattingService.formatCardNumber('4111111111111111');
+// Returns: "4111 1111 1111 1111"
 
-// Clear session on logout
-await clearUserSession();
+const maskedNumber = formattingService.cardFormattingService.maskCardNumber('4111111111111111');
+// Returns: "**** **** **** 1111"
+
+// Date formatting
+const formattedDate = formattingService.dateFormattingService.formatDate(new Date());
+// Returns: "January 15, 2024"
+
+// Text formatting
+const capitalized = formattingService.textFormattingService.capitalizeWords('hello world');
+// Returns: "Hello World"
+
+// Display formatting
+const fileSize = formattingService.displayFormattingService.formatFileSize(1024);
+// Returns: "1 KB"
+
+const strengthColor = formattingService.displayFormattingService.getPasswordStrengthColor('strong', themeColors);
+// Returns: theme color for password strength
 ```
 
-### Cryptography Services
+**Available Formatting Services**:
+- `cardFormattingService` - Card number formatting, masking, card type detection
+- `dateFormattingService` - Date formatting utilities
+- `textFormattingService` - Text formatting, capitalization, truncation
+- `displayFormattingService` - Display utilities (file size, currency, password strength)
 
-#### `cryptography.ts`
-Handles encryption and decryption of sensitive data.
+### Form Transformation Services
+
+#### `formTransformationService.ts`
+Form data transformation with business rules.
 
 ```typescript
-import { encryptItem, decryptItem, decryptAllItems } from '@common/core/services/cryptography';
+import { formTransformationService } from '@common/core/services/formTransformationService';
 
-// Encrypt a credential
-const encryptedCredential = await encryptItem(credential, userSecretKey);
+// Transform card form to item
+const cardItem = formTransformationService.cardFormTransformationService.transformFormToCard({
+  title: 'My Card',
+  cardNumber: '4111111111111111',
+  cardholderName: 'John Doe',
+  expirationDate: '12/25',
+  cvv: '123',
+  notes: 'Personal card'
+});
 
-// Decrypt a credential
-const decryptedCredential = await decryptItem(encryptedCredential, userSecretKey);
-
-// Decrypt all items
-const decryptedItems = await decryptAllItems(encryptedItems, userSecretKey);
+// Transform credential form to item
+const credentialItem = formTransformationService.credentialFormTransformationService.transformFormToCredential({
+  title: 'My Account',
+  email: 'user@example.com',
+  password: 'MyPassword123!',
+  url: 'https://example.com',
+  notes: 'Work account'
+});
 ```
 
-### Item Management Services
+**Available Transformation Services**:
+- `cardFormTransformationService` - Card form to item transformation
+- `credentialFormTransformationService` - Credential form to item transformation
+- `secureNoteFormTransformationService` - Secure note form to item transformation
+- `genericFormTransformationService` - Generic form transformation utilities
 
-#### `items.ts`
-Manages CRUD operations for credentials, bank cards, and secure notes.
+### Business Logic Services
+
+#### `itemsService.ts`
+Item management operations (credentials, bank cards, secure notes).
 
 ```typescript
-import { 
-  addCredential, 
-  addBankCard, 
-  addSecureNote,
-  updateItem,
-  deleteItem,
-  getAllItems 
-} from '@common/core/services/items';
+import { itemsService } from '@common/core/services/itemsService';
 
-// Add new items
-await addCredential(credential);
-await addBankCard(bankCard);
-await addSecureNote(secureNote);
-
-// Update existing item
-await updateItem(userId, itemId, userSecretKey, updates);
-
-// Delete item
-await deleteItem(userId, itemId);
+// Add new item
+const newItem = await itemsService.addItem(itemData);
 
 // Get all items
-const items = await getAllItems();
+const allItems = await itemsService.getAllItems();
+
+// Update item
+const updatedItem = await itemsService.updateItem(itemId, updatedData);
+
+// Delete item
+await itemsService.deleteItem(itemId);
 ```
 
-### Vault Services
-
-#### `vault.ts`
-Manages local vault storage and synchronization.
+#### `userService.ts`
+User management operations.
 
 ```typescript
-import { setLocalVault, getLocalVault, clearLocalVault } from '@common/core/services/vault';
+import { userService } from '@common/core/services/userService';
 
-// Store vault locally
-await setLocalVault(items);
+// Get current user
+const user = await userService.getCurrentUser();
 
-// Load vault from local storage
-const items = await getLocalVault();
-
-// Clear local vault
-await clearLocalVault();
+// Update user profile
+const updatedUser = await userService.updateUser(userId, profileData);
 ```
 
-### Secret Management Services
-
-#### `secret.ts`
-Manages user secret keys and device fingerprints.
+#### `secretsService.ts`
+Secret key management for encryption/decryption.
 
 ```typescript
-import { 
-  getUserSecretKey, 
-  storeUserSecretKey, 
-  deleteUserSecretKey,
-  getDeviceFingerprint 
-} from '@common/core/services/secret';
+import { secretsService } from '@common/core/services/secretsService';
 
 // Get user secret key
+const secretKey = await secretsService.getUserSecretKey();
+
+// Generate new secret key
+const newSecretKey = await secretsService.generateUserSecretKey();
+```
+
+#### `vaultService.ts`
+Vault operations and synchronization.
+
+```typescript
+import { vaultService } from '@common/core/services/vaultService';
+
+// Initialize vault
+await vaultService.initializeVault();
+
+// Sync vault data
+await vaultService.syncVaultData();
+
+// Backup vault
+const backup = await vaultService.createBackup();
+```
+
+#### `listenerService.ts`
+Real-time data listeners and synchronization.
+
+```typescript
+import { listenerService } from '@common/core/services/listenerService';
+
+// Start listening for changes
+await listenerService.startListening();
+
+// Stop listening
+await listenerService.stopListening();
+```
+
+## 🏛️ Architecture Rules
+
+### Service Responsibilities
+1. **Business Logic**: Implement complex business rules and operations
+2. **Data Validation**: Validate data according to business rules
+3. **Data Formatting**: Transform data for display and storage
+4. **Data Transformation**: Convert between different data formats
+5. **Error Handling**: Provide meaningful error messages
+6. **Orchestration**: Coordinate between multiple libraries/adapters
+
+### What Services Should NOT Do
+- ❌ **UI Logic**: No component rendering or UI state management
+- ❌ **Direct User Interaction**: No user input handling or feedback
+- ❌ **Navigation**: No routing or navigation logic
+- ❌ **Platform-Specific Code**: No platform-specific implementations
+
+### Library Integration Pattern
+```typescript
+// ✅ Correct: Service calls library/adapter
 const secretKey = await getUserSecretKey();
+const encryptedData = await encryptData(secretKey, plainText);
 
-// Store user secret key
-await storeUserSecretKey(secretKey);
-
-// Get device fingerprint
-const fingerprint = await getDeviceFingerprint();
-```
-
-### State Management Services
-
-#### `states.ts`
-Manages Zustand state updates and synchronization.
-
-```typescript
-import { 
-  setDataInStates, 
-  clearAllStates, 
-  updateItemInStates 
-} from '@common/core/services/states';
-
-// Set data in all states
-await setDataInStates({ credentials, bankCards, secureNotes });
-
-// Clear all states
-await clearAllStates();
-
-// Update specific item
-await updateItemInStates(itemType, itemId, updates);
-```
-
-## Service Architecture
-
-### Error Handling
-All services use custom error classes for consistent error handling:
-
-```typescript
-import { 
-  AuthenticationError, 
-  CryptographyError, 
-  NetworkError, 
-  VaultError 
-} from '@common/core/types/errors.types';
-
-try {
-  await loginUser(email, password);
-} catch (error) {
-  if (error instanceof AuthenticationError) {
-    // Handle authentication error
-  } else if (error instanceof NetworkError) {
-    // Handle network error
-  }
-}
-```
-
-### Business Rules
-Services implement business rules and validation:
-
-```typescript
-// Example: Password strength validation
-export const addCredential = async (credential: Credential) => {
-  // Business rule: Validate password strength
-  if (!isPasswordStrong(credential.password)) {
-    throw new ValidationError('Password does not meet security requirements');
-  }
-  
-  // Business rule: Check for duplicate credentials
-  if (await hasDuplicateCredential(credential)) {
-    throw new ValidationError('Credential already exists');
-  }
-  
-  // Proceed with encryption and storage
-  const encryptedCredential = await encryptItem(credential, userSecretKey);
-  await addDocument('items', encryptedCredential);
+// ❌ Incorrect: Service implements low-level operations
+const encryptData = (data: string) => {
+  // Low-level operations should be in libraries
 };
 ```
 
-### Library Coordination
-Services coordinate between multiple libraries:
+## 📝 Usage Examples
 
+### Creating a Validation Service
 ```typescript
-export const loginUser = async (email: string, password: string) => {
-  // 1. Authenticate with Cognito (Library Layer)
-  const cognitoUser = await loginWithCognito(email, password);
+// validationService.ts
+export const cardValidationService = {
+  validateCardNumber: (number: string): ValidationResult => {
+    const cleaned = number.replace(/\s/g, '');
+    
+    if (!/^\d{13,19}$/.test(cleaned)) {
+      return { isValid: false, error: 'Invalid card number' };
+    }
+    
+    // Luhn algorithm validation
+    const isValid = validateLuhn(cleaned);
+    
+    return { 
+      isValid, 
+      error: isValid ? null : 'Invalid card number' 
+    };
+  },
   
-  // 2. Get user salt from Cognito (Library Layer)
-  const userSalt = await getCognitoUserSalt(cognitoUser);
-  
-  // 3. Sign in to Firebase (Library Layer)
-  const firebaseToken = await signInWithFirebaseToken(cognitoUser);
-  
-  // 4. Derive user secret key (Library Layer)
-  const userSecretKey = await deriveKey(password, userSalt);
-  
-  // 5. Create user and session objects
-  const user = createUserFromCognito(cognitoUser);
-  const session = createSession(user, userSecretKey);
-  
-  return { user, session, userSecretKey };
+  validateCVV: (cvv: string): ValidationResult => {
+    const cleaned = cvv.replace(/\D/g, '');
+    
+    if (cleaned.length !== 3 && cleaned.length !== 4) {
+      return { isValid: false, error: 'CVV must be 3 or 4 digits' };
+    }
+    
+    return { isValid: true, error: null };
+  }
 };
 ```
 
-## Testing Services
+### Creating a Formatting Service
+```typescript
+// formattingService.ts
+export const cardFormattingService = {
+  formatCardNumber: (number: string): string => {
+    const cleaned = number.replace(/\s/g, '');
+    return cleaned.replace(/(\d{4})/g, '$1 ').trim();
+  },
+  
+  maskCardNumber: (number: string): string => {
+    const cleaned = number.replace(/\s/g, '');
+    const lastFour = cleaned.slice(-4);
+    return `**** **** **** ${lastFour}`;
+  },
+  
+  getCardType: (number: string): string => {
+    const cleaned = number.replace(/\s/g, '');
+    
+    if (/^4/.test(cleaned)) return 'Visa';
+    if (/^5[1-5]/.test(cleaned)) return 'Mastercard';
+    if (/^3[47]/.test(cleaned)) return 'American Express';
+    
+    return 'Unknown';
+  }
+};
+```
+
+### Creating a Transformation Service
+```typescript
+// formTransformationService.ts
+export const cardFormTransformationService = {
+  transformFormToCard: (formData: CardFormData): BankCard => {
+    return {
+      id: generateItemKey(),
+      type: 'bankCard',
+      title: formData.title.trim(),
+      cardNumber: formData.cardNumber.replace(/\s/g, ''),
+      cardholderName: formData.cardholderName.trim(),
+      expirationDate: parseExpirationDate(formData.expirationDate),
+      cvv: formData.cvv,
+      notes: formData.notes.trim(),
+      createdDateTime: new Date(),
+      lastUseDateTime: new Date()
+    };
+  },
+  
+  transformCardToForm: (card: BankCard): CardFormData => {
+    return {
+      title: card.title,
+      cardNumber: card.cardNumber,
+      cardholderName: card.cardholderName,
+      expirationDate: formatExpirationDate(card.expirationDate),
+      cvv: card.cvv,
+      notes: card.notes
+    };
+  }
+};
+```
+
+## 🧪 Testing Guidelines
+
+### Service Testing Strategy
+- **Test Business Logic**: Verify business rules and validation
+- **Test Data Transformation**: Verify data formatting and conversion
+- **Test Error Handling**: Verify error scenarios and messages
+- **Test Edge Cases**: Verify boundary conditions and edge cases
+- **Mock Dependencies**: Mock libraries/adapters for isolated testing
 
 ### Example Test
 ```typescript
-import { loginUser } from './auth';
-import { mockCognitoUser, mockFirebaseToken } from '../__mocks__/auth';
+import { cardValidationService } from './validationService';
 
-describe('loginUser', () => {
-  it('should orchestrate login flow successfully', async () => {
-    const result = await loginUser('test@example.com', 'password');
+describe('cardValidationService', () => {
+  describe('validateCardNumber', () => {
+    it('should validate valid card numbers', () => {
+      const result = cardValidationService.validateCardNumber('4111111111111111');
+      expect(result.isValid).toBe(true);
+      expect(result.error).toBeNull();
+    });
     
-    expect(result.user).toBeDefined();
-    expect(result.session).toBeDefined();
-    expect(result.userSecretKey).toBeDefined();
-  });
-  
-  it('should handle authentication errors', async () => {
-    await expect(loginUser('invalid@example.com', 'wrong'))
-      .rejects.toThrow(AuthenticationError);
+    it('should reject invalid card numbers', () => {
+      const result = cardValidationService.validateCardNumber('1234567890123456');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('Invalid card number');
+    });
   });
 });
 ```
 
-## Development Guidelines
+## 🔄 Migration Guide
 
-### 1. Keep Services Focused
+### From Old Pattern to New Pattern
+
+**Old Pattern (Business Logic in Hooks)**:
 ```typescript
-// ✅ Good - Single responsibility
-export const addCredential = async (credential: Credential) => {
-  // Only handle credential addition logic
-};
-
-// ❌ Bad - Multiple responsibilities
-export const handleUserAction = async (action: string, data: any) => {
-  // Handles multiple different actions
-};
-```
-
-### 2. Use Proper Error Handling
-```typescript
-// ✅ Good - Specific error handling
-try {
-  await loginWithCognito(email, password);
-} catch (error) {
-  if (error instanceof NetworkError) {
-    throw new AuthenticationError('Network connection failed', error);
-  }
-  throw new AuthenticationError('Login failed', error);
-}
-```
-
-### 3. Implement Business Rules
-```typescript
-// ✅ Good - Business rule validation
-export const addCredential = async (credential: Credential) => {
-  // Validate business rules
-  if (!isValidCredential(credential)) {
-    throw new ValidationError('Invalid credential data');
-  }
-  
-  // Proceed with operation
-  await encryptAndStore(credential);
+const useCardForm = () => {
+  const validateCardNumber = (value: string) => {
+    // Business logic in hook ❌
+    if (value.length < 13) return 'Invalid card number';
+    // Luhn algorithm implementation...
+  };
 };
 ```
 
-### 4. Coordinate Libraries Properly
+**New Pattern (Business Logic in Services)**:
 ```typescript
-// ✅ Good - Proper library coordination
-export const refreshData = async () => {
-  // 1. Get data from database
-  const encryptedItems = await getAllItemsFromFirestore();
-  
-  // 2. Decrypt data
-  const decryptedItems = await decryptAllItems(encryptedItems);
-  
-  // 3. Update states
-  await setDataInStates(decryptedItems);
-  
-  // 4. Store locally
-  await setLocalVault(decryptedItems);
-};
-```
-
-## Integration with Other Layers
-
-### Services → Libraries
-Services call libraries for external operations:
-
-```typescript
-// Service calls library
-const cognitoUser = await loginWithCognito(email, password);
-```
-
-### Services → Hooks
-Hooks call services for business logic:
-
-```typescript
-// Hook calls service
-const { login } = useLoginFlow();
-// Internally calls loginUser service
-```
-
-### Services → States
-Services update Zustand states:
-
-```typescript
-// Service updates state
-await setDataInStates(decryptedItems);
-```
-
-## Platform Considerations
-
-Services are platform-agnostic and work across:
-
-- **Mobile** (React Native)
-- **Extension** (Chrome Extension)
-- **Web** (React)
-
-Platform-specific logic is handled in the libraries layer through adapters.
-
-## Performance Considerations
-
-### Caching
-Services should implement appropriate caching:
-
-```typescript
-// Cache expensive operations
-const cachedUserSecretKey = await getUserSecretKey();
-if (cachedUserSecretKey) {
-  return cachedUserSecretKey;
-}
-```
-
-### Batch Operations
-Use batch operations when possible:
-
-```typescript
-// Batch multiple operations
-const batch = firestore.batch();
-items.forEach(item => {
-  const docRef = firestore.collection('items').doc();
-  batch.set(docRef, item);
-});
-await batch.commit();
-```
-
-### Error Recovery
-Implement proper error recovery:
-
-```typescript
-// Retry failed operations
-const retryOperation = async (operation: () => Promise<any>, maxRetries = 3) => {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      return await operation();
-    } catch (error) {
-      if (i === maxRetries - 1) throw error;
-      await delay(1000 * (i + 1)); // Exponential backoff
+// Service contains business logic ✅
+export const cardValidationService = {
+  validateCardNumber: (number: string): ValidationResult => {
+    // Business logic in service
+    if (number.length < 13) {
+      return { isValid: false, error: 'Invalid card number' };
     }
+    // Luhn algorithm implementation...
   }
 };
-``` 
+
+// Hook calls service ✅
+const useCardForm = () => {
+  const validateField = (field: string, value: string) => {
+    return cardValidationService.validateCardNumber(value);
+  };
+};
+```
+
+## 📚 Best Practices
+
+1. **Keep Services Pure**: Focus on business logic only
+2. **Use Libraries**: Call libraries/adapters for external operations
+3. **Handle Errors**: Provide meaningful error messages
+4. **Type Safety**: Use strict TypeScript types
+5. **Test Thoroughly**: Write comprehensive tests for business logic
+6. **Document APIs**: Provide clear documentation and examples
+7. **Follow Naming**: Use descriptive names for services and methods
+8. **Single Responsibility**: Each service should have a single purpose
+
+## 🏛️ Service Categories
+
+### Validation Services
+- Input validation
+- Business rule validation
+- Data integrity checks
+
+### Formatting Services
+- Data display formatting
+- Data transformation
+- Output formatting
+
+### Transformation Services
+- Form-to-item conversion
+- Item-to-form conversion
+- Data structure transformation
+
+### Business Logic Services
+- Item management
+- User management
+- Vault operations
+- Real-time synchronization
+
+---
+
+**SimpliPass Services**: Robust business logic layer for secure, cross-platform password management. 

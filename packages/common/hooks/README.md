@@ -1,32 +1,132 @@
 # Hooks Layer (Layer 1: UI Layer)
 
-This directory contains React hooks that handle UI state and user interactions. These hooks provide simple, readable interfaces for components while abstracting complex business logic.
+This directory contains React hooks that handle UI state and user interactions. These hooks provide simple, readable interfaces for components while abstracting complex business logic to services.
 
-## Purpose
+## 🏗️ Purpose
 
 Hooks in this layer serve as the **UI Layer** in our three-layer architecture:
 
 ```
-UI Components → Hooks → Services → Libraries
+UI Components → Hooks → Services → Libraries/Adapters
 ```
 
-## Characteristics
+## ✨ Characteristics
 
+- ✅ **Pure UI State Management**: Handle only UI state, no business logic
 - ✅ **Simple and Readable**: Easy to understand and use
-- ✅ **UI State Management**: Handle loading states, errors, and user interactions
+- ✅ **Service Integration**: Call services for business logic
 - ✅ **Error Handling**: Provide clear error messages to users
-- ✅ **Data Abstraction**: Return data from memory (Zustand states)
 - ✅ **Platform Agnostic**: Work across mobile, extension, and web platforms
-- ✅ **Numbered Steps**: Complex operations follow Step 1, Step 2, Step 3... pattern
+- ✅ **Type Safe**: Full TypeScript support with strict typing
+- ✅ **Reusable**: Shared across all platforms
 
-## Available Hooks
+## 📚 Available Hooks
 
-### Authentication Hooks
+### Form Management Hooks
 
+#### `useFormState`
+Generic form state management with error handling and dirty state tracking.
 
+```typescript
+const { 
+  formData, 
+  errors, 
+  isSubmitting, 
+  isDirty,
+  updateField, 
+  resetForm, 
+  setFieldError 
+} = useFormState(initialData);
+```
+
+#### `useFormValidation`
+Integration with validation services for form validation.
+
+```typescript
+const { 
+  validateField, 
+  validateForm, 
+  isFieldValid, 
+  getFieldError 
+} = useFormValidation(validationService);
+```
+
+### Item-Specific Form Hooks
+
+#### `useCardForm`
+Card form orchestration with validation, formatting, and transformation services.
+
+```typescript
+const { 
+  formData, 
+  errors, 
+  isSubmitting, 
+  handleFieldChange, 
+  handleCardNumberChange, 
+  handleExpirationDateChange, 
+  handleCVVChange, 
+  handleSubmit 
+} = useCardForm(initialData);
+```
+
+#### `useCredentialForm`
+Credential form orchestration with validation, transformation, and password generation.
+
+```typescript
+const { 
+  formData, 
+  errors, 
+  isSubmitting, 
+  handleFieldChange, 
+  handleEmailChange, 
+  handleURLChange, 
+  handleGeneratePassword, 
+  handleSubmit 
+} = useCredentialForm(initialData);
+```
+
+### UI Behavior Hooks
+
+#### `usePasswordVisibility`
+Password field visibility toggle state management.
+
+```typescript
+const { 
+  isPasswordVisible, 
+  togglePasswordVisibility, 
+  showPassword, 
+  hidePassword 
+} = usePasswordVisibility();
+```
+
+#### `useContentSize`
+Dynamic input height management for notes and multi-line inputs.
+
+```typescript
+const { 
+  inputHeight, 
+  handleContentSizeChange, 
+  resetHeight, 
+  getHeightStyle 
+} = useContentSize(isNote, minHeight, maxHeight);
+```
+
+#### `useClipboard`
+Clipboard operations with toast notifications.
+
+```typescript
+const { 
+  isCopying, 
+  copyToClipboard, 
+  copyToClipboardSilent, 
+  isClipboardAvailable 
+} = useClipboard();
+```
+
+### Legacy Hooks (Maintained for Compatibility)
 
 #### `useAppState`
-Reads current app state without triggering initialization (4 steps).
+Reads current app state without triggering initialization.
 
 ```typescript
 const { 
@@ -38,35 +138,8 @@ const {
 } = useAppState();
 ```
 
-#### `useLoginPage`
-Handles login page UI state and user interactions (3 steps).
-
-```typescript
-const { login, isLoading, error, clearError } = useLoginPage();
-
-const handleLogin = async () => {
-  await login(email, password);
-};
-```
-
-#### `useLogoutFlow`
-Handles logout process with 4 steps.
-
-```typescript
-const { logout, isLoading, error } = useLogoutFlow();
-```
-
-#### `useReEnterPassword`
-Handles password re-entry flow with 4 steps.
-
-```typescript
-const { reEnterPassword, isLoading, error, clearError } = useReEnterPassword();
-```
-
-### Data Management Hooks
-
 #### `useItems`
-Provides real-time access to items data with automatic UI updates (3 steps).
+Provides real-time access to items data with automatic UI updates.
 
 ```typescript
 const { 
@@ -79,391 +152,189 @@ const {
 } = useItems();
 ```
 
-#### `useItems`
-Provides comprehensive items functionality including data access, CRUD operations, search, and user management (13 steps).
-
-```typescript
-const { 
-  // Data
-  items, 
-  credentials, 
-  bankCards, 
-  secureNotes,
-  
-  // User data
-  user,
-  
-  // Search and filtering
-  searchValue,
-  filteredItems,
-  filteredCredentials,
-  filteredBankCards,
-  filteredSecureNotes,
-  
-  // Selection state
-  selected,
-  selectedBankCard,
-  selectedSecureNote,
-  
-  // State
-  loading,
-  error,
-  isActionLoading,
-  
-  // Actions
-  addItem,
-  editItem,
-  deleteItem,
-  setSearchValue,
-  clearSearch,
-  setSelected,
-  setSelectedBankCard,
-  setSelectedSecureNote,
-  refreshData,
-  clearError,
-} = useItems();
-```
-
-#### `useUser`
-Provides simple access to user data from secure storage (5 steps).
+#### `useAuth`
+Authentication state management and operations.
 
 ```typescript
 const { 
   user, 
-  isLoading, 
-  error, 
-  refreshUser, 
-  clearUser 
-} = useUser();
-```
-
-#### `useAccount`
-Provides account management functionality including logout and session management (4 steps).
-
-```typescript
-const { 
-  user, 
-  isLoading, 
-  error, 
+  isAuthenticated, 
+  login, 
   logout, 
-  getCurrentUser, 
-  clearError 
-} = useAccount();
+  isLoading 
+} = useAuth();
 ```
-
-#### `useManualRefresh`
-Provides manual refresh functionality for UI components (5 steps).
-
-```typescript
-const { 
-  refreshAllData, 
-  refreshUserOnly, 
-  refreshVaultOnly, 
-  isRefreshing, 
-  error, 
-  clearError 
-} = useManualRefresh();
-```
-
-### UI State Hooks
-
-
 
 #### `usePasswordGenerator`
-Handles password generation, strength checking, and regeneration (5 steps).
+Password generation with strength analysis.
 
 ```typescript
 const { 
-  hasUppercase, 
-  hasNumbers, 
-  hasSymbols, 
-  hasLowercase, 
-  length, 
-  password, 
-  strength, 
-  setHasUppercase, 
-  setHasNumbers, 
-  setHasSymbols, 
-  setHasLowercase, 
-  setLength, 
-  handleRegenerate, 
-  handleCopyPassword 
+  generatePassword, 
+  passwordStrength, 
+  isGenerating 
 } = usePasswordGenerator();
 ```
 
-#### `useInputLogic`
-Handles password visibility, content size, and strength calculations (4 steps).
+## 🏛️ Architecture Rules
 
+### Hook Responsibilities
+1. **UI State Management**: Manage form state, loading states, error states
+2. **User Interactions**: Handle user actions and provide feedback
+3. **Service Integration**: Call services for business logic
+4. **Navigation**: Handle navigation via `useAppRouterContext()`
+5. **Side Effects**: Wrap side effects with `useEffect`
+
+### What Hooks Should NOT Do
+- ❌ **Business Logic**: No validation, formatting, or transformation logic
+- ❌ **Direct API Calls**: No direct calls to libraries or adapters
+- ❌ **Data Persistence**: No direct database or storage operations
+- ❌ **Complex Orchestration**: No complex business rule implementation
+
+### Service Integration Pattern
 ```typescript
-const { 
-  showPassword, 
-  inputHeight, 
-  togglePasswordVisibility, 
-  handleContentSizeChange, 
-  getStrengthColor 
-} = useInputLogic(type);
-```
+// ✅ Correct: Hook calls service
+const { validateField } = useFormValidation(validationService);
+const result = validateField('cardNumber', value);
 
-#### `useLazyCredentialIcon`
-Handles favicon loading, domain parsing, and fallback logic (6 steps).
-
-```typescript
-const { 
-  faviconUrl, 
-  isFaviconLoaded, 
-  showFavicon, 
-  placeholderLetter, 
-  handleFaviconLoad, 
-  handleFaviconError 
-} = useLazyCredentialIcon(url, title);
-```
-
-
-
-
-
-#### `useSettings`
-Provides settings management functionality (5 steps).
-
-```typescript
-const { 
-  settings, 
-  isLoading, 
-  error, 
-  updateSettings, 
-  toggleDarkMode, 
-  setLockTimeout, 
-  toggleAutoLock, 
-  toggleBiometric, 
-  clearError 
-} = useSettings();
-```
-
-#### `useDebouncedValue`
-Debounces a value by a given delay for search inputs.
-
-```typescript
-const debouncedValue = useDebouncedValue(value, 300);
-```
-
-### Chrome Extension Specific Hooks
-
-#### `useCurrentTabDomain`
-Provides current tab domain functionality for Chrome extension (5 steps).
-
-```typescript
-const { 
-  currentDomain, 
-  isLoading, 
-  error, 
-  refreshDomain, 
-  clearError 
-} = useCurrentTabDomain();
-```
-
-#### `useAutofill`
-Provides comprehensive autofill functionality for Chrome extension (8 steps).
-
-```typescript
-const { 
-  isAutofilling,
-  suggestions,
-  isLoading,
-  error, 
-  autofillCredential,
-  refreshSuggestions,
-  clearError 
-} = useAutofill();
-```
-
-## Usage Guidelines
-
-### 1. Always Handle Loading States
-```typescript
-const { login, isLoading, error } = useLoginPage();
-
-if (isLoading) {
-  return <LoadingSpinner />;
-}
-```
-
-### 2. Provide Clear Error Messages
-```typescript
-const { login, error } = useLoginPage();
-
-if (error) {
-  return <ErrorMessage message={error} />;
-}
-```
-
-### 3. Use Destructuring for Clean Code
-```typescript
-// ✅ Good
-const { login, isLoading, error } = useLoginPage();
-
-// ❌ Avoid
-const loginPage = useLoginPage();
-const login = loginPage.login;
-```
-
-### 4. Handle Async Operations Properly
-```typescript
-const handleLogin = async () => {
-  try {
-    await login(email, password);
-    // Success handling
-  } catch (error) {
-    // Error handling
-  }
+// ❌ Incorrect: Hook implements business logic
+const validateCardNumber = (value: string) => {
+  // Business logic should be in services
 };
 ```
 
-### 5. Follow Numbered Steps Pattern
-All hooks with complex operations follow Step 1, Step 2, Step 3... pattern for clarity.
+## 📝 Usage Examples
 
-## Testing Hooks
-
-### Example Test
+### Creating a Form Component
 ```typescript
-import { renderHook, act } from '@testing-library/react-hooks';
-import { useLoginPage } from './useLoginPage';
+import { useCardForm } from '@common/hooks/useCardForm';
 
-describe('useLoginPage', () => {
-  it('should handle successful login', async () => {
-    const { result } = renderHook(() => useLoginPage());
-    
-    await act(async () => {
-      await result.current.login('test@example.com', 'password');
-    });
-    
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.error).toBe(null);
-  });
-});
-```
+const AddCardForm = () => {
+  const { 
+    formData, 
+    errors, 
+    isSubmitting, 
+    handleFieldChange, 
+    handleSubmit 
+  } = useCardForm();
 
-## Error Handling
-
-Hooks provide clear error messages and handle errors gracefully:
-
-```typescript
-const { login, error } = useLoginPage();
-
-// Error messages are user-friendly
-if (error) {
-  return <ErrorMessage message={error} />;
-}
-```
-
-## State Management
-
-Hooks work with centralized state managers:
-
-```typescript
-// Hooks read from state managers
-const { items, loading } = useItems();
-
-// Hooks update states through services
-const { refreshData } = useHomePage();
-await refreshData(); // Updates state automatically
-```
-
-## Platform Considerations
-
-Hooks are platform-agnostic and work across:
-
-- **Mobile** (React Native)
-- **Extension** (Chrome Extension)
-- **Web** (React)
-
-Platform-specific logic is handled in the libraries layer.
-
-## Development Guidelines
-
-1. **Keep Hooks Simple**: Focus on UI concerns, not business logic
-2. **Handle All States**: Loading, error, success, and idle states
-3. **Provide Clear APIs**: Easy to understand and use
-4. **Test Thoroughly**: Each hook should have comprehensive tests
-5. **Document Usage**: Clear examples and documentation
-6. **Follow Numbered Steps**: Complex operations use Step 1, Step 2, Step 3...
-7. **Layer Separation**: Only UI logic, business logic goes to services
-
-## Integration with Other Layers
-
-### Hooks → Services
-Hooks call services for business logic:
-
-```typescript
-const { login } = useLoginPage();
-// Internally calls auth.login service
-```
-
-### Hooks → State Managers
-Hooks read from and update state managers:
-
-```typescript
-const { items } = useItems();
-// Reads from itemsStateManager
-
-const { refreshData } = useHomePage();
-await refreshData(); // Updates state through service
-```
-
-### Hooks → Components
-Components use hooks for data and interactions:
-
-```typescript
-const MyComponent = () => {
-  const { login, isLoading, error } = useLoginPage();
-  
   return (
-    <LoginForm 
-      onSubmit={login}
-      isLoading={isLoading}
-      error={error}
-    />
+    <form onSubmit={handleSubmit}>
+      <Input
+        value={formData.title}
+        onChange={(value) => handleFieldChange('title', value)}
+        error={errors.title}
+      />
+      <Button type="submit" disabled={isSubmitting}>
+        Add Card
+      </Button>
+    </form>
   );
 };
 ```
 
-## Testing Requirements
-
-All hooks must have comprehensive tests covering:
-
-1. **Initial State**: Verify correct initial state
-2. **Loading States**: Test loading state transitions
-3. **Error Handling**: Test error scenarios
-4. **Success Scenarios**: Test successful operations
-5. **Cleanup**: Test proper cleanup on unmount
-6. **Async Operations**: Test async function calls
-7. **State Updates**: Test state changes
-8. **Event Handlers**: Test user interactions
-
-### Test Structure
+### Using Clipboard Operations
 ```typescript
-describe('useHookName', () => {
-  describe('initial state', () => {
-    it('should have correct initial state', () => {
-      // Test initial state
-    });
-  });
+import { useClipboard } from '@common/hooks/useClipboard';
 
-  describe('loading states', () => {
-    it('should handle loading state correctly', () => {
-      // Test loading states
-    });
-  });
+const CopyButton = ({ text }) => {
+  const { copyToClipboard, isCopying } = useClipboard();
 
-  describe('error handling', () => {
-    it('should handle errors gracefully', () => {
-      // Test error scenarios
-    });
-  });
+  const handleCopy = () => {
+    copyToClipboard(text, 'Copied to clipboard!');
+  };
 
-  describe('success scenarios', () => {
-    it('should handle successful operations', async () => {
-      // Test success scenarios
+  return (
+    <Button onClick={handleCopy} disabled={isCopying}>
+      {isCopying ? 'Copying...' : 'Copy'}
+    </Button>
+  );
+};
+```
+
+### Managing Password Visibility
+```typescript
+import { usePasswordVisibility } from '@common/hooks/usePasswordVisibility';
+
+const PasswordInput = () => {
+  const { isPasswordVisible, togglePasswordVisibility } = usePasswordVisibility();
+
+  return (
+    <View>
+      <TextInput
+        secureTextEntry={!isPasswordVisible}
+        placeholder="Enter password"
+      />
+      <Button onPress={togglePasswordVisibility}>
+        {isPasswordVisible ? 'Hide' : 'Show'}
+      </Button>
+    </View>
+  );
+};
+```
+
+## 🧪 Testing Guidelines
+
+### Hook Testing Strategy
+- **Test UI State**: Verify state changes and user interactions
+- **Test Service Integration**: Mock services and verify calls
+- **Test Error Handling**: Verify error states and messages
+- **Test Platform Compatibility**: Ensure hooks work across platforms
+
+### Example Test
+```typescript
+import { renderHook, act } from '@testing-library/react-hooks';
+import { useCardForm } from './useCardForm';
+
+describe('useCardForm', () => {
+  it('should handle field changes', () => {
+    const { result } = renderHook(() => useCardForm());
+    
+    act(() => {
+      result.current.handleFieldChange('title', 'New Card');
     });
+    
+    expect(result.current.formData.title).toBe('New Card');
   });
 });
-``` 
+```
+
+## 🔄 Migration Guide
+
+### From Old Pattern to New Pattern
+
+**Old Pattern (Business Logic in Hooks)**:
+```typescript
+const useCardForm = () => {
+  const validateCardNumber = (value: string) => {
+    // Business logic in hook ❌
+    if (value.length < 13) return 'Invalid card number';
+    // Luhn algorithm implementation...
+  };
+};
+```
+
+**New Pattern (Business Logic in Services)**:
+```typescript
+const useCardForm = () => {
+  const { validateField } = useFormValidation(cardValidationService);
+  
+  const handleCardNumberChange = (value: string) => {
+    const result = validateField('cardNumber', value);
+    // UI state management only ✅
+  };
+};
+```
+
+## 📚 Best Practices
+
+1. **Keep Hooks Simple**: Focus on UI state management only
+2. **Use Services**: Call services for all business logic
+3. **Handle Errors**: Provide clear error messages to users
+4. **Type Safety**: Use strict TypeScript types
+5. **Test Thoroughly**: Write comprehensive tests for UI behavior
+6. **Document APIs**: Provide clear documentation and examples
+
+---
+
+**SimpliPass Hooks**: Clean, reusable UI state management for cross-platform password management. 

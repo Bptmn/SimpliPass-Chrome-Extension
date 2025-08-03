@@ -1,6 +1,3 @@
----
-alwaysApply: true
----
 
 # SimpliPass Cursor Rules
 
@@ -8,47 +5,129 @@ These rules define the architectural, structural, and functional constraints for
 
 ---
 
-## Important Principles
+## 🏗️ Important Principles
 
 - Do not flatter or reinforce assumptions. Always challenge the request if it's not aligned with best practices.
 - Always answer based on established best practices.
-- Always suggest improvements if the user’s request introduces poor design, security flaws, or unnecessary complexity.
+- Always suggest improvements if the user's request introduces poor design, security flaws, or unnecessary complexity.
 - Always update file-level and inline comments when modifying any file.
 - Keep code production-grade. Never use placeholder logic or fake data.
-- Hooks must be concise, clear, commented
-- When making changes, ensure that non obselete code is removed
-- Always think about potential bad side effect a change could have
+- **Write modular, testable code** - every function should be testable in isolation.
+- **Design for testing first** - consider how code will be tested when writing it.
+- When making changes, ensure that non-obsolete code is removed.
+- Always think about potential bad side effects a change could have.
 
 ---
 
-## Layered Architecture (Three-Layer Model)
+## 🏛️ Layered Architecture (Three-Layer Model)
 
 ### Layer 1: Hooks (UI Layer)
-- Simple, readable functions.
-- Manage UI state only.
-- Do not include business or platform logic.
-- Handle loading states and errors.
-- Must return stable, typed results for UI consumption.
-- Steps in comments must be clearly numbered (e.g., Step 1, Step 2).
+- **Purpose**: Pure UI state management and user interactions
+- **Location**: `packages/common/hooks/`
+- **Responsibilities**: Form state, validation integration, clipboard operations, password visibility, content sizing
+- **Characteristics**:
+  - Simple, readable functions
+  - Manage UI state only (no business logic)
+  - Handle loading states and errors
+  - Must return stable, typed results for UI consumption
+  - Steps in comments must be clearly numbered (e.g., Step 1, Step 2)
+  - **Testable**: Test UI state management and user interactions
 
 ### Layer 2: Services (Business Logic Layer)
-- Contain business logic orchestration.
-- Transform and validate data.
-- Never directly interact with platform APIs.
-- Only called by hooks or other services.
-- Pure functions when possible.
-- Platform-agnostic.
+- **Purpose**: Business logic orchestration, validation, formatting, and data transformation
+- **Location**: `packages/common/core/services/`
+- **Responsibilities**: Form validation, data formatting, form-to-item transformation, business rules
+- **Characteristics**:
+  - Handle complex business operations
+  - Implement validation rules
+  - Format and transform data
+  - Coordinate between multiple libraries
+  - Handle error transformation
+  - **Testable**: Test business logic in isolation with mocked dependencies
 
-### Layer 3: Libraries / Adapters / Utils (Integration Layer)
-- Handle external APIs, platform-specific calls, crypto, or storage.
-- Platform-specific implementations must live in adapters.
-- Called only by services.
-- No business logic.
-- Low-level focus.
+### Layer 3: Libraries/Adapters (Integration Layer)
+- **Purpose**: Low-level integration with external APIs, platform-specific calls, and utilities
+- **Location**: `packages/common/core/libraries/` and `packages/common/core/adapters/`
+- **Responsibilities**: Firebase integration, crypto operations, platform storage, authentication
+- **Characteristics**:
+  - Handle external API calls
+  - Platform-specific implementations
+  - Low-level operations (crypto, storage)
+  - Called only by services
+  - **Testable**: Test external API integrations with proper mocking
 
 ---
 
-## Navigation (Routing) Rules
+## 🧪 Testing Requirements
+
+### Testing Strategy by Layer
+
+#### Layer 1: Hooks Testing
+- **Test UI State**: Verify state changes and user interactions
+- **Test Service Integration**: Mock services and verify calls
+- **Test Error Handling**: Verify error states and messages
+- **Test Platform Compatibility**: Ensure hooks work across platforms
+- **Test User Interactions**: Verify user action handlers
+- **Test Loading States**: Verify loading state transitions
+
+#### Layer 2: Services Testing
+- **Test Business Logic**: Verify business rules and validation
+- **Test Data Transformation**: Verify data formatting and conversion
+- **Test Error Handling**: Verify error scenarios and messages
+- **Test Edge Cases**: Verify boundary conditions and edge cases
+- **Mock Dependencies**: Mock libraries/adapters for isolated testing
+- **Test Pure Functions**: Ensure pure functions are truly pure
+
+#### Layer 3: Libraries/Adapters Testing
+- **Test External API Integration**: Verify API calls and responses
+- **Test Platform-Specific Code**: Verify platform-specific implementations
+- **Test Error Scenarios**: Verify error handling for external failures
+- **Mock External Dependencies**: Mock external APIs and services
+- **Test Integration Points**: Verify integration with external systems
+
+### Testing Best Practices
+- **Write tests for all business logic** - services must have comprehensive test coverage
+- **Test in isolation** - each layer should be testable independently
+- **Mock dependencies** - use proper mocking for external dependencies
+- **Test error scenarios** - ensure error handling is robust
+- **Test edge cases** - verify boundary conditions and unusual inputs
+- **Use descriptive test names** - test names should clearly describe what is being tested
+- **Follow AAA pattern** - Arrange, Act, Assert for clear test structure
+
+### Testing Tools
+- **Jest** for unit testing
+- **React Testing Library** for component testing
+- **Mock functions** for dependency isolation
+- **Test coverage** should be >80% for business logic
+
+---
+
+## 🔄 Modular Design Principles
+
+### Code Organization
+- **Single Responsibility**: Each function/class should have one clear purpose
+- **Dependency Inversion**: Higher layers depend on abstractions, not implementations
+- **Interface Segregation**: Keep interfaces small and focused
+- **Open/Closed Principle**: Open for extension, closed for modification
+- **Testability**: Every module should be testable in isolation
+
+### Modular Architecture Benefits
+- **Easy Testing**: Isolated modules are easier to test
+- **Code Reuse**: Modular code can be reused across platforms
+- **Maintainability**: Clear separation makes code easier to maintain
+- **Scalability**: Modular design scales better as the codebase grows
+- **Debugging**: Isolated modules are easier to debug
+
+### Module Design Guidelines
+- **Keep modules small** - single responsibility principle
+- **Minimize dependencies** - reduce coupling between modules
+- **Use dependency injection** - inject dependencies rather than importing them
+- **Write pure functions** - functions with no side effects are easier to test
+- **Separate concerns** - UI logic, business logic, and integration logic should be separate
+
+---
+
+## 🧭 Navigation (Routing) Rules
 
 - All navigation must use the global router via `useAppRouterContext()` (from AppRouterProvider).
 - Hooks that perform navigation must never use fallback callbacks (e.g., `onSuccess`) — always navigate directly via context.
@@ -58,7 +137,7 @@ These rules define the architectural, structural, and functional constraints for
 
 ---
 
-## State & Data Flow Model
+## 📊 State & Data Flow Model
 
 - UI reads only from Zustand stores and secure local storage.
 - No direct access to Firestore or cloud storage in hooks or UI.
@@ -68,28 +147,29 @@ These rules define the architectural, structural, and functional constraints for
 
 ---
 
-## Cursor Import Convention
+## 📦 Import Convention
 
 ### Import Order
 ```ts
 // External
 import React from 'react';
 // Hooks (Layer 1)
-import { useLoginFlow } from '@core/hooks';
+import { useCardForm } from '@common/hooks';
 // Services (Layer 2)
-import { loginUser } from '@core/services';
+import { cardValidationService } from '@common/core/services';
 // Libraries (Layer 3)
-import { loginWithCognito } from '@core/libraries';
+import { getPlatformAdapter } from '@common/core/adapters';
 // Types
-import type { LoginResult } from '@core/types';
+import type { CardFormData } from '@common/core/types';
 ```
 
 - Always use absolute imports starting with `@common`, `@core`, `@mobile`, `@extension`, or `@shared`.
 - Never use relative imports like `../../../`.
+- Group imports by layer for better organization.
 
 ---
 
-## Secure Storage by Platform
+## 🔐 Secure Storage by Platform
 
 ### Mobile
 - Use `expo-secure-store`.
@@ -99,23 +179,24 @@ import type { LoginResult } from '@core/types';
 
 ---
 
-## Styling Rules
+## 🎨 Styling Rules
 
 - Never use `marginTop` or `marginBottom`.
 - Use `gap` via shared layout classes (`formContainer`, `scrollView`, etc.).
 
 ---
 
-## Error Handling Strategy
+## ⚠️ Error Handling Strategy
 
 - Always use custom error classes by layer (`SimpliPassError`, `AuthenticationError`, etc.).
 - Errors must be propagated with contextual information.
 - All thrown errors must include an error code and origin layer.
+- **Test error scenarios** - ensure error handling is comprehensive.
 
 ### Example
 ```ts
 export class SimpliPassError extends Error {
-  constructor(message, code, layer, originalError) {
+  constructor(message: string, code: string, layer: string, originalError?: Error) {
     super(message);
     this.code = code;
     this.layer = layer;
@@ -126,7 +207,7 @@ export class SimpliPassError extends Error {
 
 ---
 
-## Build & Validation Checklist
+## 🏗️ Build & Validation Checklist
 
 After any structural or logic-level change:
 ```bash
@@ -137,15 +218,54 @@ npm run build
 
 Cursor must fix all lint/type errors and ensure the app builds cleanly before completing any task.
 
+### Quality Gates
+- **Linting**: All ESLint rules must pass
+- **Type Checking**: TypeScript compilation must succeed
+- **Testing**: All tests must pass with >80% coverage for business logic
+- **Build**: Application must build successfully
+- **Architecture**: Code must follow the three-layer model
+
 ---
 
-## Summary Constraints
+## 📋 Summary Constraints
 
+### Architecture Rules
 - Never bypass the three-layer model.
 - Never persist decrypted data.
 - Never use platform logic in shared folders (`common/`, `core/services/`).
 - Always validate types, tests, and build before completion.
 - Only use Zustand for UI-driven state.
-- Keep hooks focused on UI state.
+
+### Layer Responsibilities
+- **Hooks**: Focus on UI state management only
+- **Services**: Focus on business rules and data transformation
+- **Libraries/Adapters**: Focus on integration/platform-specific logic
+
+### Testing Requirements
+- **All business logic must be tested** - services require comprehensive test coverage
+- **UI components must be tested** - use React Testing Library for component tests
+- **Integration points must be tested** - verify external API integrations
+- **Error scenarios must be tested** - ensure robust error handling
+
+### Modular Design
+- **Write testable code** - every function should be testable in isolation
+- **Design for testing** - consider testing requirements when writing code
+- **Keep modules small** - single responsibility principle
+- **Minimize dependencies** - reduce coupling between modules
+- **Use dependency injection** - inject dependencies rather than importing them
+
+---
+
+## 🎯 Key Success Metrics
+
+- **90-95% code reuse** across mobile and extension platforms
+- **Zero business logic** in UI components
+- **Clear separation** of concerns
+- **Consistent patterns** across codebase
+- **Easier testing** with isolated business logic
+- **Better maintainability** with proper architecture
+- **>80% test coverage** for business logic
+- **Modular design** enabling easy testing and maintenance
+
 - Keep services focused on business rules.
 - Keep libraries focused on integration/platform-specific logic.
