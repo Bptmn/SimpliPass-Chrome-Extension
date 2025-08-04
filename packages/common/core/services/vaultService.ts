@@ -86,3 +86,13 @@ export class VaultService implements IVaultService {
     }
   }
 }
+
+// Import actual adapters and services
+import { storage } from '../adapters/platform.storage.adapter';
+import { authService } from './authService';
+
+// Export singleton instance
+export const vaultService = new VaultService(
+  storage,
+  authService
+);

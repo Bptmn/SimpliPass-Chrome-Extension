@@ -3,7 +3,6 @@ import { User } from '../types/auth.types';
 import { IDatabaseAdapter } from '../adapters/database.adapter';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IAuthAdapter } from '../adapters/auth.adapter';
-import { useAppStateStore } from '../../hooks/useAppState';
 import { User as FirebaseUser } from 'firebase/auth';
 
 export interface IUserService {
@@ -207,3 +206,17 @@ export class UserService implements IUserService {
     }
   }
 }
+
+// Import actual adapters and store
+import { auth } from '../adapters/auth.adapter';
+import { db } from '../adapters/database.adapter';
+import { storage } from '../adapters/platform.storage.adapter';
+import { useAppStateStore } from '../../hooks/useAppState';
+
+// Export singleton instance
+export const userService = new UserService(
+  db,
+  storage,
+  auth,
+  useAppStateStore
+);

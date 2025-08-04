@@ -4,16 +4,21 @@ import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IItemsService } from './itemsService';
 import { IUserService } from './userService';
 import { IAuthService } from './authService';
-import { useAppStateStore } from '../../hooks/useAppState';
 import { User as FirebaseUser } from 'firebase/auth';
 
-export interface IListenerService {
+export interface IAuthListenerService {
+  start(): Promise<void>;
+  stop(): void;
+  isActive(): boolean;
+}
+
+export interface IDatabaseListenerService {
   start(userId: string): Promise<void>;
   stop(): void;
   isActive(): boolean;
 }
 
-class DatabaseListeners implements IListenerService {
+class DatabaseListeners implements IDatabaseListenerService {
   private isListening: boolean = false;
 
   constructor(
@@ -60,14 +65,14 @@ class DatabaseListeners implements IListenerService {
   }
 }
 
-class AuthListeners implements IListenerService {
+class AuthListeners implements IAuthListenerService {
   private isListening: boolean = false;
   private lastProcessedUserId: string | null = null;
 
   constructor(
     private authService: IAuthService,
     private userService: IUserService,
-    private databaseListeners: IListenerService,
+    private databaseListeners: IDatabaseListenerService,
     private appStateStore: typeof useAppStateStore,
   ) {}
 
@@ -107,18 +112,27 @@ class AuthListeners implements IListenerService {
 // To be instantiated in a dependency injection container
 export { DatabaseListeners, AuthListeners };
 
+// Import actual adapters and services
+import { auth } from '../adapters/auth.adapter';
+import { db } from '../adapters/database.adapter';
+import { storage } from '../adapters/platform.storage.adapter';
+import { authService } from './authService';
+import { userService } from './userService';
+import { itemsService } from './itemsService';
+import { useAppStateStore } from '../../hooks/useAppState';
+
 // Export instances for backward compatibility
 export const databaseListeners = new DatabaseListeners(
-  {} as IDatabaseAdapter,
-  {} as IPlatformStorageAdapter,
-  {} as IItemsService,
-  {} as IUserService,
-  {} as typeof useAppStateStore
+  db,
+  storage,
+  itemsService,
+  userService,
+  useAppStateStore
 );
 
 export const authListeners = new AuthListeners(
-  {} as IAuthService,
-  {} as IUserService,
+  authService,
+  userService,
   databaseListeners,
-  {} as typeof useAppStateStore
+  useAppStateStore
 );

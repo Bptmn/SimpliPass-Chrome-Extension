@@ -3,7 +3,6 @@ import { User as FirebaseUser } from 'firebase/auth';
 import { IAuthAdapter } from '../adapters/auth.adapter';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IUserService } from './userService';
-import { useAppStateStore } from '../../hooks/useAppState';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -98,10 +97,16 @@ export class AuthService implements IAuthService {
   }
 }
 
+// Import actual adapters and services
+import { auth } from '../adapters/auth.adapter';
+import { storage } from '../adapters/platform.storage.adapter';
+import { userService } from './userService';
+import { useAppStateStore } from '../../hooks/useAppState';
+
 // Export singleton instance
 export const authService = new AuthService(
-  {} as IAuthAdapter,
-  {} as IUserService,
-  {} as typeof useAppStateStore,
-  {} as IPlatformStorageAdapter
+  auth,
+  userService,
+  useAppStateStore,
+  storage
 ); 

@@ -240,3 +240,23 @@ export class ItemsService implements IItemsService {
     }
   }
 }
+
+// Import actual adapters and services
+import { auth } from '../adapters/auth.adapter';
+import { db } from '../adapters/database.adapter';
+import { storage } from '../adapters/platform.storage.adapter';
+import { authService } from './authService';
+import { vaultService } from './vaultService';
+import { secretsService } from './secretsService';
+import { cryptoService } from './cryptoService';
+
+// Export singleton instance
+export const itemsService = new ItemsService(
+  new ItemsStateManager(),
+  secretsService,
+  cryptoService,
+  db,
+  storage,
+  authService,
+  vaultService
+);

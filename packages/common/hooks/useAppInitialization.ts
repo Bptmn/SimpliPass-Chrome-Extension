@@ -20,7 +20,7 @@ import { useAppStateStore } from './useAppState';
 
 export const useAppInitialization = (): void => {
   // Get Zustand store methods directly
-  const { setInitializing } = useAppStateStore();
+  const { setInitializing: _setInitializing } = useAppStateStore();
 
   // App initialization - delegate to service layer
   const initializeApp = useCallback(async (): Promise<void> => {

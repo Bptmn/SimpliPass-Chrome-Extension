@@ -141,3 +141,6 @@ export class CryptoService implements ICryptoService {
         };
     }
 }
+
+// Export singleton instance
+export const cryptoService = new CryptoService();

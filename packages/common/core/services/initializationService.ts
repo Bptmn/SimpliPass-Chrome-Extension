@@ -2,8 +2,7 @@
 import { IAuthAdapter } from '../adapters/auth.adapter';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IAuthService } from './authService';
-import { IListenerService } from './listenerService';
-import { useAppStateStore } from '../../hooks/useAppState';
+import { IAuthListenerService } from './listenerService';
 
 export interface IInitializationService {
   initializeApp(): Promise<void>;
@@ -15,7 +14,7 @@ export class InitializationService implements IInitializationService {
     private authAdapter: IAuthAdapter,
     private storageAdapter: IPlatformStorageAdapter,
     private authService: IAuthService,
-    private authListeners: IListenerService,
+    private authListeners: IAuthListenerService,
     private appStateStore: typeof useAppStateStore,
   ) {}
 
@@ -44,15 +43,13 @@ export class InitializationService implements IInitializationService {
       // Step 5: Initialize storage (if supported)
       console.log('[InitializationService] Storage initialization completed');
       
-      // Step 6: Initialize auth listeners
-      const user = await this.authService.getCurrentUser();
-      if (user) {
-        await this.authListeners.start(user.uid);
-        console.log('[InitializationService] Auth listeners started successfully');
-      }
+      // Step 6: Initialize auth listeners (start regardless of user login state)
+      await this.authListeners.start();
+      console.log('[InitializationService] Auth listeners started successfully');
       
-      // Step 7: Mark initialization complete
+      // Step 7: Mark initialization complete and set auth as available
       this.appStateStore.getState().setInitializing(false);
+      this.appStateStore.getState().setAuthIsAvailable(true);
       
       console.log('[InitializationService] Application fully initialized');
       
@@ -60,8 +57,9 @@ export class InitializationService implements IInitializationService {
       const errorMessage = error instanceof Error ? error.message : 'Application initialization failed';
       console.error('[InitializationService] Initialization failed:', error);
       
-      // Update global state with error
+      // Update global state with error and set auth as available (even if failed)
       this.appStateStore.getState().setInitializing(false, errorMessage);
+      this.appStateStore.getState().setAuthIsAvailable(true);
       throw error;
     }
   }
@@ -78,11 +76,18 @@ export class InitializationService implements IInitializationService {
   }
 }
 
+// Import actual service instances
+import { authService } from './authService';
+import { authListeners } from './listenerService';
+import { auth } from '../adapters/auth.adapter';
+import { storage } from '../adapters/platform.storage.adapter';
+import { useAppStateStore } from '../../hooks/useAppState';
+
 // Export singleton instance
 export const initializationService = new InitializationService(
-  {} as IAuthAdapter,
-  {} as IPlatformStorageAdapter,
-  {} as IAuthService,
-  {} as IListenerService,
-  {} as typeof useAppStateStore
+  auth,
+  storage,
+  authService,
+  authListeners,
+  useAppStateStore
 ); 

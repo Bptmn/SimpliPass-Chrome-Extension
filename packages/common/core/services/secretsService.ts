@@ -99,3 +99,13 @@ export class SecretsService implements ISecretsService {
     await this.storeUserSecretKey(userSecretKey);
   }
 }
+
+// Import actual adapters
+import { auth } from '../adapters/auth.adapter';
+import { storage } from '../adapters/platform.storage.adapter';
+
+// Export singleton instance
+export const secretsService = new SecretsService(
+  storage,
+  auth
+);
