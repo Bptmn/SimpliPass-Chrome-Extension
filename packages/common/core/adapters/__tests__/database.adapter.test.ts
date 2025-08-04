@@ -56,11 +56,11 @@ describe('Database Adapter Interface', () => {
       deleteDocument: jest.fn().mockResolvedValue(undefined),
       generateItemDatabaseId: jest.fn().mockReturnValue('mock-id'),
       startListeners: jest.fn().mockResolvedValue(undefined),
-      stopListeners: jest.fn(),
-      getListenersState: jest.fn(() => ({ isListening: false, error: null })),
-      isListening: jest.fn(() => false),
-      getListenersError: jest.fn(() => null),
-      clearListenersError: jest.fn(),
+      stopListeners: jest.fn().mockResolvedValue(undefined),
+      getListenersState: jest.fn().mockResolvedValue({ isListening: false, error: null }),
+      isListening: jest.fn().mockResolvedValue(false),
+      getListenersError: jest.fn().mockResolvedValue(null),
+      clearListenersError: jest.fn().mockResolvedValue(undefined),
     };
   });
 
@@ -144,31 +144,31 @@ describe('Database Adapter Interface', () => {
   });
 
   describe('getListenersState', () => {
-    it('should return listeners state', () => {
+    it('should return listeners state', async () => {
       const mockState: DatabaseListenersState = { isListening: true, error: 'test error' };
-      mockDatabaseAdapter.getListenersState = jest.fn(() => mockState);
+      mockDatabaseAdapter.getListenersState = jest.fn().mockResolvedValue(mockState);
       
-      const result = mockDatabaseAdapter.getListenersState();
+      const result = await mockDatabaseAdapter.getListenersState();
       expect(mockDatabaseAdapter.getListenersState).toHaveBeenCalled();
       expect(result).toEqual(mockState);
     });
   });
 
   describe('isListening', () => {
-    it('should return listening status', () => {
-      mockDatabaseAdapter.isListening = jest.fn(() => true);
+    it('should return listening status', async () => {
+      mockDatabaseAdapter.isListening = jest.fn().mockResolvedValue(true);
       
-      const result = mockDatabaseAdapter.isListening();
+      const result = await mockDatabaseAdapter.isListening();
       expect(mockDatabaseAdapter.isListening).toHaveBeenCalled();
       expect(result).toBe(true);
     });
   });
 
   describe('getListenersError', () => {
-    it('should return listeners error', () => {
-      mockDatabaseAdapter.getListenersError = jest.fn(() => 'test error');
+    it('should return listeners error', async () => {
+      mockDatabaseAdapter.getListenersError = jest.fn().mockResolvedValue('test error');
       
-      const result = mockDatabaseAdapter.getListenersError();
+      const result = await mockDatabaseAdapter.getListenersError();
       expect(mockDatabaseAdapter.getListenersError).toHaveBeenCalled();
       expect(result).toBe('test error');
     });

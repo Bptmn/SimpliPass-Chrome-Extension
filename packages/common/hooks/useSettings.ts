@@ -1,121 +1,70 @@
-/**
- * useSettings Hook - Layer 1: UI Layer
- * 
- * Provides settings management functionality.
- * Handles settings like dark mode, lock timeout, etc.
- */
+// useSettings.ts
+// This hook manages settings page business logic:
+// - User data loading
+// - Logout functionality
+// - Listener management
+// - Error handling
 
-import { useState, useEffect, useCallback } from 'react';
-import { storage } from '@common/core/adapters/platform.storage.adapter';
+import { useState, useCallback } from 'react';
+import { getCurrentUser } from '@common/core/services/userService';
+import { databaseListeners, authListeners } from '@common/core/services/listenerService';
+import { auth } from '@common/core/adapters/auth.adapter';
+import type { User } from '@common/core/types/auth.types';
 
-export interface Settings {
-  darkMode: boolean;
-  lockTimeout: number; // in minutes
-  autoLock: boolean;
-  biometricEnabled: boolean;
-}
-
-export interface UseSettingsReturn {
-  // State
-  settings: Settings;
-  isLoading: boolean;
-  error: string | null;
-  
-  // Actions
-  updateSettings: (updates: Partial<Settings>) => Promise<void>;
-  toggleDarkMode: () => Promise<void>;
-  setLockTimeout: (timeout: number) => Promise<void>;
-  toggleAutoLock: () => Promise<void>;
-  toggleBiometric: () => Promise<void>;
-  clearError: () => void;
-}
-
-const DEFAULT_SETTINGS: Settings = {
-  darkMode: false,
-  lockTimeout: 15,
-  autoLock: true,
-  biometricEnabled: false,
-};
-
-export const useSettings = (): UseSettingsReturn => {
-  // Step 1: Initialize state
-  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
-  const [isLoading, setIsLoading] = useState(true);
+export const useSettings = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Step 2: Load settings on mount
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        const vault = await storage.getVaultFromSecureLocalStorage();
-        if (vault?.settings) {
-          setSettings({ ...DEFAULT_SETTINGS, ...vault.settings });
-        }
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load settings';
-        setError(errorMessage);
-        console.error('[useSettings] Failed to load settings:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadSettings();
+  // Step 1: Load current user data
+  const loadCurrentUser = useCallback(async () => {
+    try {
+      setUserLoading(true);
+      setError(null);
+      const userData = await getCurrentUser();
+      setUser(userData);
+    } catch (err) {
+      console.error('[useSettings] Failed to load user:', err);
+      setError('Failed to load user data');
+    } finally {
+      setUserLoading(false);
+    }
   }, []);
 
-  // Step 3: Update settings function
-  const updateSettings = useCallback(async (updates: Partial<Settings>) => {
+  // Step 2: Handle logout with proper cleanup
+  const signOut = useCallback(async () => {
     try {
       setError(null);
-      const newSettings = { ...settings, ...updates };
+      // Step 2.1: Sign out from Firebase and Cognito
+      await auth.signOut();
       
-      const vault = await storage.getVaultFromSecureLocalStorage();
-      await storage.updateVaultInSecureLocalStorage({
-        ...vault,
-        settings: newSettings,
-      });
-      setSettings(newSettings);
+      // Step 2.2: Stop all listeners
+      databaseListeners.stop();
+      authListeners.stop();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update settings';
-      setError(errorMessage);
-      console.error('[useSettings] Failed to update settings:', err);
+      console.error('[useSettings] Logout error:', err);
+      setError('Erreur lors de la déconnexion.');
+      throw err;
     }
-  }, [settings]);
+  }, []);
 
-  // Step 4: Specific setting toggles
-  const toggleDarkMode = useCallback(async () => {
-    await updateSettings({ darkMode: !settings.darkMode });
-  }, [settings.darkMode, updateSettings]);
+  // Step 3: Stop database listeners
+  const stopDatabaseListeners = useCallback(() => {
+    databaseListeners.stop();
+  }, []);
 
-  const setLockTimeout = useCallback(async (timeout: number) => {
-    await updateSettings({ lockTimeout: timeout });
-  }, [updateSettings]);
-
-  const toggleAutoLock = useCallback(async () => {
-    await updateSettings({ autoLock: !settings.autoLock });
-  }, [settings.autoLock, updateSettings]);
-
-  const toggleBiometric = useCallback(async () => {
-    await updateSettings({ biometricEnabled: !settings.biometricEnabled });
-  }, [settings.biometricEnabled, updateSettings]);
-
-  // Step 5: Clear error
-  const clearError = useCallback(() => {
-    setError(null);
+  // Step 4: Stop auth listeners
+  const stopAuthListeners = useCallback(() => {
+    authListeners.stop();
   }, []);
 
   return {
-    settings,
-    isLoading,
+    user,
+    userLoading,
     error,
-    updateSettings,
-    toggleDarkMode,
-    setLockTimeout,
-    toggleAutoLock,
-    toggleBiometric,
-    clearError,
+    loadCurrentUser,
+    signOut,
+    stopDatabaseListeners,
+    stopAuthListeners,
   };
 }; 

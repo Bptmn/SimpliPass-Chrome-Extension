@@ -57,4 +57,7 @@ export {
   credentialFormTransformationService,
   secureNoteFormTransformationService,
   genericFormTransformationService
-} from './formTransformationService'; 
+} from './formTransformationService';
+
+// Initialization Services
+export { initializationService } from './initializationService'; 

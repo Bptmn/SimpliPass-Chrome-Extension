@@ -17,7 +17,7 @@ export const useClipboard = () => {
    */
   const copyToClipboard = useCallback(async (text: string, successMessage: string = 'Copied to clipboard', errorMessage: string = 'Failed to copy') => {
     if (!text) {
-      showToast('Nothing to copy', 'error');
+      showToast('Nothing to copy');
       return false;
     }
 
@@ -25,10 +25,10 @@ export const useClipboard = () => {
 
     try {
       await navigator.clipboard.writeText(text);
-      showToast(successMessage, 'success');
+      showToast(successMessage);
       return true;
     } catch (_error) {
-      showToast(errorMessage, 'error');
+      showToast(errorMessage);
       return false;
     } finally {
       setIsCopying(false);

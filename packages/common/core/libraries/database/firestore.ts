@@ -1,18 +1,21 @@
 // packages/common/core/libraries/database/firestore.ts
-import {
-  collection,
-  doc,
-  getDocs,
-  getDoc,
-  updateDoc,
-  deleteDoc,
+import { 
+  Firestore, 
+  connectFirestoreEmulator, 
+  doc, 
+  getDoc, 
+  setDoc, 
+  getDocs, 
+  collection, 
+  deleteDoc, 
+  terminate,
   DocumentData,
   QuerySnapshot,
   DocumentSnapshot,
   DocumentReference,
-  setDoc,
-  Firestore,
+  updateDoc
 } from 'firebase/firestore';
+import { initFirebase } from '../auth/firebase';
 
 export const getCollection = async <T extends DocumentData = DocumentData>(
   firestore: Firestore,
@@ -77,3 +80,56 @@ export function generateItemDatabaseId(): string {
   }
   return autoId;
 }
+
+let firestoreInstance: Firestore | null = null;
+
+export const getFirestore = async (): Promise<Firestore> => {
+  if (!firestoreInstance) {
+    await initFirebase();
+    // Access the firebaseDb directly from the auth module
+    const { firebaseDb } = await import('../auth/firebase');
+    if (!firebaseDb) {
+      throw new Error('Failed to initialize Firestore');
+    }
+    firestoreInstance = firebaseDb;
+  }
+  return firestoreInstance!;
+};
+
+// Wrapper functions for adapter
+export const getCollectionWrapper = async <T extends DocumentData = DocumentData>(
+  collectionPath: string
+): Promise<T[]> => {
+  const firestore = await getFirestore();
+  return getCollection<T>(firestore, collectionPath);
+};
+
+export const getDocumentWrapper = async <T extends DocumentData = DocumentData>(
+  docPath: string
+): Promise<T | null> => {
+  const firestore = await getFirestore();
+  return getDocument<T>(firestore, docPath);
+};
+
+export const addDocumentWrapper = async <T extends DocumentData = DocumentData>(
+  collectionPath: string,
+  data: T
+): Promise<string> => {
+  const firestore = await getFirestore();
+  return addDocument<T>(firestore, collectionPath, data);
+};
+
+export const updateDocumentWrapper = async <T extends DocumentData = DocumentData>(
+  docPath: string,
+  data: Partial<T>
+): Promise<void> => {
+  const firestore = await getFirestore();
+  return updateDocument<T>(firestore, docPath, data);
+};
+
+export const deleteDocumentWrapper = async (
+  docPath: string
+): Promise<void> => {
+  const firestore = await getFirestore();
+  return deleteDocument(firestore, docPath);
+};

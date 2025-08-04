@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { SecureNoteDecrypted } from '@common/core/types/items.types';
-import { updateItem } from '@common/core/services/itemsService';
+import type { SecureNoteDecrypted } from '@common/core/types/items.types';
 import { useToast } from '@common/ui/components/Toast';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Toast } from '@ui/components/Toast';
@@ -13,9 +12,7 @@ import { getPageStyles } from '@ui/design/layout';
 import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { typography } from '@ui/design/typography';
-import { ROUTES } from '@common/ui/router';
-import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
-import { CATEGORIES } from '@common/core/types/categories.types';
+import { useModifySecureNote } from '@common/hooks/useModifySecureNote';
 
 interface ModifySecureNotePageProps {
   secureNote: SecureNoteDecrypted;
@@ -31,40 +28,18 @@ export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const router = useAppRouterContext();
   const { showToast } = useToast();
 
   const [title, setTitle] = useState(secureNote?.title || '');
   const [noteText, setNoteText] = useState(secureNote?.note || '');
   const [color, setColor] = useState(secureNote?.color || '');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [toast, _setToast] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
-    if (!secureNote) {
-      setError('Note introuvable');
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const updatedNote: SecureNoteDecrypted = {
-        ...secureNote,
-        title,
-        note: noteText,
-        color,
-        lastUseDateTime: new Date(),
-      };
-      
-      await updateItem(secureNote.id, updatedNote);
-      showToast('Note modifiée avec succès');
-      router.navigateTo(ROUTES.HOME, { category: CATEGORIES.SECURE_NOTES });
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Erreur lors de la modification de la note.');
-    } finally {
-      setLoading(false);
-    }
+  // Use the hook for business logic
+  const { error, loading, handleSubmit } = useModifySecureNote(secureNote);
+
+  const handleFormSubmit = async () => {
+    await handleSubmit(title, noteText, color, showToast);
   };
 
   if (!secureNote) {
@@ -83,7 +58,7 @@ export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Modifier une note" 
-            onBackPress={() => router.navigateTo(ROUTES.HOME, { category: CATEGORIES.SECURE_NOTES })} 
+            onBackPress={_onBack} 
           />
           <View style={pageStyles.formContainer}>
             <InputEdit
@@ -112,7 +87,7 @@ export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
         <Button
           text="Confirmer"
           color={themeColors.secondary}
-          onPress={handleSubmit}
+          onPress={handleFormSubmit}
           disabled={loading}
         />
     </View>

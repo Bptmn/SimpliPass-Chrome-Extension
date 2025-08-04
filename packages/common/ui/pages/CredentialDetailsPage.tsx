@@ -9,8 +9,7 @@
 
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { CredentialDecrypted } from '@common/core/types/types';
-import { deleteItem } from '@common/core/services/itemsService';
+import type { CredentialDecrypted } from '@common/core/types/items.types';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { LazyCredentialIcon } from '@ui/components/LazyCredentialIcon';
@@ -27,7 +26,7 @@ import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { useClipboard } from '@common/hooks/useClipboard';
 import { usePasswordVisibility } from '@common/hooks/usePasswordVisibility';
-import { textFormattingService } from '@common/core/services/formattingService';
+import { useCredentialDetails } from '@common/hooks/useCredentialDetails';
 
 interface CredentialDetailsPageProps {
   credential: CredentialDecrypted;
@@ -42,56 +41,30 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const router = useAppRouterContext();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { showToast } = useToast();
   const { copyToClipboard } = useClipboard();
   const { isPasswordVisible, togglePasswordVisibility } = usePasswordVisibility();
+  
+  const { handleEdit, handleLaunch, confirmDelete, handleCopyUsername, handleCopyPassword, handleCopyNote } = useCredentialDetails(
+    credential, 
+    onBack, 
+    setError, 
+    setLoading, 
+    showToast, 
+    copyToClipboard, 
+    togglePasswordVisibility
+  );
 
-  const handleEdit = () => {
-    router.navigateTo(ROUTES.MODIFY_CREDENTIAL, { credential });
-  };
-
-  const handleLaunch = (url: string) => {
-    try {
-      const normalizedUrl = textFormattingService.normalizeUrl(url);
-      window.open(normalizedUrl, '_blank');
-    } catch {
-      setError("Erreur lors de l'ouverture du lien.");
-    }
-  };
-
-  const handleDelete = async () => {
+  const handleDelete = () => {
     setShowDeleteConfirm(true);
   };
 
-  const confirmDelete = async () => {
-    setLoading(true);
-    setError(null);
+  const handleConfirmDelete = async () => {
     setShowDeleteConfirm(false);
-    try {
-      await deleteItem(credential.id);
-      showToast('Identifiant supprimé avec succès');
-      onBack();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erreur lors de la suppression.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCopyUsername = () => {
-    copyToClipboard(credential.username, "Nom d'utilisateur copié !");
-  };
-
-  const handleCopyPassword = () => {
-    copyToClipboard(credential.password, "Mot de passe copié !");
-  };
-
-  const handleCopyNote = () => {
-    copyToClipboard(credential.note, "Note copiée !");
+    await confirmDelete();
   };
 
   return (
@@ -116,7 +89,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
                 color={themeColors.error}
                 width="full"
                 height="full"
-                onPress={confirmDelete}
+                onPress={handleConfirmDelete}
                 style={{ flex: 1 }}
               />
             </View>

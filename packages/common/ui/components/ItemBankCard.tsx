@@ -7,14 +7,14 @@
 
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { BankCardDecrypted } from '@common/core/types/types';
+import type { BankCardDecrypted } from '@common/core/types/items.types';
 import { formatExpirationDate } from '@common/utils';
 import { LazyCredentialIcon } from './LazyCredentialIcon';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { spacing } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
-import { cardFormattingService } from '@common/core/services/formattingService';
+import { useItemBankCard } from '@common/hooks/useItemBankCard';
 
 interface ItemBankCardProps {
   cred: BankCardDecrypted;
@@ -25,8 +25,8 @@ const ItemBankCard: React.FC<ItemBankCardProps> = ({ cred, onPress }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
 
-  // Format card number using service
-  const displayCardNumber = cardFormattingService.formatCardNumber(cred.cardNumber);
+  // Use the hook for card formatting
+  const { displayCardNumber } = useItemBankCard(cred);
 
   // Dynamic styles
   const styles = {

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, ScrollView, Text, StyleSheet } from 'react-native';
-import { CredentialDecrypted } from '@common/core/types/items.types';
-import { updateItem } from '@common/core/services/itemsService';
+import type { CredentialDecrypted } from '@common/core/types/items.types';
 import { useToast } from '@common/ui/components/Toast';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Toast } from '@ui/components/Toast';
@@ -12,9 +11,7 @@ import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { InputEdit } from '@ui/components/InputEdit';
-import { ROUTES } from '@common/ui/router';
-import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
-import { CATEGORIES } from '@common/core/types/categories.types';
+import { useModifyCredential } from '@common/hooks/useModifyCredential';
 
 interface ModifyCredentialPageProps {
   credential: CredentialDecrypted;
@@ -30,7 +27,6 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const router = useAppRouterContext();
   const { showToast } = useToast();
   
   const [title, setTitle] = useState(credential?.title || '');
@@ -38,37 +34,13 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
   const [password, setPassword] = useState(credential?.password || '');
   const [url, setUrl] = useState(credential?.url || '');
   const [note, setNote] = useState(credential?.note || '');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [toast, _setToast] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
-    if (!credential) {
-      setError('Identifiant introuvable');
-      return;
-    }
-    
-    setLoading(true);
-    setError(null);
-    try {
-      const updatedCredential: CredentialDecrypted = {
-        ...credential,
-        title,
-        username,
-        password,
-        url,
-        note,
-        lastUseDateTime: new Date(),
-      };
+  // Use the hook for business logic
+  const { error, loading, handleSubmit } = useModifyCredential(credential);
 
-      await updateItem(credential.id, updatedCredential);
-      showToast('Identifiant modifié avec succès');
-      router.navigateTo(ROUTES.HOME, { category: CATEGORIES.CREDENTIALS });
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Erreur lors de la modification de l\'identifiant.');
-    } finally {
-      setLoading(false);
-    }
+  const handleFormSubmit = async () => {
+    await handleSubmit(title, username, password, url, note, showToast);
   };
 
   if (!credential) {
@@ -129,7 +101,7 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
               color={themeColors.secondary}
               width="full"
               height="full"
-              onPress={handleSubmit}
+              onPress={handleFormSubmit}
               disabled={loading}
             />
           </View>

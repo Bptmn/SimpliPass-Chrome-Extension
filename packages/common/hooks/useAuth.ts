@@ -12,10 +12,8 @@
  */
 
 import { useState, useCallback } from 'react';
-import { auth } from '../core/adapters/auth.adapter';
-import { storage } from '../core/adapters/platform.storage.adapter';
+import { authService } from '../core/services/authService';
 import { getCurrentUser as getCurrentUserFromService } from '../core/services/userService';
-import { databaseListeners, authListeners } from '../core/services/listenerService';
 import { User } from '../core/types/auth.types';
 
 export interface UseAuthReturn {
@@ -46,7 +44,7 @@ export const useAuth = ({ user }: UseAuthProps): UseAuthReturn => {
     setError(null);
     try {
       // 1. Authenticate user (includes secret key initialization)
-      await auth.login(email, password);
+      await authService.login(email, password);
 
       console.log('[useAuth] Login flow completed successfully');
       
@@ -68,18 +66,11 @@ export const useAuth = ({ user }: UseAuthProps): UseAuthReturn => {
       setIsLoading(true);
       setError(null);
       
-      // 1. Sign out from Firebase and Cognito
-      await auth.signOut();
-
-      // 2. Stop all listeners
-      databaseListeners.stop();
-      authListeners.stop();
-
-      // 3. Clear all secure local storage (vault, user, secret key)
-      await storage.clearAllSecureLocalStorage();
+      // 1. Sign out and clear all data (handled by service)
+      await authService.logout();
 
       console.log('[useAuth] Logout completed successfully');
-      // 4. PopupApp will detect auth state change and render login page
+      // 2. PopupApp will detect auth state change and render login page
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Logout failed');

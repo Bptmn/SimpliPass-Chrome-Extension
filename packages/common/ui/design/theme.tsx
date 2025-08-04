@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { setColorsMode } from '@common/ui/design/colors';
 import { setPageStylesMode } from '@common/ui/design/layout';
+import { useThemeStorage } from '@common/hooks/useThemeStorage';
 
 export type ThemeMode = 'light' | 'dark';
 
@@ -12,10 +13,9 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-const THEME_STORAGE_KEY = 'simplipass_theme_mode';
-
 export const ThemeProvider: React.FC<{ children: ReactNode; mode?: ThemeMode }> = ({ children, mode }) => {
   const [internalMode, setInternalMode] = useState<ThemeMode>('light');
+  const { getStoredTheme, setStoredTheme } = useThemeStorage();
 
   // If mode is provided, always use it
   const effectiveMode = mode ?? internalMode;
@@ -27,24 +27,31 @@ export const ThemeProvider: React.FC<{ children: ReactNode; mode?: ThemeMode }> 
       setPageStylesMode(mode);
       return;
     }
-    const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === 'dark' || stored === 'light') {
-      setInternalMode(stored as ThemeMode);
-    }
-  }, [mode]);
+    
+    // Load stored theme
+    const loadStoredTheme = async () => {
+      const stored = await getStoredTheme();
+      if (stored) {
+        setInternalMode(stored);
+      }
+    };
+    
+    loadStoredTheme();
+  }, [mode, getStoredTheme]);
 
   useEffect(() => {
     setColorsMode(effectiveMode);
     setPageStylesMode(effectiveMode);
   }, [effectiveMode]);
 
-  const setMode = (newMode: ThemeMode) => {
+  const setMode = async (newMode: ThemeMode) => {
     setInternalMode(newMode);
-    localStorage.setItem(THEME_STORAGE_KEY, newMode);
+    await setStoredTheme(newMode);
   };
 
-  const toggleMode = () => {
-    setMode(effectiveMode === 'light' ? 'dark' : 'light');
+  const toggleMode = async () => {
+    const newMode = effectiveMode === 'light' ? 'dark' : 'light';
+    await setMode(newMode);
   };
 
   return (

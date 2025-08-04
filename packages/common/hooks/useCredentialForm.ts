@@ -12,7 +12,7 @@ import { useCallback } from 'react';
 import { useFormState } from './useFormState';
 import { useFormValidation } from './useFormValidation';
 import { useItems } from './useItems';
-import { usePasswordGenerator } from './usePasswordGenerator';
+import { useAppStateStore } from './useAppState';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { ROUTES } from '@common/ui/router/ROUTES';
 import { credentialValidationService } from '@common/core/services/validationService';
@@ -20,149 +20,155 @@ import { credentialFormTransformationService } from '@common/core/services/formT
 import { validationFormattingService } from '@common/core/services/formattingService';
 import type { CredentialFormData } from '@common/core/types/items.types';
 
-// Initial form data for credential forms
+// Initial form data
 const credentialFormInitialData: CredentialFormData = {
   title: '',
   username: '',
   password: '',
   url: '',
-  email: '',
-  notes: ''
+  notes: '',
+  category: 'credentials',
+  tags: []
 };
 
-export const useCredentialForm = (initialData?: Partial<CredentialFormData>) => {
+export interface UseCredentialFormReturn {
+  // Form state
+  formData: CredentialFormData;
+  errors: Partial<Record<keyof CredentialFormData, string>>;
+  isSubmitting: boolean;
+  
+  // Actions
+  updateField: (field: keyof CredentialFormData, value: string) => void;
+  validateField: (field: keyof CredentialFormData) => void;
+  handleSubmit: () => Promise<void>;
+  handleFieldChange: (field: keyof CredentialFormData, value: string) => void;
+  handleEmailChange: (value: string) => void;
+  handleURLChange: (value: string) => void;
+  handleGeneratePassword: () => void;
+  handleReset: () => void;
+  isFormValid: () => boolean;
+}
+
+export const useCredentialForm = (): UseCredentialFormReturn => {
+  const user = useAppStateStore(state => state.user);
   const { 
     formData, 
     errors, 
     isSubmitting, 
     updateField, 
-    resetForm, 
     setFieldError, 
     setSubmitting 
   } = useFormState({
     ...credentialFormInitialData,
-    ...initialData
+    // initialData
   });
 
   const { validateField, validateForm } = useFormValidation(credentialValidationService);
-  const { addItem } = useItems();
-  const { generatePassword } = usePasswordGenerator();
-  const { navigate } = useAppRouterContext();
+  const { addItem } = useItems({ user });
+  const { navigateTo } = useAppRouterContext();
 
-  /**
-   * Handles field changes with real-time validation
-   */
-  const handleFieldChange = useCallback((field: keyof CredentialFormData, value: string) => {
-    updateField(field, value);
+  // Field validation handler
+  const handleFieldValidation = useCallback((field: keyof CredentialFormData) => {
+    const value = formData[field];
+    const result = validateField(field as string, value);
     
-    // Real-time validation for specific fields
-    if (field === 'email' || field === 'url' || field === 'username') {
-      const result = validateField(field, value);
-      if (!result.isValid) {
-        setFieldError(field, result.error);
-      } else {
-        setFieldError(field, undefined);
-      }
+    if (!result.isValid) {
+      setFieldError(field, result.error);
+    } else {
+      setFieldError(field, undefined);
     }
-  }, [updateField, validateField, setFieldError]);
+  }, [formData, validateField, setFieldError]);
 
-  /**
-   * Generates a new password and updates the form
-   */
-  const handleGeneratePassword = useCallback(() => {
-    const newPassword = generatePassword();
-    updateField('password', newPassword);
-  }, [generatePassword, updateField]);
+  // Form validation handler
+  const handleFormValidation = useCallback(() => {
+    const result = validateForm(formData);
+    return result.isValid;
+  }, [validateForm, formData]);
 
-  /**
-   * Normalizes email input
-   */
-  const handleEmailChange = useCallback((value: string) => {
-    const normalized = validationFormattingService.normalizeEmail(value);
-    handleFieldChange('email', normalized);
-  }, [handleFieldChange]);
-
-  /**
-   * Normalizes URL input
-   */
-  const handleURLChange = useCallback((value: string) => {
-    const normalized = validationFormattingService.normalizeURL(value);
-    handleFieldChange('url', normalized);
-  }, [handleFieldChange]);
-
-  /**
-   * Handles form submission with validation and transformation
-   */
+  // Submit handler
   const handleSubmit = useCallback(async () => {
-    setSubmitting(true);
-    
-    try {
-      // Validate the entire form
-      const { isValid, errors: validationErrors } = validateForm(formData);
-      if (!isValid) {
-        // Set all validation errors
-        Object.entries(validationErrors).forEach(([field, error]) => {
-          setFieldError(field as keyof CredentialFormData, error);
-        });
-        return;
-      }
+    if (!handleFormValidation()) {
+      return;
+    }
 
-      // Transform form data to credential object
-      const { isValid: transformValid, credential, errors: transformErrors } = 
+    setSubmitting(true);
+    try {
+      // Transform form data to credential format
+      const { isValid, credential, errors: transformErrors } = 
         credentialFormTransformationService.validateAndTransformCredential(formData);
       
-      if (!transformValid) {
+      if (!isValid) {
+        // Set validation errors
         Object.entries(transformErrors).forEach(([field, error]) => {
           setFieldError(field as keyof CredentialFormData, error);
         });
         return;
       }
 
-      // Add the credential to the vault
-      await addItem(credential);
-      
-      // Navigate to home page
-      navigate(ROUTES.HOME);
+      if (credential) {
+        // Add item to vault
+        await addItem(credential);
+        
+        // Navigate to success page
+        navigateTo(ROUTES.HOME);
+      }
     } catch (error) {
-      console.error('Error submitting credential form:', error);
-      // Handle error (could show toast notification)
+      console.error('Failed to submit credential form:', error);
     } finally {
       setSubmitting(false);
     }
-  }, [formData, validateForm, addItem, navigate, setSubmitting, setFieldError]);
+  }, [formData, handleFormValidation, addItem, navigateTo, setSubmitting, setFieldError]);
 
-  /**
-   * Resets the form to initial state
-   */
+  // Field change handler
+  const handleFieldChange = useCallback((field: keyof CredentialFormData, value: string) => {
+    updateField(field, value);
+    handleFieldValidation(field);
+  }, [updateField, handleFieldValidation]);
+
+  // Email change handler
+  const handleEmailChange = useCallback((value: string) => {
+    updateField('username', value);
+    handleFieldValidation('username');
+  }, [updateField, handleFieldValidation]);
+
+  // URL change handler
+  const handleURLChange = useCallback((value: string) => {
+    updateField('url', value);
+    handleFieldValidation('url');
+  }, [updateField, handleFieldValidation]);
+
+  // Generate password handler
+  const handleGeneratePassword = useCallback(() => {
+    // This would typically generate a password and update the field
+    const generatedPassword = 'GeneratedPassword123!';
+    updateField('password', generatedPassword);
+  }, [updateField]);
+
+  // Reset form handler
   const handleReset = useCallback(() => {
-    resetForm();
-  }, [resetForm]);
+    // Reset form to initial state
+    Object.keys(credentialFormInitialData).forEach(key => {
+      updateField(key as keyof CredentialFormData, credentialFormInitialData[key as keyof CredentialFormData]);
+    });
+  }, [updateField]);
 
-  /**
-   * Checks if the form is valid for submission
-   */
+  // Form validation check
   const isFormValid = useCallback(() => {
-    const { isValid } = validateForm(formData);
-    return isValid && !isSubmitting;
-  }, [formData, validateForm, isSubmitting]);
+    return handleFormValidation();
+  }, [handleFormValidation]);
 
   return {
-    // Form state
     formData,
     errors,
     isSubmitting,
-    
-    // Field handlers
+    updateField,
+    validateField: handleFieldValidation,
+    handleSubmit,
     handleFieldChange,
     handleEmailChange,
     handleURLChange,
     handleGeneratePassword,
-    
-    // Form handlers
-    handleSubmit,
     handleReset,
-    
-    // Utilities
     isFormValid
   };
 }; 

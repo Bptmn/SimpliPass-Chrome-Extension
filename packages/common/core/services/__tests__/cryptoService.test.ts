@@ -16,8 +16,8 @@ Object.defineProperty(globalThis, 'crypto', {
 
 jest.mock('@common/utils/crypto', () => ({
   ...jest.requireActual('@common/utils/crypto'),
-  encryptData: jest.fn(),
-  decryptData: jest.fn(),
+  encryptData: jest.fn().mockImplementation((key: string, data: string) => Promise.resolve(`encrypted-${data}`)),
+  decryptData: jest.fn().mockImplementation((key: string, data: string) => Promise.resolve(data.replace('encrypted-', ''))),
 }));
 
 const mockedCryptoUtils = cryptoUtils as jest.Mocked<typeof cryptoUtils>;
@@ -44,8 +44,8 @@ describe('Crypto Service', () => {
         password: 'password123',
         url: 'http://example.com',
         note: 'A note',
-        createdDateTime: new Date().toISOString(),
-        lastUseDateTime: new Date().toISOString(),
+        createdDateTime: new Date(),
+        lastUseDateTime: new Date(),
         itemType: 'credential',
         itemKey,
       };

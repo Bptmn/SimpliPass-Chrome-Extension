@@ -41,7 +41,7 @@ export const cardValidationService = {
     }
     
     const isValid = sum % 10 === 0;
-    return { isValid, error: isValid ? null : 'Invalid card number' };
+    return { isValid, error: isValid ? undefined : 'Invalid card number' };
   },
 
   /**
@@ -76,7 +76,7 @@ export const cardValidationService = {
       return { isValid: false, error: 'Card expired' };
     }
     
-    return { isValid: true, error: null };
+    return { isValid: true, error: undefined };
   },
 
   /**
@@ -84,7 +84,7 @@ export const cardValidationService = {
    */
   validateCVV: (cvv: string): ValidationResult => {
     const isValid = /^\d{3,4}$/.test(cvv);
-    return { isValid, error: isValid ? null : 'Invalid CVV' };
+    return { isValid, error: isValid ? undefined : 'Invalid CVV' };
   },
 
   /**
@@ -98,19 +98,14 @@ export const cardValidationService = {
     }
     
     if (trimmed.length < 2) {
-      return { isValid: false, error: 'Name too short' };
+      return { isValid: false, error: 'Cardholder name too short' };
     }
     
     if (trimmed.length > 50) {
-      return { isValid: false, error: 'Name too long' };
+      return { isValid: false, error: 'Cardholder name too long' };
     }
     
-    // Check for valid characters (letters, spaces, hyphens, apostrophes)
-    if (!/^[a-zA-Z\s\-']+$/.test(trimmed)) {
-      return { isValid: false, error: 'Invalid characters in name' };
-    }
-    
-    return { isValid: true, error: null };
+    return { isValid: true, error: undefined };
   },
 
   /**
@@ -124,10 +119,30 @@ export const cardValidationService = {
     }
     
     if (trimmed.length > 100) {
-      return { isValid: false, error: 'Title too long' };
+      return { isValid: false, error: 'Card title too long' };
     }
     
-    return { isValid: true, error: null };
+    return { isValid: true, error: undefined };
+  },
+
+  /**
+   * Generic validateField method for form validation
+   */
+  validateField: (field: string | number, value: any): ValidationResult => {
+    switch (field) {
+      case 'cardNumber':
+        return cardValidationService.validateCardNumber(value);
+      case 'expirationDate':
+        return cardValidationService.validateExpirationDate(value);
+      case 'cvv':
+        return cardValidationService.validateCVV(value);
+      case 'cardholderName':
+        return cardValidationService.validateCardholderName(value);
+      case 'title':
+        return cardValidationService.validateCardTitle(value);
+      default:
+        return { isValid: true, error: undefined };
+    }
   }
 };
 
@@ -140,7 +155,7 @@ export const credentialValidationService = {
   validateEmail: (email: string): ValidationResult => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isValid = emailRegex.test(email);
-    return { isValid, error: isValid ? null : 'Invalid email format' };
+    return { isValid, error: isValid ? undefined : 'Invalid email format' };
   },
 
   /**
@@ -167,7 +182,7 @@ export const credentialValidationService = {
       return { isValid: false, error: 'Password must contain a special character' };
     }
     
-    return { isValid: true, error: null };
+    return { isValid: true, error: undefined };
   },
 
   /**
@@ -175,12 +190,12 @@ export const credentialValidationService = {
    */
   validateURL: (url: string): ValidationResult => {
     if (url.length === 0) {
-      return { isValid: true, error: null }; // URL is optional
+      return { isValid: true, error: undefined }; // URL is optional
     }
     
     try {
       new URL(url.startsWith('http') ? url : `https://${url}`);
-      return { isValid: true, error: null };
+      return { isValid: true, error: undefined };
     } catch {
       return { isValid: false, error: 'Invalid URL format' };
     }
@@ -209,7 +224,7 @@ export const credentialValidationService = {
       return { isValid: false, error: 'Username contains invalid characters' };
     }
     
-    return { isValid: true, error: null };
+    return { isValid: true, error: undefined };
   },
 
   /**
@@ -226,7 +241,27 @@ export const credentialValidationService = {
       return { isValid: false, error: 'Title too long' };
     }
     
-    return { isValid: true, error: null };
+    return { isValid: true, error: undefined };
+  },
+
+  /**
+   * Generic validateField method for form validation
+   */
+  validateField: (field: string | number, value: any): ValidationResult => {
+    switch (field) {
+      case 'email':
+        return credentialValidationService.validateEmail(value);
+      case 'password':
+        return credentialValidationService.validatePassword(value);
+      case 'url':
+        return credentialValidationService.validateURL(value);
+      case 'username':
+        return credentialValidationService.validateUsername(value);
+      case 'title':
+        return credentialValidationService.validateCredentialTitle(value);
+      default:
+        return { isValid: true, error: undefined };
+    }
   }
 };
 
@@ -247,7 +282,7 @@ export const secureNoteValidationService = {
       return { isValid: false, error: 'Title too long' };
     }
     
-    return { isValid: true, error: null };
+    return { isValid: true, error: undefined };
   },
 
   /**
@@ -264,7 +299,7 @@ export const secureNoteValidationService = {
       return { isValid: false, error: 'Note content too long' };
     }
     
-    return { isValid: true, error: null };
+    return { isValid: true, error: undefined };
   }
 };
 
@@ -279,7 +314,7 @@ export const commonValidationService = {
     const isValid = trimmed.length > 0;
     return { 
       isValid, 
-      error: isValid ? null : `${fieldName} is required` 
+      error: isValid ? undefined : `${fieldName} is required` 
     };
   },
 
@@ -290,7 +325,7 @@ export const commonValidationService = {
     const isValid = value.length >= minLength;
     return { 
       isValid, 
-      error: isValid ? null : `${fieldName} must be at least ${minLength} characters` 
+      error: isValid ? undefined : `${fieldName} must be at least ${minLength} characters` 
     };
   },
 
@@ -301,7 +336,7 @@ export const commonValidationService = {
     const isValid = value.length <= maxLength;
     return { 
       isValid, 
-      error: isValid ? null : `${fieldName} must be no more than ${maxLength} characters` 
+      error: isValid ? undefined : `${fieldName} must be no more than ${maxLength} characters` 
     };
   },
 
@@ -312,7 +347,7 @@ export const commonValidationService = {
     const isValid = value.length === length;
     return { 
       isValid, 
-      error: isValid ? null : `${fieldName} must be exactly ${length} characters` 
+      error: isValid ? undefined : `${fieldName} must be exactly ${length} characters` 
     };
   }
 };

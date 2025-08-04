@@ -11,35 +11,16 @@ export {
   setLocalVault,
   getLocalVault,
   clearLocalVault,
-  setDataInStates,
-  clearAllStates,
-  updateItemInStates,
-  setAuthState,
-  addItem,
-  updateItem,
-  deleteItem,
-  getAllItems,
 } from './core';
 
-// Hooks
-export { useDebouncedValue } from './utils/debouncedValue';
-export { usePasswordGenerator } from './hooks/usePasswordGenerator';
+// Libraries Layer (Layer 3)
+export * from './core/libraries/auth';
+export * from './core/libraries/database';
 
-export { useInputLogic } from './hooks/useInputLogic';
-export { useItems } from './hooks/useItems';
-export { useLazyCredentialIcon } from './hooks/useLazyCredentialIcon';
-export { useAuth } from './hooks/useAuth';
-export { useManualRefresh } from './hooks/useManualRefresh';
-export { useReEnterPassword } from './hooks/useReEnterPassword';
-export { useUser } from './hooks/useUser';
+// Platform adapters
+export { platform } from './core/adapters';
+export type { PlatformAdapter } from './core/adapters/platform.adapter';
 
-// Types
-export type {
-  User,
-  UserSession,
-  Platform,
-  NetworkStatus,
-} from './core';
-
-// Config
-export * from './config'; 
+// Types (specific exports to avoid conflicts)
+export type { User, UserSession, PageState } from './core/types/auth.types';
+export * from './core/types/errors.types'; 

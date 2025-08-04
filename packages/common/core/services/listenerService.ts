@@ -1,6 +1,5 @@
 // packages/common/core/services/listenerService.ts
 import { IDatabaseAdapter } from '../adapters/database.adapter';
-import { IAuthAdapter } from '../adapters/auth.adapter';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IItemsService } from './itemsService';
 import { IUserService } from './userService';

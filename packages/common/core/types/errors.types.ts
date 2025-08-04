@@ -83,4 +83,10 @@ export interface AppError {
   code: string;
   layer: 'hook' | 'service' | 'library';
   originalError?: Error;
+}
+
+// Validation result interface
+export interface ValidationResult {
+  isValid: boolean;
+  error?: string;
 } 

@@ -1,6 +1,7 @@
 // packages/common/core/services/authService.ts
 import { User as FirebaseUser } from 'firebase/auth';
 import { IAuthAdapter } from '../adapters/auth.adapter';
+import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IUserService } from './userService';
 import { useAppStateStore } from '../../hooks/useAppState';
 
@@ -20,6 +21,7 @@ export class AuthService implements IAuthService {
     private authAdapter: IAuthAdapter,
     private userService: IUserService,
     private appStateStore: typeof useAppStateStore,
+    private storageAdapter: IPlatformStorageAdapter
   ) {}
 
   public async initialize(): Promise<void> {
@@ -36,14 +38,14 @@ export class AuthService implements IAuthService {
     return user;
   }
 
-  public async isAuthenticated(): Promise<boolean> {
-    return await this.authAdapter.isAuthenticated();
-  }
-
-  public async signOut(): Promise<void> {
+  public async logout(): Promise<void> {
     // Business logic: clear user data and sign out
     await this.userService.clearUserData();
     await this.authAdapter.signOut();
+  }
+
+  public async isAuthenticated(): Promise<boolean> {
+    return await this.authAdapter.isAuthenticated();
   }
 
   public async fetchUserSalt(): Promise<string> {
@@ -52,6 +54,10 @@ export class AuthService implements IAuthService {
 
   public async getCurrentUser(): Promise<FirebaseUser | null> {
     return await this.authAdapter.getCurrentUser();
+  }
+
+  public async signOut(): Promise<void> {
+    await this.authAdapter.signOut();
   }
 
   public async startAuthListeners(): Promise<void> {
@@ -96,5 +102,6 @@ export class AuthService implements IAuthService {
 export const authService = new AuthService(
   {} as IAuthAdapter,
   {} as IUserService,
-  {} as typeof useAppStateStore
+  {} as typeof useAppStateStore,
+  {} as IPlatformStorageAdapter
 ); 

@@ -131,9 +131,34 @@ export interface CredentialForm {
   tags: string[];
 }
 
+export interface CredentialFormData {
+  title: string;
+  username: string;
+  password: string;
+  url: string;
+  notes?: string;
+  category: string;
+  tags: string[];
+}
+
 export interface BankCardForm {
   cardholderName: string;
   cardNumber: string;
+  expiryMonth: number;
+  expiryYear: number;
+  cvv: string;
+  cardType: string;
+  bankName?: string;
+  notes?: string;
+  category: string;
+  tags: string[];
+}
+
+export interface CardFormData {
+  title: string;
+  cardholderName: string;
+  cardNumber: string;
+  expirationDate: string;
   expiryMonth: number;
   expiryYear: number;
   cvv: string;

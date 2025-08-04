@@ -27,25 +27,11 @@ jest.mock('@common/config/platform', () => ({
   }),
 }));
 
-// Mock dependencies
-jest.mock('@common/core/adapters/auth.adapter', () => ({
-  auth: {
-    initialize: jest.fn()
-  }
-}));
-
-jest.mock('@common/core/adapters/platform.adapter', () => ({
-  initializePlatform: jest.fn()
-}));
-
-jest.mock('@common/core/adapters/platform.storage.adapter', () => ({
-  initializeStorage: jest.fn()
-}));
-
-jest.mock('@common/core/services/listenerService', () => ({
-  authListeners: {
-    start: jest.fn(),
-    stop: jest.fn()
+// Mock the initialization service
+jest.mock('@common/core/services/initializationService', () => ({
+  initializationService: {
+    initializeApp: jest.fn(),
+    resetInitializationState: jest.fn()
   }
 }));
 
@@ -59,10 +45,7 @@ jest.mock('../useAppState', () => ({
 }));
 
 // Get the mocked modules
-const { auth: mockAuth } = require('@common/core/adapters/auth.adapter');
-const { initializePlatform: mockInitializePlatform } = require('@common/core/adapters/platform.adapter');
-const { initializeStorage: mockInitializeStorage } = require('@common/core/adapters/platform.storage.adapter');
-const { authListeners: mockAuthListeners } = require('@common/core/services/listenerService');
+const { initializationService: mockInitializationService } = require('@common/core/services/initializationService');
 const { useAppStateStore: mockUseAppStateStore } = require('../useAppState');
 
 describe('useAppInitialization', () => {
@@ -70,10 +53,8 @@ describe('useAppInitialization', () => {
     jest.clearAllMocks();
     
     // Setup default mocks
-    mockAuth.initialize.mockResolvedValue(undefined);
-    mockInitializeStorage.mockResolvedValue(undefined);
-    mockInitializePlatform.mockResolvedValue(undefined);
-    mockAuthListeners.start.mockResolvedValue(undefined);
+    mockInitializationService.initializeApp.mockResolvedValue(undefined);
+    mockInitializationService.resetInitializationState.mockReturnValue(undefined);
     
     // Setup store mock
     const mockSetInitializing = jest.fn();
@@ -104,10 +85,7 @@ describe('useAppInitialization', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(mockAuth.initialize).toHaveBeenCalled();
-      expect(mockInitializePlatform).toHaveBeenCalled();
-      expect(mockInitializeStorage).toHaveBeenCalled();
-      expect(mockAuthListeners.start).toHaveBeenCalled();
+      expect(mockInitializationService.initializeApp).toHaveBeenCalled();
     });
 
     it('should skip initialization if already initializing', async () => {
@@ -133,12 +111,12 @@ describe('useAppInitialization', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(mockAuth.initialize).not.toHaveBeenCalled();
+      expect(mockInitializationService.initializeApp).not.toHaveBeenCalled();
     });
 
-    it('should handle auth initialization failure', async () => {
-      const authError = new Error('Auth initialization failed');
-      mockAuth.initialize.mockRejectedValue(authError);
+    it('should handle initialization failure', async () => {
+      const initError = new Error('Initialization failed');
+      mockInitializationService.initializeApp.mockRejectedValue(initError);
 
       renderHook(() => useAppInitialization());
 
@@ -146,52 +124,13 @@ describe('useAppInitialization', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(mockAuth.initialize).toHaveBeenCalled();
-    });
-
-    it('should handle platform initialization failure', async () => {
-      const platformError = new Error('Platform initialization failed');
-      mockInitializePlatform.mockRejectedValue(platformError);
-
-      renderHook(() => useAppInitialization());
-
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      expect(mockInitializePlatform).toHaveBeenCalled();
-    });
-
-    it('should handle storage initialization failure', async () => {
-      const storageError = new Error('Storage initialization failed');
-      mockInitializeStorage.mockRejectedValue(storageError);
-
-      renderHook(() => useAppInitialization());
-
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      expect(mockInitializeStorage).toHaveBeenCalled();
-    });
-
-    it('should handle auth listeners start failure', async () => {
-      const listenersError = new Error('Auth listeners failed');
-      mockAuthListeners.start.mockRejectedValue(listenersError);
-
-      renderHook(() => useAppInitialization());
-
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      expect(mockAuthListeners.start).toHaveBeenCalled();
+      expect(mockInitializationService.initializeApp).toHaveBeenCalled();
     });
   });
 
   describe('error handling', () => {
     it('should handle non-Error exceptions', async () => {
-      mockAuth.initialize.mockRejectedValue('Unknown error');
+      mockInitializationService.initializeApp.mockRejectedValue('Unknown error');
 
       renderHook(() => useAppInitialization());
 
@@ -199,11 +138,11 @@ describe('useAppInitialization', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(mockAuth.initialize).toHaveBeenCalled();
+      expect(mockInitializationService.initializeApp).toHaveBeenCalled();
     });
 
     it('should handle undefined errors', async () => {
-      mockAuth.initialize.mockRejectedValue(undefined);
+      mockInitializationService.initializeApp.mockRejectedValue(undefined);
 
       renderHook(() => useAppInitialization());
 
@@ -211,11 +150,11 @@ describe('useAppInitialization', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(mockAuth.initialize).toHaveBeenCalled();
+      expect(mockInitializationService.initializeApp).toHaveBeenCalled();
     });
 
     it('should handle null errors', async () => {
-      mockAuth.initialize.mockRejectedValue(null);
+      mockInitializationService.initializeApp.mockRejectedValue(null);
 
       renderHook(() => useAppInitialization());
 
@@ -223,7 +162,7 @@ describe('useAppInitialization', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(mockAuth.initialize).toHaveBeenCalled();
+      expect(mockInitializationService.initializeApp).toHaveBeenCalled();
     });
   });
 
@@ -237,8 +176,10 @@ describe('useAppInitialization', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('[useAppInitialization] Starting application initialization');
-      expect(consoleSpy).toHaveBeenCalledWith('[useAppInitialization] Application fully initialized');
+      // The logging now happens in the service, not in the hook
+      // The hook only logs when there's an error
+      expect(consoleSpy).not.toHaveBeenCalledWith('[useAppInitialization] Starting application initialization');
+      expect(consoleSpy).not.toHaveBeenCalledWith('[useAppInitialization] Application fully initialized');
 
       consoleSpy.mockRestore();
     });
@@ -305,8 +246,8 @@ describe('useAppInitialization', () => {
 
     it('should log errors during initialization', async () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      const authError = new Error('Auth initialization failed');
-      mockAuth.initialize.mockRejectedValue(authError);
+      const initError = new Error('Initialization failed');
+      mockInitializationService.initializeApp.mockRejectedValue(initError);
 
       renderHook(() => useAppInitialization());
 
@@ -314,7 +255,7 @@ describe('useAppInitialization', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('[useAppInitialization] Initialization failed:', authError);
+      expect(consoleSpy).toHaveBeenCalledWith('[useAppInitialization] Initialization failed:', initError);
 
       consoleSpy.mockRestore();
     });
@@ -340,7 +281,7 @@ describe('useAppInitialization', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(mockAuth.initialize).toHaveBeenCalled();
+      expect(mockInitializationService.initializeApp).toHaveBeenCalled();
     });
 
     it('should not call initializeApp on mount when already initializing', async () => {
@@ -366,18 +307,18 @@ describe('useAppInitialization', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(mockAuth.initialize).not.toHaveBeenCalled();
+      expect(mockInitializationService.initializeApp).not.toHaveBeenCalled();
     });
   });
 
   describe('state management', () => {
     it('should prevent multiple simultaneous initializations', async () => {
       // Create a promise that doesn't resolve immediately
-      let resolveAuth: () => void;
-      const authPromise = new Promise<void>((resolve) => {
-        resolveAuth = resolve;
+      let resolveInit: () => void;
+      const initPromise = new Promise<void>((resolve) => {
+        resolveInit = resolve;
       });
-      mockAuth.initialize.mockReturnValue(authPromise);
+      mockInitializationService.initializeApp.mockReturnValue(initPromise);
 
       renderHook(() => useAppInitialization());
 
@@ -386,11 +327,11 @@ describe('useAppInitialization', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      // Should only call auth.initialize once
-      expect(mockAuth.initialize).toHaveBeenCalledTimes(1);
+      // Should only call initializeApp once
+      expect(mockInitializationService.initializeApp).toHaveBeenCalledTimes(1);
 
       // Resolve the promise
-      resolveAuth!();
+      resolveInit!();
       await act(async () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });

@@ -15,59 +15,22 @@
  */
 
 import { useCallback, useEffect } from 'react';
-import { auth, initializeStorage } from '@common/core/adapters';
-import { initializePlatform } from '@common/core/adapters/platform.adapter';
-import { authListeners } from '@common/core/services/listenerService';
+import { initializationService } from '@common/core/services/initializationService';
 import { useAppStateStore } from './useAppState';
 
 export const useAppInitialization = (): void => {
   // Get Zustand store methods directly
   const { setInitializing } = useAppStateStore();
 
-  // App initialization - single responsibility with Zustand state management
+  // App initialization - delegate to service layer
   const initializeApp = useCallback(async (): Promise<void> => {
-    // Prevent multiple initialization calls using Zustand state
-    const currentState = useAppStateStore.getState();
-    if (currentState.isInitializing) {
-      console.log('[useAppInitialization] App is already initializing, skipping');
-      return;
-    }
-
     try {
-      console.log('[useAppInitialization] Starting application initialization');
-      
-      // Step 1: Update global state through Zustand - start initialization
-      setInitializing(true, null);
-
-      // Step 2: Initialize auth provider
-      await auth.initialize();
-      console.log('[useAppInitialization] Auth provider initialized successfully');
-      
-      // Step 3: Initialize platform detection
-      await initializePlatform();
-      console.log('[useAppInitialization] Platform initialized successfully');
-      
-      // Step 4: Initialize storage
-      await initializeStorage();
-      console.log('[useAppInitialization] Storage initialized successfully');
-      
-      // Step 5: Start auth listeners (they will handle auth state naturally)
-      await authListeners.start();
-      console.log('[useAppInitialization] Auth listeners started successfully');
-      
-      // Step 6: Mark initialization complete via Zustand
-      setInitializing(false);
-      
-      console.log('[useAppInitialization] Application fully initialized');
-      
+      await initializationService.initializeApp();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Application initialization failed';
+      // Error is already handled by the service and exposed to UI state
       console.error('[useAppInitialization] Initialization failed:', error);
-      
-      // Update global state through Zustand
-      setInitializing(false, errorMessage);
     }
-  }, [setInitializing]);
+  }, []);
 
   // Initialize app on mount only if not already initializing
   useEffect(() => {
@@ -83,5 +46,5 @@ export const useAppInitialization = (): void => {
 // Reset function for testing and edge cases
 export function resetInitializationState(): void {
   console.log('[useAppInitialization] Resetting initialization state');
-  useAppStateStore.getState().setInitializing(false, null);
+  initializationService.resetInitializationState();
 } 

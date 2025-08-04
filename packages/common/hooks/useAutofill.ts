@@ -5,10 +5,11 @@
  * Handles autofill suggestions, credential injection, and form interactions.
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useItems } from './useItems';
+import { useAppStateStore } from './useAppState';
 import { useCurrentTabDomain } from './useCurrentTabDomain';
-import { CredentialDecrypted } from '@common/core/types/items.types';
+import type { CredentialDecrypted } from '@common/core/types/items.types';
 
 export interface AutofillData {
   username?: string;
@@ -39,8 +40,8 @@ export interface UseAutofillReturn {
 }
 
 export const useAutofill = (): UseAutofillReturn => {
-  // Step 1: Get dependencies
-  const { items, loading: itemsLoading, error: itemsError } = useItems();
+  const user = useAppStateStore(state => state.user);
+  const { items, loading: itemsLoading, error: itemsError } = useItems({ user });
   const { currentDomain, isLoading: domainLoading, error: domainError } = useCurrentTabDomain();
   
   // Step 2: Initialize state

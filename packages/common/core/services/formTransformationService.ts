@@ -7,8 +7,10 @@
 // - Generate required fields and IDs
 
 import { generateItemKey } from '@common/utils/crypto';
-import type { BankCard, Credential, SecureNote } from '@common/core/types/items.types';
-import type { CardFormData, CredentialFormData, SecureNoteFormData } from '@common/core/types/items.types';
+import { parseExpirationDate, createExpirationDate } from '@common/utils/expirationDate';
+import type { BankCardDecrypted, CredentialDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
+import type { CardFormData, CredentialFormData, SecureNoteForm } from '@common/core/types/items.types';
+import type { ItemDecrypted } from '@common/core/types/items.types';
 
 // ===== Card Form Transformation Service =====
 
@@ -16,41 +18,47 @@ export const cardFormTransformationService = {
   /**
    * Transforms form data to BankCard object
    */
-  transformFormToCard: (formData: CardFormData): BankCard => {
+  transformFormToCard: (formData: CardFormData): BankCardDecrypted => {
+    const expirationDate = parseExpirationDate(formData.expirationDate) || createExpirationDate(formData.expiryMonth, formData.expiryYear);
     return {
       id: generateItemKey(),
-      type: 'bankCard',
-      title: formData.title.trim(),
-      cardNumber: formData.cardNumber.replace(/\s/g, ''),
-      cardholderName: formData.cardholderName.trim(),
-      expirationDate: formData.expirationDate,
-      cvv: formData.cvv,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      category: 'bankCard',
-      isFavorite: false,
-      notes: formData.notes?.trim() || ''
+      itemType: 'bankCard',
+      createdDateTime: new Date(),
+      lastUseDateTime: new Date(),
+      title: formData.title,
+      owner: formData.cardholderName,
+      note: formData.notes || '',
+      color: '#007AFF',
+      itemKey: generateItemKey(),
+      cardNumber: formData.cardNumber,
+      expirationDate,
+      verificationNumber: formData.cvv,
+      bankName: formData.bankName || '',
+      bankDomain: '',
     };
   },
 
-  /**
-   * Transforms BankCard object to form data
-   */
-  transformCardToForm: (card: BankCard): CardFormData => {
+  transformCardToForm: (card: BankCardDecrypted): CardFormData => {
     return {
       title: card.title,
+      cardholderName: card.owner,
       cardNumber: card.cardNumber,
-      cardholderName: card.cardholderName,
-      expirationDate: card.expirationDate,
-      cvv: card.cvv,
-      notes: card.notes || ''
+      expirationDate: `${card.expirationDate.month.toString().padStart(2, '0')}/${card.expirationDate.year.toString().slice(-2)}`,
+      expiryMonth: card.expirationDate.month,
+      expiryYear: card.expirationDate.year,
+      cvv: card.verificationNumber,
+      cardType: 'unknown',
+      bankName: card.bankName,
+      notes: card.note,
+      category: 'cards',
+      tags: [],
     };
   },
 
   /**
    * Validates and transforms form data with business rules
    */
-  validateAndTransformCard: (formData: CardFormData): { isValid: boolean; card?: BankCard; errors: Record<string, string> } => {
+  validateAndTransformCard: (formData: CardFormData): { isValid: boolean; card?: BankCardDecrypted; errors: Record<string, string> } => {
     const errors: Record<string, string> = {};
     
     // Validate required fields
@@ -91,78 +99,69 @@ export const credentialFormTransformationService = {
   /**
    * Transforms form data to Credential object
    */
-  transformFormToCredential: (formData: CredentialFormData): Credential => {
+  transformFormToCredential: (formData: CredentialFormData): CredentialDecrypted => {
     return {
       id: generateItemKey(),
-      type: 'credential',
-      title: formData.title.trim(),
-      username: formData.username.trim(),
+      itemType: 'credential',
+      createdDateTime: new Date(),
+      lastUseDateTime: new Date(),
+      title: formData.title,
+      username: formData.username,
       password: formData.password,
-      url: formData.url?.trim() || '',
-      email: formData.email?.trim() || '',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      category: 'credential',
-      isFavorite: false,
-      notes: formData.notes?.trim() || ''
+      note: formData.notes || '',
+      url: formData.url,
+      itemKey: generateItemKey(),
     };
   },
 
   /**
    * Transforms Credential object to form data
    */
-  transformCredentialToForm: (credential: Credential): CredentialFormData => {
+  transformCredentialToForm: (credential: CredentialDecrypted): CredentialFormData => {
     return {
       title: credential.title,
       username: credential.username,
       password: credential.password,
-      url: credential.url || '',
-      email: credential.email || '',
-      notes: credential.notes || ''
+      url: credential.url,
+      notes: credential.note,
+      category: 'credentials',
+      tags: [],
     };
   },
 
   /**
    * Validates and transforms form data with business rules
    */
-  validateAndTransformCredential: (formData: CredentialFormData): { isValid: boolean; credential?: Credential; errors: Record<string, string> } => {
+  validateAndTransformCredential: (formData: CredentialFormData): { isValid: boolean; credential?: CredentialDecrypted; errors: Record<string, string> } => {
     const errors: Record<string, string> = {};
     
     // Validate required fields
     if (!formData.title?.trim()) {
-      errors.title = 'Credential title is required';
+      errors.title = 'Title is required';
     }
     
     if (!formData.username?.trim()) {
       errors.username = 'Username is required';
     }
     
-    if (!formData.password) {
+    if (!formData.password?.trim()) {
       errors.password = 'Password is required';
     }
     
-    // Validate optional fields if provided
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Invalid email format';
-    }
-    
-    if (formData.url) {
-      try {
-        new URL(formData.url.startsWith('http') ? formData.url : `https://${formData.url}`);
-      } catch {
-        errors.url = 'Invalid URL format';
-      }
+    // Validate URL format if provided
+    if (formData.url && !/^https?:\/\/.+/.test(formData.url)) {
+      errors.url = 'Invalid URL format';
     }
     
     const isValid = Object.keys(errors).length === 0;
     
     if (isValid) {
       const credential = credentialFormTransformationService.transformFormToCredential(formData);
-      return { isValid, credential, errors };
+      return { isValid: true, credential, errors: {} };
     }
     
-    return { isValid, errors };
-  }
+    return { isValid: false, credential: undefined, errors };
+  },
 };
 
 // ===== Secure Note Form Transformation Service =====
@@ -171,64 +170,49 @@ export const secureNoteFormTransformationService = {
   /**
    * Transforms form data to SecureNote object
    */
-  transformFormToSecureNote: (formData: SecureNoteFormData): SecureNote => {
+  transformFormToSecureNote: (formData: SecureNoteForm): SecureNoteDecrypted => {
     return {
       id: generateItemKey(),
-      type: 'secureNote',
-      title: formData.title.trim(),
-      content: formData.content.trim(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      category: 'secureNote',
-      isFavorite: false,
-      notes: formData.notes?.trim() || ''
+      itemType: 'secureNote',
+      createdDateTime: new Date(),
+      lastUseDateTime: new Date(),
+      title: formData.title,
+      note: formData.content,
+      color: '#007AFF',
+      itemKey: generateItemKey(),
     };
   },
 
-  /**
-   * Transforms SecureNote object to form data
-   */
-  transformSecureNoteToForm: (secureNote: SecureNote): SecureNoteFormData => {
+  transformSecureNoteToForm: (secureNote: SecureNoteDecrypted): SecureNoteForm => {
     return {
       title: secureNote.title,
-      content: secureNote.content,
-      notes: secureNote.notes || ''
+      content: secureNote.note,
+      category: 'notes',
+      tags: [],
     };
   },
 
-  /**
-   * Validates and transforms form data with business rules
-   */
-  validateAndTransformSecureNote: (formData: SecureNoteFormData): { isValid: boolean; secureNote?: SecureNote; errors: Record<string, string> } => {
+  validateAndTransformSecureNote: (formData: SecureNoteForm): { isValid: boolean; secureNote?: SecureNoteDecrypted; errors: Record<string, string> } => {
     const errors: Record<string, string> = {};
     
     // Validate required fields
     if (!formData.title?.trim()) {
-      errors.title = 'Note title is required';
+      errors.title = 'Title is required';
     }
     
     if (!formData.content?.trim()) {
-      errors.content = 'Note content is required';
-    }
-    
-    // Validate length constraints
-    if (formData.title && formData.title.length > 100) {
-      errors.title = 'Title too long (max 100 characters)';
-    }
-    
-    if (formData.content && formData.content.length > 10000) {
-      errors.content = 'Content too long (max 10,000 characters)';
+      errors.content = 'Content is required';
     }
     
     const isValid = Object.keys(errors).length === 0;
     
     if (isValid) {
       const secureNote = secureNoteFormTransformationService.transformFormToSecureNote(formData);
-      return { isValid, secureNote, errors };
+      return { isValid: true, secureNote, errors: {} };
     }
     
-    return { isValid, errors };
-  }
+    return { isValid: false, secureNote: undefined, errors };
+  },
 };
 
 // ===== Generic Form Transformation Service =====
@@ -237,17 +221,14 @@ export const genericFormTransformationService = {
   /**
    * Generic method to transform any form data to item
    */
-  transformFormToItem: <T extends Record<string, any>>(
-    formData: T,
-    itemType: 'bankCard' | 'credential' | 'secureNote'
-  ): any => {
+  transformFormToItem: <T extends Record<string, any>>(formData: T, itemType: string): ItemDecrypted => {
     switch (itemType) {
       case 'bankCard':
-        return cardFormTransformationService.transformFormToCard(formData as CardFormData);
+        return cardFormTransformationService.transformFormToCard(formData as unknown as CardFormData);
       case 'credential':
-        return credentialFormTransformationService.transformFormToCredential(formData as CredentialFormData);
+        return credentialFormTransformationService.transformFormToCredential(formData as unknown as CredentialFormData);
       case 'secureNote':
-        return secureNoteFormTransformationService.transformFormToSecureNote(formData as SecureNoteFormData);
+        return secureNoteFormTransformationService.transformFormToSecureNote(formData as unknown as SecureNoteForm);
       default:
         throw new Error(`Unknown item type: ${itemType}`);
     }
@@ -256,36 +237,30 @@ export const genericFormTransformationService = {
   /**
    * Generic method to transform any item to form data
    */
-  transformItemToForm: <T extends Record<string, any>>(
-    item: any,
-    itemType: 'bankCard' | 'credential' | 'secureNote'
-  ): T => {
-    switch (itemType) {
-      case 'bankCard':
-        return cardFormTransformationService.transformCardToForm(item) as T;
-      case 'credential':
-        return credentialFormTransformationService.transformCredentialToForm(item) as T;
-      case 'secureNote':
-        return secureNoteFormTransformationService.transformSecureNoteToForm(item) as T;
-      default:
-        throw new Error(`Unknown item type: ${itemType}`);
+  transformItemToForm: <T extends Record<string, any>>(item: ItemDecrypted): T => {
+    const itemType = item.itemType;
+    if (itemType === 'bankCard') {
+      return cardFormTransformationService.transformCardToForm(item as BankCardDecrypted) as unknown as T;
+    } else if (itemType === 'credential') {
+      return credentialFormTransformationService.transformCredentialToForm(item as CredentialDecrypted) as unknown as T;
+    } else if (itemType === 'secureNote') {
+      return secureNoteFormTransformationService.transformSecureNoteToForm(item as SecureNoteDecrypted) as unknown as T;
+    } else {
+      throw new Error(`Unknown item type: ${itemType}`);
     }
   },
 
   /**
    * Generic method to validate and transform form data
    */
-  validateAndTransformForm: <T extends Record<string, any>>(
-    formData: T,
-    itemType: 'bankCard' | 'credential' | 'secureNote'
-  ): { isValid: boolean; item?: any; errors: Record<string, string> } => {
+  validateAndTransformForm: <T extends Record<string, any>>(formData: T, itemType: string): { isValid: boolean; item?: ItemDecrypted; errors: Record<string, string> } => {
     switch (itemType) {
       case 'bankCard':
-        return cardFormTransformationService.validateAndTransformCard(formData as CardFormData);
+        return cardFormTransformationService.validateAndTransformCard(formData as unknown as CardFormData);
       case 'credential':
-        return credentialFormTransformationService.validateAndTransformCredential(formData as CredentialFormData);
+        return credentialFormTransformationService.validateAndTransformCredential(formData as unknown as CredentialFormData);
       case 'secureNote':
-        return secureNoteFormTransformationService.validateAndTransformSecureNote(formData as SecureNoteFormData);
+        return secureNoteFormTransformationService.validateAndTransformSecureNote(formData as unknown as SecureNoteForm);
       default:
         throw new Error(`Unknown item type: ${itemType}`);
     }
@@ -295,25 +270,25 @@ export const genericFormTransformationService = {
 // ===== Type Definitions =====
 
 export interface CardFormTransformationService {
-  transformFormToCard: (formData: CardFormData) => BankCard;
-  transformCardToForm: (card: BankCard) => CardFormData;
-  validateAndTransformCard: (formData: CardFormData) => { isValid: boolean; card?: BankCard; errors: Record<string, string> };
+  transformFormToCard: (formData: CardFormData) => BankCardDecrypted;
+  transformCardToForm: (card: BankCardDecrypted) => CardFormData;
+  validateAndTransformCard: (formData: CardFormData) => { isValid: boolean; card?: BankCardDecrypted; errors: Record<string, string> };
 }
 
 export interface CredentialFormTransformationService {
-  transformFormToCredential: (formData: CredentialFormData) => Credential;
-  transformCredentialToForm: (credential: Credential) => CredentialFormData;
-  validateAndTransformCredential: (formData: CredentialFormData) => { isValid: boolean; credential?: Credential; errors: Record<string, string> };
+  transformFormToCredential: (formData: CredentialFormData) => CredentialDecrypted;
+  transformCredentialToForm: (credential: CredentialDecrypted) => CredentialFormData;
+  validateAndTransformCredential: (formData: CredentialFormData) => { isValid: boolean; credential?: CredentialDecrypted; errors: Record<string, string> };
 }
 
 export interface SecureNoteFormTransformationService {
-  transformFormToSecureNote: (formData: SecureNoteFormData) => SecureNote;
-  transformSecureNoteToForm: (secureNote: SecureNote) => SecureNoteFormData;
-  validateAndTransformSecureNote: (formData: SecureNoteFormData) => { isValid: boolean; secureNote?: SecureNote; errors: Record<string, string> };
+  transformFormToSecureNote: (formData: SecureNoteForm) => SecureNoteDecrypted;
+  transformSecureNoteToForm: (secureNote: SecureNoteDecrypted) => SecureNoteForm;
+  validateAndTransformSecureNote: (formData: SecureNoteForm) => { isValid: boolean; secureNote?: SecureNoteDecrypted; errors: Record<string, string> };
 }
 
 export interface GenericFormTransformationService {
-  transformFormToItem: <T extends Record<string, any>>(formData: T, itemType: 'bankCard' | 'credential' | 'secureNote') => any;
-  transformItemToForm: <T extends Record<string, any>>(item: any, itemType: 'bankCard' | 'credential' | 'secureNote') => T;
-  validateAndTransformForm: <T extends Record<string, any>>(formData: T, itemType: 'bankCard' | 'credential' | 'secureNote') => { isValid: boolean; item?: any; errors: Record<string, string> };
+  transformFormToItem: <T extends Record<string, any>>(formData: T, itemType: string) => ItemDecrypted;
+  transformItemToForm: <T extends Record<string, any>>(item: ItemDecrypted) => T;
+  validateAndTransformForm: <T extends Record<string, any>>(formData: T, itemType: string) => { isValid: boolean; item?: ItemDecrypted; errors: Record<string, string> };
 } 

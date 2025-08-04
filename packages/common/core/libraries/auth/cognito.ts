@@ -110,3 +110,19 @@ export class CognitoAuth {
     }
   }
 }
+
+// Standalone function exports for adapter compatibility
+export const loginWithCognito = async (email: string, password: string): Promise<CognitoUser> => {
+  const cognitoAuth = new CognitoAuth();
+  return cognitoAuth.loginWithCognito(email, password);
+};
+
+export const fetchUserSaltCognito = async (): Promise<string> => {
+  const cognitoAuth = new CognitoAuth();
+  return cognitoAuth.fetchUserSaltCognito();
+};
+
+export const signOutCognito = async (): Promise<void> => {
+  const cognitoAuth = new CognitoAuth();
+  return cognitoAuth.signOutCognito();
+};

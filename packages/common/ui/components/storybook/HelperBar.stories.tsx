@@ -1,59 +1,46 @@
 import React from 'react';
 import { View } from 'react-native';
 import { HelperBar } from '../HelperBar';
-import { ThemeProvider } from '@common/ui/design/theme';
-import { spacing } from '@ui/design/layout';
-import { MemoryRouter } from 'react-router';
+import { ThemeProvider } from '@ui/design/theme';
+import { useThemeStorage } from '@common/hooks/useThemeStorage';
+
+// Mock the useThemeStorage hook for storybook
+const MockThemeProvider: React.FC<{ children: React.ReactNode; mode?: 'light' | 'dark' }> = ({ children, mode }) => {
+  const { setStoredTheme } = useThemeStorage();
+  
+  React.useEffect(() => {
+    if (mode) {
+      setStoredTheme(mode);
+    }
+  }, [mode, setStoredTheme]);
+
+  return (
+    <ThemeProvider mode={mode}>
+      {children}
+    </ThemeProvider>
+  );
+};
 
 export default {
-  title: 'components/HelperBar',
+  title: 'Components/HelperBar',
   component: HelperBar,
+  decorators: [
+    (Story: React.ComponentType) => (
+      <MockThemeProvider mode="dark">
+        <View style={{ padding: 20, backgroundColor: '#1a1a1a' }}>
+          <Story />
+        </View>
+      </MockThemeProvider>
+    ),
+  ],
 };
 
-// Custom ThemeProvider that forces dark mode
-const DarkThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Set dark mode immediately before rendering
-  if (typeof window !== 'undefined') {
-    window.localStorage.setItem('simplipass_theme_mode', 'dark');
-  }
+export const DarkMode = () => <HelperBar />;
 
-  return (
-    <ThemeProvider>
-      <View style={{ padding: spacing.lg, minHeight: 200 }}>
-        {children}
-      </View>
-    </ThemeProvider>
-  );
-};
-
-// Custom ThemeProvider that forces light mode
-const LightThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Set light mode immediately before rendering
-  if (typeof window !== 'undefined') {
-    window.localStorage.setItem('simplipass_theme_mode', 'light');
-  }
-
-  return (
-    <ThemeProvider>
-      <View style={{ padding: spacing.lg }}>
-        {children}
-      </View>
-    </ThemeProvider>
-  );
-};
-
-export const Default = () => (
-  <MemoryRouter>
-    <LightThemeProvider>
+export const LightMode = () => (
+  <MockThemeProvider mode="light">
+    <View style={{ padding: 20, backgroundColor: '#ffffff' }}>
       <HelperBar />
-    </LightThemeProvider>
-  </MemoryRouter>
-);
-
-export const DefaultDark = () => (
-  <MemoryRouter>
-    <DarkThemeProvider>
-      <HelperBar />
-    </DarkThemeProvider>
-  </MemoryRouter>
+    </View>
+  </MockThemeProvider>
 ); 

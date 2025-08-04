@@ -17,18 +17,23 @@ export interface ICryptoService {
 // Create a singleton instance for the crypto service
 let cryptoServiceInstance: CryptoService | null = null;
 
-export const decryptItem = async (userSecretKey: string, itemToDecrypt: ItemEncrypted): Promise<ItemDecrypted | null> => {
+const getCryptoService = (): CryptoService => {
   if (!cryptoServiceInstance) {
-    throw new Error('CryptoService not initialized');
+    cryptoServiceInstance = new CryptoService();
   }
-  return cryptoServiceInstance.decryptItem(userSecretKey, itemToDecrypt);
+  return cryptoServiceInstance;
+};
+
+export const decryptItem = async (userSecretKey: string, itemToDecrypt: ItemEncrypted): Promise<ItemDecrypted | null> => {
+  return getCryptoService().decryptItem(userSecretKey, itemToDecrypt);
 };
 
 export const decryptAllItems = async (userSecretKey: string, itemsList: ItemEncrypted[]): Promise<ItemDecrypted[]> => {
-  if (!cryptoServiceInstance) {
-    throw new Error('CryptoService not initialized');
-  }
-  return cryptoServiceInstance.decryptAllItems(userSecretKey, itemsList);
+  return getCryptoService().decryptAllItems(userSecretKey, itemsList);
+};
+
+export const encryptItem = async (userSecretKey: string, itemToEncrypt: ItemDecrypted): Promise<ItemEncrypted> => {
+  return getCryptoService().encryptItem(userSecretKey, itemToEncrypt);
 };
 
 export class CryptoService implements ICryptoService {

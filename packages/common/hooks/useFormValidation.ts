@@ -78,7 +78,7 @@ export const useFormValidation = <T extends Record<string, any>>(
    */
   const getFieldError = useCallback((field: keyof T, value: any): string | null => {
     const result = validationService.validateField(field, value);
-    return result.error;
+    return result.error || null;
   }, [validationService]);
 
   return {

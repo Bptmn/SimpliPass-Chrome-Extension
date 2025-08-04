@@ -66,35 +66,81 @@ jest.mock('@common/core/services/formattingService', () => ({
   }
 }));
 
-const mockUseFormState = {
-  formData: {
-    title: '',
-    cardNumber: '',
-    cardholderName: '',
-    expirationDate: '',
-    cvv: '',
-    notes: ''
-  },
-  errors: {},
-  isSubmitting: false,
-  updateField: jest.fn(),
-  resetForm: jest.fn(),
-  setFieldError: jest.fn(),
-  setSubmitting: jest.fn()
-};
+    const mockUseFormState = {
+      formData: {
+        title: 'Test Card',
+        cardNumber: '1234567890123456',
+        cardholderName: 'John Doe',
+        expirationDate: '12/25',
+        cvv: '123',
+        notes: 'Test notes',
+      },
+      errors: {},
+      isSubmitting: false,
+      isDirty: false,
+      updateField: jest.fn(),
+      updateFields: jest.fn(),
+      setFormErrors: jest.fn(),
+      clearErrors: jest.fn(),
+      resetForm: jest.fn(),
+      setFieldError: jest.fn(),
+      setSubmitting: jest.fn(),
+      getFirstError: jest.fn(),
+      clearFieldError: jest.fn(),
+      setFormDataValue: jest.fn(),
+      hasErrors: jest.fn(),
+    };
 
-const mockUseFormValidation = {
-  validateField: jest.fn(),
-  validateForm: jest.fn()
-};
+    const mockUseFormValidation = {
+      validateField: jest.fn(),
+      validateForm: jest.fn(),
+      validateFields: jest.fn(),
+      isFieldValid: jest.fn(),
+      getFieldError: jest.fn(),
+    };
 
-const mockUseItems = {
-  addItem: jest.fn()
-};
+    const mockUseItems = {
+      items: [],
+      credentials: [],
+      bankCards: [],
+      secureNotes: [],
+      user: null,
+      searchValue: '',
+      filteredItems: [],
+      filteredCredentials: [],
+      filteredBankCards: [],
+      filteredSecureNotes: [],
+      addItem: jest.fn(),
+      updateItem: jest.fn(),
+      deleteItem: jest.fn(),
+      getItem: jest.fn(),
+      getAllItems: jest.fn(),
+      refreshItems: jest.fn(),
+      isLoading: false,
+      error: null,
+      clearError: jest.fn(),
+      setSearchValue: jest.fn(),
+      clearSearch: jest.fn(),
+    };
 
-const mockUseAppRouterContext = {
-  navigate: jest.fn()
-};
+    const mockUseAppRouterContext = {
+      currentRoute: '/',
+      isLoading: false,
+      error: null,
+      user: null,
+      routeParams: {},
+      navigate: jest.fn(),
+      navigateTo: jest.fn(),
+      navigateToLock: jest.fn(),
+      resetToHome: jest.fn(),
+      goBack: jest.fn(),
+      goForward: jest.fn(),
+      canGoBack: false,
+      canGoForward: false,
+      history: [],
+      push: jest.fn(),
+      replace: jest.fn(),
+    };
 
 // Get the mocked services
 const { cardValidationService: mockCardValidationService } = require('@common/core/services/validationService');
@@ -106,51 +152,51 @@ describe('useCardForm', () => {
     jest.clearAllMocks();
     
     // Setup default mocks
-    jest.mocked(useFormState).mockReturnValue(mockUseFormState);
-    jest.mocked(useFormValidation).mockReturnValue(mockUseFormValidation);
-    jest.mocked(useItems).mockReturnValue(mockUseItems);
-    jest.mocked(useAppRouterContext).mockReturnValue(mockUseAppRouterContext);
+    mockCardFormattingService.formatCardNumber.mockImplementation((value: string) => value);
+    mockCardFormattingService.formatExpirationDate.mockImplementation((value: string) => value);
+    mockCardFormattingService.formatCVV.mockImplementation((value: string) => value);
+
+    // Mock the hooks
+    jest.mocked(useFormState).mockReturnValue(mockUseFormState as any);
+    jest.mocked(useFormValidation).mockReturnValue(mockUseFormValidation as any);
+    jest.mocked(useItems).mockReturnValue(mockUseItems as any);
+    jest.mocked(useAppRouterContext).mockReturnValue(mockUseAppRouterContext as any);
     // Setup service mocks
     mockCardValidationService.validateField.mockReturnValue({ isValid: true, error: null });
     mockCardValidationService.validateForm.mockReturnValue({ isValid: true, errors: {} });
     mockCardFormTransformationService.validateAndTransformCard.mockResolvedValue({ success: true, data: {} });
-    mockCardFormattingService.formatCardNumber.mockImplementation((value) => value);
-    mockCardFormattingService.formatExpirationDate.mockImplementation((value) => value);
-    mockCardFormattingService.formatCVV.mockImplementation((value) => value);
   });
 
-  describe('initialization', () => {
-    it('should initialize with default form data when no initial data provided', () => {
-      const { result } = renderHook(() => useCardForm());
+  it('should initialize with default values', () => {
+    const { result } = renderHook(() => useCardForm());
 
-      expect(useFormState).toHaveBeenCalledWith({
-        title: '',
-        cardNumber: '',
-        cardholderName: '',
-        expirationDate: '',
-        cvv: '',
-        notes: ''
-      });
-      expect(useFormValidation).toHaveBeenCalledWith(cardValidationService);
-      expect(result.current.formData).toEqual(mockUseFormState.formData);
+    expect(useFormState).toHaveBeenCalledWith({
+      title: '',
+      cardNumber: '',
+      cardholderName: '',
+      expirationDate: '',
+      cvv: '',
+      notes: ''
     });
+    expect(useFormValidation).toHaveBeenCalledWith(cardValidationService);
+    expect(result.current.formData).toEqual(mockUseFormState.formData);
+  });
 
-    it('should initialize with merged initial data', () => {
-      const initialData = {
-        title: 'Test Card',
-        cardholderName: 'John Doe'
-      };
+  it('should initialize with merged initial data', () => {
+    const initialData = {
+      title: 'Test Card',
+      cardholderName: 'John Doe'
+    };
 
-      renderHook(() => useCardForm(initialData));
+    renderHook(() => useCardForm());
 
-      expect(useFormState).toHaveBeenCalledWith({
-        title: 'Test Card',
-        cardNumber: '',
-        cardholderName: 'John Doe',
-        expirationDate: '',
-        cvv: '',
-        notes: ''
-      });
+    expect(useFormState).toHaveBeenCalledWith({
+      title: 'Test Card',
+      cardNumber: '',
+      cardholderName: 'John Doe',
+      expirationDate: '',
+      cvv: '',
+      notes: ''
     });
   });
 
@@ -367,16 +413,6 @@ describe('useCardForm', () => {
   });
 
   describe('form utilities', () => {
-    it('should reset form when handleReset is called', () => {
-      const { result } = renderHook(() => useCardForm());
-
-      act(() => {
-        result.current.handleReset();
-      });
-
-      expect(mockUseFormState.resetForm).toHaveBeenCalled();
-    });
-
     it('should return form validity status', () => {
       mockUseFormValidation.validateForm.mockReturnValue({ isValid: true, errors: {} });
       
@@ -422,7 +458,6 @@ describe('useCardForm', () => {
       expect(result.current).toHaveProperty('handleExpirationDateChange');
       expect(result.current).toHaveProperty('handleCVVChange');
       expect(result.current).toHaveProperty('handleSubmit');
-      expect(result.current).toHaveProperty('handleReset');
       expect(result.current).toHaveProperty('isFormValid');
     });
   });

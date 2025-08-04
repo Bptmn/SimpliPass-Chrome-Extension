@@ -1,7 +1,17 @@
-// Re-export all auth library functions
-export * from './cognito';
-export * from './firebase';
+export { 
+  initFirebase, 
+  initialize, 
+  login, 
+  isAuthenticated, 
+  signOutUser, 
+  fetchUserSalt, 
+  getAuthInstance, 
+  getCurrentUser, 
+  onAuthStateChanged 
+} from './firebase';
 
-// Re-export specific functions for convenience
-export { signInWithFirebaseToken, auth, firestore, signOutFromFirebase } from './firebase';
-export { loginWithCognito, fetchUserSaltCognito, signOutCognito } from './cognito';
+export { 
+  loginWithCognito, 
+  fetchUserSaltCognito, 
+  signOutCognito 
+} from './cognito';

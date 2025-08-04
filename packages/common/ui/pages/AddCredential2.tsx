@@ -18,6 +18,7 @@ import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { checkPasswordStrength } from '@common/utils/checkPasswordStrength';
 import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+import { useAppStateStore } from '@common/hooks/useAppState';
 
 interface AddCredential2Props {
   title: string;
@@ -30,7 +31,7 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
   const themeColors = getColors(mode);
   const router = useAppRouterContext();
   const { user } = useUser();
-  const { addItem, isActionLoading } = useItems();
+  const { addItem, isActionLoading } = useItems({ user });
   const [title, setTitle] = useState(initialTitle);
   const [username, setUsername] = useState(user?.email || '');
   const [password, setPassword] = useState(passwordGenerator(true, true, true, true, 16));

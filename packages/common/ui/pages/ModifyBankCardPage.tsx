@@ -9,9 +9,8 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Platform, StyleSheet } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { updateItem } from '@common/core/services/itemsService';
 import { useToast } from '@common/ui/components/Toast';
-import { BankCardDecrypted } from '@common/core/types/items.types';
+import type { BankCardDecrypted } from '@common/core/types/items.types';
 import { pageStyles } from '@common/ui/design/layout';
 import { getColors, typography, spacing, radius } from '@common/ui/design';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
@@ -23,11 +22,8 @@ import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Toast } from '@ui/components/Toast';
 import { Icon } from '@ui/components/Icon';
 import { getMonthOptions, getYearOptions } from '@common/utils/cards';
-import { ROUTES } from '@common/ui/router';
-import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
-import { CATEGORIES } from '@common/core/types/categories.types';
 import { useCardForm } from '@common/hooks/useCardForm';
-import { cardFormattingService } from '@common/core/services/formattingService';
+import { useModifyBankCard } from '@common/hooks/useModifyBankCard';
 import { createExpirationDate, parseExpirationDate } from '@common/utils/expirationDate';
 
 const themeColors = getColors('light');
@@ -42,7 +38,6 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
   onBack: _onBack,
 }) => {
   const { showToast } = useToast();
-  const router = useAppRouterContext();
 
   // Initialize form data from existing card
   const initialFormData = {
@@ -55,21 +50,25 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
   };
 
   // Use our new card form hook
-  const { 
-    formData, 
-    errors, 
-    isSubmitting, 
-    handleFieldChange, 
-    handleCardNumberChange, 
-    handleExpirationDateChange, 
-    handleCVVChange, 
-    handleSubmit 
-  } = useCardForm(initialFormData);
+  const {
+    formData,
+    errors,
+    isSubmitting,
+    updateField,
+    handleFieldChange,
+    handleCardNumberChange,
+    handleExpirationDateChange,
+    handleCVVChange,
+    handleSubmit,
+    isFormValid
+  } = useCardForm();
 
   const [color, setColor] = useState(bankCard.color || '#007AFF');
-  const [error, setError] = useState<string | null>(null);
   const [toast, _setToast] = useState<string | null>(null);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+
+  // Use the hook for business logic
+  const { error, loading, handleSubmit: handleModifySubmit } = useModifyBankCard(bankCard);
 
   // Date options
   const monthOptions = getMonthOptions();
@@ -86,32 +85,10 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
   };
 
   const handleFormSubmit = async () => {
-    setError(null);
-    
-    try {
-      const [month, year] = formData.expirationDate.split('/');
-      const updatedCard: BankCardDecrypted = {
-        ...bankCard,
-        title: formData.title,
-        bankName: formData.cardholderName, // Using cardholderName as bankName for consistency
-        owner: formData.cardholderName,
-        cardNumber: formData.cardNumber.replace(/\s/g, ''), // Remove spaces for storage
-        expirationDate: {
-          month: parseInt(month, 10),
-          year: parseInt(`20${year}`, 10)
-        },
-        verificationNumber: formData.cvv,
-        note: formData.notes,
-        color,
-        lastUseDateTime: new Date(),
-      };
-      
-      await updateItem(bankCard.id, updatedCard);
-      showToast('Carte modifiée avec succès');
-      router.navigateTo(ROUTES.HOME, { category: CATEGORIES.BANK_CARDS });
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Erreur lors de la modification de la carte.');
-    }
+    await handleModifySubmit({
+      ...formData,
+      notes: formData.notes || ''
+    }, color, showToast);
   };
 
   if (!bankCard) {
@@ -136,23 +113,20 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
     cardNumber: formData.cardNumber,
     expirationDate: expDate,
     verificationNumber: formData.cvv,
-    note: formData.notes,
+    note: formData.notes || '',
     color: color || bankCard.color,
   };
 
   return (
     <View style={pageStyles.pageContainer}>
-      {error && <ErrorBanner message={error} />}
+      {(error || Object.keys(errors).length > 0) && <ErrorBanner message={error || Object.values(errors).filter(Boolean).join(', ')} />}
       <Toast message={toast || ''} />
       <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
-            title="Modifier une carte" 
-            onBackPress={() => router.navigateTo(ROUTES.HOME, { category: CATEGORIES.BANK_CARDS })} 
+            title="Modifier la carte" 
+            onBackPress={_onBack} 
           />
-          <View style={styles.previewContainer}>
-            <ItemBankCard cred={previewCard} />
-          </View>
           <View style={pageStyles.formContainer}>
             <ColorSelector
               title="Choisissez la couleur de votre carte"
@@ -182,7 +156,7 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
             />
             <InputEdit
               label="Numéro de carte"
-              value={cardFormattingService.formatCardNumber(formData.cardNumber)}
+              value={formData.cardNumber}
               onChange={handleCardNumberChange}
               placeholder="0000 0000 0000 0000"
               onClear={() => handleFieldChange('cardNumber', '')}
@@ -267,8 +241,8 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
               </View>
             </View>
             <InputEdit
-              label="Note (optionnel)"
-              value={formData.notes}
+              label="Notes"
+              value={formData.notes || ''}
               onChange={(value) => handleFieldChange('notes', value)}
               placeholder="Ajoutez une note..."
               onClear={() => handleFieldChange('notes', '')}
@@ -279,7 +253,7 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
               width="full"
               height="full"
               onPress={handleFormSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || loading}
             />
           </View>
         </View>

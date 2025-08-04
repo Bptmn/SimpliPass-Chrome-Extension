@@ -3,7 +3,7 @@
  * Handles encrypted vault storage and state synchronization
  */
 
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/types';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
 import { ItemEncrypted, ItemDecrypted } from '@common/core/types/items.types';
 import { decryptAllItems, encryptItem } from '@common/core/services/cryptoService';
 

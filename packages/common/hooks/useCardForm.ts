@@ -11,155 +11,179 @@ import { useCallback } from 'react';
 import { useFormState } from './useFormState';
 import { useFormValidation } from './useFormValidation';
 import { useItems } from './useItems';
+import { useAppStateStore } from './useAppState';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { ROUTES } from '@common/ui/router/ROUTES';
 import { cardValidationService } from '@common/core/services/validationService';
 import { cardFormTransformationService } from '@common/core/services/formTransformationService';
-import { cardFormattingService } from '@common/core/services/formattingService';
 import type { CardFormData } from '@common/core/types/items.types';
 
-// Initial form data for card forms
+// Initial form data
 const cardFormInitialData: CardFormData = {
   title: '',
-  cardNumber: '',
   cardholderName: '',
+  cardNumber: '',
   expirationDate: '',
+  expiryMonth: 1,
+  expiryYear: new Date().getFullYear(),
   cvv: '',
-  notes: ''
+  cardType: 'unknown',
+  bankName: '',
+  notes: '',
+  category: 'cards',
+  tags: []
 };
 
-export const useCardForm = (initialData?: Partial<CardFormData>) => {
+export interface UseCardFormReturn {
+  // Form state
+  formData: CardFormData;
+  errors: Partial<Record<keyof CardFormData, string>>;
+  isSubmitting: boolean;
+  
+  // Actions
+  updateField: (field: keyof CardFormData, value: string) => void;
+  validateField: (field: keyof CardFormData) => void;
+  handleSubmit: () => Promise<void>;
+  handleFieldChange: (field: keyof CardFormData, value: string) => void;
+  handleCardNumberChange: (value: string) => void;
+  handleExpirationDateChange: (value: string) => void;
+  handleCVVChange: (value: string) => void;
+  isFormValid: () => boolean;
+}
+
+export const useCardForm = (): UseCardFormReturn => {
+  const user = useAppStateStore(state => state.user);
   const { 
     formData, 
     errors, 
     isSubmitting, 
     updateField, 
-    resetForm, 
     setFieldError, 
     setSubmitting 
   } = useFormState({
     ...cardFormInitialData,
-    ...initialData
+    // initialData
   });
 
   const { validateField, validateForm } = useFormValidation(cardValidationService);
-  const { addItem } = useItems();
-  const { navigate } = useAppRouterContext();
+  const { addItem } = useItems({ user });
+  const { navigateTo } = useAppRouterContext();
 
-  /**
-   * Handles field changes with real-time validation
-   */
-  const handleFieldChange = useCallback((field: keyof CardFormData, value: string) => {
-    updateField(field, value);
+  // Field validation handler
+  const handleFieldValidation = useCallback((field: keyof CardFormData) => {
+    const value = formData[field];
+    const result = validateField(field as string, value);
     
-    // Real-time validation for specific fields
-    if (field === 'cardNumber' || field === 'expirationDate' || field === 'cvv') {
-      const result = validateField(field, value);
-      if (!result.isValid) {
-        setFieldError(field, result.error);
-      } else {
-        setFieldError(field, undefined);
-      }
+    if (!result.isValid) {
+      setFieldError(field, result.error);
+    } else {
+      setFieldError(field, undefined);
     }
-  }, [updateField, validateField, setFieldError]);
+  }, [formData, validateField, setFieldError]);
 
-  /**
-   * Formats card number as user types
-   */
-  const handleCardNumberChange = useCallback((value: string) => {
-    const formatted = cardFormattingService.formatCardNumber(value);
-    handleFieldChange('cardNumber', formatted);
-  }, [handleFieldChange]);
+  // Form validation handler
+  const handleFormValidation = useCallback(() => {
+    const result = validateForm(formData);
+    return result.isValid;
+  }, [validateForm, formData]);
 
-  /**
-   * Formats expiration date as user types
-   */
-  const handleExpirationDateChange = useCallback((value: string) => {
-    const formatted = cardFormattingService.formatExpirationDate(value);
-    handleFieldChange('expirationDate', formatted);
-  }, [handleFieldChange]);
-
-  /**
-   * Formats CVV (numeric only)
-   */
-  const handleCVVChange = useCallback((value: string) => {
-    const formatted = cardFormattingService.formatCVV(value);
-    handleFieldChange('cvv', formatted);
-  }, [handleFieldChange]);
-
-  /**
-   * Handles form submission with validation and transformation
-   */
+  // Submit handler
   const handleSubmit = useCallback(async () => {
-    setSubmitting(true);
-    
-    try {
-      // Validate the entire form
-      const { isValid, errors: validationErrors } = validateForm(formData);
-      if (!isValid) {
-        // Set all validation errors
-        Object.entries(validationErrors).forEach(([field, error]) => {
-          setFieldError(field as keyof CardFormData, error);
-        });
-        return;
-      }
+    if (!handleFormValidation()) {
+      return;
+    }
 
-      // Transform form data to card object
-      const { isValid: transformValid, card, errors: transformErrors } = 
+    setSubmitting(true);
+    try {
+      // Transform form data to card format
+      const { isValid, card, errors: transformErrors } = 
         cardFormTransformationService.validateAndTransformCard(formData);
       
-      if (!transformValid) {
+      if (!isValid) {
+        // Set validation errors
         Object.entries(transformErrors).forEach(([field, error]) => {
           setFieldError(field as keyof CardFormData, error);
         });
         return;
       }
 
-      // Add the card to the vault
-      await addItem(card);
-      
-      // Navigate to home page
-      navigate(ROUTES.HOME);
+      if (card) {
+        // Add item to vault
+        await addItem(card);
+        
+        // Navigate to success page
+        navigateTo(ROUTES.HOME);
+      }
     } catch (error) {
-      console.error('Error submitting card form:', error);
-      // Handle error (could show toast notification)
+      console.error('Failed to submit card form:', error);
     } finally {
       setSubmitting(false);
     }
-  }, [formData, validateForm, addItem, navigate, setSubmitting, setFieldError]);
+  }, [formData, handleFormValidation, addItem, navigateTo, setSubmitting, setFieldError]);
 
-  /**
-   * Resets the form to initial state
-   */
-  const handleReset = useCallback(() => {
-    resetForm();
-  }, [resetForm]);
+  // Reset form
+  const resetForm = useCallback(() => {
+    // Reset to initial data
+    updateField('title', '');
+    updateField('cardholderName', '');
+    updateField('cardNumber', '');
+    updateField('expiryMonth', 1);
+    updateField('expiryYear', new Date().getFullYear());
+    updateField('cvv', '');
+    updateField('cardType', 'visa');
+    updateField('bankName', '');
+    updateField('notes', '');
+    updateField('category', 'bankCards');
+    updateField('tags', []);
+  }, [updateField]);
 
-  /**
-   * Checks if the form is valid for submission
-   */
+  // Clear errors
+  const clearErrors = useCallback(() => {
+    Object.keys(errors).forEach(field => {
+      setFieldError(field as keyof CardFormData, undefined);
+    });
+  }, [errors, setFieldError]);
+
+  // Field change handler
+  const handleFieldChange = useCallback((field: keyof CardFormData, value: string) => {
+    updateField(field, value);
+    handleFieldValidation(field);
+  }, [updateField, handleFieldValidation]);
+
+  // Card number change handler
+  const handleCardNumberChange = useCallback((value: string) => {
+    updateField('cardNumber', value);
+    handleFieldValidation('cardNumber');
+  }, [updateField, handleFieldValidation]);
+
+  // Expiration date change handler
+  const handleExpirationDateChange = useCallback((value: string) => {
+    updateField('expirationDate', value);
+    handleFieldValidation('expirationDate');
+  }, [updateField, handleFieldValidation]);
+
+  // CVV change handler
+  const handleCVVChange = useCallback((value: string) => {
+    updateField('cvv', value);
+    handleFieldValidation('cvv');
+  }, [updateField, handleFieldValidation]);
+
+  // Form validation check
   const isFormValid = useCallback(() => {
-    const { isValid } = validateForm(formData);
-    return isValid && !isSubmitting;
-  }, [formData, validateForm, isSubmitting]);
+    return handleFormValidation();
+  }, [handleFormValidation]);
 
   return {
-    // Form state
     formData,
     errors,
     isSubmitting,
-    
-    // Field handlers
+    updateField,
+    validateField: handleFieldValidation,
+    handleSubmit,
     handleFieldChange,
     handleCardNumberChange,
     handleExpirationDateChange,
     handleCVVChange,
-    
-    // Form handlers
-    handleSubmit,
-    handleReset,
-    
-    // Utilities
     isFormValid
   };
 }; 

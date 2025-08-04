@@ -26,8 +26,7 @@ import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { ROUTES } from '@common/ui/router/ROUTES';
 import { CATEGORIES } from '@common/core/types/categories.types';
 import { useCardForm } from '@common/hooks/useCardForm';
-import { cardFormattingService } from '@common/core/services/formattingService';
-import { createExpirationDate, parseExpirationDate } from '@common/utils/expirationDate';
+import { useAddCard2 } from '@common/hooks/useAddCard2';
 import type { BankCardDecrypted } from '@common/core/types/items.types';
 
 interface AddCard2Props {
@@ -50,26 +49,23 @@ export const AddCard2: React.FC<AddCard2Props> = ({
   const router = useAppRouterContext();
   
   // Use our new card form hook
-  const { 
-    formData, 
-    errors, 
-    isSubmitting, 
-    handleFieldChange, 
-    handleCardNumberChange, 
-    handleExpirationDateChange, 
-    handleCVVChange, 
-    handleSubmit 
-  } = useCardForm({
-    title: initialTitle || '',
-    cardNumber: '',
-    cardholderName: '',
-    expirationDate: initialExpiryDate || '',
-    cvv: initialCvv || '',
-    notes: ''
-  });
+  const {
+    formData,
+    errors,
+    isSubmitting,
+    updateField,
+    handleFieldChange,
+    handleCardNumberChange,
+    handleExpirationDateChange,
+    handleCVVChange,
+    handleSubmit,
+    isFormValid
+  } = useCardForm();
 
   const [selectedColor, setSelectedColor] = useState('#4f86a2');
-  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+
+  // Use the hook for business logic
+  const { previewCard, isDatePickerVisible, showDatePicker, hideDatePicker } = useAddCard2(formData, selectedColor);
 
   // Helper for web: generate month and year options
   const monthOptions = getMonthOptions();
@@ -83,46 +79,28 @@ export const AddCard2: React.FC<AddCard2Props> = ({
     const yy = String(date.getFullYear()).slice(-2);
     const formattedDate = `${mm}/${yy}`;
     handleExpirationDateChange(formattedDate);
-    setDatePickerVisible(false);
-  };
-
-  // Card preview object - only show predefined values for title and bank name
-  const previewCard: BankCardDecrypted = {
-    id: 'preview',
-    itemType: 'bankCard',
-    title: formData.title || 'Titre de la carte',
-    owner: formData.cardholderName || 'Nom du titulaire',
-    note: formData.notes || '',
-    color: selectedColor,
-    itemKey: '',
-    cardNumber: formData.cardNumber || '0000 0000 0000 0000',
-    expirationDate: parseExpirationDate(formData.expirationDate) || createExpirationDate(1, new Date().getFullYear() + 1),
-    verificationNumber: formData.cvv || '123',
-    bankName: initialBankName || 'Nom de la banque',
-    bankDomain: '',
-    createdDateTime: new Date(),
-    lastUseDateTime: new Date(),
+    hideDatePicker();
   };
 
   return (
     <View style={pageStyles.pageContainer}>
-      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={{flexGrow: 1}}>
+      {Object.keys(errors).length > 0 && <ErrorBanner message={Object.values(errors).filter(Boolean).join(', ')} />}
+      <Toast message="" />
+      <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
             title="Ajouter une carte" 
-            onBackPress={() => {
-              console.log('[AddCard2] Back button pressed, router:', !!router);
-              console.log('[AddCard2] Using router.goBack()');
-              router.goBack();
-            }} 
+            onBackPress={() => router.navigateTo(ROUTES.ADD_CARD_1)} 
           />
-          <ItemBankCard cred={previewCard} />
-          <ColorSelector
-            title="Choisissez la couleur de votre carte"
-            value={selectedColor}
-            onChange={setSelectedColor}
-          />
+          <View style={styles.previewContainer}>
+            <ItemBankCard cred={previewCard} />
+          </View>
           <View style={pageStyles.formContainer}>
+            <ColorSelector
+              title="Choisissez la couleur de votre carte"
+              value={selectedColor}
+              onChange={setSelectedColor}
+            />
             <Input
               label="Nom du titulaire"
               _id="cardholderName"
@@ -195,7 +173,7 @@ export const AddCard2: React.FC<AddCard2Props> = ({
                 ) : (
                   <Pressable
                     style={styles.inputContainer}
-                    onPress={() => setDatePickerVisible(true)}
+                    onPress={() => showDatePicker()}
                   >
                     <Text style={formData.expirationDate ? styles.inputDateText : styles.inputDatePlaceholder}>
                       {formData.expirationDate || 'MM/YY'}
@@ -225,7 +203,7 @@ export const AddCard2: React.FC<AddCard2Props> = ({
               label="Note (optionnel)"
               _id="notes"
               type="text"
-              value={formData.notes}
+              value={formData.notes || ''}
               onChange={(value) => handleFieldChange('notes', value)}
               placeholder="Ajoutez une note..."
             />
@@ -245,11 +223,9 @@ export const AddCard2: React.FC<AddCard2Props> = ({
         isVisible={isDatePickerVisible}
         mode="date"
         onConfirm={handleDateConfirm}
-        onCancel={() => setDatePickerVisible(false)}
+        onCancel={() => hideDatePicker()}
         minimumDate={new Date()}
       />
-      
-             <Toast message="" />
     </View>
   );
 };
@@ -353,6 +329,9 @@ const getStyles = (mode: 'light' | 'dark') => {
       color: themeColors.error,
       fontSize: typography.fontSize.xs,
       marginTop: spacing.xs,
+    },
+    previewContainer: {
+      marginBottom: spacing.xl,
     },
   });
 }; 

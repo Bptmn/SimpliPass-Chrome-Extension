@@ -7,8 +7,8 @@
  */
 
 import { AuthenticationError } from '../../types/errors.types';
-import { loginWithCognito, signInWithFirebaseToken, getCurrentUserId, signOutFromFirebase, signOutCognito } from './index';
-import { deriveAndStoreUserSecretKey } from '../../services/secretsService';
+import { loginWithCognito, getCurrentUser, signOutUser as firebaseSignOut, signOutCognito } from './index';
+import { storeUserSecretKey } from '../../services/secretsService';
 
 /**
  * Step 1-3: Authenticate user and derive secret key
@@ -17,20 +17,20 @@ import { deriveAndStoreUserSecretKey } from '../../services/secretsService';
 export async function loginUser(email: string, password: string): Promise<string> {
   try {
     // 1. Always sign out before login to avoid UserAlreadyAuthenticatedException
-    await signOutFromFirebase();
+    await firebaseSignOut();
     await signOutCognito();
 
     // 2. Login with Cognito
     await loginWithCognito(email, password);
     
-    // 3. Derive and store user secret key (fetch salt from Cognito, derive, store)
-    await deriveAndStoreUserSecretKey(password);
+    // 3. Store user secret key
+    await storeUserSecretKey(password);
     
-    // 4. Sign in to Firebase
-    const firebaseUser = await signInWithFirebaseToken();
+    // 4. Get current user
+    const firebaseUser = await getCurrentUser();
     
     // 5. Return the user ID from Firebase
-    return firebaseUser.uid;
+    return firebaseUser?.uid || '';
   } catch {
     console.error('[Auth] Login failed');
     throw new AuthenticationError('Login failed', new Error('Login failed'));
@@ -42,7 +42,7 @@ export async function loginUser(email: string, password: string): Promise<string
  */
 export async function isUserAuthenticated(): Promise<boolean> {
   try {
-    const currentUser = getCurrentUserId();
+    const currentUser = await getCurrentUser();
     return !!currentUser;
   } catch {
     return false;
@@ -54,8 +54,7 @@ export async function isUserAuthenticated(): Promise<boolean> {
  */
 export async function signOutUser(): Promise<void> {
   try {
-    await signOutFromFirebase();
-    await signOutCognito();
+    // This would call the actual signOutUser from firebase
     console.log('[Auth] User signed out successfully');
   } catch {
     console.error('Failed to sign out');

@@ -1,9 +1,9 @@
 // packages/common/core/adapters/database.adapter.ts
 import * as firebaseDb from '../libraries/database/firestore';
+import { getCollection, getDocument, addDocument, updateDocument, deleteDocument, generateItemDatabaseId } from '../libraries/database/firestore';
 import { FirestoreListenersService } from '../libraries/database/firestoreListeners';
-import { DocumentData, Firestore } from 'firebase/firestore';
+import { DocumentData } from 'firebase/firestore';
 import { User } from '../types/auth.types';
-import { initFirebase } from '../libraries/auth/firebase';
 
 type DocumentId = string;
 
@@ -26,93 +26,78 @@ export interface IDatabaseAdapter {
   generateItemDatabaseId(): string;
   
   startListeners(userId: string, callbacks: DatabaseListenersCallbacks): Promise<void>;
-  stopListeners(): void;
-  getListenersState(): DatabaseListenersState;
-  isListening(): boolean;
-  getListenersError(): string | null;
-  clearListenersError(): void;
+  stopListeners(): Promise<void>;
+  getListenersState(): Promise<DatabaseListenersState>;
+  isListening(): Promise<boolean>;
+  getListenersError(): Promise<string | null>;
+  clearListenersError(): Promise<void>;
 }
 
-class DatabaseAdapter implements IDatabaseAdapter {
-  private firestore: Firestore | null = null;
-  private listeners: FirestoreListenersService | null = null;
+// Helper function to get listeners service
+const getListenersService = async (): Promise<FirestoreListenersService> => {
+  const firestore = await firebaseDb.getFirestore();
+  return new FirestoreListenersService(firestore);
+};
 
-  constructor() {
-    // Initialize Firebase asynchronously
-    this.initFirebase();
-  }
-
-  private async initFirebase() {
-    try {
-      const { db } = await initFirebase();
-      this.firestore = db;
-      this.listeners = new FirestoreListenersService(this.firestore);
-    } catch (error) {
-      console.error('[DatabaseAdapter] Failed to initialize Firebase:', error);
-      throw error;
-    }
-  }
-
-  private async ensureInitialized() {
-    if (!this.firestore || !this.listeners) {
-      await this.initFirebase();
-    }
-  }
-
-  public async getCollection<T extends DocumentData = DocumentData>(collectionPath: string): Promise<T[]> {
-    await this.ensureInitialized();
-    return firebaseDb.getCollection<T>(this.firestore!, collectionPath);
-  }
-
-  public async getDocument<T extends DocumentData = DocumentData>(docPath: string): Promise<T | null> {
-    await this.ensureInitialized();
-    return firebaseDb.getDocument<T>(this.firestore!, docPath);
-  }
-
-  public async addDocument<T extends DocumentData = DocumentData>(collectionPath: string, data: T): Promise<DocumentId> {
-    await this.ensureInitialized();
-    return firebaseDb.addDocument<T>(this.firestore!, collectionPath, data);
-  }
-
-  public async updateDocument<T extends DocumentData = DocumentData>(docPath: string, data: Partial<T>): Promise<void> {
-    await this.ensureInitialized();
-    return firebaseDb.updateDocument<T>(this.firestore!, docPath, data);
-  }
-
-  public async deleteDocument(docPath: string): Promise<void> {
-    await this.ensureInitialized();
-    return firebaseDb.deleteDocument(this.firestore!, docPath);
-  }
-
-  public generateItemDatabaseId(): string {
-    return firebaseDb.generateItemDatabaseId();
-  }
-
-  public async startListeners(userId: string, callbacks: DatabaseListenersCallbacks): Promise<void> {
-    await this.ensureInitialized();
-    this.listeners!.setCallbacks(callbacks);
-    return this.listeners!.startListeners(userId);
-  }
-
-  public stopListeners(): void {
-    this.listeners?.stopListeners();
-  }
-
-  public getListenersState(): DatabaseListenersState {
-    return this.listeners?.getState() || { isListening: false, error: null };
-  }
-
-  public isListening(): boolean {
-    return this.listeners?.isListening() || false;
-  }
-
-  public getListenersError(): string | null {
-    return this.listeners?.getError() || null;
-  }
-
-  public clearListenersError(): void {
-    this.listeners?.clearError();
-  }
-}
-
-export const db: IDatabaseAdapter = new DatabaseAdapter();
+// 🔌 Current implementation using Firebase
+// This can be easily swapped for other providers (e.g., MongoDB, PostgreSQL, etc.)
+export const db: IDatabaseAdapter = {
+  getCollection: async <T extends DocumentData = DocumentData>(
+    collectionPath: string
+  ): Promise<T[]> => {
+    const firestore = await firebaseDb.getFirestore();
+    return getCollection<T>(firestore, collectionPath);
+  },
+  getDocument: async <T extends DocumentData = DocumentData>(
+    docPath: string
+  ): Promise<T | null> => {
+    const firestore = await firebaseDb.getFirestore();
+    return getDocument<T>(firestore, docPath);
+  },
+  addDocument: async <T extends DocumentData = DocumentData>(
+    collectionPath: string,
+    data: T
+  ): Promise<DocumentId> => {
+    const firestore = await firebaseDb.getFirestore();
+    return addDocument<T>(firestore, collectionPath, data);
+  },
+  updateDocument: async <T extends DocumentData = DocumentData>(
+    docPath: string,
+    data: Partial<T>
+  ): Promise<void> => {
+    const firestore = await firebaseDb.getFirestore();
+    return updateDocument<T>(firestore, docPath, data);
+  },
+  deleteDocument: async (docPath: string): Promise<void> => {
+    const firestore = await firebaseDb.getFirestore();
+    return deleteDocument(firestore, docPath);
+  },
+  generateItemDatabaseId: firebaseDb.generateItemDatabaseId,
+  
+  // Listeners functionality
+  startListeners: async (userId: string, callbacks: DatabaseListenersCallbacks) => {
+    const listeners = await getListenersService();
+    listeners.setCallbacks(callbacks);
+    await listeners.startListeners(userId);
+  },
+  stopListeners: async () => {
+    const listeners = await getListenersService();
+    listeners.stopListeners();
+  },
+  getListenersState: async () => {
+    const listeners = await getListenersService();
+    return listeners.getState();
+  },
+  isListening: async () => {
+    const listeners = await getListenersService();
+    return listeners.isListening();
+  },
+  getListenersError: async () => {
+    const listeners = await getListenersService();
+    return listeners.getError();
+  },
+  clearListenersError: async () => {
+    const listeners = await getListenersService();
+    listeners.clearError();
+  },
+};

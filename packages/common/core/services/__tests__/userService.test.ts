@@ -71,7 +71,7 @@ describe('UserService', () => {
   it('should get current user', async () => {
     const firebaseUser = { uid: 'user-1' } as FirebaseUser;
     const userDoc = { email: 'test@test.com', username: 'testuser' };
-    mockAuthAdapter.getCurrentUser.mockReturnValue(firebaseUser);
+    mockAuthAdapter.getCurrentUser.mockResolvedValue(firebaseUser);
     mockAuthAdapter.onAuthStateChanged.mockImplementation((callback) => {
         callback(firebaseUser);
         return Promise.resolve(() => {});
@@ -87,7 +87,7 @@ describe('UserService', () => {
   it('should handle user authentication state', async () => {
     const firebaseUser = { uid: 'user-1' } as FirebaseUser;
     const userDoc = { email: 'test@test.com', username: 'testuser' };
-    mockAuthAdapter.getCurrentUser.mockReturnValue(firebaseUser);
+    mockAuthAdapter.getCurrentUser.mockResolvedValue(firebaseUser);
     mockAuthAdapter.onAuthStateChanged.mockImplementation((callback) => {
         callback(firebaseUser);
         return Promise.resolve(() => {});

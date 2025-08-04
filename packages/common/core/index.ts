@@ -11,14 +11,6 @@ export {
   setLocalVault,
   getLocalVault,
   clearLocalVault,
-  setDataInStates,
-  clearAllStates,
-  updateItemInStates,
-  setAuthState,
-  addItem,
-  updateItem,
-  deleteItem,
-  getAllItems,
 } from './services';
 
 // Libraries Layer (Layer 3)
@@ -29,9 +21,6 @@ export * from './libraries/database';
 // Platform adapters
 export { platform } from './adapters';
 export type { PlatformAdapter } from './adapters/platform.adapter';
-
-// States (specific exports to avoid conflicts)
-export { useCategoryStore } from './states/category';
 
 // Types (specific exports to avoid conflicts)
 export type { User, UserSession, PageState } from './types/auth.types';

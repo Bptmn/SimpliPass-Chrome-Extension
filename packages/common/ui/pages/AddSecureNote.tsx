@@ -15,6 +15,7 @@ import { generateItemKey } from '@common/utils/crypto';
 import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { CATEGORIES } from '@common/core/types/categories.types';
+import { useAppStateStore } from '@common/hooks/useAppState';
 
 interface AddSecureNoteProps {
   onCancel?: () => void;
@@ -26,7 +27,7 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
   const themeColors = getColors(mode);
   const router = useAppRouterContext();
   const { user } = useUser();
-  const { addItem, isActionLoading } = useItems();
+  const { addItem, isActionLoading } = useItems({ user });
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedColor, setSelectedColor] = useState('#4f86a2');

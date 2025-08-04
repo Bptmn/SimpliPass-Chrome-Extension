@@ -1,7 +1,7 @@
 // packages/common/core/services/vaultService.ts
 import { ItemDecrypted } from '@common/core/types/items.types';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
-import { IAuthService } from '../libraries/auth/firebase';
+import { IAuthService } from './authService';
 
 export interface IVaultService {
   setLocalVault(items: ItemDecrypted[]): Promise<void>;
@@ -48,7 +48,8 @@ export class VaultService implements IVaultService {
         throw new Error('Local vault storage not supported on this platform');
       }
       
-      const userId = this.authService.getCurrentUserId() || 'current';
+      const user = await this.authService.getCurrentUser();
+      const userId = user?.uid || 'current';
       await this.storage.storeVaultToSecureLocalStorage({
         userId,
         items,

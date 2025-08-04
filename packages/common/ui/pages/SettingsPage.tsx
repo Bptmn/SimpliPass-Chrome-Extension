@@ -4,13 +4,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
-import { auth } from '@common/core/adapters/auth.adapter';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { useToast } from '@common/ui/components/Toast';
 import { useManualRefresh } from '@common/hooks/useManualRefresh';
-import { getCurrentUser } from '@common/core/services/userService';
-import { databaseListeners, authListeners } from '@common/core/services/listenerService';
 import { getPageStyles, spacing, radius } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
@@ -18,7 +15,8 @@ import { ModeSwitch } from '@ui/components/ModeSwitch';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { Toast } from '@ui/components/Toast';
-import { User } from '@common/core/types/types';
+import type { User } from '@common/core/types/auth.types';
+import { useSettings } from '@common/hooks/useSettings';
 
 // MenuList component to avoid defining components during render
 const MenuList: React.FC<{ themeColors: any; styles: any }> = ({ themeColors, styles }) => (
@@ -75,10 +73,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
-  const [user, setUser] = useState<User | null>(null);
-  const [_userLoading, setUserLoading] = useState(true);
-  console.log('[SettingsPage] user:', user);
-  const [error, setError] = useState<string | null>(null);
   const { toast, showToast } = useToast();
   const { 
     refreshAllData, 
@@ -91,39 +85,31 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
 
-  // Load user data from secure storage
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        setUserLoading(true);
-        const userData = await getCurrentUser();
-        setUser(userData);
-      } catch (err) {
-        console.error('[SettingsPage] Failed to load user:', err);
-        setError('Failed to load user data');
-      } finally {
-        setUserLoading(false);
-      }
-    };
+  // Use the new useSettings hook
+  const {
+    user,
+    userLoading,
+    error: settingsError,
+    loadCurrentUser,
+    signOut,
+    stopDatabaseListeners,
+    stopAuthListeners,
+  } = useSettings();
 
-    loadUser();
-  }, []);
+  // Load user data on mount
+  useEffect(() => {
+    loadCurrentUser();
+  }, [loadCurrentUser]);
 
   const handleLogout = async () => {
     try {
-      // 1. Sign out from Firebase and Cognito
-      await auth.signOut();
-      
-              // 2. Stop all listeners
-        databaseListeners.stop();
-        authListeners.stop();
-      
+      await signOut();
       showToast('Déconnexion réussie');
       setTimeout(() => {
         onLogout?.();
       }, 1200);
     } catch {
-      setError('Erreur lors de la déconnexion.');
+      // Error is handled by the hook
     }
   };
 
@@ -132,7 +118,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
       await refreshAllData();
       showToast('Données actualisées avec succès');
     } catch (_err) {
-      setError('Erreur lors de l\'actualisation des données');
+      // Error is handled by the hook
     }
   };
 
@@ -141,7 +127,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
       await refreshUserOnly();
       showToast('Informations utilisateur actualisées');
     } catch (_err) {
-      setError('Erreur lors de l\'actualisation des informations utilisateur');
+      // Error is handled by the hook
     }
   };
 
@@ -150,23 +136,20 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
       await refreshVaultOnly();
       showToast('Coffre-fort actualisé');
     } catch (_err) {
-      setError('Erreur lors de l\'actualisation du coffre-fort');
+      // Error is handled by the hook
     }
   };
-
-
 
   // Clear refresh error when component mounts or error changes
   React.useEffect(() => {
     if (refreshError) {
-      setError(refreshError);
       clearError();
     }
   }, [refreshError, clearError]);
 
   return (
     <View style={pageStyles.pageContainer}>
-      {error && <ErrorBanner message={error} />}
+      {(settingsError || refreshError) && <ErrorBanner message={settingsError || refreshError || ''} />}
       <Toast message={toast} />
       <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={pageStyles.pageContent}>

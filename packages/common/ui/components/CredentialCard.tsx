@@ -2,17 +2,17 @@
 // This component displays a single credential (title, username, icon) and provides a copy-to-clipboard button for the password.
 // Used in both the popup and popover for credential display and interaction.
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { CredentialDecrypted } from '@common/core/types/types';
-import { getColors } from '@ui/design/colors';
-import { radius, spacing } from '@ui/design/layout';
+import type { CredentialDecrypted } from '@common/core/types/items.types';
 import { LazyCredentialIcon } from './LazyCredentialIcon';
 import CopyButton from './CopyButton';
-import { typography } from '@ui/design/typography';
 import { useThemeMode } from '@common/ui/design/theme';
+import { getColors } from '@ui/design/colors';
+import { spacing, radius } from '@ui/design/layout';
+import { typography } from '@ui/design/typography';
+import { useClipboard } from '@common/hooks/useClipboard';
 
-// Minimal RN-compatible ErrorBanner
 const ErrorBanner: React.FC<{ message: string; styles: Record<string, object> }> = ({ message, styles }) => (
   <View style={styles.errorBanner}>
     <Text style={styles.errorTitle}>Erreur</Text>
@@ -35,14 +35,13 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
   hideCopyBtn,
   onCopy,
 }) => {
-  const [error, setError] = React.useState<string | null>(null);
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
+  const [error, setError] = useState<string | null>(null);
+  const { copyToClipboard } = useClipboard();
 
-  // Create styles based on current theme
-  const styles = React.useMemo(() => {
+  const styles = useMemo(() => {
     const colors = getColors(mode);
-    
     return StyleSheet.create({
       credentialCard: {
         alignItems: 'center',
@@ -109,8 +108,7 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
   // Handles copying the password to clipboard
   const handleCopy = async () => {
     try {
-      // Password is already decrypted in the new architecture
-      await navigator.clipboard.writeText(credential.password);
+      await copyToClipboard(credential.password, "Mot de passe copié !");
       if (onCopy) onCopy();
     } catch {
       setError('Impossible de copier le mot de passe');

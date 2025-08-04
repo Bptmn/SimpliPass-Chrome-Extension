@@ -8,9 +8,8 @@
 
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { BankCardDecrypted } from '@common/core/types/types';
+import type { BankCardDecrypted } from '@common/core/types/items.types';
 import { ExpirationDate, formatExpirationDate } from '@common/utils';
-import { deleteItem } from '@common/core/services/itemsService';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { LazyCredentialIcon } from '@ui/components/LazyCredentialIcon';
@@ -22,10 +21,8 @@ import { typography } from '@ui/design/typography';
 import { Button } from '@ui/components/Buttons';
 import { DetailField } from '@ui/components/DetailField';
 import { MoreInfo } from '@ui/components/MoreInfo';
-import { ROUTES } from '@common/ui/router';
-import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { useClipboard } from '@common/hooks/useClipboard';
-import { cardFormattingService } from '@common/core/services/formattingService';
+import { useBankCardDetails } from '@common/hooks/useBankCardDetails';
 
 interface BankCardDetailsPageProps {
   card: BankCardDecrypted;
@@ -40,58 +37,34 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);
   const styles = React.useMemo(() => getStyles(mode), [mode]);
-  const router = useAppRouterContext();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { showToast } = useToast();
   const { copyToClipboard } = useClipboard();
 
-  const handleEdit = () => {
-    router.navigateTo(ROUTES.MODIFY_BANK_CARD, { bankCard: card });
-  };
+  const { handleEdit, confirmDelete, handleCopyOwner, handleCopyCardNumber, handleCopyCVV, handleCopyNote, displayCardNumber } = useBankCardDetails(
+    card,
+    onBack,
+    setError,
+    setLoading,
+    showToast,
+    copyToClipboard
+  );
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     setShowDeleteConfirm(true);
   };
 
-  const confirmDelete = async () => {
-    setLoading(true);
-    setError(null);
+  const handleConfirmDelete = async () => {
     setShowDeleteConfirm(false);
-    try {
-      await deleteItem(card.id);
-      showToast('Carte supprimée avec succès');
-      onBack();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erreur lors de la suppression.');
-    } finally {
-      setLoading(false);
-    }
+    await confirmDelete();
   };
 
   const formatDate = (expDate: ExpirationDate) => {
     if (!expDate) return '';
     return formatExpirationDate(expDate);
   };
-
-  const handleCopyOwner = () => {
-    copyToClipboard(card.owner, 'Titulaire copié !');
-  };
-
-  const handleCopyCardNumber = () => {
-    copyToClipboard(card.cardNumber, 'Numéro copié !');
-  };
-
-  const handleCopyCVV = () => {
-    copyToClipboard(card.verificationNumber, 'CVV copié !');
-  };
-
-  const handleCopyNote = () => {
-    copyToClipboard(card.note, 'Note copiée !');
-  };
-
-  const displayCardNumber = cardFormattingService.formatCardNumber(card.cardNumber);
 
   return (
     <View style={pageStyles.pageContainer}>
@@ -115,7 +88,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
                 color={themeColors.error}
                 width="full"
                 height="full"
-                onPress={confirmDelete}
+                onPress={handleConfirmDelete}
                 style={{ flex: 1 }}
               />
             </View>

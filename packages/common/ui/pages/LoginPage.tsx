@@ -8,6 +8,7 @@ import { Button } from '@ui/components/Buttons';
 import { Input } from '@ui/components/InputFields';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { useAuth } from '@common/hooks/useAuth';
+import { useLoginStorage } from '@common/hooks/useLoginStorage';
 import logo from '../../../../assets/logo/logo_simplify_long.png';
 import type { User } from '@common/core/types/auth.types';
 
@@ -22,6 +23,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ user }) => {
   const styles = React.useMemo(() => getStyles(mode), [mode]);
   
   const { login, isLoading, error } = useAuth({ user });
+  const { getRememberedEmail, setRememberedEmail, removeRememberedEmail } = useLoginStorage();
 
   // Form state
   const [email, setEmail] = React.useState('');
@@ -32,21 +34,27 @@ const LoginPage: React.FC<LoginPageProps> = ({ user }) => {
 
   // Load remembered email on mount
   React.useEffect(() => {
-    const remembered = localStorage.getItem('simplipass_remembered_email');
-    if (remembered) {
-      setEmail(remembered);
-      setRememberEmail(true);
-    }
-  }, []);
+    const loadRememberedEmail = async () => {
+      const remembered = await getRememberedEmail();
+      if (remembered) {
+        setEmail(remembered);
+        setRememberEmail(true);
+      }
+    };
+    loadRememberedEmail();
+  }, [getRememberedEmail]);
 
   // Persist or remove remembered email
   React.useEffect(() => {
-    if (rememberEmail && email) {
-      localStorage.setItem('simplipass_remembered_email', email);
-    } else if (!rememberEmail) {
-      localStorage.removeItem('simplipass_remembered_email');
-    }
-  }, [rememberEmail, email]);
+    const updateRememberedEmail = async () => {
+      if (rememberEmail && email) {
+        await setRememberedEmail(email);
+      } else if (!rememberEmail) {
+        await removeRememberedEmail();
+      }
+    };
+    updateRememberedEmail();
+  }, [rememberEmail, email, setRememberedEmail, removeRememberedEmail]);
 
   const handleLogin = React.useCallback(async () => {
     setEmailError('');
