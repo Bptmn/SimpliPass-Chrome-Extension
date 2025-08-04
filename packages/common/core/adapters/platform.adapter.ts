@@ -5,142 +5,100 @@
  * Provides a single source of truth for platform detection and state.
  */
 
+import { useAppStateStore, type Platform } from '../../hooks/useAppState';
+
 export interface PlatformAdapter {
-  supportsBiometric(): boolean;
-  supportsOfflineVault(): boolean;
-  authenticateWithBiometrics?(): Promise<boolean>;
-  getNetworkStatus(): Promise<'online' | 'offline' | 'unknown'>;
-  isBiometricAvailable?(): Promise<boolean>;
+  // Core platform capabilities
+  getAppVersion(): Promise<string>;
+  getPlatformInfo(): Promise<{ platform: string; version: string }>;
+  
+  // Biometric authentication (optional)
+  authenticateWithBiometrics(): Promise<boolean>;
+  isBiometricAvailable(): Promise<boolean>;
+  
+  // Offline vault support (optional)
+  supportsOfflineVault(): Promise<boolean>;
+  supportsBiometric(): Promise<boolean>;
+  
+  // Remembered email (optional)
+  setRememberedEmail(email: string | null): Promise<void>;
+  getRememberedEmail(): Promise<string | null>;
+  
+  // Clipboard operations
   copyToClipboard(text: string): Promise<void>;
   getFromClipboard(): Promise<string>;
+  
+  // Network operations
   isOnline(): Promise<boolean>;
-  setRememberedEmail?(email: string | null): Promise<void>;
-  getRememberedEmail?(): Promise<string | null>;
+  getNetworkStatus(): Promise<'online' | 'offline' | 'unknown'>;
+  
+  // Session management
+  clearSession(): Promise<void>;
+  
+  // Session metadata (optional)
+  storeSessionMetadata(metadata: any): Promise<void>;
+  getSessionMetadata(): Promise<any>;
+  deleteSessionMetadata(): Promise<void>;
 }
 
-// Global platform state
-let currentPlatform: 'mobile' | 'extension' | null = null;
+// 🔌 Current implementation using platform-specific adapters
+// This can be easily swapped for other platform implementations
+export const platform: PlatformAdapter = new Proxy({} as PlatformAdapter, {
+  get(target, prop) {
+    return async (...args: any[]) => {
+      // Get platform from global state
+      const platform = useAppStateStore.getState().platform;
+      if (!platform) {
+        throw new Error('Platform not set in global state');
+      }
 
-export const detectPlatform = (): 'mobile' | 'extension' => {
-  if (typeof chrome !== 'undefined' && chrome.storage) {
-    return 'extension';
-  }
-  if (typeof navigator !== 'undefined' && navigator.userAgent.includes('ReactNative')) {
-    return 'mobile';
-  }
-  return 'extension';
-};
+      // Dynamically import the appropriate platform adapter
+      let adapter;
+      if (platform === 'mobile') {
+        const { MobilePlatformAdapter } = await import('../../../mobile/adapters/platform.adapter');
+        adapter = new MobilePlatformAdapter();
+      } else {
+        const { ExtensionPlatformAdapter } = await import('../../../extension/adapters/platform.adapter');
+        adapter = new ExtensionPlatformAdapter();
+      }
 
-export const setPlatform = (platform: 'mobile' | 'extension'): void => {
-  currentPlatform = platform;
-};
-
-export const getPlatform = (): 'mobile' | 'extension' => {
-  if (!currentPlatform) {
-    currentPlatform = detectPlatform();
-  }
-  return currentPlatform;
-};
-
-let platformAdapter: PlatformAdapter | null = null;
-
-const initializePlatformAdapter = async (): Promise<PlatformAdapter> => {
-  if (platformAdapter) {
-    return platformAdapter;
-  }
-  
-  const platform = getPlatform();
-  if (platform === 'mobile') {
-    try {
-      // For mobile platform, we'll use a mock implementation for now
-      // In a real implementation, this would be properly imported at the top
-      platformAdapter = {
-        supportsBiometric: () => false,
-        supportsOfflineVault: () => true,
-        copyToClipboard: async (text: string) => console.log('Copy to clipboard:', text),
-        getFromClipboard: async () => '',
-        isOnline: async () => true,
-        getNetworkStatus: async () => 'online' as const,
+      const method = (adapter as any)[prop];
+      if (method) return method(...args);
+      
+      // Handle optional methods with default values
+      const optionalMethodDefaults: Record<string, any> = {
+        authenticateWithBiometrics: Promise.resolve(false),
+        isBiometricAvailable: Promise.resolve(false),
+        supportsBiometric: Promise.resolve(false),
+        setRememberedEmail: Promise.resolve(),
+        getRememberedEmail: Promise.resolve(null),
+        copyToClipboard: Promise.resolve(),
+        getFromClipboard: Promise.resolve(''),
+        isOnline: Promise.resolve(true),
+        getNetworkStatus: Promise.resolve('online'),
+        clearSession: Promise.resolve(),
+        storeSessionMetadata: Promise.resolve(),
+        getSessionMetadata: Promise.resolve(null),
+        deleteSessionMetadata: Promise.resolve(),
       };
-    } catch (error) {
-      throw new Error(`Failed to load mobile platform adapter: ${error}`);
-    }
-  } else {
-    try {
-      // For extension platform, we'll use a mock implementation for now
-      // In a real implementation, this would be properly imported at the top
-      platformAdapter = {
-        supportsBiometric: () => false,
-        supportsOfflineVault: () => true,
-        copyToClipboard: async (text: string) => {
-          if (typeof navigator !== 'undefined' && navigator.clipboard) {
-            await navigator.clipboard.writeText(text);
-          }
-        },
-        getFromClipboard: async () => {
-          if (typeof navigator !== 'undefined' && navigator.clipboard) {
-            return await navigator.clipboard.readText();
-          }
-          return '';
-        },
-        isOnline: async () => navigator.onLine,
-        getNetworkStatus: async () => navigator.onLine ? 'online' as const : 'offline' as const,
-      };
-    } catch (error) {
-      throw new Error(`Failed to load extension platform adapter: ${error}`);
-    }
+      
+      if (prop in optionalMethodDefaults) return optionalMethodDefaults[prop as string];
+      
+      throw new Error(`Method ${String(prop)} not found in platform adapter`);
+    };
   }
-  if (!platformAdapter) {
-    throw new Error('Failed to initialize platform adapter');
-  }
-  return platformAdapter;
+});
+
+// Pure provider functions for platform operations
+export const initializePlatform = (platform: Platform) => {
+  useAppStateStore.getState().setPlatform(platform);
 };
-
-export const initializePlatform = async (): Promise<void> => {
-  try {
-    // Set the platform first
-    const platform = detectPlatform();
-    setPlatform(platform);
-    
-    // Then initialize the adapter
-    await initializePlatformAdapter();
-  
-  } catch (error) {
-    console.error('[Platform] Failed to initialize platform adapter:', error);
-    throw error;
-  }
+export const detectPlatform = (platform: Platform) => {
+  useAppStateStore.getState().setPlatform(platform);
 };
-
-const getAdapter = (): PlatformAdapter => {
-  if (!platformAdapter) {
-    throw new Error('Platform adapter not initialized. Call initializePlatform() first.');
-  }
-  return platformAdapter;
+export const setPlatform = (platform: Platform) => {
+  useAppStateStore.getState().setPlatform(platform);
 };
-
-export const platform: PlatformAdapter = {
-
-  supportsBiometric(): boolean {
-    return getAdapter().supportsBiometric();
-  },
-
-  supportsOfflineVault(): boolean {
-    return getAdapter().supportsOfflineVault();
-  },
-
-  async copyToClipboard(text: string): Promise<void> {
-    return getAdapter().copyToClipboard(text);
-  },
-
-  async getFromClipboard(): Promise<string> {
-    return getAdapter().getFromClipboard();
-  },
-
-  async isOnline(): Promise<boolean> {
-    return getAdapter().isOnline();
-  },
-
-  async getNetworkStatus(): Promise<'online' | 'offline' | 'unknown'> {
-    return getAdapter().getNetworkStatus();
-  },
+export const getPlatform = () => {
+  return useAppStateStore.getState().platform;
 }; 

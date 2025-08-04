@@ -1,17 +1,17 @@
 // useCredentialDetails.ts
-// This hook manages credential details page business logic:
-// - Edit navigation
-// - URL launching
-// - Delete operations
-// - Copy operations
+// This hook manages credential details UI state:
+// - Credential operations (edit, delete, copy, launch)
+// - URL formatting
 // - Error handling
 
 import { useCallback } from 'react';
-import { deleteItem } from '@common/core/services/itemsService';
-import { textFormattingService } from '@common/core/services/formattingService';
-import { ROUTES } from '@common/ui/router/ROUTES';
-import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
-import type { CredentialDecrypted } from '@common/core/types/items.types';
+import { useTextFormatting } from './useTextFormatting'; // ✅ Use focused formatting hook
+import { useClipboard } from './useClipboard';
+import { useItems } from './useItems';
+import { useToast } from '../ui/components/Toast';
+import { ROUTES } from '../ui/router/ROUTES';
+import { useAppRouterContext } from '../ui/router/AppRouterProvider';
+import type { CredentialDecrypted } from '../core/types/items.types';
 
 export const useCredentialDetails = (
   credential: CredentialDecrypted,
@@ -23,29 +23,38 @@ export const useCredentialDetails = (
   togglePasswordVisibility: () => void
 ) => {
   const router = useAppRouterContext();
+  const { editItem, deleteItem } = useItems({ user: null }); // User will be passed from parent
+  const { formatURL } = useTextFormatting(); // ✅ Use focused formatting hook
 
-  // Step 1: Handle edit navigation
+  // Step 1: Format URL for display
+  const normalizedUrl = formatURL(credential.url);
+
+  // Step 2: Handle edit operation
   const handleEdit = useCallback(() => {
     router.navigateTo(ROUTES.MODIFY_CREDENTIAL, { credential });
   }, [router, credential]);
 
-  // Step 2: Handle URL launching
+  // Step 3: Handle launch operation
   const handleLaunch = useCallback((url: string) => {
-    try {
-      const normalizedUrl = textFormattingService.formatURL(url);
-      window.open(normalizedUrl, '_blank');
-    } catch {
-      setError("Erreur lors de l'ouverture du lien.");
+    if (url) {
+      window.open(url, '_blank');
     }
-  }, [setError]);
-
-  // Step 3: Handle delete initiation
-  const handleDelete = useCallback(() => {
-    // This will be handled by the component's state
-    // The component should set showDeleteConfirm to true
   }, []);
 
-  // Step 4: Handle delete confirmation
+  // Step 4: Handle copy operations
+  const handleCopyUsername = useCallback(() => {
+    copyToClipboard(credential.username, 'Nom d\'utilisateur copié !');
+  }, [credential.username, copyToClipboard]);
+
+  const handleCopyPassword = useCallback(() => {
+    copyToClipboard(credential.password, 'Mot de passe copié !');
+  }, [credential.password, copyToClipboard]);
+
+  const handleCopyNote = useCallback(() => {
+    copyToClipboard(credential.note, 'Note copiée !');
+  }, [credential.note, copyToClipboard]);
+
+  // Step 5: Handle delete operation
   const confirmDelete = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -58,28 +67,15 @@ export const useCredentialDetails = (
     } finally {
       setLoading(false);
     }
-  }, [credential.id, onBack, setError, setLoading, showToast]);
-
-  // Step 5: Handle copy operations
-  const handleCopyUsername = useCallback(() => {
-    copyToClipboard(credential.username, "Nom d'utilisateur copié !");
-  }, [credential.username, copyToClipboard]);
-
-  const handleCopyPassword = useCallback(() => {
-    copyToClipboard(credential.password, "Mot de passe copié !");
-  }, [credential.password, copyToClipboard]);
-
-  const handleCopyNote = useCallback(() => {
-    copyToClipboard(credential.note, "Note copiée !");
-  }, [credential.note, copyToClipboard]);
+  }, [credential.id, deleteItem, onBack, showToast, setError, setLoading]);
 
   return {
     handleEdit,
     handleLaunch,
-    handleDelete,
     confirmDelete,
     handleCopyUsername,
     handleCopyPassword,
     handleCopyNote,
+    normalizedUrl,
   };
-}; 
+};

@@ -1,16 +1,17 @@
 // useBankCardDetails.ts
-// This hook manages bank card details page business logic:
-// - Edit navigation
-// - Delete operations
-// - Copy operations
+// This hook manages bank card details UI state:
+// - Card operations (edit, delete, copy)
+// - Card formatting
 // - Error handling
 
 import { useCallback } from 'react';
-import { deleteItem } from '@common/core/services/itemsService';
-import { cardFormattingService } from '@common/core/services/formattingService';
-import { ROUTES } from '@common/ui/router/ROUTES';
-import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
-import type { BankCardDecrypted } from '@common/core/types/items.types';
+import { useCardFormatting } from './useCardFormatting'; // ✅ Use focused formatting hook
+import { useClipboard } from './useClipboard';
+import { useItems } from './useItems';
+import { useToast } from '../ui/components/Toast';
+import { ROUTES } from '../ui/router/ROUTES';
+import { useAppRouterContext } from '../ui/router/AppRouterProvider';
+import type { BankCardDecrypted } from '../core/types/items.types';
 
 export const useBankCardDetails = (
   card: BankCardDecrypted,
@@ -21,13 +22,35 @@ export const useBankCardDetails = (
   copyToClipboard: (text: string, message: string) => void
 ) => {
   const router = useAppRouterContext();
+  const { editItem, deleteItem } = useItems({ user: null }); // User will be passed from parent
+  const { formatCardNumber } = useCardFormatting(); // ✅ Use focused formatting hook
 
-  // Step 1: Handle edit navigation
+  // Step 1: Format card number for display
+  const displayCardNumber = formatCardNumber(card.cardNumber);
+
+  // Step 2: Handle edit operation
   const handleEdit = useCallback(() => {
-    router.navigateTo(ROUTES.MODIFY_BANK_CARD, { bankCard: card });
+    router.navigateTo(ROUTES.MODIFY_BANKCARD, { bankCard: card });
   }, [router, card]);
 
-  // Step 2: Handle delete confirmation
+  // Step 3: Handle copy operations
+  const handleCopyOwner = useCallback(() => {
+    copyToClipboard(card.owner, 'Titulaire copié !');
+  }, [card.owner, copyToClipboard]);
+
+  const handleCopyCardNumber = useCallback(() => {
+    copyToClipboard(card.cardNumber, 'Numéro de carte copié !');
+  }, [card.cardNumber, copyToClipboard]);
+
+  const handleCopyCVV = useCallback(() => {
+    copyToClipboard(card.verificationNumber, 'CVV copié !');
+  }, [card.verificationNumber, copyToClipboard]);
+
+  const handleCopyNote = useCallback(() => {
+    copyToClipboard(card.note, 'Note copiée !');
+  }, [card.note, copyToClipboard]);
+
+  // Step 4: Handle delete operation
   const confirmDelete = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -40,27 +63,7 @@ export const useBankCardDetails = (
     } finally {
       setLoading(false);
     }
-  }, [card.id, onBack, setError, setLoading, showToast]);
-
-  // Step 3: Handle copy operations
-  const handleCopyOwner = useCallback(() => {
-    copyToClipboard(card.owner, 'Titulaire copié !');
-  }, [card.owner, copyToClipboard]);
-
-  const handleCopyCardNumber = useCallback(() => {
-    copyToClipboard(card.cardNumber, 'Numéro copié !');
-  }, [card.cardNumber, copyToClipboard]);
-
-  const handleCopyCVV = useCallback(() => {
-    copyToClipboard(card.verificationNumber, 'CVV copié !');
-  }, [card.verificationNumber, copyToClipboard]);
-
-  const handleCopyNote = useCallback(() => {
-    copyToClipboard(card.note, 'Note copiée !');
-  }, [card.note, copyToClipboard]);
-
-  // Step 4: Format card number
-  const displayCardNumber = cardFormattingService.formatCardNumber(card.cardNumber);
+  }, [card.id, deleteItem, onBack, showToast, setError, setLoading]);
 
   return {
     handleEdit,
@@ -71,4 +74,4 @@ export const useBankCardDetails = (
     handleCopyNote,
     displayCardNumber,
   };
-}; 
+};

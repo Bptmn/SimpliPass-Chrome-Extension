@@ -117,13 +117,23 @@ export class UserService implements IUserService {
   }
 
   public async waitForAuthStateStable(): Promise<void> {
-    await new Promise<void>((resolve) => {
-      this.auth.onAuthStateChanged((_user: FirebaseUser | null) => {
-        resolve();
-      }).then((unsubscribe) => {
-        (this.waitForAuthStateStable as any)._unsubscribe = unsubscribe;
-      });
-    });
+    // Simple polling approach to wait for auth state to stabilize
+    let attempts = 0;
+    const maxAttempts = 10;
+    const delay = 100; // 100ms between attempts
+    
+    while (attempts < maxAttempts) {
+      const currentUser = await this.auth.getCurrentUser();
+      if (currentUser !== undefined) {
+        return; // Auth state is stable
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, delay));
+      attempts++;
+    }
+    
+    // If we reach here, auth state didn't stabilize in time
+    console.warn('[UserService] Auth state did not stabilize within expected time');
   }
 
   public async checkUserSecretKey(): Promise<boolean> {

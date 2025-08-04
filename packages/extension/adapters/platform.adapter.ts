@@ -11,13 +11,29 @@ import { PlatformAdapter} from '@common/core/adapters/platform.adapter';
 
 export class ExtensionPlatformAdapter implements PlatformAdapter {
 
+  // ===== Core Platform Capabilities =====
+
+  async getAppVersion(): Promise<string> {
+    try {
+      const manifest = chrome.runtime.getManifest();
+      return manifest.version || '1.0.0';
+    } catch (_error) {
+      return '1.0.0';
+    }
+  }
+
+  async getPlatformInfo(): Promise<{ platform: string; version: string }> {
+    const version = await this.getAppVersion();
+    return { platform: 'extension', version };
+  }
+
   // ===== Storage Operations =====
 
-  supportsBiometric(): boolean {
+  async supportsBiometric(): Promise<boolean> {
     return false; // Extensions don't support biometrics
   }
 
-  supportsOfflineVault(): boolean {
+  async supportsOfflineVault(): Promise<boolean> {
     return true;
   }
 
@@ -84,6 +100,43 @@ export class ExtensionPlatformAdapter implements PlatformAdapter {
       return result.rememberedEmail || null;
     } catch (_error) {
       return null;
+    }
+  }
+
+  // ===== Session Management =====
+
+  async clearSession(): Promise<void> {
+    try {
+      await chrome.storage.local.remove(['rememberedEmail', 'sessionMetadata']);
+    } catch (_error) {
+      throw new Error('Failed to clear session');
+    }
+  }
+
+  // ===== Session Metadata =====
+
+  async storeSessionMetadata(metadata: any): Promise<void> {
+    try {
+      await chrome.storage.local.set({ sessionMetadata: metadata });
+    } catch (_error) {
+      throw new Error('Failed to store session metadata');
+    }
+  }
+
+  async getSessionMetadata(): Promise<any> {
+    try {
+      const result = await chrome.storage.local.get('sessionMetadata');
+      return result.sessionMetadata || null;
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  async deleteSessionMetadata(): Promise<void> {
+    try {
+      await chrome.storage.local.remove('sessionMetadata');
+    } catch (_error) {
+      throw new Error('Failed to delete session metadata');
     }
   }
 }

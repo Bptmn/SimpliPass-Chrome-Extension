@@ -1,6 +1,5 @@
 // packages/common/core/adapters/platform.storage.adapter.ts
-import { User } from '../types/auth.types';
-import { LocalVault } from '../types/items.types';
+import { useAppStateStore, type Platform } from '../../hooks/useAppState';
 
 export interface IPlatformStorageAdapter {
   // User Secret Key Storage
@@ -10,43 +9,48 @@ export interface IPlatformStorageAdapter {
   getUserSecretKeyFromSecureLocalStorage(): Promise<string | null>;
   
   // User Object Storage
-  storeUserToSecureLocalStorage(user: User): Promise<void>;
-  updateUserInSecureLocalStorage(user: User): Promise<void>;
+  storeUserToSecureLocalStorage(user: any): Promise<void>;
+  updateUserInSecureLocalStorage(user: any): Promise<void>;
   deleteUserFromSecureLocalStorage(): Promise<void>;
-  getUserFromSecureLocalStorage(): Promise<User | null>;
+  getUserFromSecureLocalStorage(): Promise<any | null>;
   
   // Vault Storage
-  storeVaultToSecureLocalStorage(vault: LocalVault): Promise<void>;
-  updateVaultInSecureLocalStorage(vault: LocalVault): Promise<void>;
+  storeVaultToSecureLocalStorage(vault: any): Promise<void>;
+  updateVaultInSecureLocalStorage(vault: any): Promise<void>;
   deleteVaultFromSecureLocalStorage(): Promise<void>;
-  getVaultFromSecureLocalStorage(): Promise<LocalVault | null>;
+  getVaultFromSecureLocalStorage(): Promise<any | null>;
   
   // General
   clearAllSecureLocalStorage(): Promise<void>;
 }
 
-// Export a default instance for backward compatibility
-export const storage: IPlatformStorageAdapter = {
-  storeUserSecretKeyToSecureLocalStorage: async () => {},
-  updateUserSecretKeyInSecureLocalStorage: async () => {},
-  deleteUserSecretKeyFromSecureLocalStorage: async () => {},
-  getUserSecretKeyFromSecureLocalStorage: async () => null,
-  storeUserToSecureLocalStorage: async () => {},
-  updateUserInSecureLocalStorage: async () => {},
-  deleteUserFromSecureLocalStorage: async () => {},
-  getUserFromSecureLocalStorage: async () => null,
-  storeVaultToSecureLocalStorage: async () => {},
-  updateVaultInSecureLocalStorage: async () => {},
-  deleteVaultFromSecureLocalStorage: async () => {},
-  getVaultFromSecureLocalStorage: async () => null,
-  clearAllSecureLocalStorage: async () => {}
-};
+// 🔌 Current implementation using platform-specific storage adapters
+// This can be easily swapped for other storage providers
+export const storage: IPlatformStorageAdapter = new Proxy({} as IPlatformStorageAdapter, {
+  get(target, prop) {
+    return async (...args: any[]) => {
+      // Get platform from global state
+      const platform = useAppStateStore.getState().platform;
+      if (!platform) {
+        throw new Error('Platform not set in global state');
+      }
 
-// Export initialization function for backward compatibility
-export const initializeStorage = async (): Promise<void> => {
-  // Platform-specific initialization will be handled by the actual implementation
-  console.log('[PlatformStorageAdapter] Storage initialized');
-};
+      // Dynamically import the appropriate storage adapter
+      let adapter;
+      if (platform === 'mobile') {
+        const { MobileStorageAdapter } = await import('../../../mobile/adapters/platform.storage.adapter');
+        adapter = new MobileStorageAdapter();
+      } else {
+        const { ExtensionStorageAdapter } = await import('../../../extension/adapters/platform.storage.adapter');
+        adapter = new ExtensionStorageAdapter();
+      }
 
-// Export type alias for backward compatibility
-export type StorageAdapter = IPlatformStorageAdapter;
+      const method = (adapter as any)[prop];
+      if (method) {
+        return method(...args);
+      }
+      
+      throw new Error(`Method ${String(prop)} not found in platform storage adapter`);
+    };
+  }
+});

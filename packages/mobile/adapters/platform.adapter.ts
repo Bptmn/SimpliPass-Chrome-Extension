@@ -12,13 +12,29 @@ import { PlatformAdapter } from '@common/core/adapters/platform.adapter';
 
 export class MobilePlatformAdapter implements PlatformAdapter {
 
+  // ===== Core Platform Capabilities =====
+
+  async getAppVersion(): Promise<string> {
+    try {
+      const Constants = await import('expo-constants');
+      return Constants.default.expoConfig?.version || '1.0.0';
+    } catch (_error) {
+      return '1.0.0';
+    }
+  }
+
+  async getPlatformInfo(): Promise<{ platform: string; version: string }> {
+    const version = await this.getAppVersion();
+    return { platform: 'mobile', version };
+  }
+
   // ===== Storage Operations =====
 
-  supportsBiometric(): boolean {
+  async supportsBiometric(): Promise<boolean> {
     return true;
   }
 
-  supportsOfflineVault(): boolean {
+  async supportsOfflineVault(): Promise<boolean> {
     return true;
   }
 

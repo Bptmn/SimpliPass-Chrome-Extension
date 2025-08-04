@@ -3,9 +3,10 @@ import { IAuthAdapter } from '../adapters/auth.adapter';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IAuthService } from './authService';
 import { IAuthListenerService } from './listenerService';
+import type { Platform } from '../../hooks/useAppState';
 
 export interface IInitializationService {
-  initializeApp(): Promise<void>;
+  initializeApp(platform: Platform): Promise<void>;
   resetInitializationState(): void;
 }
 
@@ -18,7 +19,7 @@ export class InitializationService implements IInitializationService {
     private appStateStore: typeof useAppStateStore,
   ) {}
 
-  public async initializeApp(): Promise<void> {
+  public async initializeApp(platform: Platform): Promise<void> {
     // Step 1: Check if already initializing
     const currentState = this.appStateStore.getState();
     if (currentState.isInitializing) {
@@ -32,13 +33,13 @@ export class InitializationService implements IInitializationService {
       // Step 2: Update global state - start initialization
       this.appStateStore.getState().setInitializing(true, null);
 
-      // Step 3: Initialize auth provider
+      // Step 3: Set platform in global state
+      this.appStateStore.getState().setPlatform(platform);
+      console.log('[InitializationService] Platform set to:', platform);
+
+      // Step 4: Initialize auth provider
       await this.authService.initialize();
       console.log('[InitializationService] Auth provider initialized successfully');
-      
-      // Step 4: Initialize platform detection
-      await this.initializePlatform();
-      console.log('[InitializationService] Platform detection initialized successfully');
       
       // Step 5: Initialize storage (if supported)
       console.log('[InitializationService] Storage initialization completed');
@@ -67,12 +68,6 @@ export class InitializationService implements IInitializationService {
   public resetInitializationState(): void {
     console.log('[InitializationService] Resetting initialization state');
     this.appStateStore.getState().setInitializing(false, null);
-  }
-
-  private async initializePlatform(): Promise<void> {
-    // Platform initialization logic
-    // This would typically detect mobile vs extension and set up platform-specific features
-    console.log('[InitializationService] Platform detection completed');
   }
 }
 

@@ -117,6 +117,13 @@ export const loginWithCognito = async (email: string, password: string): Promise
   return cognitoAuth.loginWithCognito(email, password);
 };
 
+// Pure provider function that returns user ID string for adapter compatibility
+export const loginWithCognitoAndGetUserId = async (email: string, password: string): Promise<string> => {
+  const cognitoAuth = new CognitoAuth();
+  const cognitoUser = await cognitoAuth.loginWithCognito(email, password);
+  return cognitoUser.username || email; // Return username or email as user ID
+};
+
 export const fetchUserSaltCognito = async (): Promise<string> => {
   const cognitoAuth = new CognitoAuth();
   return cognitoAuth.fetchUserSaltCognito();
@@ -125,4 +132,20 @@ export const fetchUserSaltCognito = async (): Promise<string> => {
 export const signOutCognito = async (): Promise<void> => {
   const cognitoAuth = new CognitoAuth();
   return cognitoAuth.signOutCognito();
+};
+
+// Pure provider function to sign out from all providers
+export const signOutFromAllProviders = async (): Promise<void> => {
+  const cognitoAuth = new CognitoAuth();
+  await cognitoAuth.signOutCognito();
+  
+  // Also sign out from Firebase
+  const { signOutFromFirebase } = await import('./firebase');
+  await signOutFromFirebase();
+};
+
+// Pure provider function to get Cognito tokens and Firebase token
+export const getCognitoTokensAndFirebaseToken = async (): Promise<{ idToken: string; firebaseToken: string }> => {
+  const cognitoAuth = new CognitoAuth();
+  return cognitoAuth.getCognitoTokensAndFirebaseToken();
 };

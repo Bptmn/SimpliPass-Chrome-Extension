@@ -1,253 +1,102 @@
-# 🔐 Authentication Module
+# 🔐 Authentication Library
 
-The authentication module provides platform-agnostic authentication services for SimpliPass, supporting both mobile and Chrome extension platforms through a unified interface.
+## Purpose and Role
 
-## 📁 Structure
+The Authentication Library provides **pure provider functions** for all authentication-related external API calls. This library serves as the bridge between the application's authentication needs and external providers like AWS Cognito and Firebase.
+
+### Global Application Structure
 
 ```
-auth/
-├── __tests__/           # Authentication tests
-├── cognito.ts          # AWS Cognito authentication service
-├── firebase.ts         # Firebase authentication service
-└── config.ts           # Platform-agnostic configuration
+┌─────────────────────────────────────────────────────────────┐
+│                    APPLICATION LAYERS                      │
+├─────────────────────────────────────────────────────────────┤
+│ Layer 1: Hooks (UI Layer)                                │
+│ Layer 2: Services (Business Logic Layer)                  │
+│ Layer 3: Adapters (Provider Abstraction Layer)            │
+│ Layer 4: Libraries (External Integration Layer) ← YOU ARE HERE
+│ External APIs & Services                                  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## 🏗️ Architecture
-
-### Platform-Agnostic Design
-
-The authentication module follows the **Single Source of Truth** principle and is designed to work seamlessly across platforms:
-
-- **Mobile**: Uses Expo SecureStore for keychain access
-- **Extension**: Uses Chrome storage with encryption
-- **Shared**: Common authentication logic and interfaces
-
-### Service Layer Pattern
-
-Each authentication service (`cognito.ts`, `firebase.ts`) provides:
-- Low-level API calls
-- Platform-specific initialization
-- Error handling and logging
-- Mock support for testing
-
-## 🔧 Services
-
-### AWS Cognito (`cognito.ts`)
-
-Handles AWS Cognito authentication operations:
-
-```typescript
-// Initialize Cognito
-await initCognito();
-
-// Login with email/password
-const result = await loginWithCognito(email, password);
-
-// Confirm MFA
-await confirmMfaWithCognito(code);
-
-// Get user attributes
-const attributes = await fetchUserAttributesCognito();
-
-// Get user salt for key derivation
-const salt = await fetchUserSaltCognito();
-
-// Sign out
-await signOutCognito();
-
-// Get tokens for Firebase
-const { idToken, firebaseToken } = await getCognitoTokensAndFirebaseToken();
-```
-
-### Firebase (`firebase.ts`)
-
-Handles Firebase authentication and database operations:
-
-```typescript
-// Initialize Firebase
-const { auth, db } = await initFirebase();
-
-// Sign in with custom token
-await signInWithFirebaseToken(token);
-
-// Sign out
-await signOutFromFirebase();
-```
-
-**Features:**
-- Automatic persistence configuration
-- Storybook mock support
-- Platform-specific initialization
-- Error handling and logging
-
-### Configuration (`config.ts`)
-
-Provides platform-agnostic configuration loading:
-
-```typescript
-// Get platform-specific configs
-import { firebaseConfig, cognitoConfig } from './config';
-
-// Validate configurations
-import { validateFirebaseConfig, validateCognitoConfig } from './config';
-```
-
-## 🔒 Security Features
-
-### Zero-Knowledge Architecture
-- No decrypted data is ever persisted
-- All encryption/decryption handled via platform adapters
-- Keys stored in platform-specific secure storage
-
-### Platform Security
-- **Mobile**: iOS Keychain / Android Keystore
-- **Extension**: Encrypted with device fingerprint
-- **Memory**: All decrypted data is ephemeral
-
-## 🧪 Testing
-
-### Test Structure
-```
-__tests__/
-├── auth.integration.test.ts  # Integration tests
-└── cognito.test.ts          # Unit tests
-```
-
-### Mock Support
-- Storybook environment detection
-- Firebase mock initialization
-- Cognito mock responses
-- Platform adapter mocking
-
-## 📋 Usage Examples
-
-### Basic Authentication Flow
-
-```typescript
-import { initCognito, loginWithCognito } from './cognito';
-import { initFirebase, signInWithFirebaseToken } from './firebase';
-
-// 1. Initialize services
-await initCognito();
-const { auth, db } = await initFirebase();
-
-// 2. Login with Cognito
-const cognitoResult = await loginWithCognito(email, password);
-
-// 3. Get tokens for Firebase
-const { idToken, firebaseToken } = await getCognitoTokensAndFirebaseToken();
-
-// 4. Sign in to Firebase
-await signInWithFirebaseToken(firebaseToken);
-```
-
-### MFA Flow
-
-```typescript
-import { confirmMfaWithCognito } from './cognito';
-
-// After initial login returns MFA required
-const mfaResult = await confirmMfaWithCognito(mfaCode);
-```
-
-### Error Handling
-
-```typescript
-try {
-  const result = await loginWithCognito(email, password);
-  // Handle success
-} catch (error) {
-  if (error.name === 'NotAuthorizedException') {
-    // Handle invalid credentials
-  } else if (error.name === 'UserNotConfirmedException') {
-    // Handle unconfirmed user
-  } else {
-    // Handle other errors
-  }
-}
-```
-
-## 🔧 Configuration
-
-### Environment Variables
-
-The module automatically detects the platform and loads appropriate configurations:
-
-- **Mobile**: Uses Expo SecureStore configuration
-- **Extension**: Uses Chrome storage configuration
-- **Development**: Uses mock configurations for testing
-
-### Platform Detection
-
-```typescript
-// Automatic platform detection
-const config = await getCognitoConfig(); // Returns platform-specific config
-```
-
-## 🚀 Integration
-
-### With Platform Adapters
-
-The auth module integrates with platform adapters for secure storage:
-
-```typescript
-import { getPlatformAdapter } from '../adapters/adapter.factory';
-
-const adapter = await getPlatformAdapter();
-await adapter.storeUserSecretKey(derivedKey);
-```
-
-### With Unified Logic
-
-The auth module is consumed by the unified logic layer:
-
-```typescript
-import { unifiedLogin } from '../logic/unified';
-
-const result = await unifiedLogin(email, password);
-```
-
-## 📝 Best Practices
-
-### 1. Always Use Platform Adapters
-```typescript
-// ✅ Good - Uses platform adapter
-const adapter = await getPlatformAdapter();
-await adapter.storeUserSecretKey(key);
-
-// ❌ Bad - Direct platform access
-localStorage.setItem('key', value);
-```
-
-### 2. Handle Errors Gracefully
-```typescript
-// ✅ Good - Comprehensive error handling
-try {
-  const result = await loginWithCognito(email, password);
-} catch (error) {
-  console.error('Login failed:', error);
-  // Handle specific error types
-}
-```
-
-### 3. Use Mock Support for Testing
-```typescript
-// ✅ Good - Mock support for testing
-if (isStorybook) {
-  // Use mock implementations
-}
-```
-
-### 4. Follow Security Principles
-- Never persist decrypted data
-- Always use secure storage for keys
-- Clear sensitive data on logout
-- Validate all inputs
-
-
-## 📚 Related Documentation
-
-- [Platform Adapters](../adapters/README.md)
-- [Unified Logic](../logic/README.md)
-- [State Management](../states/README.md)
-- [Security Architecture](../../ARCHITECTURE.md) 
+## Core Principles
+
+- **Pure Functions**: Only stateless functions that interact with external APIs
+- **No Business Logic**: All orchestration moved to services layer
+- **No Classes**: Removed unnecessary abstractions
+- **No Mock Data**: Removed all mock implementations from production code
+
+## Library Structure
+
+### Files and Their Purposes
+
+**`cognito.ts`** - AWS Cognito Integration
+- **Purpose**: Handles all AWS Cognito authentication operations
+- **Functions**: Login, logout, user salt retrieval, token management
+
+**`firebase.ts`** - Firebase Authentication Integration
+- **Purpose**: Handles all Firebase authentication operations
+- **Functions**: Firebase initialization, custom token authentication, auth state management
+
+**`config.ts`** - Platform-Agnostic Configuration
+- **Purpose**: Loads authentication configuration based on current platform
+- **Functions**: Configuration loading, validation, platform detection
+
+**`index.ts`** - Function Exports
+- **Purpose**: Provides clean interface for all authentication functions
+- **Functions**: Centralized exports for easy importing
+
+## Authentication Flow
+
+### Multi-Provider Strategy
+1. **Cognito Primary**: AWS Cognito handles initial user authentication
+2. **Firebase Secondary**: Firebase provides real-time authentication state
+3. **Token Exchange**: Cognito tokens exchanged for Firebase custom tokens
+4. **Unified State**: Both providers work together seamlessly
+
+### Security Architecture
+- **Zero-Knowledge**: No decrypted data ever persisted
+- **Token Management**: All tokens managed securely and never logged
+- **Platform Security**: Uses platform-specific secure storage
+- **Memory Security**: All decrypted data is ephemeral
+
+## Integration with Other Layers
+
+### Libraries → Services
+Services consume the authentication library for business logic:
+- **Orchestration**: Services coordinate multiple authentication operations
+- **Error Handling**: Services handle business-specific error scenarios
+- **State Management**: Services manage application state based on authentication results
+
+### Libraries → External APIs
+The authentication library handles external API interactions:
+- **AWS Cognito**: User authentication, token management, user attributes
+- **Firebase**: Custom token authentication, auth state listeners
+- **Error Handling**: Converts external API errors into consistent error types
+
+## Development Guidelines
+
+### Design Principles
+- **Pure Functions**: Every function has a single, clear purpose
+- **No State**: Libraries should not maintain internal state
+- **Error Propagation**: Always propagate errors up to the calling layer
+- **Type Safety**: Use TypeScript interfaces for all external API interactions
+
+### Security Considerations
+- Never log sensitive data
+- Use secure storage for keys and tokens
+- Validate all inputs before processing
+- Handle errors without exposing sensitive information
+
+## Platform Considerations
+
+### Mobile Platform
+- **Secure Storage**: Uses Expo SecureStore for token storage
+- **Biometric Integration**: Supports biometric authentication through platform adapters
+- **Offline Support**: Handles offline authentication scenarios
+- **Network Handling**: Manages network connectivity issues gracefully
+
+### Extension Platform
+- **Secure Storage**: Uses Chrome Storage API for token storage
+- **Browser Integration**: Leverages browser-specific authentication features
+- **Tab Management**: Handles authentication across multiple tabs
+- **Extension APIs**: Uses Chrome extension APIs for enhanced functionality 

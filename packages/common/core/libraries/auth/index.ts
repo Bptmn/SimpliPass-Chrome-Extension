@@ -1,17 +1,22 @@
 export { 
   initFirebase, 
   initialize, 
-  login, 
   isAuthenticated, 
-  signOutUser, 
-  fetchUserSalt, 
+  signOutFromFirebase,
+  signInWithFirebaseToken,
   getAuthInstance, 
+  getFirestoreInstance,
   getCurrentUser, 
-  onAuthStateChanged 
+  getCurrentUserId,
+  startAuthListeners,
+  stopAuthListeners
 } from './firebase';
 
 export { 
   loginWithCognito, 
+  loginWithCognitoAndGetUserId,
   fetchUserSaltCognito, 
-  signOutCognito 
+  signOutCognito,
+  signOutFromAllProviders,
+  getCognitoTokensAndFirebaseToken
 } from './cognito';

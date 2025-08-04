@@ -3,6 +3,7 @@ import { View, ScrollView } from 'react-native';
 import { Input } from '@ui/components/InputFields';
 import { getPageStyles } from '@ui/design/layout';
 import { useUser } from '@common/hooks/useUser';
+import { useItems } from '@common/hooks/useItems';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Button } from '@ui/components/Buttons';
 import { HeaderTitle } from '@ui/components/HeaderTitle';
@@ -14,7 +15,7 @@ import { generateItemKey } from '@common/utils/crypto';
 import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { CATEGORIES } from '@common/core/types/categories.types';
-import { useItemOperations } from '@common/hooks/useItemOperations'; // ✅ Use focused hook
+import { useAppStateStore } from '@common/hooks/useAppState';
 
 interface AddSecureNoteProps {
   onCancel?: () => void;
@@ -26,17 +27,15 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
   const themeColors = getColors(mode);
   const router = useAppRouterContext();
   const { user } = useUser();
-  
-  // ✅ Use focused hook for business operations
-  const { addSecureNote, isLoading, error } = useItemOperations();
-  
+  const { addItem, isActionLoading } = useItems({ user });
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedColor, setSelectedColor] = useState('#4f86a2');
+  const [error, setError] = useState<string | null>(null);
 
   const handleConfirm = async () => {
     if (!user) return;
-    
+    setError(null);
     try {
       const newNote: SecureNoteDecrypted = {
         id: crypto.randomUUID(),
@@ -49,12 +48,10 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
         itemKey: generateItemKey(),
       };
       
-      // ✅ Hook calls service for business logic
-      await addSecureNote(newNote);
+      await addItem(newNote);
       router.navigateTo(ROUTES.HOME, { category: CATEGORIES.SECURE_NOTES });
     } catch (e: unknown) {
-      // Error is handled by the hook
-      console.error('[AddSecureNote] Add failed:', e);
+      setError(e instanceof Error ? e.message : 'Erreur lors de la création de la note.');
     }
   };
 
@@ -96,7 +93,7 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
             width="full"
             height="full"
             onPress={handleConfirm}
-            disabled={isLoading}
+            disabled={isActionLoading}
           />
         </View>
       </ScrollView>
@@ -104,4 +101,4 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
   );
 };
 
-export default AddSecureNote;
+export default AddSecureNote; 

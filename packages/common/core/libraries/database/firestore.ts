@@ -1,22 +1,23 @@
 // packages/common/core/libraries/database/firestore.ts
 import { 
   Firestore, 
-  connectFirestoreEmulator, 
   doc, 
   getDoc, 
   setDoc, 
   getDocs, 
   collection, 
-  deleteDoc, 
-  terminate,
+  deleteDoc,
   DocumentData,
   QuerySnapshot,
   DocumentSnapshot,
   DocumentReference,
-  updateDoc
+  updateDoc,
+  onSnapshot,
+  Unsubscribe
 } from 'firebase/firestore';
-import { initFirebase } from '../auth/firebase';
+import { firestore } from '../auth/firebase';
 
+// Pure provider function: Get collection
 export const getCollection = async <T extends DocumentData = DocumentData>(
   firestore: Firestore,
   collectionPath: string
@@ -26,6 +27,7 @@ export const getCollection = async <T extends DocumentData = DocumentData>(
   return snapshot.docs.map(docSnapshot => ({ id: docSnapshot.id, ...docSnapshot.data() } as unknown as T));
 };
 
+// Pure provider function: Get document
 export const getDocument = async <T extends DocumentData = DocumentData>(
   firestore: Firestore,
   docPath: string
@@ -36,6 +38,7 @@ export const getDocument = async <T extends DocumentData = DocumentData>(
   return { id: snapshot.id, ...snapshot.data() } as unknown as T;
 };
 
+// Pure provider function: Add document
 export const addDocument = async <T extends DocumentData = DocumentData>(
   firestore: Firestore,
   collectionPath: string,
@@ -47,6 +50,7 @@ export const addDocument = async <T extends DocumentData = DocumentData>(
   return docRef.id;
 };
 
+// Pure provider function: Update document
 export const updateDocument = async <T extends DocumentData = DocumentData>(
   firestore: Firestore,
   docPath: string,
@@ -56,6 +60,7 @@ export const updateDocument = async <T extends DocumentData = DocumentData>(
   await updateDoc(docRef, data as DocumentData);
 };
 
+// Pure provider function: Delete document
 export const deleteDocument = async (
   firestore: Firestore,
   docPath: string
@@ -64,6 +69,7 @@ export const deleteDocument = async (
   await deleteDoc(docRef);
 };
 
+// Pure provider function: Generate database ID
 export function generateItemDatabaseId(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
   let autoId = '';
@@ -81,33 +87,60 @@ export function generateItemDatabaseId(): string {
   return autoId;
 }
 
-let firestoreInstance: Firestore | null = null;
-
-export const getFirestore = async (): Promise<Firestore> => {
-  if (!firestoreInstance) {
-    await initFirebase();
-    // Access the firebaseDb directly from the auth module
-    const { firebaseDb } = await import('../auth/firebase');
-    if (!firebaseDb) {
-      throw new Error('Failed to initialize Firestore');
-    }
-    firestoreInstance = firebaseDb;
-  }
-  return firestoreInstance!;
+// Pure provider function: Listen to document changes
+export const listenToDocument = (
+  firestore: Firestore,
+  docPath: string,
+  callback: (data: any) => void,
+  errorCallback?: (error: Error) => void
+): Unsubscribe => {
+  const docRef = doc(firestore, docPath);
+  return onSnapshot(
+    docRef,
+    (snapshot) => {
+      if (snapshot.exists()) {
+        callback({ id: snapshot.id, ...snapshot.data() });
+      } else {
+        callback(null);
+      }
+    },
+    errorCallback
+  );
 };
 
-// Wrapper functions for adapter
+// Pure provider function: Listen to collection changes
+export const listenToCollection = (
+  firestore: Firestore,
+  collectionPath: string,
+  callback: (data: any[]) => void,
+  errorCallback?: (error: Error) => void
+): Unsubscribe => {
+  const colRef = collection(firestore, collectionPath);
+  return onSnapshot(
+    colRef,
+    (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      callback(data);
+    },
+    errorCallback
+  );
+};
+// Wrapper functions for adapter compatibility (pure provider functions)
 export const getCollectionWrapper = async <T extends DocumentData = DocumentData>(
   collectionPath: string
 ): Promise<T[]> => {
-  const firestore = await getFirestore();
+  if (!firestore) {
+    throw new Error('Firestore not initialized');
+  }
   return getCollection<T>(firestore, collectionPath);
 };
 
 export const getDocumentWrapper = async <T extends DocumentData = DocumentData>(
   docPath: string
 ): Promise<T | null> => {
-  const firestore = await getFirestore();
+  if (!firestore) {
+    throw new Error('Firestore not initialized');
+  }
   return getDocument<T>(firestore, docPath);
 };
 
@@ -115,7 +148,9 @@ export const addDocumentWrapper = async <T extends DocumentData = DocumentData>(
   collectionPath: string,
   data: T
 ): Promise<string> => {
-  const firestore = await getFirestore();
+  if (!firestore) {
+    throw new Error('Firestore not initialized');
+  }
   return addDocument<T>(firestore, collectionPath, data);
 };
 
@@ -123,13 +158,103 @@ export const updateDocumentWrapper = async <T extends DocumentData = DocumentDat
   docPath: string,
   data: Partial<T>
 ): Promise<void> => {
-  const firestore = await getFirestore();
+  if (!firestore) {
+    throw new Error('Firestore not initialized');
+  }
   return updateDocument<T>(firestore, docPath, data);
 };
 
 export const deleteDocumentWrapper = async (
   docPath: string
 ): Promise<void> => {
-  const firestore = await getFirestore();
+  if (!firestore) {
+    throw new Error('Firestore not initialized');
+  }
   return deleteDocument(firestore, docPath);
 };
+
+// Listener management (business logic in library)
+let userListener: Unsubscribe | null = null;
+let itemsListener: Unsubscribe | null = null;
+let listenersState: { isListening: boolean; error: string | null } = {
+  isListening: false,
+  error: null
+};
+
+export const startListenersWrapper = async (userId: string, callbacks: { onUserUpdate?: (userData: any) => Promise<void>; onItemsUpdate?: () => Promise<void> }): Promise<void> => {
+  try {
+    if (!firestore) {
+      throw new Error('Firestore not initialized');
+    }
+    
+    // Start user listener
+    userListener = listenToDocument(
+      firestore,
+      `users/${userId}`,
+      async (userData) => {
+        if (userData && callbacks.onUserUpdate) {
+          const user = {
+            id: userData.id,
+            email: userData.email || '',
+            username: userData.username || '',
+            createdAt: userData.createdAt?.toDate() || new Date(),
+            updatedAt: userData.updatedAt?.toDate() || new Date(),
+          };
+          await callbacks.onUserUpdate(user);
+        }
+      },
+      (error) => {
+        listenersState.error = error.message;
+      }
+    );
+
+    // Start items listener
+    itemsListener = listenToCollection(
+      firestore,
+      `users/${userId}/my_items`,
+      async () => {
+        if (callbacks.onItemsUpdate) {
+          await callbacks.onItemsUpdate();
+        }
+      },
+      (error) => {
+        listenersState.error = error.message;
+      }
+    );
+
+    listenersState.isListening = true;
+    listenersState.error = null;
+  } catch (error) {
+    listenersState.error = error instanceof Error ? error.message : 'Failed to start listeners';
+    throw error;
+  }
+};
+
+export const stopListenersWrapper = async (): Promise<void> => {
+  if (userListener) {
+    userListener();
+    userListener = null;
+  }
+  if (itemsListener) {
+    itemsListener();
+    itemsListener = null;
+  }
+  listenersState.isListening = false;
+};
+
+export const getListenersStateWrapper = async (): Promise<{ isListening: boolean; error: string | null }> => {
+  return { ...listenersState };
+};
+
+export const isListeningWrapper = async (): Promise<boolean> => {
+  return listenersState.isListening;
+};
+
+export const getListenersErrorWrapper = async (): Promise<string | null> => {
+  return listenersState.error;
+};
+
+export const clearListenersErrorWrapper = async (): Promise<void> => {
+  listenersState.error = null;
+};
+

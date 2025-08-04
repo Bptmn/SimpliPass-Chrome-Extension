@@ -15,6 +15,9 @@ import { create } from 'zustand';
 import { checkUserSecretKey } from '@common/core/services/userService';
 import type { User } from '@common/core/types/auth.types';
 
+// Platform type definition
+export type Platform = 'extension' | 'mobile';
+
 // Global app state interface - only core states that impact routing
 export interface AppState {
   // Core states that impact routing
@@ -23,6 +26,7 @@ export interface AppState {
   user: User | null;
   userSecretKeyExist: boolean;
   authIsAvailable: boolean; // ✅ NEW: Auth state is available for routing
+  platform: Platform | null; // ✅ NEW: Platform type
 }
 
 // Zustand store interface
@@ -33,6 +37,7 @@ interface AppStateStore extends AppState {
   setSecretKey: (hasSecretKey: boolean) => void;
   setUserAndSecretKey: (user: User | null, hasSecretKey: boolean) => void;
   setAuthIsAvailable: (authIsAvailable: boolean) => void; // ✅ NEW
+  setPlatform: (platform: Platform) => void; // ✅ NEW
   
   // Utility methods
   refreshSecretKey: () => Promise<void>;
@@ -50,6 +55,7 @@ export const useAppStateStore = create<AppStateStore>((set, _get) => ({
   user: null,
   userSecretKeyExist: false,
   authIsAvailable: false, // ✅ NEW: Auth not available initially
+  platform: null, // ✅ NEW: Platform not set initially
 
   // Simple state update methods
   setInitializing: (isInitializing: boolean, error?: string | null) => {
@@ -79,6 +85,12 @@ export const useAppStateStore = create<AppStateStore>((set, _get) => ({
   setAuthIsAvailable: (authIsAvailable: boolean) => {
     console.log('[useAppState] Setting auth availability:', authIsAvailable);
     set({ authIsAvailable });
+  },
+
+  // ✅ NEW: Set platform
+  setPlatform: (platform: Platform) => {
+    console.log('[useAppState] Setting platform:', platform);
+    set({ platform });
   },
 
   // Utility methods

@@ -1,7 +1,5 @@
 // packages/common/core/adapters/database.adapter.ts
 import * as firebaseDb from '../libraries/database/firestore';
-import { getCollection, getDocument, addDocument, updateDocument, deleteDocument, generateItemDatabaseId } from '../libraries/database/firestore';
-import { FirestoreListenersService } from '../libraries/database/firestoreListeners';
 import { DocumentData } from 'firebase/firestore';
 import { User } from '../types/auth.types';
 
@@ -33,71 +31,33 @@ export interface IDatabaseAdapter {
   clearListenersError(): Promise<void>;
 }
 
-// Helper function to get listeners service
-const getListenersService = async (): Promise<FirestoreListenersService> => {
-  const firestore = await firebaseDb.getFirestore();
-  return new FirestoreListenersService(firestore);
-};
-
 // 🔌 Current implementation using Firebase
 // This can be easily swapped for other providers (e.g., MongoDB, PostgreSQL, etc.)
-export const db: IDatabaseAdapter = {
-  getCollection: async <T extends DocumentData = DocumentData>(
-    collectionPath: string
-  ): Promise<T[]> => {
-    const firestore = await firebaseDb.getFirestore();
-    return getCollection<T>(firestore, collectionPath);
-  },
-  getDocument: async <T extends DocumentData = DocumentData>(
-    docPath: string
-  ): Promise<T | null> => {
-    const firestore = await firebaseDb.getFirestore();
-    return getDocument<T>(firestore, docPath);
-  },
-  addDocument: async <T extends DocumentData = DocumentData>(
-    collectionPath: string,
-    data: T
-  ): Promise<DocumentId> => {
-    const firestore = await firebaseDb.getFirestore();
-    return addDocument<T>(firestore, collectionPath, data);
-  },
-  updateDocument: async <T extends DocumentData = DocumentData>(
-    docPath: string,
-    data: Partial<T>
-  ): Promise<void> => {
-    const firestore = await firebaseDb.getFirestore();
-    return updateDocument<T>(firestore, docPath, data);
-  },
-  deleteDocument: async (docPath: string): Promise<void> => {
-    const firestore = await firebaseDb.getFirestore();
-    return deleteDocument(firestore, docPath);
-  },
-  generateItemDatabaseId: firebaseDb.generateItemDatabaseId,
-  
-  // Listeners functionality
-  startListeners: async (userId: string, callbacks: DatabaseListenersCallbacks) => {
-    const listeners = await getListenersService();
-    listeners.setCallbacks(callbacks);
-    await listeners.startListeners(userId);
-  },
-  stopListeners: async () => {
-    const listeners = await getListenersService();
-    listeners.stopListeners();
-  },
-  getListenersState: async () => {
-    const listeners = await getListenersService();
-    return listeners.getState();
-  },
-  isListening: async () => {
-    const listeners = await getListenersService();
-    return listeners.isListening();
-  },
-  getListenersError: async () => {
-    const listeners = await getListenersService();
-    return listeners.getError();
-  },
-  clearListenersError: async () => {
-    const listeners = await getListenersService();
-    listeners.clearError();
-  },
-};
+export const db: IDatabaseAdapter = new Proxy({} as IDatabaseAdapter, {
+  get(target, prop) {
+    return async (...args: any[]) => {
+      // Map adapter methods to their respective library functions
+      const methodMap: Record<string, any> = {
+        getCollection: firebaseDb.getCollectionWrapper,
+        getDocument: firebaseDb.getDocumentWrapper,
+        addDocument: firebaseDb.addDocumentWrapper,
+        updateDocument: firebaseDb.updateDocumentWrapper,
+        deleteDocument: firebaseDb.deleteDocumentWrapper,
+        generateItemDatabaseId: firebaseDb.generateItemDatabaseId,
+        startListeners: firebaseDb.startListenersWrapper,
+        stopListeners: firebaseDb.stopListenersWrapper,
+        getListenersState: firebaseDb.getListenersStateWrapper,
+        isListening: firebaseDb.isListeningWrapper,
+        getListenersError: firebaseDb.getListenersErrorWrapper,
+        clearListenersError: firebaseDb.clearListenersErrorWrapper,
+      };
+
+      const method = methodMap[prop as string];
+      if (method) {
+        return method(...args);
+      }
+      
+      throw new Error(`Method ${String(prop)} not found in database adapter`);
+    };
+  }
+});

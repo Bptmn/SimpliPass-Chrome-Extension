@@ -30,32 +30,52 @@ class DatabaseListeners implements IDatabaseListenerService {
   ) {}
 
   async start(userId: string): Promise<void> {
-    const callbacks = {
-      onUserUpdate: async (userData: any) => {
-        await this.storage.updateUserInSecureLocalStorage(userData);
-      },
-      onItemsUpdate: async () => {
-        try {
-          const appState = this.appStateStore.getState();
-          if (!appState.userSecretKeyExist) {
-            return;
+    try {
+      console.log('[DatabaseListeners] Starting database listeners for user:', userId);
+      
+      const callbacks = {
+        onUserUpdate: async (userData: any) => {
+          await this.storage.updateUserInSecureLocalStorage(userData);
+        },
+        onItemsUpdate: async () => {
+          try {
+            console.log('[DatabaseListeners] Items updated in database, checking if user has secret key...');
+            
+            // ✅ Check if user has secret key before processing updates
+            const appState = this.appStateStore.getState();
+            if (!appState.userSecretKeyExist) {
+              console.log('[DatabaseListeners] Skipping items update - user secret key not available yet');
+              return;
+            }
+            
+            const currentUser = await this.userService.getCurrentUserAsync();
+            const currentUserId = currentUser?.uid;
+            if (!currentUserId) {
+              console.log('[DatabaseListeners] Skipping items update - auth not ready yet');
+              return;
+            }
+            
+            console.log('[DatabaseListeners] User has secret key, refreshing local storage and state...');
+            // ✅ Use fetchAndStoreItems to update local storage and global state
+            await this.itemsService.fetchAndStoreItems(currentUserId);
+            console.log('[DatabaseListeners] Items update processed successfully');
+          } catch (error) {
+            console.error('[DatabaseListeners] Error processing items update:', error);
           }
-          const currentUser = await this.userService.getCurrentUserAsync();
-          const currentUserId = currentUser?.uid;
-          if (!currentUserId) {
-            return;
-          }
-          await this.itemsService.fetchAndStoreItems(currentUserId);
-        } catch (error) {
-          console.error('[DatabaseListeners] Error processing items update:', error);
-        }
-      },
-    };
-    await this.db.startListeners(userId, callbacks);
-    this.isListening = true;
+        },
+      };
+
+      await this.db.startListeners(userId, callbacks);
+      this.isListening = true;
+      console.log('[DatabaseListeners] Database listeners started successfully');
+    } catch (error) {
+      console.error('[DatabaseListeners] Failed to start database listeners:', error);
+      throw error;
+    }
   }
 
   stop(): void {
+    console.log('[DatabaseListeners] Stopping database listeners');
     this.db.stopListeners();
     this.isListening = false;
   }
@@ -77,8 +97,18 @@ class AuthListeners implements IAuthListenerService {
   ) {}
 
   async start(): Promise<void> {
-    await this.authService.startAuthListeners();
-    this.isListening = true;
+    try {
+      console.log('[AuthListeners] Starting authentication listeners');
+      
+      // Set the database listeners on the auth service so it can start them when user is authenticated
+      this.authService.setDatabaseListeners(this.databaseListeners);
+      await this.authService.startAuthListeners();
+      this.isListening = true;
+      console.log('[AuthListeners] Authentication listeners started successfully');
+    } catch (error) {
+      console.error('[AuthListeners] Failed to start auth listeners:', error);
+      throw error;
+    }
   }
 
   private async handleUserAuthenticated(userId: string): Promise<void> {

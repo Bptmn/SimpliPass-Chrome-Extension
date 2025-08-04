@@ -1,2 +1,21 @@
-export * from './firestore';
-export * from './firestoreListeners'; 
+export { 
+  getCollection,
+  getDocument,
+  addDocument,
+  updateDocument,
+  deleteDocument,
+  generateItemDatabaseId,
+  listenToDocument,
+  listenToCollection,
+  getCollectionWrapper,
+  getDocumentWrapper,
+  addDocumentWrapper,
+  updateDocumentWrapper,
+  deleteDocumentWrapper,
+  startListenersWrapper,
+  stopListenersWrapper,
+  getListenersStateWrapper,
+  isListeningWrapper,
+  getListenersErrorWrapper,
+  clearListenersErrorWrapper
+} from './firestore'; 

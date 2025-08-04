@@ -1,206 +1,121 @@
 # Adapters Layer
 
-This layer provides provider-agnostic interfaces for authentication, database operations, and platform-specific functionality. This allows you to easily swap providers without changing your application code.
+## Purpose and Role
 
-## Architecture
+The Adapters layer provides provider-agnostic interfaces that abstract away specific implementation details of external services. This layer acts as a bridge between business logic and external providers, allowing easy provider switching without changing business logic.
 
-The adapters follow the **Adapter Pattern** to abstract away the specific implementation details of different providers:
+### Global Application Structure
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Application   │───▶│   Adapter       │───▶│   Provider      │
-│   (Business     │    │   (Interface)   │    │   (Firebase,    │
-│    Logic)       │    │                 │    │    MongoDB,     │
-└─────────────────┘    └─────────────────┘    │    etc.)        │
-                                              └─────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    APPLICATION LAYERS                      │
+├─────────────────────────────────────────────────────────────┤
+│ Layer 1: Hooks (UI Layer)                                │
+│ Layer 2: Services (Business Logic Layer)                  │
+│ Layer 3: Adapters (Provider Abstraction Layer) ← YOU ARE HERE
+│ Layer 4: Libraries (External Integration Layer)           │
+│ External APIs & Services                                  │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+## Core Principles
+
+- **Provider Agnostic**: Same interface works with different providers
+- **Interface Consistency**: Well-defined interfaces hide provider complexity
+- **Dynamic Loading**: Platform-specific adapters loaded based on global state
+- **Pure References**: Only reference library functions, no business logic
 
 ## Available Adapters
 
 ### Auth Adapter (`auth.adapter.ts`)
+**Purpose**: Unified interface for authentication operations across providers.
 
-Provides a unified interface for authentication operations:
+**What it does**: Abstracts authentication operations, handles both Cognito and Firebase, provides consistent error handling.
 
-```typescript
-interface AuthAdapter {
-  login(email: string, password: string): Promise<string>;
-  isAuthenticated(): Promise<boolean>;
-  signOut(): Promise<void>;
-  storeUserSecretKey(userSecretKey: string): Promise<void>;
-  checkAuthenticationStatus(): Promise<any>;
-  fetchUserSalt(): Promise<string>;
-}
-```
-
-**Current Implementation**: AWS Cognito + Firebase Auth
+**Current Implementation**: AWS Cognito + Firebase Auth integration
 
 ### Database Adapter (`database.adapter.ts`)
+**Purpose**: Unified interface for database operations regardless of provider.
 
-Provides a unified interface for database operations:
+**What it does**: Abstracts CRUD operations, handles real-time data synchronization, manages database connections.
 
-```typescript
-interface DatabaseAdapter {
-  getCollection<T>(collectionPath: string): Promise<T[]>;
-  getDocument<T>(docPath: string): Promise<T | null>;
-  addDocument<T>(collectionPath: string, data: T): Promise<string>;
-  updateDocument<T>(docPath: string, data: Partial<T>): Promise<void>;
-  deleteDocument(docPath: string): Promise<void>;
-  generateItemDatabaseId(): string;
-}
-```
-
-**Current Implementation**: Firebase Firestore
+**Current Implementation**: Firebase Firestore with real-time listeners
 
 ### Platform Adapter (`platform.adapter.ts`)
+**Purpose**: Platform-specific functionality with consistent interface.
 
-Provides a unified interface for platform-specific functionality:
-
-```typescript
-interface PlatformAdapter {
-  getUserSecretKey(): Promise<string | null>;
-  storeUserSecretKey(key: string): Promise<void>;
-  deleteUserSecretKey(): Promise<void>;
-  getSessionMetadata(): Promise<any>;
-  storeSessionMetadata(metadata: any): Promise<void>;
-  deleteSessionMetadata(): Promise<void>;
-  getPlatformName(): 'mobile' | 'extension';
-  supportsBiometric(): boolean;
-  supportsOfflineVault(): boolean;
-  copyToClipboard(text: string): Promise<void>;
-  getFromClipboard(): Promise<string>;
-  clearSession(): Promise<void>;
-  getDeviceFingerprint(): Promise<string>;
-  isOnline(): Promise<boolean>;
-  getNetworkStatus(): Promise<'online' | 'offline' | 'unknown'>;
-}
-```
+**What it does**: Handles platform features (biometrics, clipboard, network), manages platform information.
 
 **Current Implementation**: Dynamic loading of mobile or extension platform adapters
 
-## Usage
+### Platform Storage Adapter (`platform.storage.adapter.ts`)
+**Purpose**: Secure local storage operations across platforms.
 
-### Importing Adapters
+**What it does**: Handles secure storage of sensitive data, provides platform-specific implementations.
 
-```typescript
-import { auth, db, platform, initializePlatform } from '@common/core/adapters';
+**Current Implementation**: Dynamic loading of mobile (Expo SecureStore) or extension (Chrome Storage) storage adapters
 
-// Initialize platform adapter at app startup
-await initializePlatform();
+## Architecture Approach
 
-// Use auth adapter
-const result = await auth.login('user@example.com', 'password');
-if (result.mfaRequired) {
-  await auth.confirmMfa('123456');
-}
+### Adapter Pattern Implementation
+- **Provider Independence**: Business logic doesn't depend on specific providers
+- **Easy Testing**: Mock adapters can be used for testing
+- **Flexible Migration**: Providers can be swapped without code changes
+- **Consistent Interface**: Same API regardless of underlying provider
 
-// Use database adapter
-const users = await db.getCollection('users');
-const user = await db.getDocument('users/123');
+### Proxy Pattern for Dynamic Loading
+1. **Global State Check**: Adapter checks platform type from global state
+2. **Dynamic Import**: Loads appropriate platform-specific adapter
+3. **Method Delegation**: Delegates method calls to loaded adapter
+4. **Fallback Handling**: Provides default implementations for optional methods
 
-// Use platform adapter
-const secretKey = await platform.getUserSecretKey();
-await platform.copyToClipboard('text to copy');
-const isOnline = await platform.isOnline();
-```
+### Platform Management
+Platform adapters integrate with global state management:
+1. **Platform Detection**: Platform type determined at application startup
+2. **State Storage**: Platform type stored in Zustand global state
+3. **Dynamic Loading**: Adapters load platform-specific implementations based on state
 
-### Swapping Providers
+## Integration with Other Layers
 
-To swap providers, simply implement the adapter interface and update the export:
+### Adapters → Services
+Services consume adapters for external operations. Services are responsible for:
+- Orchestrating multiple adapter calls
+- Handling business logic errors
+- Managing application state
 
-#### Example: Switch to Mock Database
+### Adapters → Libraries
+Adapters use libraries for low-level operations. Adapters are responsible for:
+- Providing consistent interfaces
+- Handling provider-specific details
+- Managing dynamic loading
 
-```typescript
-// In database.adapter.ts
-import { mockDb } from './mock.adapter';
+## Development Guidelines
 
-// Change this line:
-export const db: DatabaseAdapter = mockDb;
-```
+### Design Principles
+- **Interface Consistency**: All adapters provide consistent, predictable interfaces
+- **Error Handling**: Convert provider-specific errors into consistent error types
+- **Type Safety**: Use TypeScript interfaces for all adapter methods
+- **Documentation**: Clearly document all methods and their expected behavior
 
-#### Example: Switch to MongoDB
-
-```typescript
-// Create mongodb.adapter.ts
-export const mongoDb: DatabaseAdapter = {
-  getCollection: async (collectionPath) => {
-    // MongoDB implementation
-  },
-  // ... other methods
-};
-
-// In database.adapter.ts
-import { mongoDb } from './mongodb.adapter';
-export const db: DatabaseAdapter = mongoDb;
-```
-
-#### Example: Switch to Different Auth Provider
-
-```typescript
-// Create auth0.adapter.ts
-export const auth0Auth: AuthAdapter = {
-  login: async (email, password) => {
-    // Auth0 implementation
-  },
-  // ... other methods
-};
-
-// In auth.adapter.ts
-import { auth0Auth } from './auth0.adapter';
-export const auth: AuthAdapter = auth0Auth;
-```
-
-#### Example: Switch to Different Platform
-
-```typescript
-// Create web.adapter.ts
-export const webPlatform: PlatformAdapter = {
-  getUserSecretKey: async () => {
-    // Web-specific implementation
-  },
-  // ... other methods
-};
-
-// In platform.adapter.ts
-export const platform: PlatformAdapter = webPlatform;
-```
+### Security Considerations
+- Never log sensitive data
+- Use secure storage for keys and tokens
+- Validate all inputs before processing
+- Handle errors without exposing sensitive information
 
 ## Benefits
 
-1. **Provider Agnostic**: Your application code doesn't depend on specific providers
-2. **Easy Testing**: Use mock adapters for testing
-3. **Flexible Migration**: Switch providers without changing business logic
-4. **Consistent Interface**: Same API regardless of underlying provider
-5. **Type Safety**: TypeScript ensures correct implementation
-6. **Platform Independence**: Core logic works across mobile and extension platforms
+### Provider Flexibility
+- Switch from Firebase to MongoDB without changing business logic
+- Replace Cognito with Auth0 seamlessly
+- Add new platform support without affecting existing code
 
-## Testing
+### Testing Simplicity
+- Test business logic without external dependencies
+- Simulate different provider behaviors
+- Test error scenarios easily
 
-Use the mock adapters for testing:
-
-```typescript
-import { mockDb } from '@common/core/database/mock.adapter';
-
-// In your tests
-jest.mock('@common/core/adapters', () => ({
-  db: mockDb,
-  auth: mockAuth,
-  platform: mockPlatform,
-}));
-```
-
-## Adding New Providers
-
-1. Create a new adapter file (e.g., `mongodb.adapter.ts`)
-2. Implement the interface (`DatabaseAdapter`, `AuthAdapter`, or `PlatformAdapter`)
-3. Update the main adapter file to export your new implementation
-4. Your application code remains unchanged!
-
-## Migration Strategy
-
-When migrating from one provider to another:
-
-1. Implement the new provider adapter
-2. Test thoroughly with the new adapter
-3. Update the export in the main adapter file
-4. Deploy the change
-5. Your application continues working without any code changes! 
+### Maintenance Efficiency
+- Single interface to maintain across providers
+- Consistent error handling patterns
+- Centralized provider-specific logic 

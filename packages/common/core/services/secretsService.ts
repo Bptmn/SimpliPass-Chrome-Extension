@@ -1,7 +1,6 @@
 // packages/common/core/services/secretsService.ts
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { deriveKey } from '../../utils/crypto';
-import { IAuthAdapter } from '../adapters/auth.adapter';
 
 export interface ISecretsService {
   getUserSecretKey(): Promise<string | null>;
@@ -42,10 +41,16 @@ export const hasUserSecretKey = async (): Promise<boolean> => {
   return secretsServiceInstance.hasUserSecretKey();
 };
 
+export const deriveAndStoreUserSecretKey = async (password: string): Promise<void> => {
+  if (!secretsServiceInstance) {
+    throw new Error('SecretsService not initialized');
+  }
+  return secretsServiceInstance.deriveAndStoreUserSecretKey(password);
+};
+
 export class SecretsService implements ISecretsService {
   constructor(
     private storage: IPlatformStorageAdapter,
-    private auth: IAuthAdapter,
   ) {
     // Set the singleton instance
     secretsServiceInstance = this;
@@ -94,18 +99,22 @@ export class SecretsService implements ISecretsService {
   }
 
   public async deriveAndStoreUserSecretKey(password: string): Promise<void> {
-    const userSalt = await this.auth.fetchUserSalt();
+    // Import auth library directly to avoid circular dependency
+    const { fetchUserSaltCognito } = await import('../libraries/auth/cognito');
+    const userSalt = await fetchUserSaltCognito();
     const userSecretKey = await deriveKey(password, userSalt);
     await this.storeUserSecretKey(userSecretKey);
+    
+    // Step 4: Update global state to reflect that user secret key now exists
+    const { useAppStateStore } = await import('../../hooks/useAppState');
+    useAppStateStore.getState().setSecretKey(true);
   }
 }
 
 // Import actual adapters
-import { auth } from '../adapters/auth.adapter';
 import { storage } from '../adapters/platform.storage.adapter';
 
 // Export singleton instance
 export const secretsService = new SecretsService(
-  storage,
-  auth
+  storage
 );

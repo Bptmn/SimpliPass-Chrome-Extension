@@ -6,7 +6,7 @@
  * 
  * Responsibilities:
  * 1. Initialize auth provider
- * 2. Initialize platform detection
+ * 2. Set platform type in global state
  * 3. Initialize storage
  * 4. Start auth listeners (which use Zustand store directly)
  * 5. Mark initialization complete via Zustand
@@ -16,21 +16,25 @@
 
 import { useCallback, useEffect } from 'react';
 import { initializationService } from '@common/core/services/initializationService';
-import { useAppStateStore } from './useAppState';
+import { useAppStateStore, type Platform } from './useAppState';
 
-export const useAppInitialization = (): void => {
+interface UseAppInitializationProps {
+  platform: Platform;
+}
+
+export const useAppInitialization = ({ platform }: UseAppInitializationProps): void => {
   // Get Zustand store methods directly
   const { setInitializing: _setInitializing } = useAppStateStore();
 
   // App initialization - delegate to service layer
   const initializeApp = useCallback(async (): Promise<void> => {
     try {
-      await initializationService.initializeApp();
+      await initializationService.initializeApp(platform);
     } catch (error) {
       // Error is already handled by the service and exposed to UI state
       console.error('[useAppInitialization] Initialization failed:', error);
     }
-  }, []);
+  }, [platform]);
 
   // Initialize app on mount only if not already initializing
   useEffect(() => {
