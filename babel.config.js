@@ -18,11 +18,15 @@ module.exports = {
       helpers: true,
       useESM: false
     }],
+    // Add plugin to handle import.meta syntax
+    ['@babel/plugin-syntax-import-meta', { loose: true }],
   ],
   env: {
     test: {
       plugins: [
-        ['@babel/plugin-transform-modules-commonjs', { loose: true }]
+        ['@babel/plugin-transform-modules-commonjs', { loose: true }],
+        // Handle import.meta in test environment
+        ['@babel/plugin-syntax-import-meta', { loose: true }],
       ]
     }
   }

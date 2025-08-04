@@ -80,7 +80,7 @@ export function checkPasswordStrength(password: string) {
   let strength: 'weak' | 'medium' | 'strong' | 'very-strong';
   if (score <= 2) strength = 'weak';
   else if (score <= 3) strength = 'medium';
-  else if (score <= 5) strength = 'strong';
+  else if (score < 5) strength = 'strong';
   else strength = 'very-strong';
   
   return {

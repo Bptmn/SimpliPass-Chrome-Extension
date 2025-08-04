@@ -1,21 +1,11 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useAppState } from '../useAppState';
-import { auth } from '../../core/adapters/auth.adapter';
-import { storage } from '../../core/adapters/platform.storage.adapter';
-import { getLocalVault } from '../../core/services/vault';
-import { getUserSecretKey } from '../../core/services/secret';
-import { CredentialDecrypted, BankCardDecrypted } from '../../core/types/items.types';
+import { useAppStateStore } from '../useAppState';
+import { checkUserSecretKey } from '../../core/services/userService';
 
 // Mock dependencies
-jest.mock('../../core/adapters/auth.adapter');
-jest.mock('../../core/adapters/platform.storage.adapter');
-jest.mock('../../core/services/vault');
-jest.mock('../../core/services/secret');
+jest.mock('../../core/services/userService');
 
-const mockAuth = auth as jest.Mocked<typeof auth>;
-const mockStorage = storage as jest.Mocked<typeof storage>;
-const mockGetLocalVault = getLocalVault as jest.MockedFunction<typeof getLocalVault>;
-const mockGetUserSecretKey = getUserSecretKey as jest.MockedFunction<typeof getUserSecretKey>;
+const mockCheckUserSecretKey = checkUserSecretKey as jest.MockedFunction<typeof checkUserSecretKey>;
 
 describe('useAppState', () => {
   const mockUser = {
@@ -26,210 +16,143 @@ describe('useAppState', () => {
     updatedAt: new Date('2023-01-01')
   };
 
-  const mockVault: (CredentialDecrypted | BankCardDecrypted)[] = [
+  const mockVault = [
     {
       id: '1',
-      itemType: 'credential',
       title: 'Test Credential',
       username: 'testuser',
-      password: 'testpass',
-      url: 'https://test.com',
-      note: '',
+      password: 'password123',
+      url: 'http://example.com',
+      note: 'A note',
+      createdDateTime: new Date().toISOString(),
+      lastUseDateTime: new Date().toISOString(),
+      itemType: 'credential',
       itemKey: 'key1',
-      createdDateTime: new Date(),
-      lastUseDateTime: new Date()
-    } as CredentialDecrypted,
-    {
-      id: '2',
-      itemType: 'bankCard',
-      title: 'Test Card',
-      cardNumber: '1234567890123456',
-      owner: 'Test User',
-      note: '',
-      color: '#000000',
-      itemKey: 'key2',
-      expirationDate: { month: 12, year: 2025 },
-      verificationNumber: '123',
-      bankName: 'Test Bank',
-      bankDomain: 'testbank.com',
-      createdDateTime: new Date(),
-      lastUseDateTime: new Date()
-    } as BankCardDecrypted
+    } as any,
   ];
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset the store state
+    useAppStateStore.setState({
+      isInitializing: false,
+      initializationError: null,
+      user: null,
+      userSecretKeyExist: false,
+      authIsAvailable: false,
+    });
   });
 
   describe('initial state', () => {
     it('should have correct initial state', () => {
-      const { result } = renderHook(() => useAppState());
+      const { result } = renderHook(() => useAppStateStore());
 
-      expect(result.current.state).toEqual({
-        isInitialized: false,
-        isAuthenticated: false,
-        hasLocalData: false,
-        shouldShowLogin: false,
-        shouldShowReEnterPassword: false,
-        shouldRenderApp: false,
-        error: null,
-      });
+      expect(result.current.isInitializing).toBe(false);
+      expect(result.current.initializationError).toBe(null);
       expect(result.current.user).toBe(null);
-      expect(result.current.vault).toBe(null);
-      expect(typeof result.current.refreshState).toBe('function');
-      expect(typeof result.current.clearError).toBe('function');
+      expect(result.current.userSecretKeyExist).toBe(false);
+      expect(result.current.authIsAvailable).toBe(false);
     });
   });
 
-  describe('authentication state', () => {
-    it('should handle unauthenticated user', async () => {
-      mockAuth.isAuthenticated.mockResolvedValue(false);
+  describe('state updates', () => {
+    it('should update initialization state', () => {
+      const { result } = renderHook(() => useAppStateStore());
 
-      const { result } = renderHook(() => useAppState());
-
-      await waitFor(() => {
-        expect(result.current.state.isInitialized).toBe(true);
-        expect(result.current.state.isAuthenticated).toBe(false);
-        expect(result.current.state.shouldShowLogin).toBe(true);
-        expect(result.current.state.shouldRenderApp).toBe(false);
-        expect(result.current.user).toBe(null);
-        expect(result.current.vault).toBe(null);
+      act(() => {
+        result.current.setInitializing(true, 'Test error');
       });
+
+      expect(result.current.isInitializing).toBe(true);
+      expect(result.current.initializationError).toBe('Test error');
     });
 
-    it('should handle authenticated user with local data', async () => {
-      mockAuth.isAuthenticated.mockResolvedValue(true);
-      mockGetUserSecretKey.mockResolvedValue('secret-key');
-      mockStorage.getUserFromSecureLocalStorage.mockResolvedValue(mockUser);
-      mockGetLocalVault.mockResolvedValue(mockVault);
+    it('should update user state', () => {
+      const { result } = renderHook(() => useAppStateStore());
 
-      const { result } = renderHook(() => useAppState());
-
-      await waitFor(() => {
-        expect(result.current.state.isInitialized).toBe(true);
-        expect(result.current.state.isAuthenticated).toBe(true);
-        expect(result.current.state.hasLocalData).toBe(true);
-        expect(result.current.state.shouldShowLogin).toBe(false);
-        expect(result.current.state.shouldRenderApp).toBe(true);
-        expect(result.current.user).toEqual(mockUser);
-        expect(result.current.vault).toEqual(mockVault);
+      act(() => {
+        result.current.setUser(mockUser);
       });
+
+      expect(result.current.user).toEqual(mockUser);
     });
 
-    it('should handle authenticated user without local data', async () => {
-      mockAuth.isAuthenticated.mockResolvedValue(true);
-      mockGetUserSecretKey.mockResolvedValue(null);
-      mockStorage.getUserFromSecureLocalStorage.mockResolvedValue(null);
-      mockGetLocalVault.mockResolvedValue([]);
+    it('should update secret key state', () => {
+      const { result } = renderHook(() => useAppStateStore());
 
-      const { result } = renderHook(() => useAppState());
-
-      await waitFor(() => {
-        expect(result.current.state.isInitialized).toBe(true);
-        expect(result.current.state.isAuthenticated).toBe(true);
-        expect(result.current.state.hasLocalData).toBe(false);
-        expect(result.current.state.shouldShowLogin).toBe(false);
-        expect(result.current.state.shouldShowReEnterPassword).toBe(true);
-        expect(result.current.state.shouldRenderApp).toBe(false);
-        expect(result.current.user).toBe(null);
-        expect(result.current.vault).toBe(null);
+      act(() => {
+        result.current.setSecretKey(true);
       });
+
+      expect(result.current.userSecretKeyExist).toBe(true);
+    });
+
+    it('should update user and secret key together', () => {
+      const { result } = renderHook(() => useAppStateStore());
+
+      act(() => {
+        result.current.setUserAndSecretKey(mockUser, true);
+      });
+
+      expect(result.current.user).toEqual(mockUser);
+      expect(result.current.userSecretKeyExist).toBe(true);
+    });
+
+    it('should update auth availability', () => {
+      const { result } = renderHook(() => useAppStateStore());
+
+      act(() => {
+        result.current.setAuthIsAvailable(true);
+      });
+
+      expect(result.current.authIsAvailable).toBe(true);
     });
   });
 
-  describe('error handling', () => {
-    it('should handle authentication errors', async () => {
-      const authError = new Error('Authentication failed');
-      mockAuth.isAuthenticated.mockRejectedValue(authError);
+  describe('refresh secret key', () => {
+    it('should refresh secret key successfully', async () => {
+      mockCheckUserSecretKey.mockResolvedValue(true);
 
-      const { result } = renderHook(() => useAppState());
+      const { result } = renderHook(() => useAppStateStore());
 
-      await waitFor(() => {
-        expect(result.current.state.isInitialized).toBe(true);
-        expect(result.current.state.isAuthenticated).toBe(false);
-        expect(result.current.state.shouldShowLogin).toBe(true);
-        expect(result.current.state.error).toBe('Authentication failed');
+      await act(async () => {
+        await result.current.refreshSecretKey();
       });
+
+      expect(mockCheckUserSecretKey).toHaveBeenCalled();
+      expect(result.current.userSecretKeyExist).toBe(true);
     });
 
-    it('should handle storage errors', async () => {
-      mockAuth.isAuthenticated.mockResolvedValue(true);
-      const storageError = new Error('Storage access failed');
-      mockGetUserSecretKey.mockRejectedValue(storageError);
+    it('should handle secret key refresh error', async () => {
+      mockCheckUserSecretKey.mockRejectedValue(new Error('Failed to get secret key'));
 
-      const { result } = renderHook(() => useAppState());
+      const { result } = renderHook(() => useAppStateStore());
 
-      await waitFor(() => {
-        expect(result.current.state.isInitialized).toBe(true);
-        expect(result.current.state.isAuthenticated).toBe(false);
-        expect(result.current.state.shouldShowLogin).toBe(true);
-        expect(result.current.state.error).toBe('Storage access failed');
+      await act(async () => {
+        await result.current.refreshSecretKey();
       });
+
+      expect(result.current.userSecretKeyExist).toBe(false);
     });
+  });
 
-    it('should clear error when clearError is called', async () => {
-      const authError = new Error('Test error');
-      mockAuth.isAuthenticated.mockRejectedValue(authError);
+  describe('clear error', () => {
+    it('should clear initialization error', () => {
+      const { result } = renderHook(() => useAppStateStore());
 
-      const { result } = renderHook(() => useAppState());
-
-      await waitFor(() => {
-        expect(result.current.state.error).toBe('Test error');
+      // Set an error first
+      act(() => {
+        result.current.setInitializing(false, 'Test error');
       });
 
+      expect(result.current.initializationError).toBe('Test error');
+
+      // Clear the error
       act(() => {
         result.current.clearError();
       });
 
-      expect(result.current.state.error).toBe(null);
-    });
-  });
-
-  describe('refresh state', () => {
-    it('should refresh state when called', async () => {
-      mockAuth.isAuthenticated.mockResolvedValue(true);
-      mockGetUserSecretKey.mockResolvedValue('secret-key');
-      mockStorage.getUserFromSecureLocalStorage.mockResolvedValue(mockUser);
-      mockGetLocalVault.mockResolvedValue(mockVault);
-
-      const { result } = renderHook(() => useAppState());
-
-      // Wait for initial state
-      await waitFor(() => {
-        expect(result.current.state.isInitialized).toBe(true);
-      });
-
-      // Reset mocks for refresh call
-      jest.clearAllMocks();
-      mockAuth.isAuthenticated.mockResolvedValue(false);
-
-      // Call refresh
-      await act(async () => {
-        await result.current.refreshState();
-      });
-
-      await waitFor(() => {
-        expect(result.current.state.isAuthenticated).toBe(false);
-        expect(result.current.state.shouldShowLogin).toBe(true);
-      });
-    });
-  });
-
-  describe('data loading', () => {
-    it('should load data on mount', async () => {
-      mockAuth.isAuthenticated.mockResolvedValue(true);
-      mockGetUserSecretKey.mockResolvedValue('secret-key');
-      mockStorage.getUserFromSecureLocalStorage.mockResolvedValue(mockUser);
-      mockGetLocalVault.mockResolvedValue(mockVault);
-
-      renderHook(() => useAppState());
-
-      await waitFor(() => {
-        expect(mockAuth.isAuthenticated).toHaveBeenCalled();
-        expect(mockGetUserSecretKey).toHaveBeenCalled();
-        expect(mockStorage.getUserFromSecureLocalStorage).toHaveBeenCalled();
-        expect(mockGetLocalVault).toHaveBeenCalled();
-      });
+      expect(result.current.initializationError).toBe(null);
     });
   });
 }); 

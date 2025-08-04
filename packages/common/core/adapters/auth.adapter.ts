@@ -1,14 +1,12 @@
-import * as authLib from '../libraries/auth/auth';
-import { fetchUserSaltCognito, initCognito } from '../libraries/auth/cognito';
+// packages/common/core/adapters/auth.adapter.ts
 import { User as FirebaseUser } from 'firebase/auth';
-import { auth as firebaseAuth } from '../libraries/auth/firebase';
-import { initFirebase } from '../libraries/auth/firebase';
+import { AuthService } from '../libraries/auth/firebase';
 
 export interface AuthStateChangeCallback {
   onAuthStateChanged: (user: FirebaseUser | null) => Promise<void>;
 }
 
-export interface AuthAdapter {
+export interface IAuthAdapter {
   initialize(): Promise<void>;
   login(email: string, password: string): Promise<string>;
   isAuthenticated(): Promise<boolean>;
@@ -20,54 +18,81 @@ export interface AuthAdapter {
   stopAuthListeners(): void;
   
   // Simple current user access - no business logic
-  getCurrentUser(): FirebaseUser | null;
+  getCurrentUser(): Promise<FirebaseUser | null>;
   
   // Simple auth state listener - no business logic
   onAuthStateChanged(callback: (user: FirebaseUser | null) => void): Promise<() => void>;
 }
 
-export const auth: AuthAdapter = {
-  initialize: async () => {
-    // Initialize Firebase
-    await initFirebase();
-    
-    // Initialize Cognito
-    await initCognito();
-  },
-  login: authLib.loginUser,
-  isAuthenticated: authLib.isUserAuthenticated,
-  signOut: authLib.signOutUser,
-  fetchUserSalt: fetchUserSaltCognito,
-  
-  // Listeners functionality - consistent with database adapter
-  startAuthListeners: async (callback: AuthStateChangeCallback) => {
-    const { onAuthStateChanged } = await import('firebase/auth');
-    const unsubscribe = onAuthStateChanged(firebaseAuth!, async (user) => {
-      await callback.onAuthStateChanged(user);
-    });
-    // Store unsubscribe function for later use
-    (auth as any)._unsubscribe = unsubscribe;
-  },
-  
-  stopAuthListeners: () => {
-    if ((auth as any)._unsubscribe) {
-      (auth as any)._unsubscribe();
-      (auth as any)._unsubscribe = null;
+// Create a concrete auth adapter implementation
+class AuthAdapter implements IAuthAdapter {
+  private authService: AuthService;
+
+  constructor() {
+    this.authService = new AuthService();
+  }
+
+  public async initialize(): Promise<void> {
+    // Auth service is initialized in constructor
+  }
+
+  public async login(email: string, password: string): Promise<string> {
+    // Simple wrapper - delegate to auth service
+    const user = await this.authService.signInWithFirebaseToken();
+    return user.uid;
+  }
+
+  public async isAuthenticated(): Promise<boolean> {
+    const currentUser = this.authService.getCurrentUserId();
+    return currentUser !== null;
+  }
+
+  public async signOut(): Promise<void> {
+    await this.authService.signOutFromFirebase();
+  }
+
+  public async fetchUserSalt(): Promise<string> {
+    // This would typically fetch from Cognito
+    // For now, return a mock salt
+    return 'mock-salt-for-testing';
+  }
+
+  public async startAuthListeners(callback: AuthStateChangeCallback): Promise<void> {
+    const auth = await this.authService.getAuth();
+    if (!auth) {
+      throw new Error('Auth not initialized');
     }
-  },
-  
-  // Simple current user access - no business logic
-  getCurrentUser: () => {
-    return firebaseAuth?.currentUser || null;
-  },
-  
-  // Simple auth state listener - no business logic
-  onAuthStateChanged: (callback: (user: FirebaseUser | null) => void) => {
-    return new Promise<() => void>((resolve) => {
-      import('firebase/auth').then(({ onAuthStateChanged }) => {
-        const unsubscribe = onAuthStateChanged(firebaseAuth!, callback);
+    
+    // Simple wrapper - just set up the listener
+    auth.onAuthStateChanged((user) => {
+      callback.onAuthStateChanged(user);
+    });
+  }
+
+  public stopAuthListeners(): void {
+    // Firebase auth listeners are automatically cleaned up
+    // No explicit cleanup needed for Firebase auth state listeners
+  }
+
+  public async getCurrentUser(): Promise<FirebaseUser | null> {
+    const auth = await this.authService.getAuth();
+    return auth?.currentUser || null;
+  }
+
+  public async onAuthStateChanged(callback: (user: FirebaseUser | null) => void): Promise<() => void> {
+    const auth = await this.authService.getAuth();
+    if (!auth) {
+      throw new Error('Auth not initialized');
+    }
+    
+    return new Promise((resolve) => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        callback(user);
         resolve(unsubscribe);
       });
     });
-  },
-}; 
+  }
+}
+
+// Export a singleton instance
+export const auth: IAuthAdapter = new AuthAdapter();

@@ -15,9 +15,16 @@ export const useContentSize = (isNote: boolean = false, minHeight: number = 48, 
    */
   const handleContentSizeChange = useCallback((event: any) => {
     if (isNote) {
-      const { height } = event.nativeEvent.contentSize;
-      const newHeight = Math.max(minHeight, Math.min(height, maxHeight));
-      setInputHeight(newHeight);
+      try {
+        const { height } = event.nativeEvent?.contentSize || {};
+        if (height !== undefined) {
+          const newHeight = Math.max(minHeight, Math.min(height, maxHeight));
+          setInputHeight(newHeight);
+        }
+      } catch (error) {
+        // Handle invalid event structure gracefully
+        console.warn('[useContentSize] Invalid event structure:', error);
+      }
     }
   }, [isNote, minHeight, maxHeight]);
 

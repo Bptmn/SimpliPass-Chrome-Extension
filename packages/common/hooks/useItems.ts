@@ -112,10 +112,10 @@ export const useItems = ({ user }: UseItemsProps): UseItemsReturn => {
     };
 
     // Listen for changes from the centralized state manager
-    itemsStateManager.on('itemsChanged', handleItemsChanged);
+    itemsStateManager().on('itemsChanged', handleItemsChanged);
 
     // Get initial state from the state manager
-    const initialItems = itemsStateManager.getItems();
+    const initialItems = itemsStateManager().getItems();
     if (initialItems.length > 0) {
       console.log('[useItems] Initial items found in state manager:', initialItems.length);
       setItems(initialItems);
@@ -127,7 +127,7 @@ export const useItems = ({ user }: UseItemsProps): UseItemsReturn => {
 
     // Cleanup
     return () => {
-      itemsStateManager.off('itemsChanged', handleItemsChanged);
+      itemsStateManager().off('itemsChanged', handleItemsChanged);
     };
   }, []);
 

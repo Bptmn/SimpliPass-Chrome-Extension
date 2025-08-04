@@ -1,16 +1,16 @@
+// jest.config.js
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   transform: {
     '^.+\\.[tj]sx?$': 'babel-jest',
+    '^packages/common/config/platform\\.ts$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-native-js|@react-native-community|@react-native-polyfills|@react-native/js-polyfills|@stablelib|stablelib)/)',
+    'node_modules/(?!(react-native|@react-native|@react-native-js|@react-native-community|@react-native-polyfills|@react-native/js-polyfills|@stablelib|stablelib|react-native-modal-datetime-picker)/)',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-  setupFilesAfterEnv: [
-    '<rootDir>/jest.setup.js'
-  ],
   moduleNameMapper: {
     '^react-native$': 'react-native-web',
     '^@app/(.*)$': '<rootDir>/packages/app/$1',
@@ -27,17 +27,7 @@ module.exports = {
     '^@common/(.*)$': '<rootDir>/packages/common/$1',
     '^@/(.*)$': '<rootDir>/packages/app/$1',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
-    // Mock config files that use import.meta
-    '^@common/core/auth/config$': '<rootDir>/__mocks__/configMock.js',
-    '^@extension/config/config$': '<rootDir>/__mocks__/configMock.js',
-    '^@common/config/platform$': '<rootDir>/__mocks__/configMock.js',
-    '^@common/config/platform.ts$': '<rootDir>/__mocks__/configMock.js',
-    '^@common/config/platform/index$': '<rootDir>/__mocks__/configMock.js',
-    '^@common/config/platform/index.ts$': '<rootDir>/__mocks__/configMock.js',
-    '^@common/config/platform.ts$': '<rootDir>/__mocks__/configMock.js',
-    '^@common/config/platform/index.ts$': '<rootDir>/__mocks__/configMock.js',
-    '^packages/common/config/platform$': '<rootDir>/__mocks__/configMock.js',
-    '^packages/common/config/platform.ts$': '<rootDir>/__mocks__/configMock.js',
+    '^@common/config/platform$': '<rootDir>/packages/common/config/__mocks__/platform.ts',
   },
   testMatch: [
     '**/__tests__/**/*.(ts|tsx|js)',
@@ -61,12 +51,8 @@ module.exports = {
       },
     },
   },
-  // Optimize for faster test execution
-  testTimeout: 10000,
-  // Run tests in parallel for better performance
+  testTimeout: 30000,
   maxWorkers: '50%',
-  // Reduce verbosity for faster output
   verbose: false,
-  // Cache for faster subsequent runs
   cache: true,
-}; 
+};

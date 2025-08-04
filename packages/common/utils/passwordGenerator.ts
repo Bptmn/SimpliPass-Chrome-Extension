@@ -5,6 +5,10 @@ export function passwordGenerator(
   hasSpecialCharacters: boolean,
   passwordWidth: number,
 ): string {
+  if (passwordWidth === 0) {
+    return '';
+  }
+
   const numbers = '0123456789';
   const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';

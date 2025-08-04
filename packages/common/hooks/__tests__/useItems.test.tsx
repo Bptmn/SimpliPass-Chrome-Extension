@@ -1,12 +1,37 @@
 import { renderHook, act } from '@testing-library/react';
 import { useItems } from '../useItems';
-import { itemsStateManager } from '../../core/services/items';
+import { itemsStateManager } from '../../core/services/itemsService';
 import { ItemDecrypted, CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../../core/types/items.types';
 
 // Mock dependencies
-jest.mock('../../core/services/items');
+jest.mock('../../core/services/itemsService', () => ({
+  itemsStateManager: jest.fn(() => mockStateManagerInstance),
+  addItem: jest.fn(),
+  updateItem: jest.fn(),
+  deleteItem: jest.fn(),
+  loadItemsWithFallback: jest.fn().mockResolvedValue([])
+}));
 
-const mockItemsStateManager = itemsStateManager as jest.Mocked<typeof itemsStateManager>;
+// Create a mock instance
+const mockStateManagerInstance = {
+  getItems: jest.fn(),
+  on: jest.fn(),
+  off: jest.fn(),
+  setItems: jest.fn(),
+  addItem: jest.fn(),
+  updateItem: jest.fn(),
+  removeItem: jest.fn(),
+  testCallback: null as any
+};
+
+// Mock user for testing
+const mockUser = {
+  id: 'test-user-id',
+  email: 'test@example.com',
+  username: 'testuser',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
 
 describe('useItems', () => {
   const mockItems: ItemDecrypted[] = [
@@ -52,39 +77,39 @@ describe('useItems', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockItemsStateManager.getItems.mockReturnValue([]);
-    mockItemsStateManager.on.mockImplementation((event, callback) => {
+    mockStateManagerInstance.getItems.mockReturnValue([]);
+    mockStateManagerInstance.on.mockImplementation((event, callback) => {
       // Store callback for testing
-      (mockItemsStateManager as any).testCallback = callback;
-      return mockItemsStateManager; // Return the manager for chaining
+      mockStateManagerInstance.testCallback = callback;
+      return mockStateManagerInstance; // Return the manager for chaining
     });
-    mockItemsStateManager.off.mockImplementation(() => mockItemsStateManager);
+    mockStateManagerInstance.off.mockImplementation(() => mockStateManagerInstance);
   });
 
   describe('initial state', () => {
     it('should have correct initial state', () => {
-      const { result } = renderHook(() => useItems());
+      const { result } = renderHook(() => useItems({ user: mockUser }));
 
       expect(result.current.items).toEqual([]);
       expect(result.current.credentials).toEqual([]);
       expect(result.current.bankCards).toEqual([]);
       expect(result.current.secureNotes).toEqual([]);
-      expect(result.current.loading).toBe(false);
+      expect(result.current.loading).toBe(true); // Loading is true when no initial items
       expect(result.current.error).toBe(null);
     });
 
     it('should show loading when no initial items', () => {
-      mockItemsStateManager.getItems.mockReturnValue([]);
+      mockStateManagerInstance.getItems.mockReturnValue([]);
       
-      const { result } = renderHook(() => useItems());
+      const { result } = renderHook(() => useItems({ user: mockUser }));
 
       expect(result.current.loading).toBe(true);
     });
 
     it('should not show loading when initial items exist', () => {
-      mockItemsStateManager.getItems.mockReturnValue(mockItems);
+      mockStateManagerInstance.getItems.mockReturnValue(mockItems);
       
-      const { result } = renderHook(() => useItems());
+      const { result } = renderHook(() => useItems({ user: mockUser }));
 
       expect(result.current.loading).toBe(false);
       expect(result.current.items).toEqual(mockItems);
@@ -93,26 +118,26 @@ describe('useItems', () => {
 
   describe('state manager subscription', () => {
     it('should subscribe to itemsStateManager on mount', () => {
-      renderHook(() => useItems());
+      renderHook(() => useItems({ user: mockUser }));
 
-      expect(mockItemsStateManager.on).toHaveBeenCalledWith('itemsChanged', expect.any(Function));
+      expect(mockStateManagerInstance.on).toHaveBeenCalledWith('itemsChanged', expect.any(Function));
     });
 
     it('should unsubscribe from itemsStateManager on unmount', () => {
-      const { unmount } = renderHook(() => useItems());
+      const { unmount } = renderHook(() => useItems({ user: mockUser }));
 
       unmount();
 
-      expect(mockItemsStateManager.off).toHaveBeenCalledWith('itemsChanged', expect.any(Function));
+      expect(mockStateManagerInstance.off).toHaveBeenCalledWith('itemsChanged', expect.any(Function));
     });
   });
 
   describe('items changed event', () => {
     it('should update items when itemsChanged event is triggered', async () => {
-      const { result } = renderHook(() => useItems());
+      const { result } = renderHook(() => useItems({ user: mockUser }));
 
       // Get the callback that was registered
-      const itemsChangedCallback = mockItemsStateManager.on.mock.calls[0][1];
+      const itemsChangedCallback = mockStateManagerInstance.on.mock.calls[0][1];
 
       await act(async () => {
         itemsChangedCallback(mockItems);
@@ -124,9 +149,9 @@ describe('useItems', () => {
     });
 
     it('should filter items by type correctly', async () => {
-      const { result } = renderHook(() => useItems());
+      const { result } = renderHook(() => useItems({ user: mockUser }));
 
-      const itemsChangedCallback = mockItemsStateManager.on.mock.calls[0][1];
+      const itemsChangedCallback = mockStateManagerInstance.on.mock.calls[0][1];
 
       await act(async () => {
         itemsChangedCallback(mockItems);
@@ -141,9 +166,9 @@ describe('useItems', () => {
     });
 
     it('should handle empty items array', async () => {
-      const { result } = renderHook(() => useItems());
+      const { result } = renderHook(() => useItems({ user: mockUser }));
 
-      const itemsChangedCallback = mockItemsStateManager.on.mock.calls[0][1];
+      const itemsChangedCallback = mockStateManagerInstance.on.mock.calls[0][1];
 
       await act(async () => {
         itemsChangedCallback([]);
@@ -160,9 +185,9 @@ describe('useItems', () => {
   describe('data derivation', () => {
     it('should derive credentials from items', () => {
       const credentialItems = mockItems.filter(item => item.itemType === 'credential');
-      mockItemsStateManager.getItems.mockReturnValue(credentialItems);
+      mockStateManagerInstance.getItems.mockReturnValue(credentialItems);
 
-      const { result } = renderHook(() => useItems());
+      const { result } = renderHook(() => useItems({ user: mockUser }));
 
       expect(result.current.credentials).toEqual(credentialItems);
       expect(result.current.bankCards).toEqual([]);
@@ -171,9 +196,9 @@ describe('useItems', () => {
 
     it('should derive bank cards from items', () => {
       const bankCardItems = mockItems.filter(item => item.itemType === 'bankCard');
-      mockItemsStateManager.getItems.mockReturnValue(bankCardItems);
+      mockStateManagerInstance.getItems.mockReturnValue(bankCardItems);
 
-      const { result } = renderHook(() => useItems());
+      const { result } = renderHook(() => useItems({ user: mockUser }));
 
       expect(result.current.credentials).toEqual([]);
       expect(result.current.bankCards).toEqual(bankCardItems);
@@ -182,9 +207,9 @@ describe('useItems', () => {
 
     it('should derive secure notes from items', () => {
       const secureNoteItems = mockItems.filter(item => item.itemType === 'secureNote');
-      mockItemsStateManager.getItems.mockReturnValue(secureNoteItems);
+      mockStateManagerInstance.getItems.mockReturnValue(secureNoteItems);
 
-      const { result } = renderHook(() => useItems());
+      const { result } = renderHook(() => useItems({ user: mockUser }));
 
       expect(result.current.credentials).toEqual([]);
       expect(result.current.bankCards).toEqual([]);
@@ -194,9 +219,9 @@ describe('useItems', () => {
 
   describe('error handling', () => {
     it('should handle errors gracefully', async () => {
-      const { result } = renderHook(() => useItems());
+      const { result } = renderHook(() => useItems({ user: mockUser }));
 
-      const itemsChangedCallback = mockItemsStateManager.on.mock.calls[0][1];
+      const itemsChangedCallback = mockStateManagerInstance.on.mock.calls[0][1];
 
       // Simulate an error by throwing in the callback
       await act(async () => {
@@ -214,11 +239,11 @@ describe('useItems', () => {
 
   describe('cleanup', () => {
     it('should properly cleanup subscriptions', () => {
-      const { unmount } = renderHook(() => useItems());
+      const { unmount } = renderHook(() => useItems({ user: mockUser }));
 
       unmount();
 
-      expect(mockItemsStateManager.off).toHaveBeenCalledWith('itemsChanged', expect.any(Function));
+      expect(mockStateManagerInstance.off).toHaveBeenCalledWith('itemsChanged', expect.any(Function));
     });
   });
 }); 

@@ -23,6 +23,43 @@ import { useAppRouter } from '../useAppRouter';
 import { ROUTES } from '../ROUTES';
 import type { User } from '@common/core/types/auth.types';
 
+// Mock platform config to avoid import.meta.env issues
+jest.mock('@common/config/platform', () => ({
+  getFirebaseConfig: jest.fn().mockResolvedValue({
+    apiKey: 'test-api-key',
+    authDomain: 'test-project.firebaseapp.com',
+    projectId: 'test-project',
+    storageBucket: 'test-project.appspot.com',
+    messagingSenderId: '123456789',
+    appId: 'test-app-id',
+    measurementId: 'test-measurement-id',
+  }),
+  getCognitoConfig: jest.fn().mockResolvedValue({
+    region: 'us-east-1',
+    userPoolId: 'test-user-pool',
+    clientId: 'test-client-id',
+  })
+}));
+
+let mockState = {
+  isInitializing: false,
+  initializationError: null,
+  user: null,
+  userSecretKeyExist: false,
+  authIsAvailable: true,
+};
+
+jest.mock('@common/hooks/useAppState', () => ({
+  useAppStateStore: Object.assign(
+    jest.fn((selector) => {
+      return selector ? selector(mockState) : mockState;
+    }),
+    {
+      getState: jest.fn(() => mockState)
+    }
+  )
+}));
+
 // Mock user for testing
 const mockUser: User = {
   id: 'test-user-id',
@@ -34,22 +71,41 @@ const mockUser: User = {
 
 describe('useAppRouter', () => {
   const defaultProps = {
-    user: null,
-    userSecretKeyExist: false,
-    isInitializing: false,
     platform: 'extension' as const,
   };
 
+  // Mock the Zustand store state
+  const mockUseAppStateStore = require('@common/hooks/useAppState').useAppStateStore;
+  
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('System-level route determination', () => {
     it('should return LOADING when app is initializing', () => {
-      const props = { ...defaultProps, isInitializing: true };
-      const { result } = renderHook(() => useAppRouter(props));
+      mockState = {
+        isInitializing: true,
+        initializationError: null,
+        user: null,
+        userSecretKeyExist: false,
+        authIsAvailable: true,
+      };
+      
+      const { result } = renderHook(() => useAppRouter(defaultProps));
       
       expect(result.current.currentRoute).toBe(ROUTES.LOADING);
       expect(result.current.isLoading).toBe(true);
     });
 
     it('should return LOGIN when user is null and not initializing', () => {
+      mockState = {
+        isInitializing: false,
+        initializationError: null,
+        user: null,
+        userSecretKeyExist: false,
+        authIsAvailable: true,
+      };
+      
       const { result } = renderHook(() => useAppRouter(defaultProps));
       
       expect(result.current.currentRoute).toBe(ROUTES.LOGIN);
@@ -57,23 +113,29 @@ describe('useAppRouter', () => {
     });
 
     it('should return LOCK when user exists but no secret key', () => {
-      const props = { 
-        ...defaultProps, 
-        user: mockUser, 
-        userSecretKeyExist: false 
+      mockState = {
+        isInitializing: false,
+        initializationError: null,
+        user: mockUser,
+        userSecretKeyExist: false,
+        authIsAvailable: true,
       };
-      const { result } = renderHook(() => useAppRouter(props));
+      
+      const { result } = renderHook(() => useAppRouter(defaultProps));
       
       expect(result.current.currentRoute).toBe(ROUTES.LOCK);
     });
 
     it('should return HOME when user is fully authenticated and initialized', () => {
-      const props = { 
-        ...defaultProps, 
-        user: mockUser, 
-        userSecretKeyExist: true 
+      mockState = {
+        isInitializing: false,
+        initializationError: null,
+        user: mockUser,
+        userSecretKeyExist: true,
+        authIsAvailable: true,
       };
-      const { result } = renderHook(() => useAppRouter(props));
+      
+      const { result } = renderHook(() => useAppRouter(defaultProps));
       
       expect(result.current.currentRoute).toBe(ROUTES.HOME);
     });
@@ -81,40 +143,85 @@ describe('useAppRouter', () => {
 
   describe('Route transitions', () => {
     it('should transition from LOADING to LOGIN when initialization completes', () => {
-      const { result, rerender } = renderHook(() => 
-        useAppRouter({ ...defaultProps, isInitializing: true })
-      );
+      // Start with loading state
+      mockState = {
+        isInitializing: true,
+        initializationError: null,
+        user: null,
+        userSecretKeyExist: false,
+        authIsAvailable: true,
+      };
+      
+      const { result, rerender } = renderHook(() => useAppRouter(defaultProps));
       
       expect(result.current.currentRoute).toBe(ROUTES.LOADING);
       
       // Simulate initialization completing
-      rerender({ ...defaultProps, isInitializing: false });
+      mockState = {
+        isInitializing: false,
+        initializationError: null,
+        user: null,
+        userSecretKeyExist: false,
+        authIsAvailable: true,
+      };
+      
+      rerender();
       
       expect(result.current.currentRoute).toBe(ROUTES.LOGIN);
     });
 
     it('should transition from LOGIN to LOCK when user authenticates but not initialized', () => {
-      const { result, rerender } = renderHook(() => 
-        useAppRouter({ ...defaultProps, user: null })
-      );
+      // Start with no user
+      mockState = {
+        isInitializing: false,
+        initializationError: null,
+        user: null,
+        userSecretKeyExist: false,
+        authIsAvailable: true,
+      };
+      
+      const { result, rerender } = renderHook(() => useAppRouter(defaultProps));
       
       expect(result.current.currentRoute).toBe(ROUTES.LOGIN);
       
       // Simulate user authenticating but not fully initialized
-      rerender({ ...defaultProps, user: mockUser, userSecretKeyExist: false });
+      mockState = {
+        isInitializing: false,
+        initializationError: null,
+        user: mockUser,
+        userSecretKeyExist: false,
+        authIsAvailable: true,
+      };
+      
+      rerender();
       
       expect(result.current.currentRoute).toBe(ROUTES.LOCK);
     });
 
     it('should transition from LOCK to HOME when user becomes fully initialized', () => {
-      const { result, rerender } = renderHook(() => 
-        useAppRouter({ ...defaultProps, user: mockUser, userSecretKeyExist: false })
-      );
+      // Start with user but no secret key
+      mockState = {
+        isInitializing: false,
+        initializationError: null,
+        user: mockUser,
+        userSecretKeyExist: false,
+        authIsAvailable: true,
+      };
+      
+      const { result, rerender } = renderHook(() => useAppRouter(defaultProps));
       
       expect(result.current.currentRoute).toBe(ROUTES.LOCK);
       
       // Simulate user becoming fully initialized
-      rerender({ ...defaultProps, user: mockUser, userSecretKeyExist: true });
+      mockState = {
+        isInitializing: false,
+        initializationError: null,
+        user: mockUser,
+        userSecretKeyExist: true,
+        authIsAvailable: true,
+      };
+      
+      rerender();
       
       expect(result.current.currentRoute).toBe(ROUTES.HOME);
     });
