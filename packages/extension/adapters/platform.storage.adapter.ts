@@ -6,10 +6,10 @@
  * - Extension-specific vault storage
  */
 
-import { StorageAdapter } from '@common/core/adapters/platform.storage.adapter';
+import { IPlatformStorageAdapter } from '@common/core/adapters/platform.storage.adapter';
 import { User } from '@common/core/types/auth.types';
 
-export class ExtensionStorageAdapter implements StorageAdapter {
+export class ExtensionStorageAdapter implements IPlatformStorageAdapter {
   private config = {
     userSecretKeyStorageKey: 'userSecretKey',
     userStorageKey: 'user',

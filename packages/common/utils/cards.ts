@@ -1,13 +1,14 @@
-// Card utility helpers
+// cards.ts
+// Only pure, stateless helpers should remain here after refactor.
 
 export function formatCardNumber(value: string) {
   return value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
 }
 
-export function handleCardNumberChange(val: string, setCardNumber: (val: string) => void) {
-  // Only keep digits, max 16
-  const digits = val.replace(/\D/g, '').slice(0, 16);
-  setCardNumber(digits);
+export function handleCardNumberChange(value: string, setCardNumber: (value: string) => void) {
+  const digitsOnly = value.replace(/\D/g, '');
+  const truncated = digitsOnly.slice(0, 16);
+  setCardNumber(truncated);
 }
 
 export function getMonthOptions() {

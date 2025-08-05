@@ -10,7 +10,7 @@
 import { useCallback } from 'react';
 import { useFormState } from './useFormState';
 import { useFormValidation } from './useFormValidation';
-import { useItems } from './useItems';
+import { useItemsState } from './useItemsState';
 import { useAppStateStore } from './useAppState';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { ROUTES } from '@common/ui/router/ROUTES';
@@ -51,7 +51,7 @@ export interface UseCardFormReturn {
   isFormValid: () => boolean;
 }
 
-export const useCardForm = (): UseCardFormReturn => {
+export const useCardForm = (initialData?: CardFormData): UseCardFormReturn => {
   const user = useAppStateStore(state => state.user);
   const { 
     formData, 
@@ -62,11 +62,11 @@ export const useCardForm = (): UseCardFormReturn => {
     setSubmitting 
   } = useFormState({
     ...cardFormInitialData,
-    // initialData
+    ...initialData // ✅ Merge with initial data if provided
   });
 
   const { validateField, validateForm } = useFormValidation(cardValidationService);
-  const { addItem } = useItems({ user });
+  const { addItem } = useItemsState({ user });
   const { navigateTo } = useAppRouterContext();
 
   // Field validation handler
@@ -121,28 +121,28 @@ export const useCardForm = (): UseCardFormReturn => {
     }
   }, [formData, handleFormValidation, addItem, navigateTo, setSubmitting, setFieldError]);
 
-  // Reset form
-  const resetForm = useCallback(() => {
-    // Reset to initial data
-    updateField('title', '');
-    updateField('cardholderName', '');
-    updateField('cardNumber', '');
-    updateField('expiryMonth', 1);
-    updateField('expiryYear', new Date().getFullYear());
-    updateField('cvv', '');
-    updateField('cardType', 'visa');
-    updateField('bankName', '');
-    updateField('notes', '');
-    updateField('category', 'bankCards');
-    updateField('tags', []);
-  }, [updateField]);
+  // Reset form (unused - removed)
+  // const resetForm = useCallback(() => {
+  //   // Reset to initial data
+  //   updateField('title', '');
+  //   updateField('cardholderName', '');
+  //   updateField('cardNumber', '');
+  //   updateField('expiryMonth', 1);
+  //   updateField('expiryYear', new Date().getFullYear());
+  //   updateField('cvv', '');
+  //   updateField('cardType', 'visa');
+  //   updateField('bankName', '');
+  //   updateField('notes', '');
+  //   updateField('category', 'bankCards');
+  //   updateField('tags', []);
+  // }, [updateField]);
 
-  // Clear errors
-  const clearErrors = useCallback(() => {
-    Object.keys(errors).forEach(field => {
-      setFieldError(field as keyof CardFormData, undefined);
-    });
-  }, [errors, setFieldError]);
+  // Clear errors (unused - removed)
+  // const clearErrors = useCallback(() => {
+  //   Object.keys(errors).forEach(field => {
+  //     setFieldError(field as keyof CardFormData, undefined);
+  //   });
+  // }, [errors, setFieldError]);
 
   // Field change handler
   const handleFieldChange = useCallback((field: keyof CardFormData, value: string) => {

@@ -6,7 +6,7 @@
 // - Error handling
 
 import { useState, useCallback } from 'react';
-import { updateItem } from '@common/core/services/itemsService';
+import { itemsService } from '@common/core/services/itemsService';
 import { ROUTES } from '@common/ui/router/ROUTES';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { CATEGORIES } from '@common/core/types/categories.types';
@@ -44,7 +44,7 @@ export const useModifyCredential = (credential: CredentialDecrypted | null) => {
         lastUseDateTime: new Date(),
       };
 
-      await updateItem(credential.id, updatedCredential);
+      await itemsService.updateItem(credential.id, updatedCredential);
       showToast('Identifiant modifié avec succès');
       router.navigateTo(ROUTES.HOME, { category: CATEGORIES.CREDENTIALS });
     } catch (e: unknown) {

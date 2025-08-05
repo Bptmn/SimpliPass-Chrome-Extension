@@ -2,6 +2,7 @@
 import { ItemDecrypted } from '@common/core/types/items.types';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IAuthService } from './authService';
+import { StorageError, PlatformError, AuthenticationError } from '../types/errors.types';
 
 export interface IVaultService {
   setLocalVault(items: ItemDecrypted[]): Promise<void>;
@@ -38,14 +39,15 @@ export class VaultService implements IVaultService {
     private storage: IPlatformStorageAdapter,
     private authService: IAuthService,
   ) {
-    // Set the singleton instance
+    // Set the singleton instance for global access
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     vaultServiceInstance = this;
   }
 
   public async setLocalVault(items: ItemDecrypted[]): Promise<void> {
     try {
       if (!this.storage.storeVaultToSecureLocalStorage) {
-        throw new Error('Local vault storage not supported on this platform');
+        throw new PlatformError('Local vault storage not supported on this platform');
       }
       
       const user = await this.authService.getCurrentUser();
@@ -56,14 +58,33 @@ export class VaultService implements IVaultService {
         lastModified: new Date(),
       });
     } catch (error) {
-      throw new Error(`Failed to store local vault: ${error}`);
+      console.error('[VaultService] Failed to store local vault:', error);
+      
+      // ✅ Proper error categorization for UI layer
+      if (error instanceof StorageError || error instanceof PlatformError || error instanceof AuthenticationError) {
+        throw error;
+      }
+      
+      if (error instanceof Error) {
+        if (error.message.includes('not supported')) {
+          throw new PlatformError('Vault storage not supported on this platform', error);
+        }
+        if (error.message.includes('storage') || error.message.includes('store')) {
+          throw new StorageError('Failed to store vault data', error);
+        }
+        if (error.message.includes('auth') || error.message.includes('user')) {
+          throw new AuthenticationError('Failed to get user for vault storage', error);
+        }
+      }
+      
+      throw new StorageError('Failed to store local vault', error as Error);
     }
   }
 
   public async getLocalVault(): Promise<ItemDecrypted[]> {
     try {
       if (!this.storage.getVaultFromSecureLocalStorage) {
-        throw new Error('Local vault storage not supported on this platform');
+        throw new PlatformError('Local vault storage not supported on this platform');
       }
       
       const vault = await this.storage.getVaultFromSecureLocalStorage();
@@ -72,7 +93,23 @@ export class VaultService implements IVaultService {
       }
       return vault.items || [];
     } catch (error) {
-      throw new Error(`Failed to get local vault: ${error}`);
+      console.error('[VaultService] Failed to get local vault:', error);
+      
+      // ✅ Proper error categorization for UI layer
+      if (error instanceof StorageError || error instanceof PlatformError) {
+        throw error;
+      }
+      
+      if (error instanceof Error) {
+        if (error.message.includes('not supported')) {
+          throw new PlatformError('Vault storage not supported on this platform', error);
+        }
+        if (error.message.includes('storage') || error.message.includes('get')) {
+          throw new StorageError('Failed to retrieve vault data', error);
+        }
+      }
+      
+      throw new StorageError('Failed to get local vault', error as Error);
     }
   }
 
@@ -82,7 +119,23 @@ export class VaultService implements IVaultService {
         await this.storage.deleteVaultFromSecureLocalStorage();
       }
     } catch (error) {
-      throw new Error(`Failed to clear local vault: ${error}`);
+      console.error('[VaultService] Failed to clear local vault:', error);
+      
+      // ✅ Proper error categorization for UI layer
+      if (error instanceof StorageError || error instanceof PlatformError) {
+        throw error;
+      }
+      
+      if (error instanceof Error) {
+        if (error.message.includes('not supported')) {
+          throw new PlatformError('Vault storage not supported on this platform', error);
+        }
+        if (error.message.includes('storage') || error.message.includes('delete')) {
+          throw new StorageError('Failed to clear vault data', error);
+        }
+      }
+      
+      throw new StorageError('Failed to clear local vault', error as Error);
     }
   }
 }

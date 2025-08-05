@@ -6,7 +6,7 @@
 // - Error handling
 
 import { useState, useCallback } from 'react';
-import { updateItem } from '@common/core/services/itemsService';
+import { itemsService } from '@common/core/services/itemsService';
 import { ROUTES } from '@common/ui/router/ROUTES';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { CATEGORIES } from '@common/core/types/categories.types';
@@ -39,7 +39,7 @@ export const useModifySecureNote = (secureNote: SecureNoteDecrypted | null) => {
         lastUseDateTime: new Date(),
       };
       
-      await updateItem(secureNote.id, updatedNote);
+      await itemsService.updateItem(secureNote.id, updatedNote);
       showToast('Note modifiée avec succès');
       router.navigateTo(ROUTES.HOME, { category: CATEGORIES.SECURE_NOTES });
     } catch (e: unknown) {

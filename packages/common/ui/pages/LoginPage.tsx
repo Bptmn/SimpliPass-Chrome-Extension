@@ -16,7 +16,7 @@ interface LoginPageProps {
   user: User | null;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ _user }) => { // ✅ Prefix unused prop with underscore
+const LoginPage: React.FC<LoginPageProps> = ({ user: _user }) => { // ✅ Rename unused prop
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   const pageStyles = React.useMemo(() => getPageStyles(mode), [mode]);

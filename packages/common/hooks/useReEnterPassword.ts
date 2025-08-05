@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { deriveKey } from '../utils/crypto';
+import { deriveKey } from '../core/libraries/crypto';
 import { storeUserSecretKey } from '../core/services/secretsService';
 import { auth } from '../core/adapters/auth.adapter';
 import { db } from '../core/adapters/database.adapter';

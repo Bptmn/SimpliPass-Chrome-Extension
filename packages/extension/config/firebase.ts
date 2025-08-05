@@ -10,7 +10,7 @@ let db: any;
 export async function initFirebase() {
   try {
     // Only real Firebase initialization
-    const firebaseConfig = await getFirebaseConfig();
+    const firebaseConfig = await getFirebaseConfig('extension');
     
     // Check if Firebase config is properly set
     if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
@@ -18,7 +18,7 @@ export async function initFirebase() {
       throw new Error('Firebase configuration is missing');
     }
     
-    validateFirebaseConfig();
+    validateFirebaseConfig('extension');
     app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);

@@ -92,7 +92,7 @@ export const useLogin = (): UseLoginReturn => {
       
       // ✅ Hook handles UI-specific logic
       console.log('[useLogin] Login successful, navigating to home');
-      router.push(ROUTES.HOME);
+      router.navigateTo(ROUTES.HOME);
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';

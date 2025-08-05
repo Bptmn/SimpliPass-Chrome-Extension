@@ -1,34 +1,29 @@
-/**
- * useTextFormatting Hook - Layer 1: UI Layer
- * 
- * Provides text formatting functionality:
- * - URL formatting
- * - Text formatting
- * 
- * Business logic is delegated to formattingService.
- */
+// useTextFormatting.ts
+// This hook provides text formatting utilities for UI components.
+// Responsibilities:
+// - Format URLs for display
+// - Format text for display
+// - Business logic is delegated to formatting utilities.
 
 import { useMemo } from 'react';
-import { textFormattingService } from '../core/services/formattingService';
+import { formatURL, truncateText } from '@common/utils/formatting';
 
 export interface UseTextFormattingReturn {
   formatURL: (url: string) => string;
-  formatText: (text: string) => string;
+  truncateText: (text: string, maxLength: number) => string;
 }
 
 export const useTextFormatting = (): UseTextFormattingReturn => {
-  // Step 1: Format URL using service
-  const formatURL = useMemo(() => {
-    return (url: string) => textFormattingService.formatURL(url);
+  const formatURLForDisplay = useMemo(() => {
+    return (url: string) => formatURL(url);
   }, []);
 
-  // Step 2: Format text using service
-  const formatText = useMemo(() => {
-    return (text: string) => textFormattingService.formatText(text);
+  const truncateTextForDisplay = useMemo(() => {
+    return (text: string, maxLength: number) => truncateText(text, maxLength);
   }, []);
 
   return {
-    formatURL,
-    formatText,
+    formatURL: formatURLForDisplay,
+    truncateText: truncateTextForDisplay,
   };
 };

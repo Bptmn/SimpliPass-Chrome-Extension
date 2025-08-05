@@ -9,6 +9,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Platform, StyleSheet } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { itemsService } from '@common/core/services/itemsService';
 import { useToast } from '@common/ui/components/Toast';
 import type { BankCardDecrypted } from '@common/core/types/items.types';
 import { pageStyles } from '@common/ui/design/layout';
@@ -22,9 +23,12 @@ import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Toast } from '@ui/components/Toast';
 import { Icon } from '@ui/components/Icon';
 import { getMonthOptions, getYearOptions } from '@common/utils/cards';
+import { ROUTES } from '@common/ui/router';
+import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+import { CATEGORIES } from '@common/core/types/categories.types';
 import { useCardForm } from '@common/hooks/useCardForm';
-import { useModifyBankCard } from '@common/hooks/useModifyBankCard';
-import { createExpirationDate, parseExpirationDate } from '@common/utils/expirationDate';
+import { formatCardNumber } from '@common/utils/formatting';
+import type { CardFormData } from '@common/core/types/items.types';
 
 const themeColors = getColors('light');
 
@@ -38,37 +42,39 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
   onBack: _onBack,
 }) => {
   const { showToast } = useToast();
+  const router = useAppRouterContext();
 
   // Initialize form data from existing card
-  const initialFormData = {
+  const initialFormData: CardFormData = {
     title: bankCard.title || '',
     cardNumber: bankCard.cardNumber || '',
     cardholderName: bankCard.owner || '',
     expirationDate: `${bankCard.expirationDate.month.toString().padStart(2, '0')}/${bankCard.expirationDate.year.toString().slice(-2)}`,
+    expiryMonth: bankCard.expirationDate.month,
+    expiryYear: bankCard.expirationDate.year,
     cvv: bankCard.verificationNumber || '',
-    notes: bankCard.note || ''
+    cardType: 'unknown',
+    bankName: bankCard.owner || '',
+    notes: bankCard.note || '',
+    category: 'cards',
+    tags: []
   };
 
   // Use our new card form hook
-  const {
-    formData,
-    errors,
-    isSubmitting,
-    updateField,
-    handleFieldChange,
-    handleCardNumberChange,
-    handleExpirationDateChange,
-    handleCVVChange,
-    handleSubmit,
-    isFormValid
-  } = useCardForm();
+  const { 
+    formData, 
+    errors, 
+    isSubmitting, 
+    handleFieldChange, 
+    handleCardNumberChange, 
+    handleExpirationDateChange, 
+    handleCVVChange
+  } = useCardForm(initialFormData);
 
   const [color, setColor] = useState(bankCard.color || '#007AFF');
+  const [error, setError] = useState<string | null>(null);
   const [toast, _setToast] = useState<string | null>(null);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-
-  // Use the hook for business logic
-  const { error, loading, handleSubmit: handleModifySubmit } = useModifyBankCard(bankCard);
 
   // Date options
   const monthOptions = getMonthOptions();
@@ -85,10 +91,32 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
   };
 
   const handleFormSubmit = async () => {
-    await handleModifySubmit({
-      ...formData,
-      notes: formData.notes || ''
-    }, color, showToast);
+    setError(null);
+    
+    try {
+      const [month, year] = formData.expirationDate.split('/');
+      const updatedCard: BankCardDecrypted = {
+        ...bankCard,
+        title: formData.title,
+        bankName: formData.cardholderName, // Using cardholderName as bankName for consistency
+        owner: formData.cardholderName,
+        cardNumber: formData.cardNumber.replace(/\s/g, ''), // Remove spaces for storage
+        expirationDate: {
+          month: parseInt(month, 10),
+          year: parseInt(`20${year}`, 10)
+        },
+        verificationNumber: formData.cvv,
+        note: formData.notes || '',
+        color,
+        lastUseDateTime: new Date(),
+      };
+      
+      await itemsService.updateItem(bankCard.id, updatedCard);
+      showToast('Carte modifiée avec succès');
+      router.navigateTo(ROUTES.HOME, { category: CATEGORIES.BANK_CARDS });
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Erreur lors de la modification de la carte.');
+    }
   };
 
   if (!bankCard) {
@@ -119,14 +147,17 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
 
   return (
     <View style={pageStyles.pageContainer}>
-      {(error || Object.keys(errors).length > 0) && <ErrorBanner message={error || Object.values(errors).filter(Boolean).join(', ')} />}
+      {error && <ErrorBanner message={error} />}
       <Toast message={toast || ''} />
       <ScrollView style={pageStyles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={pageStyles.pageContent}>
           <HeaderTitle 
-            title="Modifier la carte" 
-            onBackPress={_onBack} 
+            title="Modifier une carte" 
+            onBackPress={() => router.navigateTo(ROUTES.HOME, { category: CATEGORIES.BANK_CARDS })} 
           />
+          <View style={styles.previewContainer}>
+            <ItemBankCard cred={previewCard} />
+          </View>
           <View style={pageStyles.formContainer}>
             <ColorSelector
               title="Choisissez la couleur de votre carte"
@@ -156,7 +187,7 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
             />
             <InputEdit
               label="Numéro de carte"
-              value={formData.cardNumber}
+              value={formatCardNumber(formData.cardNumber)}
               onChange={handleCardNumberChange}
               placeholder="0000 0000 0000 0000"
               onClear={() => handleFieldChange('cardNumber', '')}
@@ -241,7 +272,7 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
               </View>
             </View>
             <InputEdit
-              label="Notes"
+              label="Note (optionnel)"
               value={formData.notes || ''}
               onChange={(value) => handleFieldChange('notes', value)}
               placeholder="Ajoutez une note..."
@@ -253,19 +284,22 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
               width="full"
               height="full"
               onPress={handleFormSubmit}
-              disabled={isSubmitting || loading}
+              disabled={isSubmitting}
             />
           </View>
         </View>
       </ScrollView>
       
-      <DateTimePickerModal
-        isVisible={isDatePickerVisible}
-        mode="date"
-        onConfirm={handleDateConfirm}
-        onCancel={() => setDatePickerVisible(false)}
-        minimumDate={new Date()}
-      />
+      {/* ✅ Only render DateTimePicker on mobile platforms */}
+      {Platform.OS !== 'web' && (
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="date"
+          onConfirm={handleDateConfirm}
+          onCancel={() => setDatePickerVisible(false)}
+          minimumDate={new Date()}
+        />
+      )}
     </View>
   );
 };

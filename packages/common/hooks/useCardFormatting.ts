@@ -9,26 +9,24 @@
  */
 
 import { useMemo } from 'react';
-import { cardFormattingService } from '../core/services/formattingService';
+import { formatCardNumber, maskCardNumber } from '@common/utils/formatting';
 
 export interface UseCardFormattingReturn {
   formatCardNumber: (cardNumber: string) => string;
-  formatCardDisplay: (cardNumber: string) => string;
+  maskCardNumber: (cardNumber: string) => string;
 }
 
 export const useCardFormatting = (): UseCardFormattingReturn => {
-  // Step 1: Format card number using service
-  const formatCardNumber = useMemo(() => {
-    return (cardNumber: string) => cardFormattingService.formatCardNumber(cardNumber);
+  const formatCardNumberForDisplay = useMemo(() => {
+    return (cardNumber: string) => formatCardNumber(cardNumber);
   }, []);
 
-  // Step 2: Format card display using service
-  const formatCardDisplay = useMemo(() => {
-    return (cardNumber: string) => cardFormattingService.formatCardDisplay(cardNumber);
+  const maskCardNumberForSecurity = useMemo(() => {
+    return (cardNumber: string) => maskCardNumber(cardNumber);
   }, []);
 
   return {
-    formatCardNumber,
-    formatCardDisplay,
+    formatCardNumber: formatCardNumberForDisplay,
+    maskCardNumber: maskCardNumberForSecurity,
   };
 };

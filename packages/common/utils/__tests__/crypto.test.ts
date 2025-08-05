@@ -7,7 +7,7 @@ import {
   base64UrlToBytes,
   bytesToBase64,
   base64ToBytes,
-} from '../crypto';
+} from '@common/core/libraries/crypto';
 
 // Mocking crypto for Node.js environment
 import { webcrypto } from 'crypto';

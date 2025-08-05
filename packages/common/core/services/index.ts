@@ -12,7 +12,6 @@ export { setLocalVault, getLocalVault, clearLocalVault } from './vaultService';
 // User Services
 export { 
   getCurrentUser,
-  checkUserSecretKey,
   getCurrentUserId,
   initializeUserData,
   clearUserData,
@@ -22,12 +21,7 @@ export {
 
 // Items Services - Centralized data hub
 export { 
-  addItem, 
-  updateItem, 
-  deleteItem, 
-  getAllItems,
-  fetchAndStoreItems,
-  loadItemsWithFallback,
+  itemsService,
   itemsStateManager
 } from './itemsService';
 
@@ -41,15 +35,6 @@ export {
   secureNoteValidationService,
   commonValidationService
 } from './validationService';
-
-// Formatting Services
-export {
-  cardFormattingService,
-  dateFormattingService,
-  textFormattingService,
-  displayFormattingService,
-  validationFormattingService
-} from './formattingService';
 
 // Form Transformation Services
 export {

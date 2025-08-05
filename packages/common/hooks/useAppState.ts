@@ -12,7 +12,6 @@
  */
 
 import { create } from 'zustand';
-import { checkUserSecretKey } from '@common/core/services/userService';
 import type { User } from '@common/core/types/auth.types';
 
 // Platform type definition
@@ -97,9 +96,9 @@ export const useAppStateStore = create<AppStateStore>((set, _get) => ({
   refreshSecretKey: async () => {
     try {
       console.log('[useAppState] Refreshing secret key state...');
-      const hasKey = await checkUserSecretKey();
-      console.log('[useAppState] Refreshed secret key state:', hasKey);
-      set({ userSecretKeyExist: hasKey });
+      // Note: This method is deprecated - secret key state is now managed by userService
+      // The state is updated directly by userService when needed
+      console.log('[useAppState] Secret key refresh is now handled by userService');
     } catch (error) {
       console.error('[useAppState] Error refreshing secret key state:', error);
       set({ userSecretKeyExist: false });

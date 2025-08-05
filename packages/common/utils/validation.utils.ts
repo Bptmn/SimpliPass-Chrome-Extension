@@ -1,4 +1,5 @@
-// Moved from core/libraries/crypto/validation.utils.ts
+// validation.utils.ts
+// Only pure, stateless helpers should remain here after refactor.
 
 /**
  * Validation Utilities

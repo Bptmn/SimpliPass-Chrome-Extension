@@ -11,34 +11,34 @@ type DocumentId = string;
  */
 export const mockDb: IDatabaseAdapter = {
   getCollection: async <T extends DocumentData = DocumentData>(
-    collectionPath: string
+    _collectionPath: string
   ): Promise<T[]> => {
     return [];
   },
   getDocument: async <T extends DocumentData = DocumentData>(
-    docPath: string
+    _docPath: string
   ): Promise<T | null> => {
     return null;
   },
   addDocument: async <T extends DocumentData = DocumentData>(
-    collectionPath: string,
-    data: T
+    _collectionPath: string,
+    _data: T
   ): Promise<DocumentId> => {
     return 'mock-id';
   },
   updateDocument: async <T extends DocumentData = DocumentData>(
-    docPath: string,
-    data: Partial<T>
+    _docPath: string,
+    _data: Partial<T>
   ): Promise<void> => {
     // Mock implementation
   },
-  deleteDocument: async (docPath: string): Promise<void> => {
+  deleteDocument: async (_docPath: string): Promise<void> => {
     // Mock implementation
   },
   generateItemDatabaseId: (): string => {
     return 'mock-id';
   },
-  startListeners: async (userId: string, callbacks: DatabaseListenersCallbacks): Promise<void> => {
+  startListeners: async (_userId: string, _callbacks: DatabaseListenersCallbacks): Promise<void> => {
     // Mock implementation
   },
   stopListeners: async (): Promise<void> => {

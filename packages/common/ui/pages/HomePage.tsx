@@ -16,7 +16,6 @@ import { CredentialCard } from '@ui/components/CredentialCard';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { SkeletonCard } from '@ui/components/SkeletonCard';
-import { useItems } from '@common/hooks/useItems';
 import ItemBankCard from '@ui/components/ItemBankCard';
 import ItemSecureNote from '@ui/components/ItemSecureNote';
 import { BankCardDetailsPage } from './BankCardDetailsPage';
@@ -29,9 +28,7 @@ import type { Category } from '@common/core/types/categories.types';
 import { CATEGORIES, isCategory } from '@common/core/types/categories.types';
 
 import { useAppStateStore } from '@common/hooks/useAppState';
-
-
-
+import { useItemsState } from '@common/hooks/useItemsState';
 
 
 /**
@@ -79,7 +76,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     setSelectedCredential,
     setSelectedBankCard,
     setSelectedSecureNote,
-  } = useItems({ user }); // ✅ Use user from global state
+  } = useItemsState({ user }); // ✅ Use user from global state
 
   // User interaction handlers - moved from hook to component
   const handleCardClick = React.useCallback((cred: CredentialDecrypted) => {

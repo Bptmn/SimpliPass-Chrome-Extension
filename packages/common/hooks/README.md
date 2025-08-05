@@ -15,12 +15,100 @@ UI Components → Hooks → Services → Libraries/Adapters
 - ✅ **Pure UI State Management**: Handle only UI state, no business logic
 - ✅ **Simple and Readable**: Easy to understand and use
 - ✅ **Service Integration**: Call services for business logic
-- ✅ **Error Handling**: Provide clear error messages to users
+- ✅ **Error Handling**: Provide clear error messages to users and propagate to ErrorBoundary
 - ✅ **Platform Agnostic**: Work across mobile, extension, and web platforms
 - ✅ **Type Safe**: Full TypeScript support with strict typing
 - ✅ **Reusable**: Shared across all platforms
 
+## 📁 Optimized Structure
+
+Hooks are now organized into focused categories with unified operations:
+
+```
+hooks/
+├── core/           # App-wide state (useAppState, useAuth, useAppInitialization)
+├── forms/          # Form-specific hooks (useFormState, useFormValidation, useCardForm, useCredentialForm)
+├── operations/     # Unified business operations (useItemsOperations, useItemDetails, useItemSearch, useItemSelection)
+├── ui/            # UI behavior hooks (useClipboard, usePasswordVisibility, useContentSize, usePasswordGenerator)
+├── formatting/    # Formatting hooks (useCardFormatting, useTextFormatting)
+├── autofill/      # Autofill hooks (useAutofillState, useAutofillSuggestions, useAutofillInjection)
+└── legacy/        # Legacy hooks maintained for backward compatibility
+```
+
+## 🎯 **Key Optimizations**
+
+### **1. Unified Operations**
+- **`useItemsOperations`**: Single hook for all CRUD operations
+- **`useItemDetails`**: Unified item detail operations (edit, delete, copy)
+- **`useItemSearch`**: Centralized search functionality
+- **`useItemSelection`**: Unified selection state management
+
+### **2. Consistent Error Handling**
+- ✅ **Error Propagation**: All errors propagate to ErrorBoundary
+- ✅ **Error Clearing**: Consistent error clearing mechanisms
+- ✅ **Error Messages**: Clear, user-friendly error messages
+- ✅ **Error Logging**: Comprehensive error logging for debugging
+
+### **3. Eliminated Duplication**
+- ❌ **Removed**: `useItemsState` + `useItemsCRUD` → **`useItemsOperations`**
+- ❌ **Removed**: `useBankCardDetails` + `useCredentialDetails` → **`useItemDetails`**
+- ❌ **Removed**: Multiple search hooks → **`useItemSearch`**
+- ❌ **Removed**: Multiple selection hooks → **`useItemSelection`**
+
 ## 📚 Available Hooks
+
+### Core Hooks (App State & Initialization)
+
+#### `useAppState`
+Reads current app state without triggering initialization.
+
+```typescript
+const { 
+  state, 
+  user, 
+  vault, 
+  refreshState, 
+  clearError 
+} = useAppState();
+```
+
+#### `useAppInitialization`
+Handles application initialization logic.
+
+```typescript
+const { 
+  isInitializing, 
+  initializationError, 
+  resetInitializationState 
+} = useAppInitialization({ platform });
+```
+
+#### `useAuth`
+Authentication state management and operations.
+
+```typescript
+const { 
+  user, 
+  isLoading, 
+  logout, 
+  getCurrentUser, 
+  clearError 
+} = useAuth({ user });
+```
+
+#### `useLogin`
+Focused hook for login form state management.
+
+```typescript
+const { 
+  email, 
+  password, 
+  emailError, 
+  passwordError, 
+  isLoading, 
+  handleLogin 
+} = useLogin();
+```
 
 ### Form Management Hooks
 
@@ -50,8 +138,6 @@ const {
   getFieldError 
 } = useFormValidation(validationService);
 ```
-
-### Item-Specific Form Hooks
 
 #### `useCardForm`
 Card form orchestration with validation, formatting, and transformation services.
@@ -85,7 +171,94 @@ const {
 } = useCredentialForm(initialData);
 ```
 
+### Unified Operations Hooks
+
+#### `useItemsOperations`
+**Unified operations for all item types** - replaces multiple hooks.
+
+```typescript
+const { 
+  items, 
+  credentials, 
+  bankCards, 
+  secureNotes,
+  searchValue,
+  filteredItems,
+  loading, 
+  error,
+  addItem, 
+  editItem, 
+  deleteItem,
+  setSearchValue,
+  clearSearch,
+  refreshData,
+  clearError 
+} = useItemsOperations({ user });
+```
+
+#### `useItemDetails`
+**Unified item detail operations** - replaces item-specific detail hooks.
+
+```typescript
+const { 
+  handleEdit, 
+  handleDelete, 
+  handleCopy, 
+  handleLaunch,
+  formatCardNumber,
+  formatURL,
+  isActionLoading,
+  error,
+  clearError 
+} = useItemDetails({ onBack, showToast, copyToClipboard });
+```
+
+#### `useItemSearch`
+**Unified search functionality** with validation.
+
+```typescript
+const { 
+  searchValue, 
+  isSearching,
+  error,
+  setSearchValue, 
+  clearSearch,
+  validateSearch,
+  clearError 
+} = useItemSearch({ initialValue: '', maxLength: 100 });
+```
+
+#### `useItemSelection`
+**Unified selection state management** for all item types.
+
+```typescript
+const { 
+  selectedCredential, 
+  selectedBankCard, 
+  selectedSecureNote,
+  error,
+  setSelectedCredential, 
+  setSelectedBankCard, 
+  setSelectedSecureNote,
+  clearSelection,
+  validateSelection,
+  clearError 
+} = useItemSelection();
+```
+
 ### UI Behavior Hooks
+
+#### `useClipboard`
+Clipboard operations with toast notifications and error handling.
+
+```typescript
+const { 
+  isCopying, 
+  copyToClipboard, 
+  copyToClipboardSilent, 
+  isClipboardAvailable 
+} = useClipboard();
+```
 
 #### `usePasswordVisibility`
 Password field visibility toggle state management.
@@ -111,69 +284,94 @@ const {
 } = useContentSize(isNote, minHeight, maxHeight);
 ```
 
-#### `useClipboard`
-Clipboard operations with toast notifications.
+#### `usePasswordGenerator`
+Password generation with strength calculation.
 
 ```typescript
 const { 
-  isCopying, 
-  copyToClipboard, 
-  copyToClipboardSilent, 
-  isClipboardAvailable 
-} = useClipboard();
+  password, 
+  strength,
+  hasUppercase, 
+  hasNumbers, 
+  hasSymbols, 
+  hasLowercase,
+  length,
+  setHasUppercase, 
+  setHasNumbers, 
+  setHasSymbols, 
+  setHasLowercase,
+  setLength,
+  handleRegenerate,
+  handleCopyPassword 
+} = usePasswordGenerator();
+```
+
+### Formatting Hooks
+
+#### `useCardFormatting`
+Provides UI-specific formatting for bank cards.
+
+```typescript
+const { 
+  formatCardNumber, 
+  formatCardDisplay 
+} = useCardFormatting();
+```
+
+#### `useTextFormatting`
+Provides UI-specific text formatting.
+
+```typescript
+const { 
+  formatURL, 
+  formatText 
+} = useTextFormatting();
+```
+
+### Autofill Hooks
+
+#### `useAutofillSuggestions`
+Generates autofill suggestions based on domain and vault items.
+
+```typescript
+const suggestions = useAutofillSuggestions(domain, vaultItems);
+```
+
+#### `useAutofillInjection`
+Handles credential injection logic.
+
+```typescript
+const { 
+  isAutofilling, 
+  error, 
+  autofillCredential 
+} = useAutofillInjection();
+```
+
+#### `useAutofillState`
+Orchestrates autofill functionality, combining suggestions and injection.
+
+```typescript
+const { 
+  suggestions, 
+  isAutofilling, 
+  error, 
+  autofillCredential, 
+  refreshSuggestions, 
+  clearError 
+} = useAutofillState();
 ```
 
 ### Legacy Hooks (Maintained for Compatibility)
 
-#### `useAppState`
-Reads current app state without triggering initialization.
+Legacy hooks are maintained in the `legacy/` folder for backward compatibility:
 
 ```typescript
-const { 
-  state, 
-  user, 
-  vault, 
-  refreshState, 
-  clearError 
-} = useAppState();
-```
-
-#### `useItems`
-Provides real-time access to items data with automatic UI updates.
-
-```typescript
-const { 
-  items, 
-  credentials, 
-  bankCards, 
-  secureNotes, 
-  loading, 
-  error 
-} = useItems();
-```
-
-#### `useAuth`
-Authentication state management and operations.
-
-```typescript
-const { 
-  user, 
-  isAuthenticated, 
-  login, 
-  logout, 
-  isLoading 
-} = useAuth();
-```
-
-#### `usePasswordGenerator`
-Password generation with strength analysis.
-
-```typescript
-const { 
-  generatePassword, 
-  passwordStrength, 
-  isGenerating 
-} = usePasswordGenerator();
+// Legacy hooks (use with caution, prefer new unified hooks)
+export { useAddCard2 } from './legacy/useAddCard2';
+export { useBankCardDetails } from './legacy/useBankCardDetails';
+export { useCredentialDetails } from './legacy/useCredentialDetails';
+// ... other legacy hooks
 ```
 
 ## 🏛️ Architecture Rules
@@ -184,6 +382,7 @@ const {
 3. **Service Integration**: Call services for business logic
 4. **Navigation**: Handle navigation via `useAppRouterContext()`
 5. **Side Effects**: Wrap side effects with `useEffect`
+6. **Error Handling**: Propagate errors to ErrorBoundary
 
 ### What Hooks Should NOT Do
 - ❌ **Business Logic**: No validation, formatting, or transformation logic
@@ -203,11 +402,71 @@ const validateCardNumber = (value: string) => {
 };
 ```
 
+### Error Handling Pattern
+```typescript
+// ✅ Correct: Propagate errors to ErrorBoundary
+try {
+  await service.operation();
+} catch (err) {
+  const errorMessage = err instanceof Error ? err.message : 'Operation failed';
+  setError(errorMessage);
+  console.error('[HookName] Operation failed:', err);
+  throw new Error(errorMessage); // Propagate to ErrorBoundary
+}
+
+// ❌ Incorrect: Swallow errors
+try {
+  await service.operation();
+} catch (err) {
+  setError('Something went wrong'); // Generic error
+  // No propagation to ErrorBoundary
+}
+```
+
 ## 📝 Usage Examples
 
-### Creating a Form Component
+### Using Unified Operations
 ```typescript
-import { useCardForm } from '@common/hooks/useCardForm';
+import { useItemsOperations, useItemDetails } from '@common/hooks';
+
+const MyComponent = () => {
+  const user = useAppStateStore(state => state.user);
+  const { items, addItem, deleteItem, loading, error } = useItemsOperations({ user });
+  const { handleEdit, handleDelete, handleCopy } = useItemDetails({ 
+    onBack, 
+    showToast, 
+    copyToClipboard 
+  });
+
+  const handleAddItem = async (item) => {
+    try {
+      await addItem(item);
+      showToast('Item added successfully');
+    } catch (error) {
+      // Error is automatically propagated to ErrorBoundary
+      console.error('Failed to add item:', error);
+    }
+  };
+
+  return (
+    <div>
+      {items.map(item => (
+        <ItemCard 
+          key={item.id}
+          item={item}
+          onEdit={() => handleEdit(item)}
+          onDelete={() => handleDelete(item.id)}
+          onCopy={() => handleCopy(item.title, 'Copied!')}
+        />
+      ))}
+    </div>
+  );
+};
+```
+
+### Using Form Hooks
+```typescript
+import { useCardForm } from '@common/hooks';
 
 const AddCardForm = () => {
   const { 
@@ -233,31 +492,22 @@ const AddCardForm = () => {
 };
 ```
 
-### Using Clipboard Operations
+### Using UI Hooks
 ```typescript
-import { useClipboard } from '@common/hooks/useClipboard';
+import { useClipboard, usePasswordVisibility } from '@common/hooks';
 
 const CopyButton = ({ text }) => {
   const { copyToClipboard, isCopying } = useClipboard();
-
-  const handleCopy = () => {
-    copyToClipboard(text, 'Copied to clipboard!');
-  };
-
-  return (
-    <Button onClick={handleCopy} disabled={isCopying}>
-      {isCopying ? 'Copying...' : 'Copy'}
-    </Button>
-  );
-};
-```
-
-### Managing Password Visibility
-```typescript
-import { usePasswordVisibility } from '@common/hooks/usePasswordVisibility';
-
-const PasswordInput = () => {
   const { isPasswordVisible, togglePasswordVisibility } = usePasswordVisibility();
+
+  const handleCopy = async () => {
+    try {
+      await copyToClipboard(text, 'Copied to clipboard!');
+    } catch (error) {
+      // Error is automatically propagated to ErrorBoundary
+      console.error('Copy failed:', error);
+    }
+  };
 
   return (
     <View>
@@ -267,6 +517,9 @@ const PasswordInput = () => {
       />
       <Button onPress={togglePasswordVisibility}>
         {isPasswordVisible ? 'Hide' : 'Show'}
+      </Button>
+      <Button onClick={handleCopy} disabled={isCopying}>
+        {isCopying ? 'Copying...' : 'Copy'}
       </Button>
     </View>
   );
@@ -278,23 +531,23 @@ const PasswordInput = () => {
 ### Hook Testing Strategy
 - **Test UI State**: Verify state changes and user interactions
 - **Test Service Integration**: Mock services and verify calls
-- **Test Error Handling**: Verify error states and messages
+- **Test Error Handling**: Verify error states and ErrorBoundary propagation
 - **Test Platform Compatibility**: Ensure hooks work across platforms
 
 ### Example Test
 ```typescript
 import { renderHook, act } from '@testing-library/react-hooks';
-import { useCardForm } from './useCardForm';
+import { useItemsOperations } from './operations/useItemsOperations';
 
-describe('useCardForm', () => {
-  it('should handle field changes', () => {
-    const { result } = renderHook(() => useCardForm());
+describe('useItemsOperations', () => {
+  it('should handle add item with error propagation', async () => {
+    const { result } = renderHook(() => useItemsOperations({ user: mockUser }));
     
-    act(() => {
-      result.current.handleFieldChange('title', 'New Card');
-    });
+    // Mock service to throw error
+    jest.spyOn(itemsService, 'addItem').mockRejectedValue(new Error('Service error'));
     
-    expect(result.current.formData.title).toBe('New Card');
+    await expect(result.current.addItem(mockItem)).rejects.toThrow('Service error');
+    expect(result.current.error).toBe('Failed to add item');
   });
 });
 ```
@@ -303,38 +556,40 @@ describe('useCardForm', () => {
 
 ### From Old Pattern to New Pattern
 
-**Old Pattern (Business Logic in Hooks)**:
+**Old Pattern (Multiple Hooks)**:
 ```typescript
-const useCardForm = () => {
-  const validateCardNumber = (value: string) => {
-    // Business logic in hook ❌
-    if (value.length < 13) return 'Invalid card number';
-    // Luhn algorithm implementation...
-  };
-};
+// ❌ Multiple hooks with duplication
+const { items, addItem } = useItemsState({ user });
+const { deleteItem } = useItemsCRUD();
+const { handleEdit } = useBankCardDetails(card);
 ```
 
-**New Pattern (Business Logic in Services)**:
+**New Pattern (Unified Hooks)**:
 ```typescript
-const useCardForm = () => {
-  const { validateField } = useFormValidation(cardValidationService);
-  
-  const handleCardNumberChange = (value: string) => {
-    const result = validateField('cardNumber', value);
-    // UI state management only ✅
-  };
-};
+// ✅ Single unified hook
+const { 
+  items, 
+  addItem, 
+  deleteItem 
+} = useItemsOperations({ user });
+const { 
+  handleEdit, 
+  handleDelete, 
+  handleCopy 
+} = useItemDetails({ onBack, showToast, copyToClipboard });
 ```
 
 ## 📚 Best Practices
 
-1. **Keep Hooks Simple**: Focus on UI state management only
-2. **Use Services**: Call services for all business logic
-3. **Handle Errors**: Provide clear error messages to users
-4. **Type Safety**: Use strict TypeScript types
-5. **Test Thoroughly**: Write comprehensive tests for UI behavior
-6. **Document APIs**: Provide clear documentation and examples
+1. **Use Unified Hooks**: Prefer `useItemsOperations` over legacy hooks
+2. **Propagate Errors**: Always throw errors to ErrorBoundary
+3. **Keep Hooks Simple**: Focus on UI state management only
+4. **Use Services**: Call services for all business logic
+5. **Handle Errors**: Provide clear error messages to users
+6. **Type Safety**: Use strict TypeScript types
+7. **Test Thoroughly**: Write comprehensive tests for UI behavior
+8. **Document APIs**: Provide clear documentation and examples
 
 ---
 
-**SimpliPass Hooks**: Clean, reusable UI state management for cross-platform password management. 
+**SimpliPass Hooks**: Clean, unified, and error-resilient UI state management for cross-platform password management. 

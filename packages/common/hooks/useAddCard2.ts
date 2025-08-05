@@ -6,7 +6,7 @@
 // - Error handling
 
 import { useState, useMemo, useCallback } from 'react';
-import { cardFormattingService } from '@common/core/services/formattingService';
+// Removed unused import
 import { createExpirationDate, parseExpirationDate } from '@common/utils/expirationDate';
 import type { BankCardDecrypted } from '@common/core/types/items.types';
 

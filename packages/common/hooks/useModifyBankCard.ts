@@ -6,12 +6,10 @@
 // - Error handling
 
 import { useState, useCallback } from 'react';
-import { updateItem } from '@common/core/services/itemsService';
-import { cardFormattingService } from '@common/core/services/formattingService';
+import { itemsService } from '@common/core/services/itemsService';
 import { ROUTES } from '@common/ui/router/ROUTES';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { CATEGORIES } from '@common/core/types/categories.types';
-import { createExpirationDate, parseExpirationDate } from '@common/utils/expirationDate';
 import type { BankCardDecrypted } from '@common/core/types/items.types';
 
 export const useModifyBankCard = (bankCard: BankCardDecrypted) => {
@@ -53,7 +51,7 @@ export const useModifyBankCard = (bankCard: BankCardDecrypted) => {
         lastUseDateTime: new Date(),
       };
 
-      await updateItem(bankCard.id, updatedCard);
+      await itemsService.updateItem(bankCard.id, updatedCard);
       showToast('Carte modifiée avec succès');
       router.navigateTo(ROUTES.HOME, { category: CATEGORIES.BANK_CARDS });
     } catch (e: unknown) {

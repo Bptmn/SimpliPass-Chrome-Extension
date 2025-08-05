@@ -1,5 +1,5 @@
 // packages/common/core/adapters/platform.storage.adapter.ts
-import { useAppStateStore, type Platform } from '../../hooks/useAppState';
+import { useAppStateStore } from '../../hooks/useAppState';
 
 export interface IPlatformStorageAdapter {
   // User Secret Key Storage
@@ -47,7 +47,8 @@ export const storage: IPlatformStorageAdapter = new Proxy({} as IPlatformStorage
 
       const method = (adapter as any)[prop];
       if (method) {
-        return method(...args);
+        // Bind the method to the adapter instance to preserve 'this' context
+        return method.bind(adapter)(...args);
       }
       
       throw new Error(`Method ${String(prop)} not found in platform storage adapter`);

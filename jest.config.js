@@ -27,7 +27,6 @@ module.exports = {
     '^@common/(.*)$': '<rootDir>/packages/common/$1',
     '^@/(.*)$': '<rootDir>/packages/app/$1',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
-    '^@common/config/platform$': '<rootDir>/packages/common/config/__mocks__/platform.ts',
   },
   testMatch: [
     '**/__tests__/**/*.(ts|tsx|js)',

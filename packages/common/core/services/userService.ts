@@ -4,12 +4,13 @@ import { IDatabaseAdapter } from '../adapters/database.adapter';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IAuthAdapter } from '../adapters/auth.adapter';
 import { User as FirebaseUser } from 'firebase/auth';
+import { hasUserSecretKey } from './secretsService';
+import { NetworkError, AuthenticationError, StorageError } from '../types/errors.types';
 
 export interface IUserService {
   getCurrentUser(): Promise<User | null>;
   getCurrentUserAsync(): Promise<FirebaseUser | null>;
   waitForAuthStateStable(): Promise<void>;
-  checkUserSecretKey(): Promise<boolean>;
   getCurrentUserId(): Promise<string | null>;
   initializeUserData(userId: string): Promise<{ user: User | null; hasSecretKey: boolean; }>;
   handleUserAuthenticationState(userId: string): Promise<{ user: User | null; hasSecretKey: boolean; success: boolean; }>;
@@ -26,13 +27,6 @@ export const getCurrentUser = async (): Promise<User | null> => {
     throw new Error('UserService not initialized');
   }
   return userServiceInstance.getCurrentUser();
-};
-
-export const checkUserSecretKey = async (): Promise<boolean> => {
-  if (!userServiceInstance) {
-    throw new Error('UserService not initialized');
-  }
-  return userServiceInstance.checkUserSecretKey();
 };
 
 export const getCurrentUserId = async (): Promise<string | null> => {
@@ -84,7 +78,8 @@ export class UserService implements IUserService {
     private auth: IAuthAdapter,
     private appStateStore: typeof useAppStateStore,
   ) {
-    // Set the singleton instance
+    // Set the singleton instance for global access
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     userServiceInstance = this;
   }
 
@@ -112,53 +107,59 @@ export class UserService implements IUserService {
   }
 
   public async getCurrentUserAsync(): Promise<FirebaseUser | null> {
-    await this.waitForAuthStateStable();
-    return this.auth.getCurrentUser();
+    try {
+      await this.waitForAuthStateStable();
+      return this.auth.getCurrentUser();
+    } catch (error) {
+      console.error('[UserService] Failed to get current user async:', error);
+      return null;
+    }
   }
 
   public async waitForAuthStateStable(): Promise<void> {
-    // Simple polling approach to wait for auth state to stabilize
-    let attempts = 0;
-    const maxAttempts = 10;
-    const delay = 100; // 100ms between attempts
-    
-    while (attempts < maxAttempts) {
-      const currentUser = await this.auth.getCurrentUser();
-      if (currentUser !== undefined) {
-        return; // Auth state is stable
+    try {
+      // Simple polling approach to wait for auth state to stabilize
+      let attempts = 0;
+      const maxAttempts = 10;
+      const delay = 100; // 100ms between attempts
+      
+      while (attempts < maxAttempts) {
+        const currentUser = await this.auth.getCurrentUser();
+        if (currentUser !== undefined) {
+          return; // Auth state is stable
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, delay));
+        attempts++;
       }
       
-      await new Promise(resolve => setTimeout(resolve, delay));
-      attempts++;
-    }
-    
-    // If we reach here, auth state didn't stabilize in time
-    console.warn('[UserService] Auth state did not stabilize within expected time');
-  }
-
-  public async checkUserSecretKey(): Promise<boolean> {
-    try {
-      const userSecretKey = await this.storage.getUserSecretKeyFromSecureLocalStorage();
-      return !!userSecretKey;
+      // If we reach here, auth state didn't stabilize in time
+      console.warn('[UserService] Auth state did not stabilize within expected time');
     } catch (error) {
-      console.error('[UserService] Error checking user secret key:', error);
-      return false;
+      console.error('[UserService] Error waiting for auth state to stabilize:', error);
+      throw new AuthenticationError('Failed to wait for auth state to stabilize', error as Error);
     }
   }
 
   public async getCurrentUserId(): Promise<string | null> {
-    const currentUser = await this.getCurrentUserAsync();
-    return currentUser?.uid || null;
+    try {
+      const currentUser = await this.getCurrentUserAsync();
+      return currentUser?.uid || null;
+    } catch (error) {
+      console.error('[UserService] Failed to get current user ID:', error);
+      return null;
+    }
   }
 
+  // Get user data from database and check if user has a secret key
   public async initializeUserData(userId: string): Promise<{ user: User | null; hasSecretKey: boolean; }> {
     try {
       const user = await this.getCurrentUser();
-      const hasSecretKey = await this.checkUserSecretKey();
+      const hasSecretKey = await hasUserSecretKey();
       return { user, hasSecretKey };
     } catch (error) {
       console.error('[UserService] Failed to initialize user data:', error);
-      throw error;
+      throw new AuthenticationError('Failed to initialize user data', error as Error);
     }
   }
 
@@ -184,7 +185,7 @@ export class UserService implements IUserService {
       await this.storage.clearAllSecureLocalStorage();
     } catch (error) {
       console.error('[UserService] Failed to clear user data:', error);
-      throw error;
+      throw new StorageError('Failed to clear user data', error as Error);
     }
   }
 
@@ -193,7 +194,7 @@ export class UserService implements IUserService {
       return await this.db.getDocument(`users/${userId}`);
     } catch (error) {
       console.error('[UserService] Failed to get Firestore user document:', error);
-      throw error;
+      throw new NetworkError('Failed to get user document from database', error as Error);
     }
   }
 
@@ -212,7 +213,7 @@ export class UserService implements IUserService {
       };
     } catch (error) {
       console.error('[UserService] Failed to refresh user info:', error);
-      throw error;
+      throw new NetworkError('Failed to refresh user information', error as Error);
     }
   }
 }

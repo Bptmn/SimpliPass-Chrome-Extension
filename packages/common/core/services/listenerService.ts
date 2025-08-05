@@ -1,10 +1,12 @@
 // packages/common/core/services/listenerService.ts
+import { User as FirebaseUser } from 'firebase/auth';
 import { IDatabaseAdapter } from '../adapters/database.adapter';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
+import { IAuthAdapter } from '../adapters/auth.adapter';
 import { IItemsService } from './itemsService';
 import { IUserService } from './userService';
-import { IAuthService } from './authService';
-import { User as FirebaseUser } from 'firebase/auth';
+import { useAppStateStore } from '../../hooks/useAppState';
+import { NetworkError, AuthenticationError, ItemError } from '../types/errors.types';
 
 export interface IAuthListenerService {
   start(): Promise<void>;
@@ -35,9 +37,14 @@ class DatabaseListeners implements IDatabaseListenerService {
       
       const callbacks = {
         onUserUpdate: async (userData: any) => {
-          await this.storage.updateUserInSecureLocalStorage(userData);
+          try {
+            await this.storage.updateUserInSecureLocalStorage(userData);
+          } catch (error) {
+            console.error('[DatabaseListeners] Failed to update user in storage:', error);
+            // Don't throw here as this is a callback - just log the error
+          }
         },
-        onItemsUpdate: async () => {
+        onItemsUpdate: async (encryptedItems: any[]) => {
           try {
             console.log('[DatabaseListeners] Items updated in database, checking if user has secret key...');
             
@@ -55,12 +62,13 @@ class DatabaseListeners implements IDatabaseListenerService {
               return;
             }
             
-            console.log('[DatabaseListeners] User has secret key, refreshing local storage and state...');
-            // ✅ Use fetchAndStoreItems to update local storage and global state
-            await this.itemsService.fetchAndStoreItems(currentUserId);
-            console.log('[DatabaseListeners] Items update processed successfully');
+            console.log('[DatabaseListeners] User has secret key, handling external database change...');
+            // ✅ Use external change handling to update local storage and state
+            await this.itemsService.handleExternalDatabaseChange(encryptedItems);
+            console.log('[DatabaseListeners] External items update processed successfully');
           } catch (error) {
-            console.error('[DatabaseListeners] Error processing items update:', error);
+            console.error('[DatabaseListeners] Error processing external items update:', error);
+            // Don't throw here as this is a callback - just log the error
           }
         },
       };
@@ -70,14 +78,19 @@ class DatabaseListeners implements IDatabaseListenerService {
       console.log('[DatabaseListeners] Database listeners started successfully');
     } catch (error) {
       console.error('[DatabaseListeners] Failed to start database listeners:', error);
-      throw error;
+      throw new NetworkError('Failed to start database listeners', error as Error);
     }
   }
 
   stop(): void {
-    console.log('[DatabaseListeners] Stopping database listeners');
-    this.db.stopListeners();
-    this.isListening = false;
+    try {
+      console.log('[DatabaseListeners] Stopping database listeners');
+      this.db.stopListeners();
+      this.isListening = false;
+    } catch (error) {
+      console.error('[DatabaseListeners] Error stopping database listeners:', error);
+      // Don't throw here as stop should be idempotent
+    }
   }
 
   isActive(): boolean {
@@ -86,28 +99,54 @@ class DatabaseListeners implements IDatabaseListenerService {
 }
 
 class AuthListeners implements IAuthListenerService {
-  private isListening: boolean = false;
+  private authListenerUnsubscribe: (() => void) | null = null;
   private lastProcessedUserId: string | null = null;
 
   constructor(
-    private authService: IAuthService,
+    private authAdapter: IAuthAdapter,
     private userService: IUserService,
     private databaseListeners: IDatabaseListenerService,
     private appStateStore: typeof useAppStateStore,
   ) {}
 
+  // ✅ NEW: Check if listeners are actually active
+  public areListenersActive(): boolean {
+    return this.authListenerUnsubscribe !== null;
+  }
+
   async start(): Promise<void> {
     try {
+      // ✅ NATIVE CHECK: Use actual listener state
+      if (this.areListenersActive()) {
+        console.log('[AuthListeners] Already listening, skipping start');
+        return;
+      }
+
       console.log('[AuthListeners] Starting authentication listeners');
       
-      // Set the database listeners on the auth service so it can start them when user is authenticated
-      this.authService.setDatabaseListeners(this.databaseListeners);
-      await this.authService.startAuthListeners();
-      this.isListening = true;
+      const authStateCallback = async (firebaseUser: FirebaseUser | null) => {
+        try {
+          if (firebaseUser) {
+            await this.handleUserAuthenticated(firebaseUser.uid);
+          } else {
+            await this.handleUserSignedOut();
+          }
+          this.appStateStore.getState().setAuthIsAvailable(true);
+        } catch (error) {
+          console.error('[AuthListeners] Error in auth state change:', error);
+          // Don't throw here as this is a callback - just log the error
+        }
+      };
+      
+      await this.authAdapter.startAuthListeners(authStateCallback);
+      // Store the unsubscribe function to track active state
+      this.authListenerUnsubscribe = () => {
+        this.authAdapter.stopAuthListeners();
+      };
       console.log('[AuthListeners] Authentication listeners started successfully');
     } catch (error) {
       console.error('[AuthListeners] Failed to start auth listeners:', error);
-      throw error;
+      throw new NetworkError('Failed to start authentication listeners', error as Error);
     }
   }
 
@@ -115,27 +154,70 @@ class AuthListeners implements IAuthListenerService {
     if (this.lastProcessedUserId === userId) {
       return;
     }
-    const { success } = await this.userService.handleUserAuthenticationState(userId);
-    if (success) {
-      await this.databaseListeners.start(userId);
+    
+    try {
+      console.log('[AuthListeners] Handling user authentication:', userId);
+      
+      const { success } = await this.userService.handleUserAuthenticationState(userId);
+      if (success) {
+        console.log('[AuthListeners] User data retrieved successfully');
+        
+        // ✅ Start database listeners when user is authenticated
+        try {
+          await this.databaseListeners.start(userId);
+        } catch (dbError) {
+          console.error('[AuthListeners] Failed to start database listeners:', dbError);
+          // Don't throw here as auth is still successful even if DB listeners fail
+        }
+      }
+    } catch (error) {
+      console.error('[AuthListeners] Error handling user authentication:', error);
+      throw new AuthenticationError('Failed to handle user authentication', error as Error);
     }
+    
     this.lastProcessedUserId = userId;
   }
 
   private async handleUserSignedOut(): Promise<void> {
-    this.databaseListeners.stop();
-    this.appStateStore.getState().setUserAndSecretKey(null, false);
+    try {
+      console.log('[AuthListeners] Handling user sign out');
+      
+      // Step 1: Stop database listeners
+      this.databaseListeners.stop();
+      console.log('[AuthListeners] Database listeners stopped due to sign out');
+      
+      // Step 2: Update global state directly via Zustand store
+      this.appStateStore.getState().setUserAndSecretKey(null, false);
+      
+      console.log('[AuthListeners] User signed out');
+    } catch (error) {
+      console.error('[AuthListeners] Error handling user sign out:', error);
+      throw new AuthenticationError('Failed to handle user sign out', error as Error);
+    }
+    
     this.lastProcessedUserId = null;
   }
 
   stop(): void {
-    this.authService.stopAuthListeners();
-    this.isListening = false;
-    this.lastProcessedUserId = null;
+    // ✅ NATIVE CHECK: Use actual listener state
+    if (!this.areListenersActive()) {
+      console.log('[AuthListeners] Not listening, skipping stop');
+      return;
+    }
+
+    try {
+      console.log('[AuthListeners] Stopping authentication listeners');
+      this.authAdapter.stopAuthListeners();
+      this.authListenerUnsubscribe = null;
+      console.log('[AuthListeners] Authentication listeners stopped');
+    } catch (error) {
+      console.error('[AuthListeners] Error stopping authentication listeners:', error);
+      // Don't throw here as stop should be idempotent
+    }
   }
 
   isActive(): boolean {
-    return this.isListening;
+    return this.areListenersActive();
   }
 }
 
@@ -143,15 +225,13 @@ class AuthListeners implements IAuthListenerService {
 export { DatabaseListeners, AuthListeners };
 
 // Import actual adapters and services
-import { auth } from '../adapters/auth.adapter';
 import { db } from '../adapters/database.adapter';
 import { storage } from '../adapters/platform.storage.adapter';
-import { authService } from './authService';
+import { auth } from '../adapters/auth.adapter';
 import { userService } from './userService';
 import { itemsService } from './itemsService';
-import { useAppStateStore } from '../../hooks/useAppState';
 
-// Export instances for backward compatibility
+// Export singleton instances
 export const databaseListeners = new DatabaseListeners(
   db,
   storage,
@@ -161,7 +241,7 @@ export const databaseListeners = new DatabaseListeners(
 );
 
 export const authListeners = new AuthListeners(
-  authService,
+  auth,
   userService,
   databaseListeners,
   useAppStateStore

@@ -24,7 +24,7 @@ export const PopupApp: React.FC = () => {
   const [theme] = useState<'light' | 'dark'>('light');
 
   // Step 1: Use initialization (uses Zustand store directly)
-  useAppInitialization();
+  useAppInitialization({ platform: 'extension' });
 
   // Step 2: Create router (subscribes to Zustand store automatically)
   const router = useAppRouter({

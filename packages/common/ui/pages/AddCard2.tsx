@@ -24,10 +24,8 @@ import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Toast } from '@ui/components/Toast';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { ROUTES } from '@common/ui/router/ROUTES';
-import { CATEGORIES } from '@common/core/types/categories.types';
 import { useCardForm } from '@common/hooks/useCardForm';
 import { useAddCard2 } from '@common/hooks/useAddCard2';
-import type { BankCardDecrypted } from '@common/core/types/items.types';
 
 interface AddCard2Props {
   title?: string;
@@ -37,10 +35,10 @@ interface AddCard2Props {
 }
 
 export const AddCard2: React.FC<AddCard2Props> = ({ 
-  title: initialTitle, 
-  bankName: initialBankName, 
-  expiryDate: initialExpiryDate, 
-  cvv: initialCvv 
+  title: _initialTitle, 
+  bankName: _initialBankName, 
+  expiryDate: _initialExpiryDate, 
+  cvv: _initialCvv 
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
@@ -53,13 +51,11 @@ export const AddCard2: React.FC<AddCard2Props> = ({
     formData,
     errors,
     isSubmitting,
-    updateField,
     handleFieldChange,
     handleCardNumberChange,
     handleExpirationDateChange,
     handleCVVChange,
-    handleSubmit,
-    isFormValid
+    handleSubmit
   } = useCardForm();
 
   const [selectedColor, setSelectedColor] = useState('#4f86a2');

@@ -22,8 +22,7 @@ import { Button } from '@ui/components/Buttons';
 import { DetailField } from '@ui/components/DetailField';
 import { MoreInfo } from '@ui/components/MoreInfo';
 import CopyButton from '@ui/components/CopyButton';
-import { ROUTES } from '@common/ui/router';
-import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+// Removed unused imports
 import { useClipboard } from '@common/hooks/useClipboard';
 import { usePasswordVisibility } from '@common/hooks/usePasswordVisibility';
 import { useCredentialDetails } from '@common/hooks/useCredentialDetails';

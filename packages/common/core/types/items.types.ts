@@ -57,8 +57,8 @@ export interface ItemEncrypted {
   id: string;
   content_encrypted: string;
   item_key_encrypted: string;
-  created_at: Date;
-  last_used_at: Date;
+  created_at: Date; // ✅ Standard Date object (provider-agnostic)
+  last_used_at: Date; // ✅ Standard Date object (provider-agnostic)
   item_type: string;
 }
 

@@ -5,13 +5,11 @@
  * Determines which config to use based on the current environment
  */
 
-import { detectPlatform } from '../core/adapters/platform.adapter';
+// Removed circular dependency - platform detection should be done at app initialization
 
 export const isTestEnvironment = process.env.NODE_ENV === 'test';
 
-export const getPlatformConfig = () => {
-  const platform = detectPlatform();
-  
+export const getPlatformConfig = (platform: 'extension' | 'mobile') => {
   if (isTestEnvironment) {
     // Test environment config - no import.meta
     if (platform === 'extension') {
@@ -114,31 +112,31 @@ export const getPlatformConfig = () => {
 /**
  * Get Firebase config for the current platform
  */
-export async function getFirebaseConfig() {
-  const config = await getPlatformConfig();
+export async function getFirebaseConfig(platform: 'extension' | 'mobile') {
+  const config = await getPlatformConfig(platform);
   return config.firebaseConfig;
 }
 
 /**
  * Get Cognito config for the current platform
  */
-export async function getCognitoConfig() {
-  const config = await getPlatformConfig();
+export async function getCognitoConfig(platform: 'extension' | 'mobile') {
+  const config = await getPlatformConfig(platform);
   return config.cognitoConfig;
 }
 
 /**
  * Validate Firebase config for the current platform
  */
-export async function validateFirebaseConfig() {
-  const config = await getPlatformConfig();
+export async function validateFirebaseConfig(platform: 'extension' | 'mobile') {
+  const config = await getPlatformConfig(platform);
   return config.validateFirebaseConfig();
 }
 
 /**
  * Validate Cognito config for the current platform
  */
-export async function validateCognitoConfig() {
-  const config = await getPlatformConfig();
+export async function validateCognitoConfig(platform: 'extension' | 'mobile') {
+  const config = await getPlatformConfig(platform);
   return config.validateCognitoConfig();
 } 

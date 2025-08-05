@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { useItems } from './useItems';
+import { useItemsState } from './useItemsState';
 import { useAppStateStore } from './useAppState';
 import { useCurrentTabDomain } from './useCurrentTabDomain';
 import type { CredentialDecrypted } from '@common/core/types/items.types';
@@ -41,7 +41,7 @@ export interface UseAutofillReturn {
 
 export const useAutofill = (): UseAutofillReturn => {
   const user = useAppStateStore(state => state.user);
-  const { items, loading: itemsLoading, error: itemsError } = useItems({ user });
+  const { items, loading: itemsLoading, error: itemsError } = useItemsState({ user });
   const { currentDomain, isLoading: domainLoading, error: domainError } = useCurrentTabDomain();
   
   // Step 2: Initialize state

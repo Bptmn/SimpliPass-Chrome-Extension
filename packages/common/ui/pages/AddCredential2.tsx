@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView } from 'react-native';
 import { useUser } from '@common/hooks/useUser';
 import { passwordGenerator } from '@common/utils/passwordGenerator';
-import { generateItemKey } from '@common/utils/crypto';
+import { generateItemKey } from '@common/core/libraries/crypto';
 
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import Toast from '@ui/components/Toast';
@@ -17,7 +17,7 @@ import { HeaderTitle } from '@ui/components/HeaderTitle';
 import { checkPasswordStrength } from '@common/utils/checkPasswordStrength';
 import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
-import { useItemOperations } from '@common/hooks/useItemOperations'; // ✅ Use focused hook
+import { useItemsCRUD } from '@common/hooks/useItemsCRUD'; // ✅ Use focused hook
 
 interface AddCredential2Props {
   title: string;
@@ -32,7 +32,7 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({ title: initialTi
   const { user } = useUser();
   
   // ✅ Use focused hook for business operations
-  const { addCredential, isLoading, error } = useItemOperations();
+  const { addCredential, isLoading, error } = useItemsCRUD();
   
   const [title, setTitle] = useState(initialTitle);
   const [username, setUsername] = useState(user?.email || '');

@@ -19,27 +19,19 @@ export const MoreInfo: React.FC<MoreInfoProps> = ({
   const themeColors = getColors(mode);
   const [showMeta, setShowMeta] = useState(false);
 
-  const formatDateTime = (dateTime: any): string => {
-    if (!dateTime) return 'N/A';
-    let dateObj: Date;
-    if (dateTime instanceof Date) {
-      dateObj = dateTime;
-    } else if (typeof dateTime.toDate === 'function') {
-      // Firestore Timestamp
-      dateObj = dateTime.toDate();
-    } else if (typeof dateTime === 'string' || typeof dateTime === 'number') {
-      dateObj = new Date(dateTime);
-    } else {
+  const formatDateTime = (dateTime: Date): string => {
+    if (!dateTime || !(dateTime instanceof Date)) {
       return 'N/A';
     }
+    
     return (
-      dateObj.toLocaleDateString('fr-FR', {
+      dateTime.toLocaleDateString('fr-FR', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
       }) +
       ' à ' +
-      dateObj.toLocaleTimeString('fr-FR', {
+      dateTime.toLocaleTimeString('fr-FR', {
         hour: '2-digit',
         minute: '2-digit',
       })

@@ -6,9 +6,7 @@
 
 import { useCallback } from 'react';
 import { useCardFormatting } from './useCardFormatting'; // ✅ Use focused formatting hook
-import { useClipboard } from './useClipboard';
-import { useItems } from './useItems';
-import { useToast } from '../ui/components/Toast';
+import { useItemsState } from './useItemsState';
 import { ROUTES } from '../ui/router/ROUTES';
 import { useAppRouterContext } from '../ui/router/AppRouterProvider';
 import type { BankCardDecrypted } from '../core/types/items.types';
@@ -22,7 +20,7 @@ export const useBankCardDetails = (
   copyToClipboard: (text: string, message: string) => void
 ) => {
   const router = useAppRouterContext();
-  const { editItem, deleteItem } = useItems({ user: null }); // User will be passed from parent
+  const { deleteItem } = useItemsState({ user: null }); // User will be passed from parent
   const { formatCardNumber } = useCardFormatting(); // ✅ Use focused formatting hook
 
   // Step 1: Format card number for display
@@ -30,7 +28,7 @@ export const useBankCardDetails = (
 
   // Step 2: Handle edit operation
   const handleEdit = useCallback(() => {
-    router.navigateTo(ROUTES.MODIFY_BANKCARD, { bankCard: card });
+    router.navigateTo(ROUTES.MODIFY_BANK_CARD, { bankCard: card });
   }, [router, card]);
 
   // Step 3: Handle copy operations

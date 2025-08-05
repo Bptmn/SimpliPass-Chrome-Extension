@@ -9,7 +9,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import type { BankCardDecrypted } from '@common/core/types/items.types';
-import { ExpirationDate, formatExpirationDate } from '@common/utils';
+import { ExpirationDate, formatExpirationDateFromExp } from '@common/utils';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
 import { LazyCredentialIcon } from '@ui/components/LazyCredentialIcon';
@@ -63,7 +63,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
 
   const formatDate = (expDate: ExpirationDate) => {
     if (!expDate) return '';
-    return formatExpirationDate(expDate);
+    return formatExpirationDateFromExp(expDate);
   };
 
   return (

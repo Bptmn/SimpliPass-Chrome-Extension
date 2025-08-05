@@ -6,9 +6,7 @@
 
 import { useCallback } from 'react';
 import { useTextFormatting } from './useTextFormatting'; // ✅ Use focused formatting hook
-import { useClipboard } from './useClipboard';
-import { useItems } from './useItems';
-import { useToast } from '../ui/components/Toast';
+import { useItemsState } from './useItemsState';
 import { ROUTES } from '../ui/router/ROUTES';
 import { useAppRouterContext } from '../ui/router/AppRouterProvider';
 import type { CredentialDecrypted } from '../core/types/items.types';
@@ -20,10 +18,10 @@ export const useCredentialDetails = (
   setLoading: (loading: boolean) => void,
   showToast: (message: string) => void,
   copyToClipboard: (text: string, message: string) => void,
-  togglePasswordVisibility: () => void
+  _togglePasswordVisibility: () => void
 ) => {
   const router = useAppRouterContext();
-  const { editItem, deleteItem } = useItems({ user: null }); // User will be passed from parent
+  const { deleteItem } = useItemsState({ user: null }); // User will be passed from parent
   const { formatURL } = useTextFormatting(); // ✅ Use focused formatting hook
 
   // Step 1: Format URL for display

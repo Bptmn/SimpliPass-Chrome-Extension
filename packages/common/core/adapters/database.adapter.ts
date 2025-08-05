@@ -7,7 +7,7 @@ type DocumentId = string;
 
 export interface DatabaseListenersCallbacks {
   onUserUpdate?: (userData: User) => Promise<void>;
-  onItemsUpdate?: () => Promise<void>;
+  onItemsUpdate?: (encryptedItems: any[]) => Promise<void>;
 }
 
 export interface DatabaseListenersState {

@@ -9,25 +9,42 @@ import { AuthenticationError } from '@common/core/types/errors.types';
 let firebaseApp: FirebaseApp | null = null;
 let firebaseAuth: Auth | null = null;
 let firebaseDb: Firestore | null = null;
+let authListenerUnsubscribe: (() => void) | null = null;
 
-// Pure provider function: Initialize Firebase
-export const initFirebase = async (): Promise<void> => {
-  if (!firebaseApp || !firebaseAuth || !firebaseDb) {
-    const firebaseConfig = await getFirebaseConfig();
-    firebaseApp = initializeApp(firebaseConfig);
-    firebaseAuth = getAuth(firebaseApp);
-    firebaseDb = getFirestore(firebaseApp);
-  }
+// ✅ NEW: Check if Firebase is actually initialized
+export const isFirebaseInitialized = (): boolean => {
+  return firebaseApp !== null && firebaseAuth !== null && firebaseDb !== null;
 };
 
-// Pure provider function: Initialize Firebase (alias for backward compatibility)
-export const initialize = async (): Promise<void> => {
-  await initFirebase();
+// ✅ NEW: Check if auth listeners are actually active
+export const areAuthListenersActive = (): boolean => {
+  return authListenerUnsubscribe !== null;
+};
+
+// Pure provider function: Initialize Firebase
+export const initFirebase = async (platform: 'extension' | 'mobile'): Promise<void> => {
+  // ✅ NATIVE CHECK: Use actual Firebase state
+  if (isFirebaseInitialized()) {
+    console.log('[Firebase] Already initialized, skipping');
+    return;
+  }
+
+  console.log('[Firebase] Initializing Firebase...');
+  const firebaseConfig = await getFirebaseConfig(platform);
+  firebaseApp = initializeApp(firebaseConfig);
+  firebaseAuth = getAuth(firebaseApp);
+  firebaseDb = getFirestore(firebaseApp);
+  console.log('[Firebase] Initialization complete');
+};
+
+// Pure provider function: Initialize Firebase
+export const initialize = async (platform: 'extension' | 'mobile'): Promise<void> => {
+  await initFirebase(platform);
 };
 
 // Pure provider function: Get Firebase Auth instance
-export const getAuthInstance = async (): Promise<Auth | null> => {
-  await initFirebase();
+export const getAuthInstance = async (platform: 'extension' | 'mobile' = 'extension'): Promise<Auth | null> => {
+  await initFirebase(platform);
   return firebaseAuth;
 };
 
@@ -37,8 +54,8 @@ export const getFirestoreInstance = (): Firestore | null => {
 };
 
 // Pure provider function: Sign in with custom token
-export const signInWithFirebaseToken = async (token: string): Promise<FirebaseUser> => {
-  await initFirebase();
+export const signInWithFirebaseToken = async (token: string, platform: 'extension' | 'mobile' = 'extension'): Promise<FirebaseUser> => {
+  await initFirebase(platform);
   if (!firebaseAuth) {
     throw new AuthenticationError('Firebase auth not initialized');
   }
@@ -52,8 +69,8 @@ export const signInWithFirebaseToken = async (token: string): Promise<FirebaseUs
 };
 
 // Pure provider function: Sign out from Firebase
-export const signOutFromFirebase = async (): Promise<void> => {
-  await initFirebase();
+export const signOutFromFirebase = async (platform: 'extension' | 'mobile' = 'extension'): Promise<void> => {
+  await initFirebase(platform);
   if (!firebaseAuth) {
     throw new AuthenticationError('Firebase auth not initialized');
   }
@@ -66,14 +83,20 @@ export const signOutFromFirebase = async (): Promise<void> => {
 };
 
 // Pure provider function: Check if user is authenticated
-export const isAuthenticated = async (): Promise<boolean> => {
-  await initFirebase();
+export const isAuthenticated = async (platform: 'extension' | 'mobile' = 'extension'): Promise<boolean> => {
+  await initFirebase(platform);
   return firebaseAuth?.currentUser !== null;
 };
 
 // Pure provider function: Get current user
-export const getCurrentUser = async (): Promise<FirebaseUser | null> => {
-  await initFirebase();
+export const getCurrentUser = async (platform: 'extension' | 'mobile' = 'extension'): Promise<FirebaseUser | null> => {
+  await initFirebase(platform);
+  return firebaseAuth?.currentUser || null;
+};
+
+// ✅ NEW: Get current auth state from Firebase
+export const getCurrentAuthState = async (platform: 'extension' | 'mobile' = 'extension'): Promise<FirebaseUser | null> => {
+  await initFirebase(platform);
   return firebaseAuth?.currentUser || null;
 };
 
@@ -83,25 +106,41 @@ export const getCurrentUserId = (): string | null => {
 };
 
 // Pure provider function: Start auth state listeners
-export const startAuthListeners = async (callback: (user: FirebaseUser | null) => Promise<void>): Promise<void> => {
-  await initFirebase();
+export const startAuthListeners = async (callback: (user: FirebaseUser | null) => Promise<void>, platform: 'extension' | 'mobile' = 'extension'): Promise<void> => {
+  await initFirebase(platform);
+  
+  // ✅ NATIVE CHECK: Use actual listener state
+  if (areAuthListenersActive()) {
+    console.log('[Firebase] Auth listeners already active, skipping');
+    return;
+  }
+
   if (!firebaseAuth) {
     throw new AuthenticationError('Firebase auth not initialized');
   }
   
+  console.log('[Firebase] Starting auth listeners...');
   const unsubscribe = onAuthStateChanged(firebaseAuth, async (user) => {
     await callback(user);
   });
   
-  // Store unsubscribe function for later use
-  (startAuthListeners as any)._unsubscribe = unsubscribe;
+  authListenerUnsubscribe = unsubscribe;
+  console.log('[Firebase] Auth listeners started');
 };
 
 // Pure provider function: Stop auth state listeners
 export const stopAuthListeners = (): void => {
-  if ((startAuthListeners as any)._unsubscribe) {
-    (startAuthListeners as any)._unsubscribe();
-    (startAuthListeners as any)._unsubscribe = null;
+  // ✅ NATIVE CHECK: Use actual listener state
+  if (!areAuthListenersActive()) {
+    console.log('[Firebase] Auth listeners not active, skipping stop');
+    return;
+  }
+
+  if (authListenerUnsubscribe) {
+    console.log('[Firebase] Stopping auth listeners...');
+    authListenerUnsubscribe();
+    authListenerUnsubscribe = null;
+    console.log('[Firebase] Auth listeners stopped');
   }
 };
 

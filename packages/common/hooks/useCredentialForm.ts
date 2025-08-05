@@ -11,13 +11,13 @@
 import { useCallback } from 'react';
 import { useFormState } from './useFormState';
 import { useFormValidation } from './useFormValidation';
-import { useItems } from './useItems';
+import { useItemsState } from './useItemsState';
 import { useAppStateStore } from './useAppState';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { ROUTES } from '@common/ui/router/ROUTES';
 import { credentialValidationService } from '@common/core/services/validationService';
 import { credentialFormTransformationService } from '@common/core/services/formTransformationService';
-import { validationFormattingService } from '@common/core/services/formattingService';
+// Removed unused import
 import type { CredentialFormData } from '@common/core/types/items.types';
 
 // Initial form data
@@ -64,7 +64,7 @@ export const useCredentialForm = (): UseCredentialFormReturn => {
   });
 
   const { validateField, validateForm } = useFormValidation(credentialValidationService);
-  const { addItem } = useItems({ user });
+  const { addItem } = useItemsState({ user });
   const { navigateTo } = useAppRouterContext();
 
   // Field validation handler

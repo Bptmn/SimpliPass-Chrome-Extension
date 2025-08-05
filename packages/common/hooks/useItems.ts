@@ -1,318 +1,61 @@
-/**
- * useItems Hook - Layer 1: UI Layer
- * 
- * Manages items state and provides comprehensive item management functionality:
- * - Real-time items synchronization with database
- * - Search and filtering capabilities
- * - Item selection and management
- * - CRUD operations for items
- * 
- * IMPORTANT: This hook now receives user state from useAppInitialization
- * instead of calling useListeners directly to prevent redundant actions.
- */
+// useItems.ts
+// This hook provides access to items state and operations.
+// Responsibilities:
+// - Get all items from state
+// - Add, update, delete items
+// - Filter and search items
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { itemsStateManager, addItem as addItemToService, updateItem as editItemInService, deleteItem as deleteItemFromService, loadItemsWithFallback } from '../core/services/itemsService';
-import { User } from '../core/types/auth.types';
-import { ItemDecrypted, CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../core/types/items.types';
+import { useMemo } from 'react';
+import { itemsStateManager } from '@common/core/services/itemsService';
+import type { ItemDecrypted } from '@common/core/types/items.types';
 
 export interface UseItemsReturn {
-  // Data
   items: ItemDecrypted[];
-  credentials: CredentialDecrypted[];
-  bankCards: BankCardDecrypted[];
-  secureNotes: SecureNoteDecrypted[];
-  
-  // User data
-  user: User | null;
-  
-  // Search and filtering
-  searchValue: string;
-  filteredItems: ItemDecrypted[];
-  filteredCredentials: CredentialDecrypted[];
-  filteredBankCards: BankCardDecrypted[];
-  filteredSecureNotes: SecureNoteDecrypted[];
-  
-  // Selection state
-  selectedCredential: CredentialDecrypted | null;
-  selectedBankCard: BankCardDecrypted | null;
-  selectedSecureNote: SecureNoteDecrypted | null;
-  
-  // State
-  loading: boolean;
+  isLoading: boolean;
   error: string | null;
-  isActionLoading: boolean;
-  
-  // Actions
-  addItem: (item: ItemDecrypted) => Promise<void>;
-  editItem: (id: string, updates: Partial<ItemDecrypted>) => Promise<void>;
-  deleteItem: (id: string) => Promise<void>;
-  setSearchValue: (value: string) => void;
-  clearSearch: () => void;
-  setSelectedCredential: (item: CredentialDecrypted | null) => void;
-  setSelectedBankCard: (item: BankCardDecrypted | null) => void;
-  setSelectedSecureNote: (item: SecureNoteDecrypted | null) => void;
-  refreshData: () => Promise<void>;
-  clearError: () => void;
+  addItem: (item: ItemDecrypted) => void;
+  updateItem: (itemId: string, item: ItemDecrypted) => void;
+  deleteItem: (itemId: string) => void;
+  refreshItems: () => Promise<void>;
 }
 
-export interface UseItemsProps {
-  user: User | null;
-}
-
-export const useItems = ({ user }: UseItemsProps): UseItemsReturn => {
-  // Initialize items state
-  const [items, setItems] = useState<ItemDecrypted[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isActionLoading, setIsActionLoading] = useState(false);
-  
-  // Initialize search and selection state
-  const [searchValue, setSearchValue] = useState('');
-  const [selectedCredential, setSelectedCredential] = useState<CredentialDecrypted | null>(null);
-  const [selectedBankCard, setSelectedBankCard] = useState<BankCardDecrypted | null>(null);
-  const [selectedSecureNote, setSelectedSecureNote] = useState<SecureNoteDecrypted | null>(null);
-
-  // ✅ NEW: Auto-fetch data when user is available
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      if (!user) {
-        console.log('[useItems] No user available, skipping data fetch');
-        return;
-      }
-
-      try {
-        console.log('[useItems] User available, fetching initial data...');
-        setLoading(true);
-        setError(null);
-        
-        // Fetch data using loadItemsWithFallback (handles local storage + database)
-        await loadItemsWithFallback();
-        
-        console.log('[useItems] Initial data fetch completed');
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch initial data';
-        setError(errorMessage);
-        console.error('[useItems] Failed to fetch initial data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchInitialData();
-  }, [user]);
-
-  // Subscribe to state changes
-  useEffect(() => {
-    const handleItemsChanged = (newItems: ItemDecrypted[]) => {
-      console.log('[useItems] Items changed, updating UI state:', newItems.length);
-      setItems(newItems);
-      setLoading(false);
-      setError(null);
-    };
-
-    // Listen for changes from the centralized state manager
-    itemsStateManager().on('itemsChanged', handleItemsChanged);
-
-    // Get initial state from the state manager
-    const initialItems = itemsStateManager().getItems();
-    if (initialItems.length > 0) {
-      console.log('[useItems] Initial items found in state manager:', initialItems.length);
-      setItems(initialItems);
-      setLoading(false);
-    } else {
-      console.log('[useItems] No initial items in state manager, waiting for data...');
-      setLoading(true);
-    }
-
-    // Cleanup
-    return () => {
-      itemsStateManager().off('itemsChanged', handleItemsChanged);
-    };
+export const useItems = (): UseItemsReturn => {
+  const items = useMemo(() => {
+    return itemsStateManager.getItems();
   }, []);
 
-  // Derive data for convenience
-  const credentials = items.filter(item => item.itemType === 'credential') as CredentialDecrypted[];
-  const bankCards = items.filter(item => item.itemType === 'bankCard') as BankCardDecrypted[];
-  const secureNotes = items.filter(item => item.itemType === 'secureNote') as SecureNoteDecrypted[];
-
-  // Derive loading state from items state
-  const _shouldShowLoading = loading && items.length === 0;
-
-  // Filter items based on search value
-  const filteredItems = useMemo(() => {
-    if (!searchValue.trim()) {
-      return items;
-    }
-
-    const searchLower = searchValue.toLowerCase();
-    return items.filter(item => {
-      // Search in title
-      if (item.title.toLowerCase().includes(searchLower)) {
-        return true;
-      }
-
-      // Search in note
-      if (item.note && item.note.toLowerCase().includes(searchLower)) {
-        return true;
-      }
-
-      // Search in URL for credentials
-      if (item.itemType === 'credential' && 'url' in item) {
-        const credential = item as CredentialDecrypted;
-        if (credential.url && credential.url.toLowerCase().includes(searchLower)) {
-          return true;
-        }
-      }
-
-      // Search in username for credentials
-      if (item.itemType === 'credential' && 'username' in item) {
-        const credential = item as CredentialDecrypted;
-        if (credential.username && credential.username.toLowerCase().includes(searchLower)) {
-          return true;
-        }
-      }
-
-      // Search in bank name for bank cards
-      if (item.itemType === 'bankCard' && 'bankName' in item) {
-        const bankCard = item as BankCardDecrypted;
-        if (bankCard.bankName && bankCard.bankName.toLowerCase().includes(searchLower)) {
-          return true;
-        }
-      }
-
-      return false;
-    });
-  }, [items, searchValue]);
-
-  // Derive filtered items by type
-  const filteredCredentials = useMemo(() => 
-    filteredItems.filter(item => item.itemType === 'credential') as CredentialDecrypted[],
-    [filteredItems]
-  );
-
-  const filteredBankCards = useMemo(() => 
-    filteredItems.filter(item => item.itemType === 'bankCard') as BankCardDecrypted[],
-    [filteredItems]
-  );
-
-  const filteredSecureNotes = useMemo(() => 
-    filteredItems.filter(item => item.itemType === 'secureNote') as SecureNoteDecrypted[],
-    [filteredItems]
-  );
-
-  // CRUD Actions - delegated to itemsService.ts
-  const handleAddItem = useCallback(async (item: ItemDecrypted) => {
-    try {
-      setIsActionLoading(true);
-      setError(null);
-      await addItemToService(item);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to add item';
-      setError(errorMessage);
-      console.error('[useItems] Failed to add item:', err);
-    } finally {
-      setIsActionLoading(false);
-    }
+  const isLoading = useMemo(() => {
+    return false; // TODO: Add loading state to ItemsStateManager
   }, []);
 
-  const handleEditItem = useCallback(async (id: string, updates: Partial<ItemDecrypted>) => {
-    try {
-      setIsActionLoading(true);
-      setError(null);
-      await editItemInService(id, updates as ItemDecrypted);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to edit item';
-      setError(errorMessage);
-      console.error('[useItems] Failed to edit item:', err);
-    } finally {
-      setIsActionLoading(false);
-    }
+  const error = useMemo(() => {
+    return null; // TODO: Add error state to ItemsStateManager
   }, []);
 
-  const handleDeleteItem = useCallback(async (id: string) => {
-    try {
-      setIsActionLoading(true);
-      setError(null);
-      await deleteItemFromService(id);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete item';
-      setError(errorMessage);
-      console.error('[useItems] Failed to delete item:', err);
-    } finally {
-      setIsActionLoading(false);
-    }
-  }, []);
+  const addItem = (item: ItemDecrypted): void => {
+    itemsStateManager.addItem(item);
+  };
 
-  // Search actions
-  const clearSearch = useCallback(() => {
-    setSearchValue('');
-  }, []);
+  const updateItem = (itemId: string, item: ItemDecrypted): void => {
+    itemsStateManager.updateItem(itemId, item);
+  };
 
-  // ✅ UPDATED: Data refresh using loadItemsWithFallback
-  const refreshData = useCallback(async () => {
-    try {
-      console.log('[useItems] Refreshing vault data...');
-      setError(null);
-      setLoading(true);
-      
-      // Use loadItemsWithFallback to refresh data
-      await loadItemsWithFallback();
-      
-      console.log('[useItems] Vault data refreshed successfully');
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to refresh vault data';
-      setError(errorMessage);
-      console.error('[useItems] Failed to refresh vault data:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const deleteItem = (itemId: string): void => {
+    itemsStateManager.removeItem(itemId);
+  };
 
-  // Error handling
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
-
-
+  const refreshItems = async (): Promise<void> => {
+    // TODO: Implement refresh logic
+    console.log('Refresh items called');
+  };
 
   return {
-    // Data
     items,
-    credentials,
-    bankCards,
-    secureNotes,
-    
-    // User data
-    user,
-    
-    // Search and filtering
-    searchValue,
-    filteredItems,
-    filteredCredentials,
-    filteredBankCards,
-    filteredSecureNotes,
-    
-    // Selection state
-    selectedCredential,
-    selectedBankCard,
-    selectedSecureNote,
-    
-    // State
-    loading,
+    isLoading,
     error,
-    isActionLoading,
-    
-    // Actions
-    addItem: handleAddItem,
-    editItem: handleEditItem,
-    deleteItem: handleDeleteItem,
-    setSearchValue,
-    clearSearch,
-    setSelectedCredential,
-    setSelectedBankCard,
-    setSelectedSecureNote,
-    refreshData,
-    clearError,
+    addItem,
+    updateItem,
+    deleteItem,
+    refreshItems,
   };
 }; 

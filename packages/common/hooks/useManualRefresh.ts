@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { refreshUserInfo, getCurrentUserAsync } from '@common/core/services/userService';
-import { fetchAndStoreItems } from '@common/core/services/itemsService';
+import { itemsService } from '@common/core/services/itemsService';
 import { useAppStateStore } from './useAppState';
 
 export const useManualRefresh = () => {
@@ -36,7 +36,7 @@ export const useManualRefresh = () => {
       }
       
       // Step 3: Refresh items
-      await fetchAndStoreItems(userId);
+      await itemsService.fetchAndStoreItems(userId);
       
       console.log('[useManualRefresh] All data refreshed successfully');
       

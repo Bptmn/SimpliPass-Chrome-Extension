@@ -8,7 +8,7 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import type { BankCardDecrypted } from '@common/core/types/items.types';
-import { formatExpirationDate } from '@common/utils';
+import { formatExpirationDateFromExp } from '@common/utils';
 import { LazyCredentialIcon } from './LazyCredentialIcon';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
@@ -106,7 +106,7 @@ const ItemBankCard: React.FC<ItemBankCardProps> = ({ cred, onPress }) => {
       <View style={styles.bankCardBottom}>
         <Text style={styles.bankCardOwner}>{cred.owner}</Text>
         <Text style={styles.bankCardExpiry}>
-          {formatExpirationDate(cred.expirationDate)}
+          {formatExpirationDateFromExp(cred.expirationDate)}
         </Text>
       </View>
     </Pressable>

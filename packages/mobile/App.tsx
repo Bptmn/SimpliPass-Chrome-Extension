@@ -1,12 +1,11 @@
 import React from 'react';
-import { View, Text } from 'react-native';
 import { AppRouterProvider, AppRouterView, useAppRouter } from '@common/ui/router';
 import { useAppInitialization } from '@common/hooks/useAppInitialization';
 import { useAppStateStore } from '@common/hooks/useAppState';
 
 export default function App() {
   // Step 1: Initialize app
-  useAppInitialization();
+  useAppInitialization({ platform: 'mobile' });
 
   // Step 2: Get app state from Zustand store
   const appState = useAppStateStore();

@@ -14,7 +14,7 @@ import { spacing, radius, getPageStyles } from '@ui/design/layout';
 import { typography } from '@ui/design/typography';
 import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
-import { useSecureNoteOperations } from '@common/hooks/useSecureNoteOperations'; // ✅ Use focused hook
+import { useItemsCRUD } from '@common/hooks/useItemsCRUD'; // ✅ Use focused hook
 
 interface SecureNoteDetailsPageProps {
   note: SecureNoteDecrypted;
@@ -34,7 +34,7 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   // ✅ Use focused hook for business operations
-  const { deleteSecureNote, isLoading, error } = useSecureNoteOperations();
+  const { deleteItem, isLoading, error } = useItemsCRUD();
 
   const handleEdit = () => {
     router.navigateTo(ROUTES.MODIFY_SECURENOTE, { secureNote: note });
@@ -48,7 +48,7 @@ export const SecureNoteDetailsPage: React.FC<SecureNoteDetailsPageProps> = ({
     setShowDeleteConfirm(false);
     try {
       // ✅ Hook calls service for business logic
-      await deleteSecureNote(note.id);
+      await deleteItem(note.id);
       showToast('Note supprimée avec succès');
       onBack();
     } catch (e) {

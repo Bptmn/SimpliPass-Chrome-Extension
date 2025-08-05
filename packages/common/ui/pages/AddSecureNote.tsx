@@ -10,11 +10,11 @@ import { ColorSelector } from '@ui/components/ColorSelector';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { SecureNoteDecrypted } from '@common/core/types/items.types';
-import { generateItemKey } from '@common/utils/crypto';
+import { generateItemKey } from '@common/core/libraries/crypto';
 import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { CATEGORIES } from '@common/core/types/categories.types';
-import { useItemOperations } from '@common/hooks/useItemOperations'; // ✅ Use focused hook
+import { useItemsCRUD } from '@common/hooks/useItemsCRUD'; // ✅ Use focused hook
 
 interface AddSecureNoteProps {
   onCancel?: () => void;
@@ -28,7 +28,7 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
   const { user } = useUser();
   
   // ✅ Use focused hook for business operations
-  const { addSecureNote, isLoading, error } = useItemOperations();
+  const { addSecureNote, isLoading, error } = useItemsCRUD();
   
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');

@@ -1,6 +1,6 @@
 // packages/common/core/services/secretsService.ts
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
-import { deriveKey } from '../../utils/crypto';
+import { CryptographyError, StorageError, AuthenticationError } from '../types/errors.types';
 
 export interface ISecretsService {
   getUserSecretKey(): Promise<string | null>;
@@ -52,7 +52,8 @@ export class SecretsService implements ISecretsService {
   constructor(
     private storage: IPlatformStorageAdapter,
   ) {
-    // Set the singleton instance
+    // Set the singleton instance for global access
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     secretsServiceInstance = this;
   }
 
@@ -75,7 +76,7 @@ export class SecretsService implements ISecretsService {
       console.log('[Secret] User secret key stored successfully');
     } catch (error) {
       console.error('[Secret] Failed to store user secret key:', error);
-      throw error;
+      throw new StorageError('Failed to store user secret key', error as Error);
     }
   }
 
@@ -85,7 +86,7 @@ export class SecretsService implements ISecretsService {
       console.log('[Secret] User secret key deleted successfully');
     } catch (error) {
       console.error('[Secret] Failed to delete user secret key:', error);
-      throw error;
+      throw new StorageError('Failed to delete user secret key', error as Error);
     }
   }
 
@@ -99,15 +100,41 @@ export class SecretsService implements ISecretsService {
   }
 
   public async deriveAndStoreUserSecretKey(password: string): Promise<void> {
-    // Import auth library directly to avoid circular dependency
-    const { fetchUserSaltCognito } = await import('../libraries/auth/cognito');
-    const userSalt = await fetchUserSaltCognito();
-    const userSecretKey = await deriveKey(password, userSalt);
-    await this.storeUserSecretKey(userSecretKey);
-    
-    // Step 4: Update global state to reflect that user secret key now exists
-    const { useAppStateStore } = await import('../../hooks/useAppState');
-    useAppStateStore.getState().setSecretKey(true);
+    try {
+      // ✅ Use adapter instead of direct library calls
+      // TODO: Create a crypto adapter to abstract this dependency
+      const { deriveKey } = await import('../libraries/crypto');
+      const { fetchUserSaltCognito } = await import('../libraries/auth/cognito');
+      
+      const userSalt = await fetchUserSaltCognito();
+      const userSecretKey = await deriveKey(password, userSalt);
+      await this.storeUserSecretKey(userSecretKey);
+      
+      // Step 4: Update global state to reflect that user secret key now exists
+      const { useAppStateStore } = await import('../../hooks/useAppState');
+      useAppStateStore.getState().setSecretKey(true);
+    } catch (error) {
+      console.error('[Secret] Failed to derive and store user secret key:', error);
+      
+      // ✅ Proper error categorization for UI layer
+      if (error instanceof CryptographyError || error instanceof StorageError || error instanceof AuthenticationError) {
+        throw error;
+      }
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Invalid user secret key') || error.message.includes('Invalid key')) {
+          throw new CryptographyError('Invalid user secret key', error);
+        }
+        if (error.message.includes('salt') || error.message.includes('Salt')) {
+          throw new AuthenticationError('Failed to fetch user salt', error);
+        }
+        if (error.message.includes('store') || error.message.includes('storage')) {
+          throw new StorageError('Failed to store user secret key', error);
+        }
+      }
+      
+      throw new CryptographyError('Failed to derive and store user secret key', error as Error);
+    }
   }
 }
 

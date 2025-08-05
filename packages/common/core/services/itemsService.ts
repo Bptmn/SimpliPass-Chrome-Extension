@@ -1,12 +1,12 @@
 // packages/common/core/services/itemsService.ts
 import { EventEmitter } from 'events';
-import { CryptographyError, NetworkError } from '../types/errors.types';
+import { CryptographyError, NetworkError, AuthenticationError, ItemError } from '../types/errors.types';
 import { ItemEncrypted, ItemDecrypted } from '../types/items.types';
 import { ISecretsService } from './secretsService';
 import { ICryptoService } from './cryptoService';
 import { IDatabaseAdapter } from '../adapters/database.adapter';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
-import { IAuthService } from '../libraries/auth/firebase';
+import { IAuthService } from './authService';
 import { IVaultService } from './vaultService';
 
 export interface IItemsService {
@@ -15,60 +15,12 @@ export interface IItemsService {
     addItem(item: ItemDecrypted): Promise<void>;
     updateItem(itemId: string, updatedItem: ItemDecrypted): Promise<void>;
     deleteItem(itemId: string): Promise<void>;
+    // ✅ NEW: External change handling
+    handleExternalDatabaseChange(encryptedItems: ItemEncrypted[]): Promise<void>;
+    handleExternalItemAdded(encryptedItem: ItemEncrypted): Promise<void>;
+    handleExternalItemUpdated(itemId: string, encryptedItem: ItemEncrypted): Promise<void>;
+    handleExternalItemDeleted(itemId: string): Promise<void>;
 }
-
-// Create singleton instances
-let itemsServiceInstance: ItemsService | null = null;
-let itemsStateManagerInstance: ItemsStateManager | null = null;
-
-export const addItem = async (item: ItemDecrypted): Promise<void> => {
-  if (!itemsServiceInstance) {
-    throw new Error('ItemsService not initialized');
-  }
-  return itemsServiceInstance.addItem(item);
-};
-
-export const updateItem = async (itemId: string, updatedItem: ItemDecrypted): Promise<void> => {
-  if (!itemsServiceInstance) {
-    throw new Error('ItemsService not initialized');
-  }
-  return itemsServiceInstance.updateItem(itemId, updatedItem);
-};
-
-export const deleteItem = async (itemId: string): Promise<void> => {
-  if (!itemsServiceInstance) {
-    throw new Error('ItemsService not initialized');
-  }
-  return itemsServiceInstance.deleteItem(itemId);
-};
-
-export const getAllItems = async (): Promise<ItemDecrypted[]> => {
-  if (!itemsStateManagerInstance) {
-    throw new Error('ItemsStateManager not initialized');
-  }
-  return itemsStateManagerInstance.getItems();
-};
-
-export const fetchAndStoreItems = async (currentUserId: string): Promise<ItemDecrypted[]> => {
-  if (!itemsServiceInstance) {
-    throw new Error('ItemsService not initialized');
-  }
-  return itemsServiceInstance.fetchAndStoreItems(currentUserId);
-};
-
-export const loadItemsWithFallback = async (): Promise<ItemDecrypted[]> => {
-  if (!itemsServiceInstance) {
-    throw new Error('ItemsService not initialized');
-  }
-  return itemsServiceInstance.loadItemsWithFallback();
-};
-
-export const itemsStateManager = (): ItemsStateManager => {
-  if (!itemsStateManagerInstance) {
-    throw new Error('ItemsStateManager not initialized');
-  }
-  return itemsStateManagerInstance;
-};
 
 // State management for UI updates
 export class ItemsStateManager extends EventEmitter {
@@ -76,7 +28,6 @@ export class ItemsStateManager extends EventEmitter {
 
   constructor() {
     super();
-    itemsStateManagerInstance = this;
   }
 
   setItems(items: ItemDecrypted[]) {
@@ -116,16 +67,41 @@ export class ItemsService implements IItemsService {
     private storage: IPlatformStorageAdapter,
     private authService: IAuthService,
     private vaultService: IVaultService,
-  ) {
-    // Set the singleton instance
-    itemsServiceInstance = this;
+  ) {}
+
+  public getStateManager(): ItemsStateManager {
+    return this.itemsStateManager;
+  }
+
+  // ✅ Helper method for common error handling
+  private handleServiceError(error: unknown, operation: string): never {
+    console.error(`[ItemsService] ${operation} failed:`, error);
+    
+    if (error instanceof CryptographyError || error instanceof NetworkError || 
+        error instanceof AuthenticationError || error instanceof ItemError) {
+      throw error;
+    }
+    
+    if (error instanceof Error) {
+      if (error.message.includes('No user secret key') || error.message.includes('not authenticated')) {
+        throw new AuthenticationError('User not authenticated', error);
+      }
+      if (error.message.includes('Network') || error.message.includes('timeout')) {
+        throw new NetworkError('Network error during item operation', error);
+      }
+      if (error.message.includes('encrypt') || error.message.includes('decrypt')) {
+        throw new CryptographyError('Cryptography error during item operation', error);
+      }
+    }
+    
+    throw new ItemError(`Failed to ${operation}`, error as Error);
   }
 
   public async fetchAndStoreItems(currentUserId: string): Promise<ItemDecrypted[]> {
     try {
       const userSecretKey = await this.secretsService.getUserSecretKey();
       if (!userSecretKey) {
-        throw new Error('No user secret key found');
+        throw new AuthenticationError('No user secret key found');
       }
 
       const encryptedItems = await this.db.getCollection<ItemEncrypted>(`users/${currentUserId}/my_items`);
@@ -152,8 +128,7 @@ export class ItemsService implements IItemsService {
       this.itemsStateManager.setItems(decryptedItems);
       return decryptedItems;
     } catch (error) {
-      console.error('[Items] Failed to fetch and store items:', error);
-      throw error;
+      this.handleServiceError(error, 'fetch and store items');
     }
   }
   
@@ -167,12 +142,11 @@ export class ItemsService implements IItemsService {
       }
       
       const currentUserId = this.authService.getCurrentUserId();
-      if (!currentUserId) throw new Error('User not authenticated');
+      if (!currentUserId) throw new AuthenticationError('User not authenticated');
       return await this.fetchAndStoreItems(currentUserId);
       
     } catch (error) {
-      console.error('[Items] Failed to load items with fallback:', error);
-      throw error;
+      this.handleServiceError(error, 'load items with fallback');
     }
   }
 
@@ -180,25 +154,28 @@ export class ItemsService implements IItemsService {
     try {
       const userSecretKey = await this.secretsService.getUserSecretKey();
       if (!userSecretKey) {
-        throw new Error('User not authenticated');
+        throw new AuthenticationError('User not authenticated');
       }
 
       const userId = this.authService.getCurrentUserId();
-      if (!userId) throw new Error('User not authenticated');
+      if (!userId) throw new AuthenticationError('User not authenticated');
       const collectionPath = `users/${userId}/my_items`;
 
       const databaseId = this.db.generateItemDatabaseId();
       const completeItem = { ...item, id: databaseId };
       const encryptedItem = await this.cryptoService.encryptItem(userSecretKey, completeItem);
       
+      // ✅ Update all 3 sources for internal changes
       await this.db.addDocument(collectionPath, { ...encryptedItem, id: databaseId });
+      await this.storage.updateVaultInSecureLocalStorage({
+        userId,
+        items: [...this.itemsStateManager.getItems(), completeItem],
+        lastModified: new Date(),
+      });
       this.itemsStateManager.addItem(completeItem);
 
     } catch (error) {
-      if (error instanceof NetworkError) {
-        throw new NetworkError('Failed to add item to database', error);
-      }
-      throw new CryptographyError('Failed to encrypt item', error as Error);
+      this.handleServiceError(error, 'add item');
     }
   }
   
@@ -206,57 +183,162 @@ export class ItemsService implements IItemsService {
     try {
       const userSecretKey = await this.secretsService.getUserSecretKey();
       if (!userSecretKey) {
-        throw new Error('User not authenticated');
+        throw new AuthenticationError('User not authenticated');
       }
       
       const encryptedUpdates = await this.cryptoService.encryptItem(userSecretKey, updatedItem);
 
       const realUserId = this.authService.getCurrentUserId();
-      if (!realUserId) throw new Error('User not authenticated');
+      if (!realUserId) throw new AuthenticationError('User not authenticated');
       const collectionPath = `users/${realUserId}/my_items`;
 
+      // ✅ Update all 3 sources for internal changes
       await this.db.updateDocument(`${collectionPath}/${itemId}`, encryptedUpdates);
+      await this.storage.updateVaultInSecureLocalStorage({
+        userId: realUserId,
+        items: this.itemsStateManager.getItems().map(item => item.id === itemId ? updatedItem : item),
+        lastModified: new Date(),
+      });
       this.itemsStateManager.updateItem(itemId, updatedItem);
       
     } catch (error) {
-      if (error instanceof NetworkError) {
-        throw new NetworkError('Failed to update item in database', error);
-      }
-      throw new CryptographyError('Failed to encrypt item updates', error as Error);
+      this.handleServiceError(error, 'update item');
     }
   }
 
   public async deleteItem(itemId: string): Promise<void> {
     try {
       const realUserId = this.authService.getCurrentUserId();
-      if (!realUserId) throw new Error('User not authenticated');
+      if (!realUserId) throw new AuthenticationError('User not authenticated');
       const collectionPath = `users/${realUserId}/my_items`;
 
+      // ✅ Update all 3 sources for internal changes
       await this.db.deleteDocument(`${collectionPath}/${itemId}`);
+      await this.storage.updateVaultInSecureLocalStorage({
+        userId: realUserId,
+        items: this.itemsStateManager.getItems().filter(item => item.id !== itemId),
+        lastModified: new Date(),
+      });
       this.itemsStateManager.removeItem(itemId);
       
     } catch (error) {
-      throw new NetworkError('Failed to delete item from database', error as Error);
+      this.handleServiceError(error, 'delete item');
+    }
+  }
+
+  // External change handling
+  public async handleExternalDatabaseChange(encryptedItems: ItemEncrypted[]): Promise<void> {
+    try {
+      const userSecretKey = await this.secretsService.getUserSecretKey();
+      if (!userSecretKey) {
+        throw new AuthenticationError('No user secret key found for external change');
+      }
+
+      const decryptedItems = await this.cryptoService.decryptAllItems(userSecretKey, encryptedItems);
+      this.itemsStateManager.setItems(decryptedItems);
+      await this.storage.updateVaultInSecureLocalStorage({
+        userId: this.authService.getCurrentUserId() || 'unknown',
+        items: decryptedItems,
+        lastModified: new Date(),
+      });
+    } catch (error) {
+      console.error('[ItemsService] Failed to handle external database change:', error);
+      throw new ItemError('Failed to handle external database change', error as Error);
+    }
+  }
+
+  public async handleExternalItemAdded(encryptedItem: ItemEncrypted): Promise<void> {
+    try {
+      const userSecretKey = await this.secretsService.getUserSecretKey();
+      if (!userSecretKey) {
+        throw new AuthenticationError('No user secret key found for external change');
+      }
+
+      const decryptedItem = await this.cryptoService.decryptItem(userSecretKey, encryptedItem);
+      if (!decryptedItem) {
+        throw new ItemError('Failed to decrypt external item');
+      }
+      
+      this.itemsStateManager.addItem(decryptedItem);
+      await this.storage.updateVaultInSecureLocalStorage({
+        userId: this.authService.getCurrentUserId() || 'unknown',
+        items: [...this.itemsStateManager.getItems(), decryptedItem],
+        lastModified: new Date(),
+      });
+    } catch (error) {
+      console.error('[ItemsService] Failed to handle external item added:', error);
+      throw new ItemError('Failed to handle external item added', error as Error);
+    }
+  }
+
+  public async handleExternalItemUpdated(itemId: string, encryptedItem: ItemEncrypted): Promise<void> {
+    try {
+      const userSecretKey = await this.secretsService.getUserSecretKey();
+      if (!userSecretKey) {
+        throw new AuthenticationError('No user secret key found for external change');
+      }
+
+      const decryptedItem = await this.cryptoService.decryptItem(userSecretKey, encryptedItem);
+      if (!decryptedItem) {
+        throw new ItemError('Failed to decrypt external item');
+      }
+      
+      this.itemsStateManager.updateItem(itemId, decryptedItem);
+      await this.storage.updateVaultInSecureLocalStorage({
+        userId: this.authService.getCurrentUserId() || 'unknown',
+        items: this.itemsStateManager.getItems().map(item => item.id === itemId ? decryptedItem : item),
+        lastModified: new Date(),
+      });
+    } catch (error) {
+      console.error('[ItemsService] Failed to handle external item updated:', error);
+      throw new ItemError('Failed to handle external item updated', error as Error);
+    }
+  }
+
+  public async handleExternalItemDeleted(itemId: string): Promise<void> {
+    try {
+      this.itemsStateManager.removeItem(itemId);
+      await this.storage.updateVaultInSecureLocalStorage({
+        userId: this.authService.getCurrentUserId() || 'unknown',
+        items: this.itemsStateManager.getItems(),
+        lastModified: new Date(),
+      });
+    } catch (error) {
+      console.error('[ItemsService] Failed to handle external item deleted:', error);
+      throw new ItemError('Failed to handle external item deleted', error as Error);
     }
   }
 }
 
 // Import actual adapters and services
-import { auth } from '../adapters/auth.adapter';
 import { db } from '../adapters/database.adapter';
 import { storage } from '../adapters/platform.storage.adapter';
 import { authService } from './authService';
 import { vaultService } from './vaultService';
 import { secretsService } from './secretsService';
-import { cryptoService } from './cryptoService';
+import { CryptoService } from './cryptoService';
 
-// Export singleton instance
+// Create service instances
+const cryptoServiceInstance = new CryptoService();
+
+// Export service instance for dependency injection
 export const itemsService = new ItemsService(
   new ItemsStateManager(),
   secretsService,
-  cryptoService,
+  cryptoServiceInstance,
   db,
   storage,
   authService,
   vaultService
 );
+
+// Export state manager for UI components that need direct access
+export const itemsStateManager = itemsService.getStateManager();
+
+// Export individual methods for backward compatibility
+export const loadItemsWithFallback = () => itemsService.loadItemsWithFallback();
+export const addItem = (item: ItemDecrypted) => itemsService.addItem(item);
+export const updateItem = (itemId: string, updatedItem: ItemDecrypted) => itemsService.updateItem(itemId, updatedItem);
+export const deleteItem = (itemId: string) => itemsService.deleteItem(itemId);
+export const getAllItems = () => itemsService.getStateManager().getItems();
+export const fetchAndStoreItems = (currentUserId: string) => itemsService.fetchAndStoreItems(currentUserId);

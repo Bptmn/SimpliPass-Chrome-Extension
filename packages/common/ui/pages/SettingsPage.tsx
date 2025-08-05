@@ -2,7 +2,7 @@
 // This page displays the user's profile and settings.
 // It also allows the user to logout.
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { Icon } from '@ui/components/Icon';
@@ -15,7 +15,7 @@ import { ModeSwitch } from '@ui/components/ModeSwitch';
 import { useThemeMode } from '@common/ui/design/theme';
 import { getColors } from '@ui/design/colors';
 import { Toast } from '@ui/components/Toast';
-import type { User } from '@common/core/types/auth.types';
+// Removed unused import
 import { useSettings } from '@common/hooks/useSettings';
 
 // MenuList component to avoid defining components during render
@@ -88,12 +88,9 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   // Use the new useSettings hook
   const {
     user,
-    userLoading,
     error: settingsError,
     loadCurrentUser,
     signOut,
-    stopDatabaseListeners,
-    stopAuthListeners,
   } = useSettings();
 
   // Load user data on mount

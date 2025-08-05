@@ -5,20 +5,88 @@ import { CognitoUser } from '../../types/auth.types';
 import { getCognitoConfig } from '@common/config/platform';
 
 export class CognitoAuth {
-  private isInitialized = false;
+  private static instance: CognitoAuth | null = null;
 
-  private async initCognito(): Promise<void> {
-    if (this.isInitialized) {
+  // ✅ NEW: Singleton getInstance
+  static getInstance(): CognitoAuth {
+    if (!this.instance) {
+      this.instance = new CognitoAuth();
+    }
+    return this.instance;
+  }
+
+  // ✅ NEW: Check if Cognito is actually initialized using Amplify
+  public async isCognitoInitialized(): Promise<boolean> {
+    try {
+      // Check if Amplify is configured with UserPool
+      const { Amplify } = await import('aws-amplify');
+      const config = Amplify.getConfig();
+      
+      // Check if Auth.Cognito configuration exists
+      if (!config.Auth?.Cognito) {
+        console.log('[Cognito] UserPool not configured');
+        return false;
+      }
+      
+      // Check if required UserPool properties are set
+      const cognitoConfig = config.Auth.Cognito;
+      if (!cognitoConfig.userPoolId || !cognitoConfig.userPoolClientId) {
+        console.log('[Cognito] UserPool configuration incomplete');
+        return false;
+      }
+      
+      console.log('[Cognito] UserPool properly configured');
+      return true;
+    } catch (_error) {
+      console.log('[Cognito] Error checking initialization:', _error);
+      return false;
+    }
+  }
+
+  // ✅ NEW: Check if user is authenticated using native Cognito
+  public async isUserAuthenticated(): Promise<boolean> {
+    try {
+      // First check if Cognito is properly initialized
+      const isInitialized = await this.isCognitoInitialized();
+      if (!isInitialized) {
+        console.log('[Cognito] Not initialized, user not authenticated');
+        return false;
+      }
+      
+      // Try to get current authenticated user
+      const { getCurrentUser } = await import('aws-amplify/auth');
+      const user = await getCurrentUser();
+      
+      if (user) {
+        console.log('[Cognito] User authenticated:', user.username);
+        return true;
+      }
+      
+      console.log('[Cognito] No authenticated user found');
+      return false;
+    } catch (_error) {
+      console.log('[Cognito] Error checking authentication:', _error);
+      return false;
+    }
+  }
+
+  public async initCognito(): Promise<void> {
+    // ✅ NATIVE CHECK: Use actual Cognito state
+    const isInitialized = await this.isCognitoInitialized();
+    if (isInitialized) {
+      console.log('[Cognito] Already initialized, skipping');
       return;
     }
+
+    console.log('[Cognito] Initializing Cognito...');
     try {
-      const cognitoConfig = await getCognitoConfig();
+      const cognitoConfig = await getCognitoConfig('extension');
       Amplify.configure({
         Auth: {
           Cognito: cognitoConfig,
         },
       });
-      this.isInitialized = true;
+      console.log('[Cognito] Initialization complete');
     } catch (error) {
       console.error('[Cognito] Failed to initialize:', error);
       throw new NetworkError('Failed to initialize Cognito', error as Error);
@@ -112,31 +180,44 @@ export class CognitoAuth {
 }
 
 // Standalone function exports for adapter compatibility
+
+// Pure provider function: Initialize Cognito
+export const initCognito = async (_platform?: 'extension' | 'mobile'): Promise<void> => {
+  const cognitoAuth = CognitoAuth.getInstance(); // ✅ Use singleton
+  await cognitoAuth.initCognito();
+};
+
+// ✅ NEW: Check if Cognito is initialized
+export const isCognitoInitialized = async (): Promise<boolean> => {
+  const cognitoAuth = CognitoAuth.getInstance();
+  return await cognitoAuth.isCognitoInitialized();
+};
+
 export const loginWithCognito = async (email: string, password: string): Promise<CognitoUser> => {
-  const cognitoAuth = new CognitoAuth();
+  const cognitoAuth = CognitoAuth.getInstance(); // ✅ Use singleton
   return cognitoAuth.loginWithCognito(email, password);
 };
 
 // Pure provider function that returns user ID string for adapter compatibility
 export const loginWithCognitoAndGetUserId = async (email: string, password: string): Promise<string> => {
-  const cognitoAuth = new CognitoAuth();
+  const cognitoAuth = CognitoAuth.getInstance(); // ✅ Use singleton
   const cognitoUser = await cognitoAuth.loginWithCognito(email, password);
   return cognitoUser.username || email; // Return username or email as user ID
 };
 
 export const fetchUserSaltCognito = async (): Promise<string> => {
-  const cognitoAuth = new CognitoAuth();
+  const cognitoAuth = CognitoAuth.getInstance(); // ✅ Use singleton
   return cognitoAuth.fetchUserSaltCognito();
 };
 
 export const signOutCognito = async (): Promise<void> => {
-  const cognitoAuth = new CognitoAuth();
+  const cognitoAuth = CognitoAuth.getInstance(); // ✅ Use singleton
   return cognitoAuth.signOutCognito();
 };
 
 // Pure provider function to sign out from all providers
 export const signOutFromAllProviders = async (): Promise<void> => {
-  const cognitoAuth = new CognitoAuth();
+  const cognitoAuth = CognitoAuth.getInstance(); // ✅ Use singleton
   await cognitoAuth.signOutCognito();
   
   // Also sign out from Firebase
@@ -146,6 +227,6 @@ export const signOutFromAllProviders = async (): Promise<void> => {
 
 // Pure provider function to get Cognito tokens and Firebase token
 export const getCognitoTokensAndFirebaseToken = async (): Promise<{ idToken: string; firebaseToken: string }> => {
-  const cognitoAuth = new CognitoAuth();
+  const cognitoAuth = CognitoAuth.getInstance(); // ✅ Use singleton
   return cognitoAuth.getCognitoTokensAndFirebaseToken();
 };

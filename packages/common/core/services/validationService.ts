@@ -1,10 +1,5 @@
 // validationService.ts
-// This service contains all business logic for form validation across the application.
-// Responsibilities:
-// - Card validation (number, expiration date, CVV)
-// - Credential validation (email, password, URL)
-// - Secure note validation
-// - Common validation utilities
+// Business logic and validation functions moved from utils/validation.utils.ts
 
 import type { ValidationResult } from '@common/core/types/errors.types';
 

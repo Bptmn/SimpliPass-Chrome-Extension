@@ -57,7 +57,4 @@ export function getCardStyles(mode: 'light' | 'dark') {
       padding: spacing.sm,
     },
   });
-}
-
-// Default export for backward compatibility (light mode)
-export const cardStyles = getCardStyles('light'); 
+} 

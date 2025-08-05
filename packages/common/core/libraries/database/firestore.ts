@@ -13,9 +13,36 @@ import {
   DocumentReference,
   updateDoc,
   onSnapshot,
-  Unsubscribe
+  Unsubscribe,
+  Timestamp
 } from 'firebase/firestore';
 import { firestore } from '../auth/firebase';
+
+// ✅ Provider-agnostic timestamp conversion
+const convertFirestoreTimestamps = (data: any): any => {
+  if (!data || typeof data !== 'object') {
+    return data;
+  }
+  
+  const converted: any = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (value instanceof Timestamp) {
+      // Convert Firestore Timestamp to standard Date
+      converted[key] = value.toDate();
+    } else if (Array.isArray(value)) {
+      // Handle arrays recursively
+      converted[key] = value.map(item => convertFirestoreTimestamps(item));
+    } else if (value && typeof value === 'object') {
+      // Handle nested objects recursively
+      converted[key] = convertFirestoreTimestamps(value);
+    } else {
+      // Keep other values as-is
+      converted[key] = value;
+    }
+  }
+  
+  return converted;
+};
 
 // Pure provider function: Get collection
 export const getCollection = async <T extends DocumentData = DocumentData>(
@@ -24,7 +51,11 @@ export const getCollection = async <T extends DocumentData = DocumentData>(
 ): Promise<T[]> => {
   const colRef = collection(firestore, collectionPath);
   const snapshot: QuerySnapshot = await getDocs(colRef);
-  return snapshot.docs.map(docSnapshot => ({ id: docSnapshot.id, ...docSnapshot.data() } as unknown as T));
+  return snapshot.docs.map(docSnapshot => {
+    const data = { id: docSnapshot.id, ...docSnapshot.data() };
+    // ✅ Convert timestamps to standard dates
+    return convertFirestoreTimestamps(data) as unknown as T;
+  });
 };
 
 // Pure provider function: Get document
@@ -35,7 +66,9 @@ export const getDocument = async <T extends DocumentData = DocumentData>(
   const docRef = doc(firestore, docPath);
   const snapshot: DocumentSnapshot = await getDoc(docRef);
   if (!snapshot.exists()) return null;
-  return { id: snapshot.id, ...snapshot.data() } as unknown as T;
+  const data = { id: snapshot.id, ...snapshot.data() };
+  // ✅ Convert timestamps to standard dates
+  return convertFirestoreTimestamps(data) as unknown as T;
 };
 
 // Pure provider function: Add document
@@ -99,12 +132,18 @@ export const listenToDocument = (
     docRef,
     (snapshot) => {
       if (snapshot.exists()) {
-        callback({ id: snapshot.id, ...snapshot.data() });
+        const data = { id: snapshot.id, ...snapshot.data() };
+        // ✅ Convert timestamps to standard dates
+        callback(convertFirestoreTimestamps(data));
       } else {
         callback(null);
       }
     },
-    errorCallback
+    (error) => {
+      if (errorCallback) {
+        errorCallback(error);
+      }
+    }
   );
 };
 
@@ -119,10 +158,15 @@ export const listenToCollection = (
   return onSnapshot(
     colRef,
     (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      callback(data);
+      const data = snapshot.docs.map(docSnapshot => ({ id: docSnapshot.id, ...docSnapshot.data() }));
+      // ✅ Convert timestamps to standard dates
+      callback(convertFirestoreTimestamps(data));
     },
-    errorCallback
+    (error) => {
+      if (errorCallback) {
+        errorCallback(error);
+      }
+    }
   );
 };
 // Wrapper functions for adapter compatibility (pure provider functions)
@@ -176,12 +220,12 @@ export const deleteDocumentWrapper = async (
 // Listener management (business logic in library)
 let userListener: Unsubscribe | null = null;
 let itemsListener: Unsubscribe | null = null;
-let listenersState: { isListening: boolean; error: string | null } = {
+const listenersState: { isListening: boolean; error: string | null } = {
   isListening: false,
   error: null
 };
 
-export const startListenersWrapper = async (userId: string, callbacks: { onUserUpdate?: (userData: any) => Promise<void>; onItemsUpdate?: () => Promise<void> }): Promise<void> => {
+export const startListenersWrapper = async (userId: string, callbacks: { onUserUpdate?: (userData: any) => Promise<void>; onItemsUpdate?: (encryptedItems: any[]) => Promise<void> }): Promise<void> => {
   try {
     if (!firestore) {
       throw new Error('Firestore not initialized');
@@ -212,9 +256,9 @@ export const startListenersWrapper = async (userId: string, callbacks: { onUserU
     itemsListener = listenToCollection(
       firestore,
       `users/${userId}/my_items`,
-      async () => {
+      async (encryptedItems) => {
         if (callbacks.onItemsUpdate) {
-          await callbacks.onItemsUpdate();
+          await callbacks.onItemsUpdate(encryptedItems);
         }
       },
       (error) => {
