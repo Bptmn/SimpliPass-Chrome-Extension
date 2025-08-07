@@ -3,6 +3,10 @@
  * Handles popover creation, positioning, and communication
  */
 
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { PopoverCredentialPicker } from '../PopoverCredentialPicker';
+
 export interface PopoverOptions {
   position?: 'top' | 'bottom' | 'left' | 'right';
   offset?: { x: number; y: number };
@@ -69,7 +73,7 @@ export class PopoverManager {
   }
 
   /**
-   * Create and show a credential picker popover
+   * Create and show a credential picker popover using PopoverCredentialPicker component
    */
   showCredentialPicker(
     targetField: HTMLElement, 
@@ -79,56 +83,56 @@ export class PopoverManager {
   ): void {
     this.removeCurrentPopover();
     
+    // Create container for React component
     const popover = document.createElement('div');
     popover.className = 'simplipass-credential-picker-popover';
-    
-    const credentialsList = credentials.length > 0 
-      ? credentials.map(cred => `
-          <div class="credential-item" data-credential-id="${cred.id}">
-            <div class="credential-title">${cred.title}</div>
-            <div class="credential-username">${cred.username}</div>
-            ${cred.url ? `<div class="credential-url">${cred.url}</div>` : ''}
-          </div>
-        `).join('')
-      : '<div class="no-credentials"><div class="message">No matching credentials found</div></div>';
-    
-    popover.innerHTML = `
-      <div class="credential-picker">
-        <div class="title">SimpliPass</div>
-        <div class="subtitle">Select a credential to autofill:</div>
-        <div class="credentials-list">
-          ${credentialsList}
-        </div>
-        <div class="buttons">
-          <button id="cancel-btn" class="btn btn-cancel">Cancel</button>
-        </div>
-      </div>
+    popover.style.cssText = `
+      position: absolute;
+      z-index: 10000;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      padding: 16px;
+      width: 320px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     `;
-
-    // Add styles
-    this.addPopoverStyles(popover);
     
-    // Add event listeners
-    popover.querySelector('#cancel-btn')?.addEventListener('click', () => {
-      this.removeCurrentPopover();
-      onCancel();
-    });
-    
-    // Add credential selection listeners
-    popover.querySelectorAll('.credential-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const credentialId = item.getAttribute('data-credential-id');
-        const credential = credentials.find(c => c.id === credentialId);
-        if (credential) {
-          this.removeCurrentPopover();
-          onSelectCredential(credential);
-        }
-      });
-    });
-    
-    // Position and show
+    // Position the popover
     this.positionPopover(popover, targetField);
     document.body.appendChild(popover);
+    
+    // Convert credentials to the format expected by PopoverCredentialPicker
+    const popoverCredentials = credentials.map(cred => ({
+      id: cred.id,
+      title: cred.title,
+      username: cred.username,
+      url: cred.url,
+      itemKeyCipher: 'encrypted-key', // Placeholder - will be filled by parent
+      passwordCipher: 'encrypted-password' // Placeholder - will be filled by parent
+    }));
+    
+    // Create React root and render PopoverCredentialPicker
+    const root = createRoot(popover);
+    
+    root.render(
+      React.createElement(PopoverCredentialPicker, {
+        credentials: popoverCredentials,
+        onPick: (credential: any) => {
+          this.removeCurrentPopover();
+          // Convert back to the original credential format
+          const originalCredential = credentials.find(c => c.id === credential.id);
+          if (originalCredential) {
+            onSelectCredential(originalCredential);
+          }
+        },
+        onClose: () => {
+          this.removeCurrentPopover();
+          onCancel();
+        }
+      })
+    );
     
     this.currentPopover = popover;
     this.currentField = targetField;
