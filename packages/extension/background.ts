@@ -155,9 +155,27 @@ const getMatchingCredentials = async (domain: string): Promise<Array<{
       .filter((cred: any) => {
         if (!cred.url) return false;
         try {
-          const credDomain = new URL(cred.url).hostname;
-          return credDomain === domain || credDomain.endsWith('.' + domain) || domain.endsWith('.' + credDomain);
-        } catch {
+          // Extract domain from stored credential URL
+          const credDomain = new URL(cred.url.startsWith('http') ? cred.url : `https://${cred.url}`).hostname;
+          
+          // Extract domain from current page domain
+          const currentDomain = domain.replace(/^www\./, ''); // Remove www. prefix
+          const storedDomain = credDomain.replace(/^www\./, ''); // Remove www. prefix
+          
+          console.log('[Background] Domain matching:', {
+            currentDomain,
+            storedDomain,
+            credUrl: cred.url,
+            matches: currentDomain === storedDomain || 
+                     currentDomain.endsWith('.' + storedDomain) || 
+                     storedDomain.endsWith('.' + currentDomain)
+          });
+          
+          return currentDomain === storedDomain || 
+                 currentDomain.endsWith('.' + storedDomain) || 
+                 storedDomain.endsWith('.' + currentDomain);
+        } catch (error) {
+          console.error('[Background] Error parsing credential URL:', cred.url, error);
           return false;
         }
       });

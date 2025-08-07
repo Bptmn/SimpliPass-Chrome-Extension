@@ -106,9 +106,18 @@
       const matchingCredentials = allItems.filter((item) => item.itemType === "credential").filter((cred) => {
         if (!cred.url) return false;
         try {
-          const credDomain = new URL(cred.url).hostname;
-          return credDomain === domain || credDomain.endsWith("." + domain) || domain.endsWith("." + credDomain);
-        } catch {
+          const credDomain = new URL(cred.url.startsWith("http") ? cred.url : `https://${cred.url}`).hostname;
+          const currentDomain = domain.replace(/^www\./, "");
+          const storedDomain = credDomain.replace(/^www\./, "");
+          console.log("[Background] Domain matching:", {
+            currentDomain,
+            storedDomain,
+            credUrl: cred.url,
+            matches: currentDomain === storedDomain || currentDomain.endsWith("." + storedDomain) || storedDomain.endsWith("." + currentDomain)
+          });
+          return currentDomain === storedDomain || currentDomain.endsWith("." + storedDomain) || storedDomain.endsWith("." + currentDomain);
+        } catch (error) {
+          console.error("[Background] Error parsing credential URL:", cred.url, error);
           return false;
         }
       });
