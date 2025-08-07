@@ -15,10 +15,23 @@ const setPlatform = (platform: 'extension' | 'mobile') => {
 
 const getPlatform = () => currentPlatform;
 
-// Simple stubs for autofill functions to avoid React Native dependencies
+// Check if user is logged in by checking Chrome storage
 const isAutofillAvailable = async (): Promise<boolean> => {
-  console.log('[Background] isAutofillAvailable called - returning false for now');
-  return false;
+  console.log('[Background] isAutofillAvailable called - checking session status');
+  try {
+    // Check if user is logged in by looking for auth data in storage
+    const result = await chrome.storage.session.get(['authToken', 'userId', 'isAuthenticated']);
+    console.log('[Background] Storage check result:', result);
+    
+    // Check if we have valid authentication data
+    const hasValidAuth = result.authToken && result.userId && result.isAuthenticated === true;
+    console.log('[Background] Has valid auth:', hasValidAuth);
+    
+    return hasValidAuth;
+  } catch (error) {
+    console.error('[Background] Error checking autofill availability:', error);
+    return false;
+  }
 };
 
 const getMatchingCredentials = async (domain: string): Promise<Array<{
@@ -28,7 +41,36 @@ const getMatchingCredentials = async (domain: string): Promise<Array<{
   url?: string;
 }>> => {
   console.log('[Background] getMatchingCredentials called for domain:', domain);
-  return [];
+  try {
+    // Get credentials from storage
+    const result = await chrome.storage.session.get(['credentials', 'items']);
+    console.log('[Background] Storage credentials result:', result);
+    
+    const credentials = result.credentials || result.items || [];
+    console.log('[Background] All credentials:', credentials);
+    
+    // Filter credentials that match the domain
+    const matchingCredentials = credentials.filter((cred: any) => {
+      if (!cred.url) return false;
+      try {
+        const credDomain = new URL(cred.url).hostname;
+        return credDomain === domain || credDomain.endsWith('.' + domain) || domain.endsWith('.' + credDomain);
+      } catch {
+        return false;
+      }
+    });
+    
+    console.log('[Background] Matching credentials for domain', domain, ':', matchingCredentials.length);
+    return matchingCredentials.map((cred: any) => ({
+      id: cred.id || cred._id,
+      title: cred.title || cred.name || 'Untitled',
+      username: cred.username || cred.email || '',
+      url: cred.url
+    }));
+  } catch (error) {
+    console.error('[Background] Error getting matching credentials:', error);
+    return [];
+  }
 };
 
 const getCredentialForInjection = async (credentialId: string): Promise<{
@@ -39,7 +81,33 @@ const getCredentialForInjection = async (credentialId: string): Promise<{
   url?: string;
 } | null> => {
   console.log('[Background] getCredentialForInjection called for id:', credentialId);
-  return null;
+  try {
+    // Get credentials from storage
+    const result = await chrome.storage.session.get(['credentials', 'items']);
+    const credentials = result.credentials || result.items || [];
+    
+    // Find the specific credential by ID
+    const credential = credentials.find((cred: any) => 
+      (cred.id || cred._id) === credentialId
+    );
+    
+    if (credential) {
+      console.log('[Background] Found credential for injection:', credential.title || credential.name);
+      return {
+        id: credential.id || credential._id,
+        title: credential.title || credential.name || 'Untitled',
+        username: credential.username || credential.email || '',
+        password: credential.password || '',
+        url: credential.url
+      };
+    } else {
+      console.log('[Background] Credential not found for ID:', credentialId);
+      return null;
+    }
+  } catch (error) {
+    console.error('[Background] Error getting credential for injection:', error);
+    return null;
+  }
 };
 
 // Simple stubs for context menu functions to avoid React Native dependencies
