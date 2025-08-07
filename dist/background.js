@@ -13,7 +13,15 @@
       ]);
       const isAuthenticated = !!(sessionData.user && sessionData.user.id);
       const hasUserSecretKey = !!sessionData.userSecretKey;
-      const hasCredentials = !!(sessionData.encryptedVault && sessionData.encryptedVault.length > 0);
+      let hasCredentials = false;
+      if (sessionData.encryptedVault) {
+        try {
+          const vaultItems = JSON.parse(sessionData.encryptedVault);
+          hasCredentials = Array.isArray(vaultItems) && vaultItems.length > 0;
+        } catch {
+          hasCredentials = false;
+        }
+      }
       console.log("[Background] Session data check:", {
         isAuthenticated,
         hasUserSecretKey,
@@ -64,6 +72,12 @@
         return [];
       }
       const allItems = JSON.parse(vaultString);
+      console.log("[Background] Vault data type:", typeof allItems);
+      console.log("[Background] Vault data:", allItems);
+      if (!Array.isArray(allItems)) {
+        console.log("[Background] Vault data is not an array, converting to empty array");
+        return [];
+      }
       console.log("[Background] All vault items:", allItems.length);
       const matchingCredentials = allItems.filter((item) => item.itemType === "credential").filter((cred) => {
         if (!cred.url) return false;
@@ -96,6 +110,12 @@
         return null;
       }
       const allItems = JSON.parse(vaultString);
+      console.log("[Background] Vault data type for injection:", typeof allItems);
+      console.log("[Background] Vault data for injection:", allItems);
+      if (!Array.isArray(allItems)) {
+        console.log("[Background] Vault data is not an array for injection");
+        return null;
+      }
       const credential = allItems.filter((item) => item.itemType === "credential").find((cred) => cred.id === credentialId);
       if (credential) {
         console.log("[Background] Found credential for injection:", credential.title);

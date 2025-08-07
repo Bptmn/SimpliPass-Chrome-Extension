@@ -35,7 +35,17 @@ const checkPageCapabilities = async (): Promise<{
     
     const isAuthenticated = !!(sessionData.user && sessionData.user.id);
     const hasUserSecretKey = !!sessionData.userSecretKey;
-    const hasCredentials = !!(sessionData.encryptedVault && sessionData.encryptedVault.length > 0);
+    
+    // Check if vault exists and has content
+    let hasCredentials = false;
+    if (sessionData.encryptedVault) {
+      try {
+        const vaultItems = JSON.parse(sessionData.encryptedVault);
+        hasCredentials = Array.isArray(vaultItems) && vaultItems.length > 0;
+      } catch {
+        hasCredentials = false;
+      }
+    }
     
     console.log('[Background] Session data check:', {
       isAuthenticated,
@@ -100,6 +110,15 @@ const getMatchingCredentials = async (domain: string): Promise<Array<{
     }
     
     const allItems = JSON.parse(vaultString);
+    console.log('[Background] Vault data type:', typeof allItems);
+    console.log('[Background] Vault data:', allItems);
+    
+    // Ensure allItems is an array
+    if (!Array.isArray(allItems)) {
+      console.log('[Background] Vault data is not an array, converting to empty array');
+      return [];
+    }
+    
     console.log('[Background] All vault items:', allItems.length);
     
     // Filter credentials that match the domain
@@ -147,6 +166,14 @@ const getCredentialForInjection = async (credentialId: string): Promise<{
     }
     
     const allItems = JSON.parse(vaultString);
+    console.log('[Background] Vault data type for injection:', typeof allItems);
+    console.log('[Background] Vault data for injection:', allItems);
+    
+    // Ensure allItems is an array
+    if (!Array.isArray(allItems)) {
+      console.log('[Background] Vault data is not an array for injection');
+      return null;
+    }
     
     // Find the specific credential by ID
     const credential = allItems
