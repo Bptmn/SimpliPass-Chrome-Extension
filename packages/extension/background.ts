@@ -46,9 +46,18 @@ const checkPageCapabilities = async (): Promise<{
     let hasCredentials = false;
     if (sessionData.encryptedVault) {
       try {
-        const vaultItems = JSON.parse(sessionData.encryptedVault);
+        const vaultData = JSON.parse(sessionData.encryptedVault);
+        // The vault is an object with items array, not directly an array
+        const vaultItems = vaultData.items;
         hasCredentials = Array.isArray(vaultItems) && vaultItems.length > 0;
-      } catch {
+        console.log('[Background] Vault parsing:', {
+          vaultDataKeys: Object.keys(vaultData),
+          itemsArrayExists: !!vaultData.items,
+          itemsArrayLength: vaultData.items ? vaultData.items.length : 0,
+          hasCredentials
+        });
+      } catch (error) {
+        console.error('[Background] Error parsing vault:', error);
         hasCredentials = false;
       }
     }
@@ -123,13 +132,18 @@ const getMatchingCredentials = async (domain: string): Promise<Array<{
       return [];
     }
     
-    const allItems = JSON.parse(vaultString);
-    console.log('[Background] Vault data type:', typeof allItems);
-    console.log('[Background] Vault data:', allItems);
+    const parsedVaultData = JSON.parse(vaultString);
+    console.log('[Background] Vault data type:', typeof parsedVaultData);
+    console.log('[Background] Vault data keys:', Object.keys(parsedVaultData));
+    
+    // Extract items array from vault object
+    const allItems = parsedVaultData.items;
+    console.log('[Background] Items array type:', typeof allItems);
+    console.log('[Background] Items array:', allItems);
     
     // Ensure allItems is an array
     if (!Array.isArray(allItems)) {
-      console.log('[Background] Vault data is not an array, converting to empty array');
+      console.log('[Background] Items array is not an array, converting to empty array');
       return [];
     }
     
@@ -179,13 +193,18 @@ const getCredentialForInjection = async (credentialId: string): Promise<{
       return null;
     }
     
-    const allItems = JSON.parse(vaultString);
-    console.log('[Background] Vault data type for injection:', typeof allItems);
-    console.log('[Background] Vault data for injection:', allItems);
+    const vaultDataForInjection = JSON.parse(vaultString);
+    console.log('[Background] Vault data type for injection:', typeof vaultDataForInjection);
+    console.log('[Background] Vault data keys for injection:', Object.keys(vaultDataForInjection));
+    
+    // Extract items array from vault object
+    const allItems = vaultDataForInjection.items;
+    console.log('[Background] Items array type for injection:', typeof allItems);
+    console.log('[Background] Items array for injection:', allItems);
     
     // Ensure allItems is an array
     if (!Array.isArray(allItems)) {
-      console.log('[Background] Vault data is not an array for injection');
+      console.log('[Background] Items array is not an array for injection');
       return null;
     }
     
