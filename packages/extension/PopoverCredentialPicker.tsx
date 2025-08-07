@@ -8,6 +8,7 @@ import { Text } from 'react-native';
 import './PopoverCredentialPicker.css';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@common/ui/design/theme';
+import { ToastProvider } from '@common/ui/components/Toast';
 import { CredentialCard } from '@common/ui/components/CredentialCard';
 import type { CredentialDecrypted } from '@common/core/types/items.types';
 
@@ -97,37 +98,39 @@ export const PopoverCredentialPicker: React.FC<PopoverCredentialPickerProps> = (
 
   return (
     <ThemeProvider>
-      <div className="popover-content-root" ref={rootRef} style={{ minHeight: 120, minWidth: 320 }}>
-        {error && <PopoverErrorBanner message={error} />}
-        <button className="inpage-picker-close" onClick={onClose} aria-label="Fermer">
-          <Text>×</Text>
-        </button>
-        <div className="inpage-picker-title">
-          <Text>Suggestion</Text>
+      <ToastProvider>
+        <div className="popover-content-root" ref={rootRef} style={{ minHeight: 120, minWidth: 320 }}>
+          {error && <PopoverErrorBanner message={error} />}
+          <button className="inpage-picker-close" onClick={onClose} aria-label="Fermer">
+            <Text>×</Text>
+          </button>
+          <div className="inpage-picker-title">
+            <Text>Suggestion</Text>
+          </div>
+          <div className="inpage-picker-list">
+            {credentials.slice(0, 3).map((cred) => (
+              <div
+                key={cred.id}
+                className="inpage-picker-card"
+                onClick={() => onPick(cred)}
+                tabIndex={0}
+                role="button"
+                aria-label={`Utiliser l'identifiant pour ${cred.title} (${cred.username})`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') onPick(cred);
+                }}
+              >
+                {/* Use the shared CredentialCard component */}
+                <CredentialCard 
+                  credential={convertToCredentialDecrypted(cred)}
+                  onPress={() => onPick(cred)}
+                  hideCopyBtn={true} 
+                />
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="inpage-picker-list">
-          {credentials.slice(0, 3).map((cred) => (
-            <div
-              key={cred.id}
-              className="inpage-picker-card"
-              onClick={() => onPick(cred)}
-              tabIndex={0}
-              role="button"
-              aria-label={`Utiliser l'identifiant pour ${cred.title} (${cred.username})`}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') onPick(cred);
-              }}
-            >
-              {/* Use the shared CredentialCard component */}
-              <CredentialCard 
-                credential={convertToCredentialDecrypted(cred)}
-                onPress={() => onPick(cred)}
-                hideCopyBtn={true} 
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      </ToastProvider>
     </ThemeProvider>
   );
 };
