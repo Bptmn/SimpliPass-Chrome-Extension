@@ -14,4 +14,9 @@ export { default as ToastStories } from './Toast.stories';
 export { default as ButtonsStories } from './Buttons.stories';
 export { default as MoreInfoStories } from './MoreInfo.stories';
 export { default as SliderStories } from './Slider.stories';
-export * from './ModeSwitch.stories'; 
+export * from './ModeSwitch.stories';
+
+// Extension Popover Stories
+export { default as LoginPromptPopoverStories } from '../../../extension/popovers/components/LoginPrompt/LoginPromptPopover.stories';
+export { default as CredentialPickerPopoverStories } from '../../../extension/popovers/components/CredentialPicker/CredentialPickerPopover.stories';
+export { default as PopoverManagerStories } from '../../../extension/popovers/PopoverManager.stories'; 
