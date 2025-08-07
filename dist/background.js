@@ -57,64 +57,62 @@
   const setPlatform = (platform) => {
     console.log("[Background] Platform set to:", platform);
   };
-  const isAutofillAvailable = async () => {
-    console.log("[Background] isAutofillAvailable called - checking session status");
+  const checkPageCapabilities = async () => {
+    console.log("[Background] Checking page capabilities");
     try {
       const { authService: authService2 } = await __vitePreload(async () => {
         const { authService: authService3 } = await Promise.resolve().then(() => authService$1);
         return { authService: authService3 };
       }, false ? __VITE_PRELOAD__ : void 0);
       const isAuthenticated2 = await authService2.isAuthenticated();
-      console.log("[Background] Auth service check:", isAuthenticated2);
-      if (!isAuthenticated2) {
-        console.log("[Background] User not authenticated");
-        return false;
-      }
-      const { vaultService: vaultService2 } = await __vitePreload(async () => {
-        const { vaultService: vaultService3 } = await Promise.resolve().then(() => vaultService$1);
-        return { vaultService: vaultService3 };
-      }, false ? __VITE_PRELOAD__ : void 0);
-      const vaultItems = await vaultService2.getLocalVault();
-      const hasCredentials = vaultItems.length > 0;
-      console.log("[Background] Vault items count:", vaultItems.length);
-      const isAutofillReady = isAuthenticated2 && hasCredentials;
-      console.log("[Background] Autofill ready:", isAutofillReady);
-      return isAutofillReady;
-    } catch (error) {
-      console.error("[Background] Error checking autofill availability:", error);
-      return false;
-    }
-  };
-  const isSaveCredentialAvailable = async () => {
-    console.log("[Background] isSaveCredentialAvailable called - checking save requirements");
-    try {
-      const { authService: authService2 } = await __vitePreload(async () => {
-        const { authService: authService3 } = await Promise.resolve().then(() => authService$1);
-        return { authService: authService3 };
-      }, false ? __VITE_PRELOAD__ : void 0);
-      const isAuthenticated2 = await authService2.isAuthenticated();
-      console.log("[Background] Auth service check for save:", isAuthenticated2);
-      if (!isAuthenticated2) {
-        console.log("[Background] User not authenticated for save");
-        return false;
-      }
+      console.log("[Background] Authentication status:", isAuthenticated2);
       const { secretsService: secretsService2 } = await __vitePreload(async () => {
         const { secretsService: secretsService3 } = await Promise.resolve().then(() => secretsService$1);
         return { secretsService: secretsService3 };
       }, false ? __VITE_PRELOAD__ : void 0);
       const hasUserSecretKey2 = await secretsService2.hasUserSecretKey();
       console.log("[Background] Has user secret key:", hasUserSecretKey2);
-      const isSaveReady = isAuthenticated2 && hasUserSecretKey2;
-      console.log("[Background] Save credential ready:", isSaveReady);
-      return isSaveReady;
+      const { vaultService: vaultService2 } = await __vitePreload(async () => {
+        const { vaultService: vaultService3 } = await Promise.resolve().then(() => vaultService$1);
+        return { vaultService: vaultService3 };
+      }, false ? __VITE_PRELOAD__ : void 0);
+      const vaultItems = await vaultService2.getLocalVault();
+      const hasCredentials = vaultItems.length > 0;
+      console.log("[Background] Vault items count:", hasCredentials ? vaultItems.length : 0);
+      const capabilities = {
+        canAutofill: isAuthenticated2 && hasCredentials,
+        // ✅ Auth + credentials in RAM
+        canSaveCredential: isAuthenticated2 && hasUserSecretKey2,
+        // ✅ Auth + user secret key
+        canGeneratePassword: true,
+        // ✅ Always available
+        hasCredentials,
+        isAuthenticated: isAuthenticated2
+      };
+      console.log("[Background] Page capabilities:", capabilities);
+      return capabilities;
     } catch (error) {
-      console.error("[Background] Error checking save credential availability:", error);
-      return false;
+      console.error("[Background] Error checking page capabilities:", error);
+      return {
+        canAutofill: false,
+        canSaveCredential: false,
+        canGeneratePassword: true,
+        hasCredentials: false,
+        isAuthenticated: false
+      };
     }
   };
+  const isAutofillAvailable = async () => {
+    const capabilities = await checkPageCapabilities();
+    return capabilities.canAutofill;
+  };
+  const isSaveCredentialAvailable = async () => {
+    const capabilities = await checkPageCapabilities();
+    return capabilities.canSaveCredential;
+  };
   const isPasswordGeneratorAvailable = async () => {
-    console.log("[Background] isPasswordGeneratorAvailable called - always available");
-    return true;
+    const capabilities = await checkPageCapabilities();
+    return capabilities.canGeneratePassword;
   };
   const getMatchingCredentials = async (domain) => {
     console.log("[Background] getMatchingCredentials called for domain:", domain);
@@ -300,6 +298,29 @@
         } catch (error) {
           console.error("[Background] Error checking session status:", error);
           sendResponse({ isValid: false, error: error instanceof Error ? error.message : "Unknown error" });
+        }
+      })();
+      return true;
+    }
+    if (msg.type === "GET_PAGE_CAPABILITIES") {
+      console.log("[Background] GET_PAGE_CAPABILITIES request");
+      (async () => {
+        try {
+          const capabilities = await checkPageCapabilities();
+          console.log("[Background] Page capabilities:", capabilities);
+          sendResponse({ capabilities });
+        } catch (error) {
+          console.error("[Background] Error checking page capabilities:", error);
+          sendResponse({
+            capabilities: {
+              canAutofill: false,
+              canSaveCredential: false,
+              canGeneratePassword: true,
+              hasCredentials: false,
+              isAuthenticated: false
+            },
+            error: error instanceof Error ? error.message : "Unknown error"
+          });
         }
       })();
       return true;

@@ -596,6 +596,41 @@ let loginFields: LoginField[] = [];
 let passwordFields: HTMLInputElement[] = [];
 let isProcessingField = false; // Flag to prevent duplicate processing
 
+// ✅ NEW: Page capabilities (pre-checked on page load)
+let pageCapabilities: {
+  canAutofill: boolean;
+  canSaveCredential: boolean;
+  canGeneratePassword: boolean;
+  hasCredentials: boolean;
+  isAuthenticated: boolean;
+} | null = null;
+
+// ✅ NEW: Check page capabilities on load
+async function checkPageCapabilities(): Promise<void> {
+  try {
+    console.log('[Content Script] Checking page capabilities on load');
+    const response = await new Promise<{ capabilities: any }>((resolve) => {
+      chrome.runtime.sendMessage({ 
+        type: 'GET_PAGE_CAPABILITIES'
+      }, resolve);
+    });
+    
+    if (response && response.capabilities) {
+      pageCapabilities = response.capabilities;
+      console.log('[Content Script] Page capabilities loaded:', pageCapabilities);
+    }
+  } catch (error) {
+    console.error('[Content Script] Error checking page capabilities:', error);
+    pageCapabilities = {
+      canAutofill: false,
+      canSaveCredential: false,
+      canGeneratePassword: true,
+      hasCredentials: false,
+      isAuthenticated: false
+    };
+  }
+}
+
 /**
  * Handle field click events
  */
