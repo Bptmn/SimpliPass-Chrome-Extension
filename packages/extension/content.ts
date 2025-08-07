@@ -8,6 +8,9 @@
  * - Coordinates communication between background script and page
  */
 
+// Import popover manager
+import { popoverManager } from './popovers/PopoverManager';
+
 // Simple stubs to avoid React Native dependencies in content script
 interface LoginField {
   element: HTMLElement;
@@ -178,68 +181,36 @@ const removePopover = () => {
 const showPopoverCredentialPicker = (field: HTMLElement, credentials: any[], _loginFields: LoginField[]) => {
   console.log('[Content Script] showPopoverCredentialPicker called');
   
-  const content = `
-    <div style="margin-bottom: 8px; font-weight: 600; color: #333;">Select Credential</div>
-    ${credentials.map((cred, index) => `
-      <div class="credential-option" data-index="${index}" style="padding: 8px; border-bottom: 1px solid #eee; cursor: pointer;">
-        <div style="font-weight: 500;">${cred.title}</div>
-        <div style="font-size: 12px; color: #666;">${cred.username}</div>
-      </div>
-    `).join('')}
-    <div class="open-manager" style="padding: 8px; color: #007bff; cursor: pointer; text-align: center; margin-top: 8px;">
-      Open SimpliPass Manager
-    </div>
-  `;
-  
-  const popover = createPopover(content, field);
-  
-  // Add event listeners
-  popover.querySelectorAll('.credential-option').forEach((option, index) => {
-    option.addEventListener('click', () => {
-      console.log('Credential selected:', credentials[index].title);
-      removePopover();
-    });
-  });
-  
-  popover.querySelector('.open-manager')?.addEventListener('click', () => {
-    console.log('Open manager clicked');
-    window.open(`chrome-extension://${chrome.runtime.id}/popup.html`, '_blank');
-    removePopover();
-  });
+  popoverManager.showCredentialPicker(
+    field,
+    credentials,
+    (credential) => {
+      // Credential selected - inject it
+      console.log('[Content Script] Credential selected:', credential.title);
+      injectCredential(field, credential);
+    },
+    () => {
+      // Cancel button clicked - do nothing
+      console.log('[Content Script] Credential picker cancelled');
+    }
+  );
 };
 
 const showLoginPromptPopover = (field: HTMLElement, _loginFields: LoginField[]) => {
   console.log('[Content Script] showLoginPromptPopover called');
   
-  const content = `
-    <div style="margin-bottom: 8px; font-weight: 600; color: #333;">SimpliPass</div>
-    <div style="margin-bottom: 12px; color: #666; font-size: 13px;">
-      Please log in to SimpliPass to use autofill features.
-    </div>
-    <div style="display: flex; gap: 8px;">
-      <button class="login-btn" style="flex: 1; padding: 8px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
-        Log In
-      </button>
-      <button class="dismiss-btn" style="flex: 1; padding: 8px 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
-        Dismiss
-      </button>
-    </div>
-  `;
-  
-  const popover = createPopover(content, field);
-  
-  // Add event listeners
-  popover.querySelector('.login-btn')?.addEventListener('click', () => {
-    console.log('Login clicked');
-    // Open the extension popup using Chrome API
-    chrome.runtime.sendMessage({ type: 'OPEN_POPUP' });
-    removePopover();
-  });
-  
-  popover.querySelector('.dismiss-btn')?.addEventListener('click', () => {
-    console.log('Dismiss clicked');
-    removePopover();
-  });
+  popoverManager.showLoginPrompt(
+    field,
+    () => {
+      // Login button clicked - open extension popup
+      console.log('[Content Script] Login button clicked');
+      chrome.runtime.sendMessage({ type: 'OPEN_POPUP' });
+    },
+    () => {
+      // Cancel button clicked - do nothing
+      console.log('[Content Script] Login prompt cancelled');
+    }
+  );
 };
 
 const showPasswordGeneratorPopover = (field: HTMLInputElement, _options?: any) => {
@@ -462,9 +433,47 @@ const updatePickerSize = () => {
   // Could implement dynamic sizing if needed
 };
 
-// Simple stubs for credential injection
-const injectCredential = (_field: HTMLElement, _credential: any) => {
-  console.log('[Content Script] injectCredential called');
+// Real credential injection implementation
+const injectCredential = async (field: HTMLElement, credential: any) => {
+  console.log('[Content Script] injectCredential called for credential:', credential.title);
+  
+  try {
+    // Get the full credential data from background script
+    const response = await new Promise<{ success: boolean; error?: string }>((resolve) => {
+      chrome.runtime.sendMessage({ 
+        type: 'INJECT_CREDENTIAL', 
+        credentialId: credential.id 
+      }, resolve);
+    });
+    
+    if (response && response.success) {
+      console.log('[Content Script] Credential injection successful');
+      
+      // Find login fields in the form
+      const form = field.closest('form');
+      if (form) {
+        // Find username/email field
+        const usernameField = form.querySelector('input[type="text"], input[type="email"], input[autocomplete="username"], input[autocomplete="email"]') as HTMLInputElement;
+        if (usernameField) {
+          usernameField.value = credential.username;
+          usernameField.dispatchEvent(new Event('input', { bubbles: true }));
+          console.log('[Content Script] Username injected:', credential.username);
+        }
+        
+        // Find password field
+        const passwordField = form.querySelector('input[type="password"]') as HTMLInputElement;
+        if (passwordField) {
+          passwordField.value = credential.password;
+          passwordField.dispatchEvent(new Event('input', { bubbles: true }));
+          console.log('[Content Script] Password injected');
+        }
+      }
+    } else {
+      console.error('[Content Script] Credential injection failed:', response?.error);
+    }
+  } catch (error) {
+    console.error('[Content Script] Error injecting credential:', error);
+  }
 };
 
 // Simple stubs for services
