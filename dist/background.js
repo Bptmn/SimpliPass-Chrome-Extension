@@ -1,5 +1,69 @@
 (function() {
   "use strict";
+  function normalizeDomain(domain) {
+    return domain.replace(/^www\./, "").toLowerCase();
+  }
+  function domainsMatch(currentDomain, storedDomain) {
+    const normalizedCurrent = normalizeDomain(currentDomain);
+    const normalizedStored = normalizeDomain(storedDomain);
+    if (normalizedCurrent === normalizedStored) {
+      return true;
+    }
+    if (normalizedCurrent.endsWith("." + normalizedStored)) {
+      return true;
+    }
+    if (normalizedStored.endsWith("." + normalizedCurrent)) {
+      return true;
+    }
+    return false;
+  }
+  function extractDomainFromUrl(url) {
+    try {
+      const urlWithProtocol = url.startsWith("http") ? url : `https://${url}`;
+      const urlObj = new URL(urlWithProtocol);
+      return urlObj.hostname;
+    } catch (error) {
+      console.error("[DomainMatching] Error extracting domain from URL:", url, error);
+      return null;
+    }
+  }
+  function matchCredentialDomain(credential, currentDomain) {
+    if (!credential.url) {
+      return false;
+    }
+    const storedDomain = extractDomainFromUrl(credential.url);
+    if (!storedDomain) {
+      return false;
+    }
+    return domainsMatch(currentDomain, storedDomain);
+  }
+  function getDomainMatchingDetails(currentDomain, storedUrl) {
+    const normalizedCurrent = normalizeDomain(currentDomain);
+    const storedDomain = extractDomainFromUrl(storedUrl);
+    const normalizedStored = storedDomain ? normalizeDomain(storedDomain) : null;
+    let matches = false;
+    let matchType = "none";
+    if (normalizedStored) {
+      if (normalizedCurrent === normalizedStored) {
+        matches = true;
+        matchType = "exact";
+      } else if (normalizedCurrent.endsWith("." + normalizedStored)) {
+        matches = true;
+        matchType = "subdomain";
+      } else if (normalizedStored.endsWith("." + normalizedCurrent)) {
+        matches = true;
+        matchType = "reverse-subdomain";
+      }
+    }
+    return {
+      currentDomain,
+      storedDomain,
+      normalizedCurrent,
+      normalizedStored,
+      matches,
+      matchType
+    };
+  }
   const setPlatform = (platform) => {
     console.log("[Background] Platform set to:", platform);
   };
@@ -105,21 +169,18 @@
       console.log("[Background] All vault items:", allItems.length);
       const matchingCredentials = allItems.filter((item) => item.itemType === "credential").filter((cred) => {
         if (!cred.url) return false;
-        try {
-          const credDomain = new URL(cred.url.startsWith("http") ? cred.url : `https://${cred.url}`).hostname;
-          const currentDomain = domain.replace(/^www\./, "");
-          const storedDomain = credDomain.replace(/^www\./, "");
-          console.log("[Background] Domain matching:", {
-            currentDomain,
-            storedDomain,
-            credUrl: cred.url,
-            matches: currentDomain === storedDomain || currentDomain.endsWith("." + storedDomain) || storedDomain.endsWith("." + currentDomain)
-          });
-          return currentDomain === storedDomain || currentDomain.endsWith("." + storedDomain) || storedDomain.endsWith("." + currentDomain);
-        } catch (error) {
-          console.error("[Background] Error parsing credential URL:", cred.url, error);
-          return false;
-        }
+        const matches = matchCredentialDomain(cred, domain);
+        const details = getDomainMatchingDetails(domain, cred.url);
+        console.log("[Background] Domain matching:", {
+          currentDomain: details.currentDomain,
+          storedDomain: details.storedDomain,
+          credUrl: cred.url,
+          normalizedCurrent: details.normalizedCurrent,
+          normalizedStored: details.normalizedStored,
+          matches: details.matches,
+          matchType: details.matchType
+        });
+        return matches;
       });
       console.log("[Background] Matching credentials for domain", domain, ":", matchingCredentials.length);
       return matchingCredentials.map((cred) => ({

@@ -1,4 +1,6 @@
 // Minimal background script to avoid React Native dependencies
+import { matchCredentialDomain, getDomainMatchingDetails } from './utils/domainMatching';
+
 interface PageState {
   url: string;
   domain: string;
@@ -149,35 +151,26 @@ const getMatchingCredentials = async (domain: string): Promise<Array<{
     
     console.log('[Background] All vault items:', allItems.length);
     
-    // Filter credentials that match the domain
+    // Filter credentials that match the domain using utility function
     const matchingCredentials = allItems
       .filter((item: any) => item.itemType === 'credential')
       .filter((cred: any) => {
         if (!cred.url) return false;
-        try {
-          // Extract domain from stored credential URL
-          const credDomain = new URL(cred.url.startsWith('http') ? cred.url : `https://${cred.url}`).hostname;
-          
-          // Extract domain from current page domain
-          const currentDomain = domain.replace(/^www\./, ''); // Remove www. prefix
-          const storedDomain = credDomain.replace(/^www\./, ''); // Remove www. prefix
-          
-          console.log('[Background] Domain matching:', {
-            currentDomain,
-            storedDomain,
-            credUrl: cred.url,
-            matches: currentDomain === storedDomain || 
-                     currentDomain.endsWith('.' + storedDomain) || 
-                     storedDomain.endsWith('.' + currentDomain)
-          });
-          
-          return currentDomain === storedDomain || 
-                 currentDomain.endsWith('.' + storedDomain) || 
-                 storedDomain.endsWith('.' + currentDomain);
-        } catch (error) {
-          console.error('[Background] Error parsing credential URL:', cred.url, error);
-          return false;
-        }
+        
+        const matches = matchCredentialDomain(cred, domain);
+        const details = getDomainMatchingDetails(domain, cred.url);
+        
+        console.log('[Background] Domain matching:', {
+          currentDomain: details.currentDomain,
+          storedDomain: details.storedDomain,
+          credUrl: cred.url,
+          normalizedCurrent: details.normalizedCurrent,
+          normalizedStored: details.normalizedStored,
+          matches: details.matches,
+          matchType: details.matchType
+        });
+        
+        return matches;
       });
     
     console.log('[Background] Matching credentials for domain', domain, ':', matchingCredentials.length);
