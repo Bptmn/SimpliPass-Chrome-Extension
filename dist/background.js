@@ -11,6 +11,8 @@
         "user",
         "encryptedVault"
       ]);
+      console.log("[Background] All session storage keys:", await chrome.storage.session.get(null));
+      console.log("[Background] Requested session data:", sessionData);
       const isAuthenticated = !!(sessionData.user && sessionData.user.id);
       const hasUserSecretKey = !!sessionData.userSecretKey;
       let hasCredentials = false;
@@ -25,7 +27,11 @@
       console.log("[Background] Session data check:", {
         isAuthenticated,
         hasUserSecretKey,
-        hasCredentials: hasCredentials ? "yes" : "no"
+        hasCredentials: hasCredentials ? "yes" : "no",
+        userData: sessionData.user,
+        userSecretKeyExists: !!sessionData.userSecretKey,
+        encryptedVaultExists: !!sessionData.encryptedVault,
+        encryptedVaultLength: sessionData.encryptedVault ? sessionData.encryptedVault.length : 0
       });
       const capabilities = {
         canAutofill: isAuthenticated && hasCredentials,
@@ -51,7 +57,10 @@
     }
   };
   const isAutofillAvailable = async () => {
+    console.log("[Background] isAutofillAvailable called");
     const capabilities = await checkPageCapabilities();
+    console.log("[Background] isAutofillAvailable result:", capabilities.canAutofill);
+    console.log("[Background] isAutofillAvailable details:", capabilities);
     return capabilities.canAutofill;
   };
   const isSaveCredentialAvailable = async () => {

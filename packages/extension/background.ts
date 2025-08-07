@@ -33,6 +33,9 @@ const checkPageCapabilities = async (): Promise<{
       'encryptedVault'
     ]);
     
+    console.log('[Background] All session storage keys:', await chrome.storage.session.get(null));
+    console.log('[Background] Requested session data:', sessionData);
+    
     const isAuthenticated = !!(sessionData.user && sessionData.user.id);
     const hasUserSecretKey = !!sessionData.userSecretKey;
     
@@ -50,7 +53,11 @@ const checkPageCapabilities = async (): Promise<{
     console.log('[Background] Session data check:', {
       isAuthenticated,
       hasUserSecretKey,
-      hasCredentials: hasCredentials ? 'yes' : 'no'
+      hasCredentials: hasCredentials ? 'yes' : 'no',
+      userData: sessionData.user,
+      userSecretKeyExists: !!sessionData.userSecretKey,
+      encryptedVaultExists: !!sessionData.encryptedVault,
+      encryptedVaultLength: sessionData.encryptedVault ? sessionData.encryptedVault.length : 0
     });
     
     // Determine capabilities
@@ -78,7 +85,10 @@ const checkPageCapabilities = async (): Promise<{
 
 // Legacy functions for backward compatibility
 const isAutofillAvailable = async (): Promise<boolean> => {
+  console.log('[Background] isAutofillAvailable called');
   const capabilities = await checkPageCapabilities();
+  console.log('[Background] isAutofillAvailable result:', capabilities.canAutofill);
+  console.log('[Background] isAutofillAvailable details:', capabilities);
   return capabilities.canAutofill;
 };
 
