@@ -80,4 +80,59 @@ export const MultipleCardsDark = () => (
       <CredentialCard credential={mockCredential} onPress={() => console.log('Card 3 pressed')} />
     </View>
   </DarkThemeProvider>
+);
+
+export const WithoutCopyButton = () => (
+  <LightThemeProvider>
+    <CredentialCard 
+      credential={mockCredential} 
+      onPress={() => console.log('Card pressed')} 
+      hideCopyBtn={true}
+    />
+  </LightThemeProvider>
+);
+
+export const WithoutCopyButtonDark = () => (
+  <DarkThemeProvider>
+    <CredentialCard 
+      credential={mockCredential} 
+      onPress={() => console.log('Card pressed')} 
+      hideCopyBtn={true}
+    />
+  </DarkThemeProvider>
+);
+
+export const PopoverStyle = () => (
+  <LightThemeProvider>
+    <div style={{ 
+      position: 'relative', 
+      width: '320px', 
+      padding: '16px',
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+      border: '1px solid #E5E5EA'
+    }}>
+      <div style={{ marginBottom: '8px', fontSize: '14px', color: '#666' }}>
+        Select a credential to autofill:
+      </div>
+      <View style={{ gap: 4 }}>
+        <CredentialCard 
+          credential={mockCredential} 
+          onPress={() => console.log('Facebook selected')} 
+          hideCopyBtn={true}
+        />
+        <CredentialCard 
+          credential={mockCredentialWithLongData} 
+          onPress={() => console.log('Google selected')} 
+          hideCopyBtn={true}
+        />
+        <CredentialCard 
+          credential={mockCredential} 
+          onPress={() => console.log('GitHub selected')} 
+          hideCopyBtn={true}
+        />
+      </View>
+    </div>
+  </LightThemeProvider>
 ); 

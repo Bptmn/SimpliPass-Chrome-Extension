@@ -19,4 +19,5 @@ export * from './ModeSwitch.stories';
 // Extension Popover Stories
 export { default as LoginPromptPopoverStories } from '../../../extension/popovers/components/LoginPrompt/LoginPromptPopover.stories';
 export { default as CredentialPickerPopoverStories } from '../../../extension/popovers/components/CredentialPicker/CredentialPickerPopover.stories';
-export { default as PopoverManagerStories } from '../../../extension/popovers/PopoverManager.stories'; 
+export { default as PopoverManagerStories } from '../../../extension/popovers/PopoverManager.stories';
+export { default as PopoverCredentialPickerStories } from '../../../extension/PopoverCredentialPicker.stories'; 
