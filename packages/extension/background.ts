@@ -33,8 +33,11 @@ const checkPageCapabilities = async (): Promise<{
       'encryptedVault'
     ]);
     
-    console.log('[Background] All session storage keys:', await chrome.storage.session.get(null));
-    console.log('[Background] Requested session data:', sessionData);
+    const allKeys = await chrome.storage.session.get(null);
+    const allLocalKeys = await chrome.storage.local.get(null);
+    console.log('[Background] All session storage keys:', JSON.stringify(allKeys, null, 2));
+    console.log('[Background] All local storage keys:', JSON.stringify(allLocalKeys, null, 2));
+    console.log('[Background] Requested session data:', JSON.stringify(sessionData, null, 2));
     
     const isAuthenticated = !!(sessionData.user && sessionData.user.id);
     const hasUserSecretKey = !!sessionData.userSecretKey;
@@ -50,7 +53,7 @@ const checkPageCapabilities = async (): Promise<{
       }
     }
     
-    console.log('[Background] Session data check:', {
+    const sessionCheck = {
       isAuthenticated,
       hasUserSecretKey,
       hasCredentials: hasCredentials ? 'yes' : 'no',
@@ -58,7 +61,8 @@ const checkPageCapabilities = async (): Promise<{
       userSecretKeyExists: !!sessionData.userSecretKey,
       encryptedVaultExists: !!sessionData.encryptedVault,
       encryptedVaultLength: sessionData.encryptedVault ? sessionData.encryptedVault.length : 0
-    });
+    };
+    console.log('[Background] Session data check:', JSON.stringify(sessionCheck, null, 2));
     
     // Determine capabilities
     const capabilities = {
@@ -87,8 +91,8 @@ const checkPageCapabilities = async (): Promise<{
 const isAutofillAvailable = async (): Promise<boolean> => {
   console.log('[Background] isAutofillAvailable called');
   const capabilities = await checkPageCapabilities();
-  console.log('[Background] isAutofillAvailable result:', capabilities.canAutofill);
-  console.log('[Background] isAutofillAvailable details:', capabilities);
+      console.log('[Background] isAutofillAvailable result:', capabilities.canAutofill);
+    console.log('[Background] isAutofillAvailable details:', JSON.stringify(capabilities, null, 2));
   return capabilities.canAutofill;
 };
 
