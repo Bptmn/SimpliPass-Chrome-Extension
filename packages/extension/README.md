@@ -42,6 +42,21 @@ Firestore (encrypted) → secureLocalStorage (chrome.storage.session) → Zustan
 
 ## 🔄 Popover Flow Logic
 
+### **Pre-Checked Page Capabilities Approach**
+
+The extension now uses a **pre-checked capabilities approach** for optimal performance and user experience:
+
+#### **✅ Corrected Understanding: Vault Storage**
+- **Vault is stored in clear format** in `chrome.storage.session` (RAM)
+- **No encryption needed** for local storage since it's in RAM
+- **Credentials are already decrypted** when stored locally
+- **Data flow**: `Firestore (encrypted) → Download → Decrypt → Store in RAM (clear) → Use for autofill`
+
+#### **✅ Capability Requirements**
+- **Autofill**: `authService.isAuthenticated()` + `vaultService.getLocalVault()` (clear format)
+- **Save Credential**: `authService.isAuthenticated()` + `secretsService.hasUserSecretKey()` (for encryption)
+- **Password Generator**: Always available
+
 ### **Initialization Flow**
 The extension follows a specific initialization sequence when loaded:
 
@@ -56,7 +71,9 @@ graph TD
     G --> H[Field Detection Setup]
     H --> I[Form Capture Setup]
     I --> J[Security Service Init]
-    J --> K[Extension Ready]
+    J --> K[Pre-Check Page Capabilities]
+    K --> L[Store Capabilities in Memory]
+    L --> M[Extension Ready]
     
     subgraph "Background Script"
         C
@@ -70,12 +87,17 @@ graph TD
         H
         I
         J
+        K
+        L
     end
     
     subgraph "Services"
-        K1[Security Service]
-        K2[Credential Capture Service]
-        K3[Form Capture Utility]
+        M1[Security Service]
+        M2[Credential Capture Service]
+        M3[Form Capture Utility]
+        M4[Auth Service]
+        M5[Secrets Service]
+        M6[Vault Service]
     end
 ```
 
@@ -84,16 +106,26 @@ graph TD
 graph TD
     A[User Clicks Field] --> B[Field Detection]
     B --> C[Security Validation]
-    C --> D{Session Valid?}
-    D -->|No| E[Show Login Prompt]
-    D -->|Yes| F[Get Credentials]
-    F --> G[Show Credential Picker]
-    E --> H[Position Popover Below Field]
-    G --> H
-    H --> I[Add Event Listeners]
-    I --> J[User Interaction]
-    J --> K[Handle Action]
-    K --> L[Close Popover]
+    C --> D{Check Pre-Stored Capabilities}
+    D -->|Can Autofill| E[Get Credentials]
+    D -->|Cannot Autofill| F[Show Login Prompt]
+    D -->|Password Field| G[Check Password Generator]
+    E --> H[Show Credential Picker]
+    F --> I[Position Popover Below Field]
+    G --> J[Show Password Generator]
+    H --> I
+    J --> I
+    I --> K[Add Event Listeners]
+    K --> L[User Interaction]
+    L --> M[Handle Action]
+    M --> N[Close Popover]
+    
+    subgraph "Pre-Checked Capabilities"
+        D1[Use stored pageCapabilities]
+        D2[No API call needed]
+        D3[Instant response]
+        D4[Better UX]
+    end
     
     subgraph "Field Detection"
         B1[Scan input fields]
@@ -103,17 +135,17 @@ graph TD
     end
     
     subgraph "Popover Positioning"
-        H1[Calculate field position]
-        H2[Account for scroll offset]
-        H3[Position below field + 5px]
-        H4[Log positioning coordinates]
+        I1[Calculate field position]
+        I2[Account for scroll offset]
+        I3[Position below field + 5px]
+        I4[Log positioning coordinates]
     end
     
     subgraph "Event Handling"
-        I1[Remove inline onclick handlers]
-        I2[Add addEventListener with classes]
-        I3[CSP-compliant event handling]
-        I4[Proper cleanup on close]
+        K1[Remove inline onclick handlers]
+        K2[Add addEventListener with classes]
+        K3[CSP-compliant event handling]
+        K4[Proper cleanup on close]
     end
 ```
 
@@ -186,21 +218,30 @@ graph TD
     A[Content Script Loads] --> B[Detect Login Fields]
     B --> C[Detect Password Fields]
     C --> D[Setup Event Listeners]
-    D --> E[Wait for User Interaction]
-    E --> F[User Clicks Field]
-    F --> G{Field Type?}
-    G -->|Login Field| H[Check Session Status]
-    G -->|Password Field| I[Check Eligibility]
-    H --> J{Session Valid?}
-    J -->|Yes| K[Get Matching Credentials]
-    J -->|No| L[Show Login Prompt]
-    I --> M[Show Password Generator]
-    K --> N[Show Credential Picker]
-    L --> O[User Login Action]
-    M --> P[Generate Password]
-    N --> Q[User Selects Credential]
-    P --> R[Inject Password]
-    Q --> S[Inject Credential]
+    D --> E[Pre-Check Page Capabilities]
+    E --> F[Store Capabilities in Memory]
+    F --> G[Wait for User Interaction]
+    G --> H[User Clicks Field]
+    H --> I{Field Type?}
+    I -->|Login Field| J[Check Stored Capabilities]
+    I -->|Password Field| K[Check Password Generator]
+    J --> L{Can Autofill?}
+    L -->|Yes| M[Get Matching Credentials]
+    L -->|No| N[Show Login Prompt]
+    K --> O[Show Password Generator]
+    M --> P[Show Credential Picker]
+    N --> Q[User Login Action]
+    O --> R[Generate Password]
+    P --> S[User Selects Credential]
+    R --> T[Inject Password]
+    S --> U[Inject Credential]
+    
+    subgraph "Pre-Checked Capabilities"
+        E1[GET_PAGE_CAPABILITIES message]
+        E2[Check auth + vault + secrets]
+        E3[Store in pageCapabilities variable]
+        E4[No API calls on user interaction]
+    end
     
     subgraph "Field Detection Logic"
         B1[Scan: input[type="text|email|tel"]]
@@ -210,10 +251,10 @@ graph TD
     end
     
     subgraph "Popover Display"
-        L1[Create popover element]
-        L2[Position below clicked field]
-        L3[Add CSP-compliant event listeners]
-        L4[Handle user interactions]
+        N1[Create popover element]
+        N2[Position below clicked field]
+        N3[Add CSP-compliant event listeners]
+        N4[Handle user interactions]
     end
 ```
 
@@ -327,6 +368,68 @@ packages/extension/
   - Smart visibility based on context
 
 ## 🔧 Implementation Details
+
+### **✅ Pre-Checked Page Capabilities Implementation**
+
+```typescript
+// ✅ Background Script: Comprehensive capability checking
+const checkPageCapabilities = async (): Promise<{
+  canAutofill: boolean;
+  canSaveCredential: boolean;
+  canGeneratePassword: boolean;
+  hasCredentials: boolean;
+  isAuthenticated: boolean;
+}> => {
+  // Check authentication
+  const { authService } = await import('@common/core/services/authService');
+  const isAuthenticated = await authService.isAuthenticated();
+  
+  // Check user secret key (needed for save operations)
+  const { secretsService } = await import('@common/core/services/secretsService');
+  const hasUserSecretKey = await secretsService.hasUserSecretKey();
+  
+  // Check vault (credentials in clear format in RAM)
+  const { vaultService } = await import('@common/core/services/vaultService');
+  const vaultItems = await vaultService.getLocalVault();
+  const hasCredentials = vaultItems.length > 0;
+  
+  return {
+    canAutofill: isAuthenticated && hasCredentials,     // ✅ Auth + credentials in RAM
+    canSaveCredential: isAuthenticated && hasUserSecretKey, // ✅ Auth + userSecretKey
+    canGeneratePassword: true,                          // ✅ Always available
+    hasCredentials,
+    isAuthenticated
+  };
+};
+
+// ✅ Content Script: Store capabilities for fast access
+let pageCapabilities: {
+  canAutofill: boolean;
+  canSaveCredential: boolean;
+  canGeneratePassword: boolean;
+  hasCredentials: boolean;
+  isAuthenticated: boolean;
+} | null = null;
+
+// ✅ Check on page load
+async function checkPageCapabilities(): Promise<void> {
+  const response = await chrome.runtime.sendMessage({ 
+    type: 'GET_PAGE_CAPABILITIES' 
+  });
+  pageCapabilities = response.capabilities;
+}
+
+// ✅ Use pre-checked capabilities in field handlers
+async function handleFieldClick(e: Event): Promise<void> {
+  // ✅ Use stored capabilities (no API call needed)
+  if (!pageCapabilities?.canAutofill) {
+    showLoginPromptPopover(field, loginFields);
+    return;
+  }
+  
+  // Get credentials and show picker...
+}
+```
 
 ### Field Detection Logic
 
@@ -505,12 +608,16 @@ showLoginPromptPopover(field, loginFields)
 ### Message Handling
 
 ```typescript
-// Background script message handlers
-'GET_SESSION_STATUS' → isAutofillAvailable()
+// ✅ Background script message handlers
+'GET_PAGE_CAPABILITIES' → checkPageCapabilities() // ✅ NEW: Pre-check all capabilities
+'GET_SESSION_STATUS' → isAutofillAvailable()      // ✅ Legacy: Backward compatibility
 'GET_MATCHING_CREDENTIALS' → getMatchingCredentials(domain)
 'INJECT_CREDENTIAL' → getCredentialForInjection(id)
+'GET_SAVE_CREDENTIAL_STATUS' → isSaveCredentialAvailable()
+'GET_PASSWORD_GENERATOR_STATUS' → isPasswordGeneratorAvailable()
 'RESTORE_VAULT' → loadItemsWithFallback()
 'LOCK_VAULT' → clearVaultFromStorage()
+'OPEN_POPUP' → chrome.action.openPopup()
 ```
 
 ## 🛡️ Security Features
@@ -619,6 +726,13 @@ showLoginPromptPopover(field, loginFields)
 
 ### ✅ **Latest Fixes & Improvements**
 
+#### **✅ Pre-Checked Page Capabilities Approach**
+- ✅ **Pre-Check on Page Load**: Capabilities determined once, stored in memory
+- ✅ **Fast User Interactions**: No API calls needed during field clicks
+- ✅ **Better UX**: Instant response when user clicks on fields
+- ✅ **Corrected Understanding**: Vault stored in clear format in RAM
+- ✅ **Proper Service Layer**: Uses `authService`, `secretsService`, `vaultService`
+
 #### **CSP Compliance & Security**
 - ✅ **CSP Violations Fixed**: Removed all inline `onclick` handlers
 - ✅ **Event Handling**: Using `addEventListener` with CSS classes
@@ -687,14 +801,15 @@ showLoginPromptPopover(field, loginFields)
 
 1. **Popover not appearing**
    - Check field detection logic
-   - Verify session status
+   - Verify pre-checked capabilities
    - Check console for errors
    - Ensure CSP compliance (no inline event handlers)
 
 2. **Credential injection not working**
-   - Verify vault is loaded
+   - Verify vault is loaded (clear format in RAM)
    - Check domain matching
    - Validate field detection
+   - Check pre-checked capabilities
 
 3. **Password generator not showing**
    - Check field eligibility
@@ -733,13 +848,22 @@ showLoginPromptPopover(field, loginFields)
    - ✅ **FIXED**: Added `OPEN_POPUP` message handler in background script
    - ✅ **FIXED**: Uses `chrome.action.openPopup()` to properly open the extension popup
 
+10. **✅ Pre-Checked Capabilities Issues**
+    - ✅ **FIXED**: Vault stored in clear format in RAM (no encryption needed)
+    - ✅ **FIXED**: Proper service layer usage (`authService`, `secretsService`, `vaultService`)
+    - ✅ **FIXED**: Capabilities pre-checked on page load for better UX
+    - ✅ **FIXED**: No API calls needed during user interactions
+
 ### Debug Commands
 
 ```javascript
 // Check field detection
 console.log('[Content Script] Detected fields:', loginFields.length);
 
-// Check session status
+// Check pre-checked capabilities
+console.log('[Content Script] Page capabilities:', pageCapabilities);
+
+// Check session status (legacy)
 chrome.runtime.sendMessage({ type: 'GET_SESSION_STATUS' }, console.log);
 
 // Check matching credentials
@@ -747,6 +871,9 @@ chrome.runtime.sendMessage({
   type: 'GET_MATCHING_CREDENTIALS', 
   domain: window.location.hostname 
 }, console.log);
+
+// Check comprehensive capabilities
+chrome.runtime.sendMessage({ type: 'GET_PAGE_CAPABILITIES' }, console.log);
 ```
 
 ## 📚 References
@@ -758,6 +885,7 @@ chrome.runtime.sendMessage({
 
 ---
 
-**Last Updated**: Latest CSP Fixes & Positioning Improvements
-**Status**: ✅ All Phases Complete - Extension Popover Features Fully Implemented with CSP Compliance
-**Performance**: 🚀 99% size reduction, 38x faster builds, CSP-compliant popovers 
+**Last Updated**: Pre-Checked Page Capabilities Implementation
+**Status**: ✅ All Phases Complete - Extension Popover Features Fully Implemented with Pre-Checked Capabilities
+**Performance**: 🚀 99% size reduction, 38x faster builds, CSP-compliant popovers, instant user interactions
+**Architecture**: ✅ Corrected vault storage understanding (clear format in RAM), proper service layer usage 
