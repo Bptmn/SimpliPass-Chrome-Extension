@@ -15,7 +15,7 @@ const setPlatform = (platform: 'extension' | 'mobile') => {
 
 const getPlatform = () => currentPlatform;
 
-// ✅ Pre-check all capabilities on page load
+// ✅ Pre-check all capabilities on page load (using simple stubs)
 const checkPageCapabilities = async (): Promise<{
   canAutofill: boolean;
   canSaveCredential: boolean;
@@ -26,21 +26,22 @@ const checkPageCapabilities = async (): Promise<{
   console.log('[Background] Checking page capabilities');
   
   try {
-    // Check authentication
-    const { authService } = await import('@common/core/services/authService');
-    const isAuthenticated = await authService.isAuthenticated();
-    console.log('[Background] Authentication status:', isAuthenticated);
+    // ✅ Simple stub checks using chrome.storage.session directly
+    const sessionData = await chrome.storage.session.get([
+      'userSecretKey',
+      'user',
+      'encryptedVault'
+    ]);
     
-    // Check user secret key (needed for save operations)
-    const { secretsService } = await import('@common/core/services/secretsService');
-    const hasUserSecretKey = await secretsService.hasUserSecretKey();
-    console.log('[Background] Has user secret key:', hasUserSecretKey);
+    const isAuthenticated = !!(sessionData.user && sessionData.user.id);
+    const hasUserSecretKey = !!sessionData.userSecretKey;
+    const hasCredentials = !!(sessionData.encryptedVault && sessionData.encryptedVault.length > 0);
     
-    // Check vault (credentials in clear format in RAM)
-    const { vaultService } = await import('@common/core/services/vaultService');
-    const vaultItems = await vaultService.getLocalVault();
-    const hasCredentials = vaultItems.length > 0;
-    console.log('[Background] Vault items count:', hasCredentials ? vaultItems.length : 0);
+    console.log('[Background] Session data check:', {
+      isAuthenticated,
+      hasUserSecretKey,
+      hasCredentials: hasCredentials ? 'yes' : 'no'
+    });
     
     // Determine capabilities
     const capabilities = {
@@ -89,17 +90,22 @@ const getMatchingCredentials = async (domain: string): Promise<Array<{
 }>> => {
   console.log('[Background] getMatchingCredentials called for domain:', domain);
   try {
-    // ✅ Use vaultService to get all items
-    const { vaultService } = await import('@common/core/services/vaultService');
-    const allItems = await vaultService.getLocalVault();
+    // ✅ Simple stub using chrome.storage.session directly
+    const vaultData = await chrome.storage.session.get('encryptedVault');
+    const vaultString = vaultData.encryptedVault;
+    
+    if (!vaultString) {
+      console.log('[Background] No vault data found');
+      return [];
+    }
+    
+    const allItems = JSON.parse(vaultString);
     console.log('[Background] All vault items:', allItems.length);
     
     // Filter credentials that match the domain
     const matchingCredentials = allItems
-      .filter((item): item is import('@common/core/types/items.types').CredentialDecrypted => 
-        item.itemType === 'credential'
-      )
-      .filter((cred) => {
+      .filter((item: any) => item.itemType === 'credential')
+      .filter((cred: any) => {
         if (!cred.url) return false;
         try {
           const credDomain = new URL(cred.url).hostname;
@@ -110,7 +116,7 @@ const getMatchingCredentials = async (domain: string): Promise<Array<{
       });
     
     console.log('[Background] Matching credentials for domain', domain, ':', matchingCredentials.length);
-    return matchingCredentials.map((cred) => ({
+    return matchingCredentials.map((cred: any) => ({
       id: cred.id,
       title: cred.title || 'Untitled',
       username: cred.username || '',
@@ -131,16 +137,21 @@ const getCredentialForInjection = async (credentialId: string): Promise<{
 } | null> => {
   console.log('[Background] getCredentialForInjection called for id:', credentialId);
   try {
-    // ✅ Use vaultService to get all items
-    const { vaultService } = await import('@common/core/services/vaultService');
-    const allItems = await vaultService.getLocalVault();
+    // ✅ Simple stub using chrome.storage.session directly
+    const vaultData = await chrome.storage.session.get('encryptedVault');
+    const vaultString = vaultData.encryptedVault;
+    
+    if (!vaultString) {
+      console.log('[Background] No vault data found');
+      return null;
+    }
+    
+    const allItems = JSON.parse(vaultString);
     
     // Find the specific credential by ID
     const credential = allItems
-      .filter((item): item is import('@common/core/types/items.types').CredentialDecrypted => 
-        item.itemType === 'credential'
-      )
-      .find((cred) => cred.id === credentialId);
+      .filter((item: any) => item.itemType === 'credential')
+      .find((cred: any) => cred.id === credentialId);
     
     if (credential) {
       console.log('[Background] Found credential for injection:', credential.title);
