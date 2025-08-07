@@ -9,6 +9,7 @@ import './PopoverCredentialPicker.css';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@common/ui/design/theme';
 import { CredentialCard } from '@common/ui/components/CredentialCard';
+import type { CredentialDecrypted } from '@common/core/types/items.types';
 
 // Minimal popover-specific ErrorBanner
 const PopoverErrorBanner: React.FC<{ message: string }> = ({ message }) => (
@@ -37,6 +38,27 @@ interface PopoverCredentialPickerProps {
   }) => void;
   onClose: () => void;
 }
+
+// Helper function to convert credential data to CredentialDecrypted format
+const convertToCredentialDecrypted = (cred: {
+  id: string;
+  title: string;
+  username: string;
+  url?: string;
+  itemKeyCipher: string;
+  passwordCipher: string;
+}): CredentialDecrypted => ({
+  id: cred.id,
+  itemType: 'credential',
+  title: cred.title,
+  username: cred.username,
+  password: '', // Will be filled by the parent when needed
+  url: cred.url || '',
+  note: '',
+  createdDateTime: new Date(),
+  lastUseDateTime: new Date(),
+  itemKey: '',
+});
 
 export const PopoverCredentialPicker: React.FC<PopoverCredentialPickerProps> = ({
   credentials,
@@ -96,20 +118,9 @@ export const PopoverCredentialPicker: React.FC<PopoverCredentialPickerProps> = (
                 if (e.key === 'Enter' || e.key === ' ') onPick(cred);
               }}
             >
-              {/* Use the shared CredentialCard, but hide the copy button and use popover-specific onClick */}
+              {/* Use the shared CredentialCard component */}
               <CredentialCard 
-                credential={{ 
-                  id: cred.id,
-                  itemType: 'credential',
-                  title: cred.title,
-                  username: cred.username,
-                  password: '', // Will be filled by the parent
-                  url: cred.url || '',
-                  note: '',
-                  createdDateTime: new Date(),
-                  lastUseDateTime: new Date(),
-                  itemKey: '',
-                }} 
+                credential={convertToCredentialDecrypted(cred)}
                 onPress={() => onPick(cred)}
                 hideCopyBtn={true} 
               />
