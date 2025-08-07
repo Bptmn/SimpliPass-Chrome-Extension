@@ -158,7 +158,9 @@ const createPopover = (content: string, field: HTMLElement): HTMLElement => {
   
   // Add event listener with a small delay to prevent immediate closure
   setTimeout(() => {
-    document.addEventListener('click', clickOutsideHandler);
+    if (clickOutsideHandler) {
+      document.addEventListener('click', clickOutsideHandler);
+    }
   }, 100);
   
   console.log('[Content Script] Popover created and positioned at:', { left: popoverLeft, top: popoverTop });
@@ -428,8 +430,8 @@ const removeLoginPrompt = () => {
   removePopover();
 };
 
-const updatePickerSize = () => {
-  console.log('[Content Script] updatePickerSize called');
+const updatePickerSize = (height?: number, width?: number) => {
+  console.log('[Content Script] updatePickerSize called', { height, width });
   // Could implement dynamic sizing if needed
 };
 
@@ -575,18 +577,43 @@ const formCaptureUtility = {
   },
   initializeFormCapture: () => {
     console.log('[Content Script] formCaptureUtility.initializeFormCapture called');
+  },
+  extractCredentialsFromForm: (form: HTMLFormElement) => {
+    console.log('[Content Script] formCaptureUtility.extractCredentialsFromForm called', form);
+    return {
+      username: '',
+      password: '',
+      usernameField: null,
+      passwordField: null
+    };
   }
 };
 
 const credentialCaptureService = {
-  processCapturedCredentials: () => {
-    console.log('[Content Script] credentialCaptureService.processCapturedCredentials called');
+  processCapturedCredentials: (data?: any) => {
+    console.log('[Content Script] credentialCaptureService.processCapturedCredentials called', data);
+  },
+  isCredentialUpdate: async (data: any) => {
+    console.log('[Content Script] credentialCaptureService.isCredentialUpdate called', data);
+    return { isUpdate: false, existingCredential: null };
+  },
+  shouldShowSavePrompt: async (data: any) => {
+    console.log('[Content Script] credentialCaptureService.shouldShowSavePrompt called', data);
+    return false;
+  },
+  getSuggestedTitle: (data: any) => {
+    console.log('[Content Script] credentialCaptureService.getSuggestedTitle called', data);
+    return 'New Credential';
   }
 };
 
 const securityService = {
   isAutofillSafe: () => {
     console.log('[Content Script] securityService.isAutofillSafe called');
+    return { isValid: true, reason: 'stub' };
+  },
+  validateFormData: (data: any) => {
+    console.log('[Content Script] securityService.validateFormData called', data);
     return { isValid: true, reason: 'stub' };
   }
 };
@@ -878,7 +905,11 @@ window.addEventListener('message', (event) => {
 // Listen for credential injection messages from background script
 chrome.runtime.onMessage.addListener(async (msg: { type: string; username?: string; password?: string; level?: string; message?: string; data?: any }) => {
   if (msg && msg.type === 'INJECT_CREDENTIAL' && msg.username && msg.password) {
-    injectCredential(msg.username, msg.password);
+    // Find the current focused field for injection
+    const activeElement = document.activeElement as HTMLElement;
+    if (activeElement) {
+      injectCredential(activeElement, { username: msg.username, password: msg.password });
+    }
     removeInPagePicker();
       } else if (msg && msg.type === 'CAPTURE_CREDENTIALS' && msg.data) {
       // Handle captured credentials
@@ -890,14 +921,14 @@ chrome.runtime.onMessage.addListener(async (msg: { type: string; username?: stri
         
         if (updateCheck.isUpdate && updateCheck.existingCredential) {
           // Show update credential popover
-          showUpdateCredentialPopover(msg.data, updateCheck.existingCredential);
+          showUpdateCredentialPopover(msg.data);
         } else {
           // Check if we should show save prompt for new credential
           const shouldShowPrompt = await credentialCaptureService.shouldShowSavePrompt(msg.data);
           
           if (shouldShowPrompt) {
             const suggestedTitle = credentialCaptureService.getSuggestedTitle(msg.data);
-            showSaveCredentialPopover(msg.data, suggestedTitle);
+            showSaveCredentialPopover(msg.data);
           }
         }
       } catch (error) {
@@ -907,13 +938,19 @@ chrome.runtime.onMessage.addListener(async (msg: { type: string; username?: stri
       // Handle context menu credential picker
       try {
         const domain = window.location.hostname;
-        const credentials = await getMatchingCredentials(domain);
+        // Get matching credentials from background script
+        const response = await new Promise<{ credentials: Array<{ id: string; title: string; username: string; url?: string }> }>((resolve) => {
+          chrome.runtime.sendMessage({ 
+            type: 'GET_MATCHING_CREDENTIALS', 
+            domain: domain 
+          }, resolve);
+        });
         
-        if (credentials.length > 0) {
+        if (response && response.credentials && response.credentials.length > 0) {
           // Find the current focused field
           const activeElement = document.activeElement as HTMLElement;
           if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
-            showPopoverCredentialPicker(activeElement, credentials, []);
+            showPopoverCredentialPicker(activeElement, response.credentials, []);
           }
         }
       } catch (error) {
@@ -947,15 +984,15 @@ chrome.runtime.onMessage.addListener(async (msg: { type: string; username?: stri
           
           if (capturedData) {
             const fullCapturedData = {
-              username: capturedData.username,
-              password: capturedData.password,
+              username: capturedData.username || '',
+              password: capturedData.password || '',
               url: window.location.href,
               domain: window.location.hostname,
               timestamp: Date.now(),
               formId: form.id || undefined,
               fieldNames: {
-                username: capturedData.usernameField?.name,
-                password: capturedData.passwordField?.name
+                username: '',
+                password: ''
               }
             };
             
@@ -970,10 +1007,10 @@ chrome.runtime.onMessage.addListener(async (msg: { type: string; username?: stri
             const updateCheck = await credentialCaptureService.isCredentialUpdate(fullCapturedData);
             
             if (updateCheck.isUpdate && updateCheck.existingCredential) {
-              showUpdateCredentialPopover(fullCapturedData, updateCheck.existingCredential);
+              showUpdateCredentialPopover(fullCapturedData);
             } else {
               const suggestedTitle = credentialCaptureService.getSuggestedTitle(fullCapturedData);
-              showSaveCredentialPopover(fullCapturedData, suggestedTitle);
+              showSaveCredentialPopover(fullCapturedData);
             }
           }
         }
