@@ -1,11 +1,9 @@
 /**
  * Extension-specific items service
- * Wraps common items service for extension-specific functionality
+ * Uses direct Chrome APIs to avoid React Native dependencies
  */
 
-import { itemsService, itemsStateManager } from '@common/core/services/itemsService';
 import { matchCredentialDomain, getDomainMatchingDetails } from '../utils/domainMatching';
-import type { CredentialDecrypted } from '@common/core/types/items.types';
 
 export interface IExtensionItemsService {
   getMatchingCredentials(domain: string): Promise<Array<{
@@ -30,6 +28,19 @@ export interface IExtensionItemsService {
 }
 
 export class ExtensionItemsService implements IExtensionItemsService {
+  private async getAllItems(): Promise<any[]> {
+    try {
+      const sessionData = await chrome.storage.session.get(['encryptedVault']);
+      if (!sessionData.encryptedVault) return [];
+      
+      const vaultData = JSON.parse(sessionData.encryptedVault);
+      return vaultData.items || [];
+    } catch (error) {
+      console.error('[ExtensionItemsService] Failed to get all items:', error);
+      return [];
+    }
+  }
+
   async getMatchingCredentials(domain: string): Promise<Array<{
     id: string;
     title: string;
@@ -37,8 +48,8 @@ export class ExtensionItemsService implements IExtensionItemsService {
     url?: string;
   }>> {
     try {
-      // Get all items from the state manager
-      const allItems = itemsStateManager.getItems();
+      // Get all items from Chrome storage directly
+      const allItems = await this.getAllItems();
       
       // Filter credentials that match the domain using utility function
       const matchingCredentials = allItems
@@ -83,8 +94,8 @@ export class ExtensionItemsService implements IExtensionItemsService {
     url?: string;
   } | null> {
     try {
-      // Get all items from the state manager
-      const allItems = itemsStateManager.getItems();
+      // Get all items from Chrome storage directly
+      const allItems = await this.getAllItems();
       
       // Find the specific credential by ID
       const credential = allItems
@@ -117,8 +128,8 @@ export class ExtensionItemsService implements IExtensionItemsService {
     url?: string;
   }>> {
     try {
-      // Get all items from the state manager
-      const allItems = itemsStateManager.getItems();
+      // Get all items from Chrome storage directly
+      const allItems = await this.getAllItems();
       
       // Filter credentials only
       const credentials = allItems

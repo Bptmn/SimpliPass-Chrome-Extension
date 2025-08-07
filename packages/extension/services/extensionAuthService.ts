@@ -1,12 +1,7 @@
 /**
  * Extension-specific authentication service
- * Wraps common auth service for extension-specific functionality
+ * Uses direct Chrome APIs to avoid React Native dependencies
  */
-
-import { authService } from '@common/core/services/authService';
-import { secretsService } from '@common/core/services/secretsService';
-import { vaultService } from '@common/core/services/vaultService';
-import { itemsService } from '@common/core/services/itemsService';
 
 export interface IExtensionAuthService {
   isAuthenticated(): Promise<boolean>;
@@ -19,7 +14,8 @@ export interface IExtensionAuthService {
 export class ExtensionAuthService implements IExtensionAuthService {
   async isAuthenticated(): Promise<boolean> {
     try {
-      return await authService.isAuthenticated();
+      const sessionData = await chrome.storage.session.get(['user']);
+      return !!(sessionData.user && sessionData.user.id);
     } catch (error) {
       console.error('[ExtensionAuthService] Failed to check authentication:', error);
       return false;
@@ -28,7 +24,8 @@ export class ExtensionAuthService implements IExtensionAuthService {
 
   async hasUserSecretKey(): Promise<boolean> {
     try {
-      return await secretsService.hasUserSecretKey();
+      const sessionData = await chrome.storage.session.get(['userSecretKey']);
+      return !!sessionData.userSecretKey;
     } catch (error) {
       console.error('[ExtensionAuthService] Failed to check user secret key:', error);
       return false;
@@ -37,8 +34,12 @@ export class ExtensionAuthService implements IExtensionAuthService {
 
   async hasCredentials(): Promise<boolean> {
     try {
-      const vault = await vaultService.getLocalVault();
-      return Array.isArray(vault) && vault.length > 0;
+      const sessionData = await chrome.storage.session.get(['encryptedVault']);
+      if (!sessionData.encryptedVault) return false;
+      
+      const vaultData = JSON.parse(sessionData.encryptedVault);
+      const vaultItems = vaultData.items;
+      return Array.isArray(vaultItems) && vaultItems.length > 0;
     } catch (error) {
       console.error('[ExtensionAuthService] Failed to check credentials:', error);
       return false;
@@ -46,12 +47,18 @@ export class ExtensionAuthService implements IExtensionAuthService {
   }
 
   getCurrentUserId(): string | null {
-    return authService.getCurrentUserId();
+    // This would need to be implemented with direct Chrome API calls
+    // For now, return null and let the calling code handle it
+    return null;
   }
 
   async getLocalVault(): Promise<any[]> {
     try {
-      return await vaultService.getLocalVault();
+      const sessionData = await chrome.storage.session.get(['encryptedVault']);
+      if (!sessionData.encryptedVault) return [];
+      
+      const vaultData = JSON.parse(sessionData.encryptedVault);
+      return vaultData.items || [];
     } catch (error) {
       console.error('[ExtensionAuthService] Failed to get local vault:', error);
       return [];
