@@ -1,7 +1,9 @@
 /**
  * Extension-specific local storage implementation
- * Uses chrome.storage.local for secure storage
+ * Thin wrapper around platform storage adapter for extension-specific needs
  */
+
+import { storage } from '@common/core/adapters/platform.storage.adapter';
 
 export interface LocalStorageAdapter {
   setItem(key: string, value: unknown): Promise<void>;
@@ -11,47 +13,59 @@ export interface LocalStorageAdapter {
   getAllKeys(): Promise<string[]>;
 }
 
-// Extension localStorage implementation using chrome.storage.local
+// Extension localStorage implementation using platform storage adapter
 const extensionLocalStorage: LocalStorageAdapter = {
   async setItem(key: string, value: unknown): Promise<void> {
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      await chrome.storage.local.set({ [key]: value });
-    } else {
-      throw new Error('Chrome storage not available');
+    try {
+      // Use platform storage adapter for secure storage
+      await storage.storeVaultToSecureLocalStorage({ [key]: value });
+    } catch (error) {
+      throw new Error(`Failed to set item ${key}: ${error}`);
     }
   },
   
   async getItem<T>(key: string): Promise<T | null> {
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      const result = await chrome.storage.local.get([key]);
-      return result[key] || null;
-    } else {
-      throw new Error('Chrome storage not available');
+    try {
+      // Use platform storage adapter for secure storage
+      const vault = await storage.getVaultFromSecureLocalStorage();
+      if (!vault || !vault[key]) {
+        return null;
+      }
+      return vault[key] as T;
+    } catch (error) {
+      console.error('Failed to get item:', error);
+      return null;
     }
   },
   
   async removeItem(key: string): Promise<void> {
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      await chrome.storage.local.remove([key]);
-    } else {
-      throw new Error('Chrome storage not available');
+    try {
+      // Get current vault, remove key, and store back
+      const vault = await storage.getVaultFromSecureLocalStorage();
+      if (vault && vault[key]) {
+        delete vault[key];
+        await storage.updateVaultInSecureLocalStorage(vault);
+      }
+    } catch (error) {
+      throw new Error(`Failed to remove item ${key}: ${error}`);
     }
   },
   
   async clear(): Promise<void> {
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      await chrome.storage.local.clear();
-    } else {
-      throw new Error('Chrome storage not available');
+    try {
+      await storage.clearAllSecureLocalStorage();
+    } catch (error) {
+      throw new Error(`Failed to clear storage: ${error}`);
     }
   },
   
   async getAllKeys(): Promise<string[]> {
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      const result = await chrome.storage.local.get(null);
-      return Object.keys(result);
-    } else {
-      throw new Error('Chrome storage not available');
+    try {
+      const vault = await storage.getVaultFromSecureLocalStorage();
+      return vault ? Object.keys(vault) : [];
+    } catch (error) {
+      console.error('Failed to get all keys:', error);
+      return [];
     }
   }
 };
@@ -61,7 +75,7 @@ export function getExtensionLocalStorage(): LocalStorageAdapter {
   return extensionLocalStorage;
 }
 
-// Convenience functions
+// Convenience functions using platform storage adapter
 export async function setLocalStorageItem(key: string, value: unknown): Promise<void> {
   const storage = getExtensionLocalStorage();
   await storage.setItem(key, value);

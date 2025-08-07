@@ -1,5 +1,6 @@
-// Minimal background script to avoid React Native dependencies
-import { matchCredentialDomain, getDomainMatchingDetails } from './utils/domainMatching';
+// Minimal background script using services instead of direct Chrome APIs
+import { extensionAuthService } from './services/extensionAuthService';
+import { extensionItemsService } from './services/extensionItemsService';
 
 interface PageState {
   url: string;
@@ -17,7 +18,7 @@ const setPlatform = (platform: 'extension' | 'mobile') => {
 
 const _getPlatform = () => currentPlatform;
 
-// ✅ Pre-check all capabilities on page load (using simple stubs)
+// ✅ Pre-check all capabilities on page load using services
 const checkPageCapabilities = async (): Promise<{
   canAutofill: boolean;
   canSaveCredential: boolean;
@@ -28,52 +29,16 @@ const checkPageCapabilities = async (): Promise<{
   console.log('[Background] Checking page capabilities');
   
   try {
-    // ✅ Simple stub checks using chrome.storage.session directly
-    const sessionData = await chrome.storage.session.get([
-      'userSecretKey',
-      'user',
-      'encryptedVault'
-    ]);
+    // ✅ Use services instead of direct Chrome APIs
+    const isAuthenticated = await extensionAuthService.isAuthenticated();
+    const hasUserSecretKey = await extensionAuthService.hasUserSecretKey();
+    const hasCredentials = await extensionAuthService.hasCredentials();
     
-    const allKeys = await chrome.storage.session.get(null);
-    const allLocalKeys = await chrome.storage.local.get(null);
-    console.log('[Background] All session storage keys:', JSON.stringify(allKeys, null, 2));
-    console.log('[Background] All local storage keys:', JSON.stringify(allLocalKeys, null, 2));
-    console.log('[Background] Requested session data:', JSON.stringify(sessionData, null, 2));
-    
-    const isAuthenticated = !!(sessionData.user && sessionData.user.id);
-    const hasUserSecretKey = !!sessionData.userSecretKey;
-    
-    // Check if vault exists and has content
-    let hasCredentials = false;
-    if (sessionData.encryptedVault) {
-      try {
-        const vaultData = JSON.parse(sessionData.encryptedVault);
-        // The vault is an object with items array, not directly an array
-        const vaultItems = vaultData.items;
-        hasCredentials = Array.isArray(vaultItems) && vaultItems.length > 0;
-        console.log('[Background] Vault parsing:', {
-          vaultDataKeys: Object.keys(vaultData),
-          itemsArrayExists: !!vaultData.items,
-          itemsArrayLength: vaultData.items ? vaultData.items.length : 0,
-          hasCredentials
-        });
-      } catch (error) {
-        console.error('[Background] Error parsing vault:', error);
-        hasCredentials = false;
-      }
-    }
-    
-    const sessionCheck = {
+    console.log('[Background] Service checks:', {
       isAuthenticated,
       hasUserSecretKey,
-      hasCredentials: hasCredentials ? 'yes' : 'no',
-      userData: sessionData.user,
-      userSecretKeyExists: !!sessionData.userSecretKey,
-      encryptedVaultExists: !!sessionData.encryptedVault,
-      encryptedVaultLength: sessionData.encryptedVault ? sessionData.encryptedVault.length : 0
-    };
-    console.log('[Background] Session data check:', JSON.stringify(sessionCheck, null, 2));
+      hasCredentials: hasCredentials ? 'yes' : 'no'
+    });
     
     // Determine capabilities
     const capabilities = {
@@ -84,7 +49,7 @@ const checkPageCapabilities = async (): Promise<{
       isAuthenticated
     };
     
-    console.log('[Background] Page capabilities:', capabilities);
+    console.log('[Background] Page capabilities:', JSON.stringify(capabilities, null, 2));
     return capabilities;
   } catch (error) {
     console.error('[Background] Error checking page capabilities:', error);
@@ -125,61 +90,10 @@ const getMatchingCredentials = async (domain: string): Promise<Array<{
 }>> => {
   console.log('[Background] getMatchingCredentials called for domain:', domain);
   try {
-    // ✅ Simple stub using chrome.storage.session directly
-    const vaultData = await chrome.storage.session.get('encryptedVault');
-    const vaultString = vaultData.encryptedVault;
-    
-    if (!vaultString) {
-      console.log('[Background] No vault data found');
-      return [];
-    }
-    
-    const parsedVaultData = JSON.parse(vaultString);
-    console.log('[Background] Vault data type:', typeof parsedVaultData);
-    console.log('[Background] Vault data keys:', Object.keys(parsedVaultData));
-    
-    // Extract items array from vault object
-    const allItems = parsedVaultData.items;
-    console.log('[Background] Items array type:', typeof allItems);
-    console.log('[Background] Items array:', allItems);
-    
-    // Ensure allItems is an array
-    if (!Array.isArray(allItems)) {
-      console.log('[Background] Items array is not an array, converting to empty array');
-      return [];
-    }
-    
-    console.log('[Background] All vault items:', allItems.length);
-    
-    // Filter credentials that match the domain using utility function
-    const matchingCredentials = allItems
-      .filter((item: any) => item.itemType === 'credential')
-      .filter((cred: any) => {
-        if (!cred.url) return false;
-        
-        const matches = matchCredentialDomain(cred, domain);
-        const details = getDomainMatchingDetails(domain, cred.url);
-        
-        console.log('[Background] Domain matching:', {
-          currentDomain: details.currentDomain,
-          storedDomain: details.storedDomain,
-          credUrl: cred.url,
-          normalizedCurrent: details.normalizedCurrent,
-          normalizedStored: details.normalizedStored,
-          matches: details.matches,
-          matchType: details.matchType
-        });
-        
-        return matches;
-      });
-    
-    console.log('[Background] Matching credentials for domain', domain, ':', matchingCredentials.length);
-    return matchingCredentials.map((cred: any) => ({
-      id: cred.id,
-      title: cred.title || 'Untitled',
-      username: cred.username || '',
-      url: cred.url
-    }));
+    // ✅ Use extension items service instead of direct Chrome APIs
+    const matchingCredentials = await extensionItemsService.getMatchingCredentials(domain);
+    console.log('[Background] Found matching credentials:', matchingCredentials.length);
+    return matchingCredentials;
   } catch (error) {
     console.error('[Background] Error getting matching credentials:', error);
     return [];
@@ -195,48 +109,14 @@ const getCredentialForInjection = async (credentialId: string): Promise<{
 } | null> => {
   console.log('[Background] getCredentialForInjection called for id:', credentialId);
   try {
-    // ✅ Simple stub using chrome.storage.session directly
-    const vaultData = await chrome.storage.session.get('encryptedVault');
-    const vaultString = vaultData.encryptedVault;
-    
-    if (!vaultString) {
-      console.log('[Background] No vault data found');
-      return null;
-    }
-    
-    const vaultDataForInjection = JSON.parse(vaultString);
-    console.log('[Background] Vault data type for injection:', typeof vaultDataForInjection);
-    console.log('[Background] Vault data keys for injection:', Object.keys(vaultDataForInjection));
-    
-    // Extract items array from vault object
-    const allItems = vaultDataForInjection.items;
-    console.log('[Background] Items array type for injection:', typeof allItems);
-    console.log('[Background] Items array for injection:', allItems);
-    
-    // Ensure allItems is an array
-    if (!Array.isArray(allItems)) {
-      console.log('[Background] Items array is not an array for injection');
-      return null;
-    }
-    
-    // Find the specific credential by ID
-    const credential = allItems
-      .filter((item: any) => item.itemType === 'credential')
-      .find((cred: any) => cred.id === credentialId);
-    
+    // ✅ Use extension items service instead of direct Chrome APIs
+    const credential = await extensionItemsService.getCredentialForInjection(credentialId);
     if (credential) {
       console.log('[Background] Found credential for injection:', credential.title);
-      return {
-        id: credential.id,
-        title: credential.title || 'Untitled',
-        username: credential.username || '',
-        password: credential.password || '',
-        url: credential.url
-      };
     } else {
       console.log('[Background] Credential not found for ID:', credentialId);
-      return null;
     }
+    return credential;
   } catch (error) {
     console.error('[Background] Error getting credential for injection:', error);
     return null;
