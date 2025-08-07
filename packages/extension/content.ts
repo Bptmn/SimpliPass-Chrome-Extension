@@ -274,9 +274,73 @@ const showPasswordGeneratorPopover = (field: HTMLInputElement, options?: any) =>
   });
 };
 
-const showSaveCredentialPopover = (data: any) => {
+const showSaveCredentialPopover = async (data: any) => {
   console.log('[Content Script] showSaveCredentialPopover called');
   
+  // Check if save credential is available (requires user secret key)
+  const saveResponse = await new Promise<{ isAvailable: boolean }>((resolve) => {
+    chrome.runtime.sendMessage({ 
+      type: 'GET_SAVE_CREDENTIAL_STATUS'
+    }, resolve);
+  });
+  
+  if (!saveResponse || !saveResponse.isAvailable) {
+    console.log('[Content Script] Save credential not available (no valid session or no user secret key)');
+    // Show a message that user needs to log in with master password
+    const content = `
+      <div style="margin-bottom: 8px; font-weight: 600; color: #333;">Save Credential</div>
+      <div style="margin-bottom: 12px; color: #666; font-size: 13px;">
+        Please log in to SimpliPass with your master password to save credentials.
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="login-btn" style="flex: 1; padding: 8px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
+          Log In
+        </button>
+        <button class="dismiss-btn" style="flex: 1; padding: 8px 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
+          Dismiss
+        </button>
+      </div>
+    `;
+    
+    const popover = document.createElement('div');
+    popover.style.cssText = `
+      position: fixed;
+      z-index: 999999;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      padding: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      max-width: 300px;
+      min-width: 200px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    `;
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.innerHTML = content;
+    popover.appendChild(contentDiv);
+    document.body.appendChild(popover);
+    currentPopover = popover;
+    
+    // Add event listeners
+    popover.querySelector('.login-btn')?.addEventListener('click', () => {
+      console.log('Login clicked for save credential');
+      chrome.runtime.sendMessage({ type: 'OPEN_POPUP' });
+      removePopover();
+    });
+    
+    popover.querySelector('.dismiss-btn')?.addEventListener('click', () => {
+      console.log('Dismiss clicked');
+      removePopover();
+    });
+    return;
+  }
+  
+  // Save credential is available, show the save form
   const content = `
     <div style="margin-bottom: 8px; font-weight: 600; color: #333;">Save Credential</div>
     <div style="margin-bottom: 12px; color: #666; font-size: 13px;">
@@ -292,7 +356,6 @@ const showSaveCredentialPopover = (data: any) => {
     </div>
   `;
   
-  // Create popover without specific field (for form submission)
   const popover = document.createElement('div');
   popover.style.cssText = `
     position: fixed;
@@ -558,15 +621,15 @@ async function handleFieldClick(e: Event): Promise<void> {
   isProcessingField = true;
   
   try {
-    // Check session status first
-    const sessionResponse = await new Promise<{ isValid: boolean }>((resolve) => {
+    // Check autofill availability (requires login + credentials)
+    const autofillResponse = await new Promise<{ isValid: boolean }>((resolve) => {
       chrome.runtime.sendMessage({ 
         type: 'GET_SESSION_STATUS'
       }, resolve);
     });
     
-    if (!sessionResponse || !sessionResponse.isValid) {
-      console.log('[Content Script] No valid session found, showing login prompt');
+    if (!autofillResponse || !autofillResponse.isValid) {
+      console.log('[Content Script] Autofill not available (no valid session or no credentials), showing login prompt');
       showLoginPromptPopover(field, loginFields);
       return;
     }
@@ -582,7 +645,7 @@ async function handleFieldClick(e: Event): Promise<void> {
     if (response && response.credentials && response.credentials.length > 0) {
       showPopoverCredentialPicker(field, response.credentials, loginFields);
     } else {
-      console.log('[Content Script] No matching credentials found or session not valid');
+      console.log('[Content Script] No matching credentials found for autofill');
       removeInPagePicker();
     }
   } catch (error) {
@@ -632,13 +695,13 @@ async function handlePasswordFieldClick(e: Event): Promise<void> {
     } else {
       console.log('[Content Script] Password field not eligible for generation (login form)');
       
-      // For login forms, behave like login fields - check session and show appropriate popover
-      const response = await new Promise<{ isValid: boolean }>((resolve) => {
+      // For login forms, check autofill availability (requires login + credentials)
+      const autofillResponse = await new Promise<{ isValid: boolean }>((resolve) => {
         chrome.runtime.sendMessage({ type: 'GET_SESSION_STATUS' }, resolve);
       });
       
-      if (response && response.isValid) {
-        console.log('[Content Script] Valid session found for password field');
+      if (autofillResponse && autofillResponse.isValid) {
+        console.log('[Content Script] Autofill available for password field');
         
         // Get matching credentials for current domain
         const credentialsResponse = await new Promise<{ credentials: Array<{ id: string; title: string; username: string; url?: string }> }>((resolve) => {
@@ -655,7 +718,7 @@ async function handlePasswordFieldClick(e: Event): Promise<void> {
           removeInPagePicker();
         }
       } else {
-        console.log('[Content Script] No valid session found for password field, showing login prompt');
+        console.log('[Content Script] Autofill not available for password field, showing login prompt');
         showLoginPromptPopover(field, loginFields);
       }
     }

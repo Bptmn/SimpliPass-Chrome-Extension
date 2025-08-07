@@ -6,15 +6,41 @@
   const isAutofillAvailable = async () => {
     console.log("[Background] isAutofillAvailable called - checking session status");
     try {
-      const result = await chrome.storage.session.get(["authToken", "userId", "isAuthenticated"]);
+      const result = await chrome.storage.session.get(["authToken", "userId", "isAuthenticated", "credentials", "items"]);
       console.log("[Background] Storage check result:", result);
       const hasValidAuth = result.authToken && result.userId && result.isAuthenticated === true;
       console.log("[Background] Has valid auth:", hasValidAuth);
-      return hasValidAuth;
+      const credentials = result.credentials || result.items || [];
+      const hasCredentials = credentials.length > 0;
+      console.log("[Background] Has credentials:", hasCredentials, "Count:", credentials.length);
+      const isAutofillReady = hasValidAuth && hasCredentials;
+      console.log("[Background] Autofill ready:", isAutofillReady);
+      return isAutofillReady;
     } catch (error) {
       console.error("[Background] Error checking autofill availability:", error);
       return false;
     }
+  };
+  const isSaveCredentialAvailable = async () => {
+    console.log("[Background] isSaveCredentialAvailable called - checking save requirements");
+    try {
+      const result = await chrome.storage.session.get(["authToken", "userId", "isAuthenticated", "userSecretKey"]);
+      console.log("[Background] Save credential check result:", result);
+      const hasValidAuth = result.authToken && result.userId && result.isAuthenticated === true;
+      const hasUserSecretKey = result.userSecretKey && result.userSecretKey.length > 0;
+      console.log("[Background] Has valid auth for save:", hasValidAuth);
+      console.log("[Background] Has user secret key:", hasUserSecretKey);
+      const isSaveReady = hasValidAuth && hasUserSecretKey;
+      console.log("[Background] Save credential ready:", isSaveReady);
+      return isSaveReady;
+    } catch (error) {
+      console.error("[Background] Error checking save credential availability:", error);
+      return false;
+    }
+  };
+  const isPasswordGeneratorAvailable = async () => {
+    console.log("[Background] isPasswordGeneratorAvailable called - always available");
+    return true;
   };
   const getMatchingCredentials = async (domain) => {
     console.log("[Background] getMatchingCredentials called for domain:", domain);
@@ -193,6 +219,34 @@
         } catch (error) {
           console.error("[Background] Error checking session status:", error);
           sendResponse({ isValid: false, error: error instanceof Error ? error.message : "Unknown error" });
+        }
+      })();
+      return true;
+    }
+    if (msg.type === "GET_SAVE_CREDENTIAL_STATUS") {
+      console.log("[Background] GET_SAVE_CREDENTIAL_STATUS request");
+      (async () => {
+        try {
+          const isAvailable = await isSaveCredentialAvailable();
+          console.log("[Background] Save credential status:", isAvailable);
+          sendResponse({ isAvailable });
+        } catch (error) {
+          console.error("[Background] Error checking save credential status:", error);
+          sendResponse({ isAvailable: false, error: error instanceof Error ? error.message : "Unknown error" });
+        }
+      })();
+      return true;
+    }
+    if (msg.type === "GET_PASSWORD_GENERATOR_STATUS") {
+      console.log("[Background] GET_PASSWORD_GENERATOR_STATUS request");
+      (async () => {
+        try {
+          const isAvailable = await isPasswordGeneratorAvailable();
+          console.log("[Background] Password generator status:", isAvailable);
+          sendResponse({ isAvailable });
+        } catch (error) {
+          console.error("[Background] Error checking password generator status:", error);
+          sendResponse({ isAvailable: false, error: error instanceof Error ? error.message : "Unknown error" });
         }
       })();
       return true;
