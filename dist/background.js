@@ -118,10 +118,10 @@
   const initializeContextMenu = () => {
     console.log("[Background] initializeContextMenu called");
   };
-  const handleContextMenuClick = (info, tab) => {
+  const handleContextMenuClick = (_info, _tab) => {
     console.log("[Background] handleContextMenuClick called");
   };
-  const updateContextMenuVisibility = (tab) => {
+  const updateContextMenuVisibility = (_tab) => {
     console.log("[Background] updateContextMenuVisibility called");
   };
   const pageState = {};

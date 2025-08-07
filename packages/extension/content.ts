@@ -175,7 +175,7 @@ const removePopover = () => {
   }
 };
 
-const showPopoverCredentialPicker = (field: HTMLElement, credentials: any[], loginFields: LoginField[]) => {
+const showPopoverCredentialPicker = (field: HTMLElement, credentials: any[], _loginFields: LoginField[]) => {
   console.log('[Content Script] showPopoverCredentialPicker called');
   
   const content = `
@@ -208,7 +208,7 @@ const showPopoverCredentialPicker = (field: HTMLElement, credentials: any[], log
   });
 };
 
-const showLoginPromptPopover = (field: HTMLElement, loginFields: LoginField[]) => {
+const showLoginPromptPopover = (field: HTMLElement, _loginFields: LoginField[]) => {
   console.log('[Content Script] showLoginPromptPopover called');
   
   const content = `
@@ -242,7 +242,7 @@ const showLoginPromptPopover = (field: HTMLElement, loginFields: LoginField[]) =
   });
 };
 
-const showPasswordGeneratorPopover = (field: HTMLInputElement, options?: any) => {
+const showPasswordGeneratorPopover = (field: HTMLInputElement, _options?: any) => {
   console.log('[Content Script] showPasswordGeneratorPopover called');
   
   const content = `
@@ -274,7 +274,7 @@ const showPasswordGeneratorPopover = (field: HTMLInputElement, options?: any) =>
   });
 };
 
-const showSaveCredentialPopover = async (data: any) => {
+const showSaveCredentialPopover = async (_data: any) => {
   console.log('[Content Script] showSaveCredentialPopover called');
   
   // Check if save credential is available (requires user secret key)
@@ -392,7 +392,7 @@ const showSaveCredentialPopover = async (data: any) => {
   });
 };
 
-const showUpdateCredentialPopover = (data: any) => {
+const showUpdateCredentialPopover = (_data: any) => {
   console.log('[Content Script] showUpdateCredentialPopover called');
   
   const content = `
@@ -463,7 +463,7 @@ const updatePickerSize = () => {
 };
 
 // Simple stubs for credential injection
-const injectCredential = (field: HTMLElement, credential: any) => {
+const injectCredential = (_field: HTMLElement, _credential: any) => {
   console.log('[Content Script] injectCredential called');
 };
 
@@ -606,7 +606,7 @@ let pageCapabilities: {
 } | null = null;
 
 // ✅ NEW: Check page capabilities on load
-async function checkPageCapabilities(): Promise<void> {
+async function _checkPageCapabilities(): Promise<void> {
   try {
     console.log('[Content Script] Checking page capabilities on load');
     const response = await new Promise<{ capabilities: any }>((resolve) => {

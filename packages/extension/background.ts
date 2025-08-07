@@ -13,7 +13,7 @@ const setPlatform = (platform: 'extension' | 'mobile') => {
   console.log('[Background] Platform set to:', platform);
 };
 
-const getPlatform = () => currentPlatform;
+const _getPlatform = () => currentPlatform;
 
 // ✅ Pre-check all capabilities on page load (using simple stubs)
 const checkPageCapabilities = async (): Promise<{
@@ -178,12 +178,12 @@ const initializeContextMenu = () => {
   // Context menu initialization will be implemented later
 };
 
-const handleContextMenuClick = (info: any, tab: any) => {
+const handleContextMenuClick = (_info: any, _tab: any) => {
   console.log('[Background] handleContextMenuClick called');
   // Context menu click handling will be implemented later
 };
 
-const updateContextMenuVisibility = (tab: any) => {
+const updateContextMenuVisibility = (_tab: any) => {
   console.log('[Background] updateContextMenuVisibility called');
   // Context menu visibility update will be implemented later
 };
