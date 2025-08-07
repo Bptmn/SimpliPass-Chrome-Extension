@@ -37,6 +37,51 @@ Object.defineProperty(global, 'import', {
   writable: true
 });
 
+// Mock Chrome API for extension tests
+const mockChrome = {
+  runtime: {
+    onMessage: {
+      addListener: jest.fn(),
+      removeListener: jest.fn()
+    },
+    sendMessage: jest.fn(),
+    onStartup: {
+      addListener: jest.fn()
+    },
+    onInstalled: {
+      addListener: jest.fn()
+    }
+  },
+  tabs: {
+    onUpdated: {
+      addListener: jest.fn()
+    },
+    query: jest.fn(),
+    sendMessage: jest.fn()
+  },
+  contextMenus: {
+    create: jest.fn(),
+    update: jest.fn(),
+    removeAll: jest.fn(),
+    onClicked: {
+      addListener: jest.fn()
+    }
+  },
+  storage: {
+    session: {
+      get: jest.fn(),
+      set: jest.fn(),
+      remove: jest.fn()
+    }
+  }
+};
+
+// Mock Chrome API globally
+Object.defineProperty(global, 'chrome', {
+  value: mockChrome,
+  writable: true
+});
+
 module.exports = async () => {
   console.log('Starting Firestore emulator in global setup...');
   global.emulator = exec('npm run emulator');

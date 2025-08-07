@@ -1,14 +1,16 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tsconfigPaths from 'vite-tsconfig-paths'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
+import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
   plugins: [
-    react(),
     tsconfigPaths(),
     viteStaticCopy({
       targets: [
+        {
+          src: 'packages/extension/public/manifest.json',
+          dest: '.',
+        },
         {
           src: 'packages/extension/PopoverCredentialPicker.html',
           dest: 'src/content/popovers',
@@ -37,10 +39,6 @@ export default defineConfig({
           src: 'packages/extension/public/icons/*',
           dest: 'assets/icons',
         },
-        {
-          src: 'packages/extension/public/manifest.json',
-          dest: '.',
-        },
       ],
     }),
   ],
@@ -49,26 +47,22 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       input: {
-        popup: 'packages/extension/popup/index.tsx',
-        credentialPicker: 'packages/extension/PopoverCredentialPicker.tsx',
+        background: 'packages/extension/background.ts',
       },
       external: ['chrome'],
       output: {
-        entryFileNames: chunk => {
-          if (chunk.name === 'popup') return 'assets/index.js';
-          if (chunk.name === 'credentialPicker') return 'src/content/popovers/PopoverCredentialPicker.js';
-          return 'assets/[name]-[hash].js';
-        },
-        format: 'es',
-        preserveModules: false,
-      }
+        entryFileNames: 'background.js',
+        format: 'iife',
+        inlineDynamicImports: true,
+        exports: 'none',
+        manualChunks: undefined,
+      },
     },
     minify: false,
     commonjsOptions: {
       include: [/node_modules/],
       transformMixedEsModules: true,
     },
-    emptyOutDir: false, // Don't empty the dist directory to preserve content.js
   },
   resolve: {
     alias: {
@@ -87,12 +81,8 @@ export default defineConfig({
     },
     extensions: ['.web.ts', '.web.tsx', '.ts', '.tsx', '.js', '.json'],
   },
-  envPrefix: 'VITE_',
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-native-web'],
-    exclude: ['chrome', 'react-native'],
-  },
   define: {
     global: 'globalThis',
+    __DEV__: 'false',
   },
-}) 
+}); 

@@ -7,6 +7,15 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'babel-jest',
     '^packages/common/config/platform\\.ts$': 'babel-jest',
   },
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  globals: {
+    'ts-jest': {
+      useESM: true,
+      tsconfig: {
+        jsx: 'react-jsx',
+      },
+    },
+  },
   transformIgnorePatterns: [
     'node_modules/(?!(react-native|@react-native|@react-native-js|@react-native-community|@react-native-polyfills|@react-native/js-polyfills|@stablelib|stablelib|react-native-modal-datetime-picker)/)',
   ],
@@ -27,6 +36,7 @@ module.exports = {
     '^@common/(.*)$': '<rootDir>/packages/common/$1',
     '^@/(.*)$': '<rootDir>/packages/app/$1',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
+    '^@common/config/platform$': '<rootDir>/__mocks__/platformMock.js',
   },
   testMatch: [
     '**/__tests__/**/*.(ts|tsx|js)',

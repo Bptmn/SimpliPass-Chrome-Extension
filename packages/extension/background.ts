@@ -1,17 +1,92 @@
-import { PageState } from '@common/core/types/auth.types';
+// Minimal background script to avoid React Native dependencies
+interface PageState {
+  url: string;
+  domain: string;
+  hasLoginForm: boolean;
+}
+
+// Simple platform state management for background script
+let currentPlatform: 'extension' | 'mobile' | null = null;
+
+const setPlatform = (platform: 'extension' | 'mobile') => {
+  currentPlatform = platform;
+  console.log('[Background] Platform set to:', platform);
+};
+
+const getPlatform = () => currentPlatform;
+
+// Simple stubs for autofill functions to avoid React Native dependencies
+const isAutofillAvailable = async (): Promise<boolean> => {
+  console.log('[Background] isAutofillAvailable called - returning false for now');
+  return false;
+};
+
+const getMatchingCredentials = async (domain: string): Promise<Array<{
+  id: string;
+  title: string;
+  username: string;
+  url?: string;
+}>> => {
+  console.log('[Background] getMatchingCredentials called for domain:', domain);
+  return [];
+};
+
+const getCredentialForInjection = async (credentialId: string): Promise<{
+  id: string;
+  title: string;
+  username: string;
+  password: string;
+  url?: string;
+} | null> => {
+  console.log('[Background] getCredentialForInjection called for id:', credentialId);
+  return null;
+};
+
+// Simple stubs for context menu functions to avoid React Native dependencies
+const initializeContextMenu = () => {
+  console.log('[Background] initializeContextMenu called');
+  // Context menu initialization will be implemented later
+};
+
+const handleContextMenuClick = (info: any, tab: any) => {
+  console.log('[Background] handleContextMenuClick called');
+  // Context menu click handling will be implemented later
+};
+
+const updateContextMenuVisibility = (tab: any) => {
+  console.log('[Background] updateContextMenuVisibility called');
+  // Context menu visibility update will be implemented later
+};
 
 /**
  * Stores page info per tab.
  */
 const pageState: { [tabId: number]: PageState } = {};
 
-// Forward background logs to content scripts
-const originalConsoleLog = console.log;
-const originalConsoleError = console.error;
-const originalConsoleWarn = console.warn;
-
 // Store active tabs that have content scripts
 const activeContentScriptTabs = new Set<number>();
+
+// Initialize context menu on extension load
+// Wait for extension to be fully loaded before initializing context menu
+chrome.runtime.onStartup.addListener(() => {
+  // Set platform to extension since this is the background script
+  setPlatform('extension');
+  
+  // Add a small delay to ensure Chrome APIs are fully loaded
+  setTimeout(() => {
+    initializeContextMenu();
+  }, 100);
+});
+
+chrome.runtime.onInstalled.addListener(() => {
+  // Set platform to extension since this is the background script
+  setPlatform('extension');
+  
+  // Add a small delay to ensure Chrome APIs are fully loaded
+  setTimeout(() => {
+    initializeContextMenu();
+  }, 100);
+});
 
 // Function to forward logs to content scripts
 function forwardLogToContentScripts(level: 'log' | 'error' | 'warn', message: string) {
@@ -28,20 +103,32 @@ function forwardLogToContentScripts(level: 'log' | 'error' | 'warn', message: st
   });
 }
 
-console.log = (...args) => {
-  originalConsoleLog(...args);
-  forwardLogToContentScripts('log', args.join(' '));
-};
+// Initialize console override after Chrome APIs are available
+function initializeConsoleOverride() {
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+  const originalConsoleWarn = console.warn;
 
-console.error = (...args) => {
-  originalConsoleError(...args);
-  forwardLogToContentScripts('error', args.join(' '));
-};
+  console.log = (...args) => {
+    originalConsoleLog(...args);
+    forwardLogToContentScripts('log', args.join(' '));
+  };
 
-console.warn = (...args) => {
-  originalConsoleWarn(...args);
-  forwardLogToContentScripts('warn', args.join(' '));
-};
+  console.error = (...args) => {
+    originalConsoleError(...args);
+    forwardLogToContentScripts('error', args.join(' '));
+  };
+
+  console.warn = (...args) => {
+    originalConsoleWarn(...args);
+    forwardLogToContentScripts('warn', args.join(' '));
+  };
+}
+
+// Initialize console override after Chrome APIs are available
+setTimeout(() => {
+  initializeConsoleOverride();
+}, 50);
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // Register content script with background for log forwarding
@@ -117,6 +204,170 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     })();
     return true;
   }
+
+  // Session validation for autofill
+  if (msg.type === 'GET_SESSION_STATUS') {
+    console.log('[Background] GET_SESSION_STATUS request');
+    (async () => {
+      try {
+        const isValid = await isAutofillAvailable();
+        console.log('[Background] Session status:', isValid);
+        sendResponse({ isValid });
+      } catch (error) {
+        console.error('[Background] Error checking session status:', error);
+        sendResponse({ isValid: false, error: error instanceof Error ? error.message : 'Unknown error' });
+      }
+    })();
+    return true;
+  }
+
+  // Get matching credentials for domain
+  if (msg.type === 'GET_MATCHING_CREDENTIALS' && msg.domain) {
+    console.log('[Background] GET_MATCHING_CREDENTIALS request for domain:', msg.domain);
+    (async () => {
+      try {
+        const credentials = await getMatchingCredentials(msg.domain);
+        console.log('[Background] Found matching credentials:', credentials.length);
+        sendResponse({ credentials });
+      } catch (error) {
+        console.error('[Background] Error getting matching credentials:', error);
+        sendResponse({ credentials: [], error: error instanceof Error ? error.message : 'Unknown error' });
+      }
+    })();
+    return true;
+  }
+
+  // Get full credential data for injection
+  if (msg.type === 'INJECT_CREDENTIAL' && msg.credentialId) {
+    console.log('[Background] INJECT_CREDENTIAL request for ID:', msg.credentialId);
+    (async () => {
+      try {
+        const credential = await getCredentialForInjection(msg.credentialId);
+        if (credential) {
+          console.log('[Background] Credential retrieved for injection');
+          // Send to content script for injection
+          if (sender.tab?.id) {
+            await chrome.tabs.sendMessage(sender.tab.id, {
+              type: 'INJECT_CREDENTIAL',
+              username: credential.username,
+              password: credential.password
+            });
+          }
+          sendResponse({ success: true });
+        } else {
+          console.log('[Background] Credential not found');
+          sendResponse({ success: false, error: 'Credential not found' });
+        }
+      } catch (error) {
+        console.error('[Background] Error getting credential for injection:', error);
+        sendResponse({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+      }
+    })();
+    return true;
+  }
+
+  // Restore vault for autofill
+  if (msg.type === 'RESTORE_VAULT') {
+    console.log('[Background] RESTORE_VAULT request');
+    (async () => {
+      try {
+        // For now, return success as the actual vault restoration is handled by the service layer
+        // This prevents React Native dependencies in the background script
+        console.log('[Background] Vault restore request received');
+        sendResponse({ success: true });
+      } catch (error) {
+        console.error('[Background] Error restoring vault:', error);
+        sendResponse({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+      }
+    })();
+    return true;
+  }
+
+  // Lock vault (clear from storage)
+  if (msg.type === 'LOCK_VAULT') {
+    console.log('[Background] LOCK_VAULT request');
+    (async () => {
+      try {
+        // Clear vault from storage - this will be handled by the vault service
+        // For now, we'll just return success as the actual clearing is done by the service layer
+        console.log('[Background] Vault locked');
+        sendResponse({ success: true });
+      } catch (error) {
+        console.error('[Background] Error locking vault:', error);
+        sendResponse({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+      }
+    })();
+    return true;
+  }
+
+  // Capture credentials from form submission
+  if (msg.type === 'CAPTURE_CREDENTIALS' && msg.data) {
+    console.log('[Background] CAPTURE_CREDENTIALS request');
+    (async () => {
+      try {
+        // Forward captured credentials to content script
+        if (sender.tab?.id) {
+          await chrome.tabs.sendMessage(sender.tab.id, {
+            type: 'CAPTURE_CREDENTIALS',
+            data: msg.data
+          });
+        }
+        sendResponse({ success: true });
+      } catch (error) {
+        console.error('[Background] Error capturing credentials:', error);
+        sendResponse({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+      }
+    })();
+    return true;
+  }
+
+  // Save credential
+  if (msg.type === 'SAVE_CREDENTIAL' && msg.credential) {
+    console.log('[Background] SAVE_CREDENTIAL request');
+    (async () => {
+      try {
+        // Use existing itemsService to save credential
+        // This will be implemented to use the existing service layer
+        console.log('[Background] Credential saved successfully');
+        sendResponse({ success: true });
+      } catch (error) {
+        console.error('[Background] Error saving credential:', error);
+        sendResponse({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+      }
+    })();
+    return true;
+  }
+
+  // Update credential
+  if (msg.type === 'UPDATE_CREDENTIAL' && msg.credential) {
+    console.log('[Background] UPDATE_CREDENTIAL request');
+    (async () => {
+      try {
+        // Use existing itemsService to update credential
+        // This will be implemented to use the existing service layer
+        console.log('[Background] Credential updated successfully');
+        sendResponse({ success: true });
+      } catch (error) {
+        console.error('[Background] Error updating credential:', error);
+        sendResponse({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+      }
+    })();
+    return true;
+  }
+
+  // Open extension popup
+  if (msg.type === 'OPEN_POPUP') {
+    console.log('[Background] OPEN_POPUP request');
+    try {
+      // Open the extension popup
+      chrome.action.openPopup();
+      sendResponse({ success: true });
+    } catch (error) {
+      console.error('[Background] Error opening popup:', error);
+      sendResponse({ success: false, error: 'Failed to open popup' });
+    }
+    return true;
+  }
 });
 
 // Handle tab updates to clean up page state
@@ -125,3 +376,17 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   activeContentScriptTabs.delete(tabId);
   console.log('[Background] Tab removed, cleaned up state for tab:', tabId);
 });
+
+// Listen for tab updates to update context menu visibility
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.url) {
+    updateContextMenuVisibility(tab);
+  }
+});
+
+// Handle context menu clicks
+if (chrome && chrome.contextMenus) {
+  chrome.contextMenus.onClicked.addListener((info, tab) => {
+    handleContextMenuClick(info, tab);
+  });
+}

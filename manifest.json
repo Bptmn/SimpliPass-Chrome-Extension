@@ -6,7 +6,8 @@
   "permissions": [
     "tabs",
     "storage",
-    "scripting"
+    "scripting",
+    "contextMenus"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -31,16 +32,20 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_idle"
+      "js": ["assets/content.js"],
+      "run_at": "document_idle",
+      "type": "module"
     }
   ],
   "web_accessible_resources": [
     {
       "resources": [
-        "src/content/popovers/PopoverCredentialPicker.html",
-        "src/content/popovers/PopoverCredentialPicker.css",
-        "src/content/popovers/PopoverCredentialPicker.js"
+        "assets/src/content/popovers/PopoverCredentialPicker.html",
+        "assets/src/content/popovers/PopoverCredentialPicker.css",
+        "assets/src/content/popovers/PopoverCredentialPicker.js",
+        "assets/popovers/components/PasswordGenerator/PasswordGeneratorPopover.html",
+        "assets/popovers/components/SaveCredential/SaveCredentialPopover.html",
+        "assets/popovers/components/UpdateCredential/UpdateCredentialPopover.html"
       ],
       "matches": ["<all_urls>"]
     }

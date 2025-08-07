@@ -35,23 +35,31 @@ export const storage: IPlatformStorageAdapter = new Proxy({} as IPlatformStorage
         throw new Error('Platform not set in global state');
       }
 
-      // Dynamically import the appropriate storage adapter
-      let adapter;
-      if (platform === 'mobile') {
-        const { MobileStorageAdapter } = await import('../../../mobile/adapters/platform.storage.adapter');
-        adapter = new MobileStorageAdapter();
-      } else {
+      // For extension platform, use a simpler approach without dynamic imports
+      if (platform === 'extension') {
+        // Import the extension storage adapter directly
         const { ExtensionStorageAdapter } = await import('../../../extension/adapters/platform.storage.adapter');
-        adapter = new ExtensionStorageAdapter();
+        const adapter = new ExtensionStorageAdapter();
+        const method = (adapter as any)[prop];
+        if (method) {
+          return method.bind(adapter)(...args);
+        }
+        throw new Error(`Method ${String(prop)} not found in extension storage adapter`);
       }
 
-      const method = (adapter as any)[prop];
-      if (method) {
-        // Bind the method to the adapter instance to preserve 'this' context
-        return method.bind(adapter)(...args);
+      // For mobile platform, use dynamic import
+      try {
+        const { MobileStorageAdapter } = await import('../../../mobile/adapters/platform.storage.adapter');
+        const adapter = new MobileStorageAdapter();
+        const method = (adapter as any)[prop];
+        if (method) {
+          return method.bind(adapter)(...args);
+        }
+        throw new Error(`Method ${String(prop)} not found in mobile storage adapter`);
+      } catch (error) {
+        console.error('[PlatformStorageAdapter] Failed to load mobile storage adapter:', error);
+        throw new Error(`Failed to load storage adapter for platform: ${platform}`);
       }
-      
-      throw new Error(`Method ${String(prop)} not found in platform storage adapter`);
     };
   }
 });

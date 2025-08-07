@@ -25,6 +25,26 @@ export interface LoginField {
 }
 
 /**
+ * Interface for detected signup fields
+ */
+export interface SignupField {
+  usernameField: HTMLInputElement;
+  passwordField: HTMLInputElement;
+  confirmPasswordField?: HTMLInputElement;
+  form: HTMLFormElement;
+}
+
+/**
+ * Interface for detected password change fields
+ */
+export interface PasswordChangeField {
+  currentPasswordField: HTMLInputElement;
+  newPasswordField: HTMLInputElement;
+  confirmPasswordField?: HTMLInputElement;
+  form: HTMLFormElement;
+}
+
+/**
  * Check if an element is visible
  * @param element The element to check
  * @returns true if visible, false otherwise
@@ -123,4 +143,209 @@ export function getPageInfo(): { url: string; domain: string; hasLoginForm: bool
   const hasLoginForm = !!document.querySelector('form input[type="password"]');
   
   return { url, domain, hasLoginForm };
+}
+
+/**
+ * Check if the current frame is in an iframe
+ * @returns true if in iframe, false otherwise
+ */
+export function isInIframe(): boolean {
+  try {
+    return window !== window.top;
+  } catch {
+    return true; // If we can't access window.top, we're likely in an iframe
+  }
+}
+
+/**
+ * Check if the current frame is the top-level frame
+ * @returns true if top-level frame, false otherwise
+ */
+export function isTopLevelFrame(): boolean {
+  return !isInIframe();
+}
+
+/**
+ * Check if a form is eligible for autofill
+ * @param form The form element to check
+ * @returns true if eligible, false otherwise
+ */
+export function isFormEligibleForAutofill(form: HTMLFormElement): boolean {
+  // Skip forms in iframes for security
+  if (isInIframe()) {
+    return false;
+  }
+  
+  // Skip forms with suspicious attributes
+  const suspiciousAttributes = ['data-no-autofill', 'data-simplipass-disabled'];
+  for (const attr of suspiciousAttributes) {
+    if (form.hasAttribute(attr)) {
+      return false;
+    }
+  }
+  
+  // Must have at least one password field
+  const hasPasswordField = form.querySelector('input[type="password"]') !== null;
+  if (!hasPasswordField) {
+    return false;
+  }
+  
+  return true;
+}
+
+/**
+ * Detect signup fields on the current page
+ * @returns Array of detected signup field groups
+ */
+export function detectSignupFields(): SignupField[] {
+  const signupFields: SignupField[] = [];
+  
+  // Find all forms with password fields
+  const forms = document.querySelectorAll('form');
+  
+  forms.forEach((form) => {
+    if (!isFormEligibleForAutofill(form)) {
+      return;
+    }
+    
+    const passwordFields = form.querySelectorAll('input[type="password"]');
+    const emailFields = form.querySelectorAll('input[type="email"]');
+    const textFields = form.querySelectorAll('input[type="text"]');
+    
+    // Look for signup patterns: email + password + confirm password
+    if (passwordFields.length >= 1) {
+      const passwordField = passwordFields[0] as HTMLInputElement;
+      
+      // Find username/email field
+      let usernameField: HTMLInputElement | null = null;
+      
+      // Prefer email fields
+      if (emailFields.length > 0) {
+        usernameField = emailFields[0] as HTMLInputElement;
+      } else {
+        // Look for username fields in text inputs
+        for (const field of textFields) {
+          const textField = field as HTMLInputElement;
+          if (
+            textField.name?.toLowerCase().includes('email') ||
+            textField.name?.toLowerCase().includes('user') ||
+            textField.autocomplete?.includes('email') ||
+            textField.autocomplete?.includes('username') ||
+            textField.placeholder?.toLowerCase().includes('email') ||
+            textField.placeholder?.toLowerCase().includes('user')
+          ) {
+            usernameField = textField;
+            break;
+          }
+        }
+      }
+      
+      if (usernameField && passwordField) {
+        // Look for confirm password field
+        let confirmPasswordField: HTMLInputElement | null = null;
+        if (passwordFields.length > 1) {
+          // Check if any password field looks like a confirm field
+          for (let i = 1; i < passwordFields.length; i++) {
+            const field = passwordFields[i] as HTMLInputElement;
+            if (
+              field.name?.toLowerCase().includes('confirm') ||
+              field.name?.toLowerCase().includes('repeat') ||
+              field.placeholder?.toLowerCase().includes('confirm') ||
+              field.placeholder?.toLowerCase().includes('repeat')
+            ) {
+              confirmPasswordField = field;
+              break;
+            }
+          }
+        }
+        
+        signupFields.push({
+          usernameField,
+          passwordField,
+          confirmPasswordField,
+          form
+        });
+      }
+    }
+  });
+  
+  return signupFields;
+}
+
+/**
+ * Detect password change fields on the current page
+ * @returns Array of detected password change field groups
+ */
+export function detectPasswordChangeFields(): PasswordChangeField[] {
+  const passwordChangeFields: PasswordChangeField[] = [];
+  
+  // Find all forms with password fields
+  const forms = document.querySelectorAll('form');
+  
+  forms.forEach((form) => {
+    if (!isFormEligibleForAutofill(form)) {
+      return;
+    }
+    
+    const passwordFields = form.querySelectorAll('input[type="password"]');
+    
+    // Look for password change patterns: current password + new password + confirm
+    if (passwordFields.length >= 2) {
+      let currentPasswordField: HTMLInputElement | null = null;
+      let newPasswordField: HTMLInputElement | null = null;
+      let confirmPasswordField: HTMLInputElement | null = null;
+      
+      // Identify current password field
+      for (const field of passwordFields) {
+        const passwordField = field as HTMLInputElement;
+        if (
+          passwordField.name?.toLowerCase().includes('current') ||
+          passwordField.name?.toLowerCase().includes('old') ||
+          passwordField.placeholder?.toLowerCase().includes('current') ||
+          passwordField.placeholder?.toLowerCase().includes('old')
+        ) {
+          currentPasswordField = passwordField;
+          break;
+        }
+      }
+      
+      // Identify new password field
+      for (const field of passwordFields) {
+        const passwordField = field as HTMLInputElement;
+        if (
+          passwordField.name?.toLowerCase().includes('new') ||
+          passwordField.placeholder?.toLowerCase().includes('new') ||
+          (!currentPasswordField && passwordField !== currentPasswordField)
+        ) {
+          newPasswordField = passwordField;
+          break;
+        }
+      }
+      
+      // Identify confirm password field
+      for (const field of passwordFields) {
+        const passwordField = field as HTMLInputElement;
+        if (
+          passwordField.name?.toLowerCase().includes('confirm') ||
+          passwordField.name?.toLowerCase().includes('repeat') ||
+          passwordField.placeholder?.toLowerCase().includes('confirm') ||
+          passwordField.placeholder?.toLowerCase().includes('repeat')
+        ) {
+          confirmPasswordField = passwordField;
+          break;
+        }
+      }
+      
+      if (currentPasswordField && newPasswordField) {
+        passwordChangeFields.push({
+          currentPasswordField,
+          newPasswordField,
+          confirmPasswordField,
+          form
+        });
+      }
+    }
+  });
+  
+  return passwordChangeFields;
 } 

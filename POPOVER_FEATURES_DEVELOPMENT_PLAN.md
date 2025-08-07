@@ -24,6 +24,7 @@ All UI (popover or popup) must read state **only from Zustand**. If state or sec
 2. Decrypt it  
 3. Store it in secureLocalStorage
 4. Hydrate Zustand
+This service already exist in @packages/common/core/services/itemServices -> fetchAndStoreItems function.
 
 ### **Key Features to Implement (Phase 1: Credentials Only)**
 Based on analysis of major password managers (Dashlane, 1Password, Bitwarden, LastPass, Proton Pass):
@@ -78,7 +79,7 @@ packages/extension/popovers/
 └── styles/              # Popover-specific styles
 ```
 
-### **Layer 2: Services (packages/extension/services/)**
+### **Layer 2: Services (packages/extension/services/)** -> only if specific to popovers, otherwise use the services from @packages/common/core/services
 ```
 packages/extension/services/
 ├── popoverOrchestrationService.ts  # Orchestrates popover logic
@@ -87,7 +88,7 @@ packages/extension/services/
 └── backgroundMessagingService.ts   # Background communication logic
 ```
 
-### **Layer 3: Utilities (packages/extension/utils/)**
+### **Layer 3: Utilities (packages/extension/utils/)** -> only if specific to popovers, otherwise use the utils from @packages/common/utils
 ```
 packages/extension/utils/
 ├── fieldDetection.ts       # Enhanced (existing) - platform detection only
@@ -252,7 +253,7 @@ handleKeyboardNavigation(event: KeyboardEvent): void
 - **Auto-Close**: Timeout after 30 seconds of inactivity
 
 **Security Enhancements:**
-- **Iframe Isolation**: Use Shadow DOM or iframe for popover content
+- **Iframe Isolation**: Use iframe for popover content
 - **CSP Compliance**: Ensure popover content follows strict CSP
 - **Origin Validation**: Verify popover origin before processing actions
 
@@ -599,34 +600,34 @@ import { Input, Button, ErrorBanner } from '@common/ui/components';
 ## 📋 Implementation Checklist
 
 ### **Phase 1: Core Autofill Enhancement**
-- [ ] Complete background script message handlers
-- [ ] Enhanced field detection for signup/change forms
-- [ ] Improved popover positioning and UX
-- [ ] Error handling and loading states
-- [ ] Keyboard navigation support
+- [x] Complete background script message handlers
+- [x] Enhanced field detection for signup/change forms
+- [x] Improved popover positioning and UX
+- [x] Error handling and loading states
+- [x] Keyboard navigation support
 
 ### **Phase 2: Password Generation**
-- [ ] PasswordGeneratorPopover component
-- [ ] Password generation service
-- [ ] Integration with field detection
-- [ ] Icon display on eligible fields
+- [x] PasswordGeneratorPopover component
+- [x] Password generation service
+- [x] Integration with field detection
+- [x] Icon display on eligible fields
 
 ### **Phase 3: Credential Capture**
-- [ ] Form submission detection
-- [ ] SaveCredentialPopover component
-- [ ] Credential capture service
-- [ ] Integration with existing vault
+- [x] Form submission detection
+- [x] SaveCredentialPopover component
+- [x] Credential capture service
+- [x] Integration with existing vault
 
 ### **Phase 4: Credential Updates**
-- [ ] UpdateCredentialPopover component
-- [ ] Credential diffing logic
-- [ ] Enhanced capture for updates
+- [x] UpdateCredentialPopover component
+- [x] Credential diffing logic
+- [x] Enhanced capture for updates
 
 ### **Phase 5: Advanced Features**
-- [ ] Context menu integration
-- [ ] Enhanced security measures
-- [ ] Comprehensive testing
-- [ ] Performance optimization
+- [x] Context menu integration
+- [x] Enhanced security measures
+- [x] Comprehensive testing
+- [x] Performance optimization
 
 ---
 
@@ -640,7 +641,6 @@ import { Input, Button, ErrorBanner } from '@common/ui/components';
 
 ### **Popover Isolation (Following Bitwarden/Proton Pass Patterns)**
 - **Iframe Sandboxing**: Use isolated iframes for all popover content
-- **Shadow DOM**: Consider Shadow DOM for complete isolation
 - **CSP Enforcement**: Strict Content Security Policy for popover content
 - **Origin Validation**: Verify all postMessage communications
 - **Cross-Origin Protection**: Never autofill in cross-origin iframes
@@ -786,7 +786,6 @@ npm run lint
 - [Chrome Extension Manifest V3](https://developer.chrome.com/docs/extensions/mv3/)
 - [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - [Web Accessibility Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
-- [Shadow DOM for Extension Isolation](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM)
 
 ### **Security References**
 - **Iframe Security**: [Cross-Origin Iframe Vulnerabilities](https://www.bleepingcomputer.com/news/security/bitwarden-flaw-can-let-hackers-steal-passwords-using-iframes/)
@@ -798,55 +797,55 @@ npm run lint
 ## ✅ Data Flow Validation Checklist
 
 ### **🔒 Architecture Compliance**
-- [ ] **Layer 1 (Hooks)**: Only UI state management, no business logic
-- [ ] **Layer 2 (Services)**: All logic orchestration and service calls
-- [ ] **Layer 3 (Adapters/Libraries)**: Low-level platform operations only
-- [ ] **No Direct Layer 3 Access**: Content scripts/popovers never call adapters directly
+- [x] **Layer 1 (Hooks)**: Only UI state management, no business logic
+- [x] **Layer 2 (Services)**: All logic orchestration and service calls
+- [x] **Layer 3 (Adapters/Libraries)**: Low-level platform operations only
+- [x] **No Direct Layer 3 Access**: Content scripts/popovers never call adapters directly
 
 ### **💾 Data Flow Compliance**
-- [ ] **Vault Access Pipeline**: Firestore → secureLocalStorage → Zustand only
-- [ ] **UI State Reading**: All UI reads only from Zustand state
-- [ ] **Service Layer Usage**: All operations route through `@common/core/services`
-- [ ] **No Bypass**: No direct Firestore, storage, or crypto access from UI
+- [x] **Vault Access Pipeline**: Firestore → secureLocalStorage → Zustand only
+- [x] **UI State Reading**: All UI reads only from Zustand state
+- [x] **Service Layer Usage**: All operations route through `@common/core/services`
+- [x] **No Bypass**: No direct Firestore, storage, or crypto access from UI
 
 ### **🔐 Security Compliance**
-- [ ] **Content Script Isolation**: Untrusted entry points properly sanitized
-- [ ] **Form Data Validation**: All captured data validated through services
-- [ ] **Memory Management**: Sensitive data cleared immediately after use
-- [ ] **Origin Validation**: Cross-origin iframe protection implemented
+- [x] **Content Script Isolation**: Untrusted entry points properly sanitized
+- [x] **Form Data Validation**: All captured data validated through services
+- [x] **Memory Management**: Sensitive data cleared immediately after use
+- [x] **Origin Validation**: Cross-origin iframe protection implemented
 
 ### **🔄 Service Integration Compliance**
-- [ ] **Credential Operations**: Use `itemsService.ts` from `@common/core/services`
-- [ ] **Form Validation**: Use `validationService.ts` from `@common/core/services`
-- [ ] **Form Transformation**: Use `formTransformationService.ts` from `@common/core/services`
-- [ ] **Crypto Operations**: Use `cryptoService.ts` from `@common/core/services`
-- [ ] **Vault Management**: Use `vaultService.ts` from `@common/core/services`
+- [x] **Credential Operations**: Use `itemsService.ts` from `@common/core/services`
+- [x] **Form Validation**: Use `validationService.ts` from `@common/core/services`
+- [x] **Form Transformation**: Use `formTransformationService.ts` from `@common/core/services`
+- [x] **Crypto Operations**: Use `cryptoService.ts` from `@common/core/services`
+- [x] **Vault Management**: Use `vaultService.ts` from `@common/core/services`
 
 ### **📱 Component Compliance**
-- [ ] **Popover Components**: UI only, no business logic
-- [ ] **Background Script**: Message routing only, no direct operations
-- [ ] **Content Script**: DOM manipulation only, no data processing
-- [ ] **Hooks**: State management only, no service calls
+- [x] **Popover Components**: UI only, no business logic
+- [x] **Background Script**: Message routing only, no direct operations
+- [x] **Content Script**: DOM manipulation only, no data processing
+- [x] **Hooks**: State management only, no service calls
 
 ### **🧪 Testing Compliance**
-- [ ] **Unit Tests**: All services tested in isolation
-- [ ] **Integration Tests**: Message passing tested
-- [ ] **Security Tests**: Iframe protection and XSS prevention tested
-- [ ] **Performance Tests**: Memory usage and performance impact measured
+- [x] **Unit Tests**: All services tested in isolation
+- [x] **Integration Tests**: Message passing tested
+- [x] **Security Tests**: Iframe protection and XSS prevention tested
+- [x] **Performance Tests**: Memory usage and performance impact measured
 
 ### **📋 Implementation Checklist**
-- [ ] **Phase 1**: Core autofill with proper service integration
-- [ ] **Phase 2**: Password generation with shared utilities
-- [ ] **Phase 3**: Credential capture with existing services
-- [ ] **Phase 4**: Advanced features with proper validation
-- [ ] **Phase 5**: Polish and optimization
+- [x] **Phase 1**: Core autofill with proper service integration
+- [x] **Phase 2**: Password generation with shared utilities
+- [x] **Phase 3**: Credential capture with existing services
+- [x] **Phase 4**: Advanced features with proper validation
+- [x] **Phase 5**: Polish and optimization
 
 ### **🚨 Critical Validation Points**
-- [ ] **No Direct Vault Access**: UI never accesses encrypted data directly
-- [ ] **Service Layer Enforcement**: All business logic uses services
-- [ ] **State Management**: All UI reads from Zustand only
-- [ ] **Error Handling**: Proper error propagation through layers
-- [ ] **Security Boundaries**: Trust boundaries properly enforced
+- [x] **No Direct Vault Access**: UI never accesses encrypted data directly
+- [x] **Service Layer Enforcement**: All business logic uses services
+- [x] **State Management**: All UI reads from Zustand only
+- [x] **Error Handling**: Proper error propagation through layers
+- [x] **Security Boundaries**: Trust boundaries properly enforced
 
 ---
 

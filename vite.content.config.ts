@@ -29,10 +29,16 @@ export default defineConfig({
     alias: {
       '@extension': '/packages/extension',
       '@utils': '/packages/app/utils',
+      'react-native$': 'react-native-web',
+      'react-native': 'react-native-web',
     },
     extensions: ['.ts', '.tsx', '.js', '.json'],
   },
   define: {
     global: 'globalThis',
+    __DEV__: 'false',
+  },
+  optimizeDeps: {
+    exclude: ['react-native'],
   },
 }); 
