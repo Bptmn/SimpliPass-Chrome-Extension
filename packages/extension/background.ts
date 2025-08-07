@@ -19,21 +19,24 @@ const getPlatform = () => currentPlatform;
 const isAutofillAvailable = async (): Promise<boolean> => {
   console.log('[Background] isAutofillAvailable called - checking session status');
   try {
-    // Check if user is logged in by looking for auth data in storage
-    const result = await chrome.storage.session.get(['authToken', 'userId', 'isAuthenticated', 'credentials', 'items']);
-    console.log('[Background] Storage check result:', result);
+    // ✅ Use authService to check authentication
+    const { authService } = await import('@common/core/services/authService');
+    const isAuthenticated = await authService.isAuthenticated();
+    console.log('[Background] Auth service check:', isAuthenticated);
     
-    // Check if we have valid authentication data
-    const hasValidAuth = result.authToken && result.userId && result.isAuthenticated === true;
-    console.log('[Background] Has valid auth:', hasValidAuth);
+    if (!isAuthenticated) {
+      console.log('[Background] User not authenticated');
+      return false;
+    }
     
-    // Check if we have credentials in storage (no need for user secret key since credentials are already decrypted)
-    const credentials = result.credentials || result.items || [];
-    const hasCredentials = credentials.length > 0;
-    console.log('[Background] Has credentials:', hasCredentials, 'Count:', credentials.length);
+    // ✅ Use vaultService to check if credentials exist
+    const { vaultService } = await import('@common/core/services/vaultService');
+    const vaultItems = await vaultService.getLocalVault();
+    const hasCredentials = vaultItems.length > 0;
+    console.log('[Background] Vault items count:', vaultItems.length);
     
     // Autofill requires both valid auth AND credentials
-    const isAutofillReady = hasValidAuth && hasCredentials;
+    const isAutofillReady = isAuthenticated && hasCredentials;
     console.log('[Background] Autofill ready:', isAutofillReady);
     
     return isAutofillReady;
@@ -47,19 +50,23 @@ const isAutofillAvailable = async (): Promise<boolean> => {
 const isSaveCredentialAvailable = async (): Promise<boolean> => {
   console.log('[Background] isSaveCredentialAvailable called - checking save requirements');
   try {
-    // Check if user is logged in and has user secret key (needed for encryption)
-    const result = await chrome.storage.session.get(['authToken', 'userId', 'isAuthenticated', 'userSecretKey']);
-    console.log('[Background] Save credential check result:', result);
+    // ✅ Use authService to check authentication
+    const { authService } = await import('@common/core/services/authService');
+    const isAuthenticated = await authService.isAuthenticated();
+    console.log('[Background] Auth service check for save:', isAuthenticated);
     
-    // Check if we have valid authentication data AND user secret key
-    const hasValidAuth = result.authToken && result.userId && result.isAuthenticated === true;
-    const hasUserSecretKey = result.userSecretKey && result.userSecretKey.length > 0;
+    if (!isAuthenticated) {
+      console.log('[Background] User not authenticated for save');
+      return false;
+    }
     
-    console.log('[Background] Has valid auth for save:', hasValidAuth);
+    // ✅ Use secretsService to check if user secret key exists
+    const { secretsService } = await import('@common/core/services/secretsService');
+    const hasUserSecretKey = await secretsService.hasUserSecretKey();
     console.log('[Background] Has user secret key:', hasUserSecretKey);
     
     // Save/update requires both valid auth AND user secret key
-    const isSaveReady = hasValidAuth && hasUserSecretKey;
+    const isSaveReady = isAuthenticated && hasUserSecretKey;
     console.log('[Background] Save credential ready:', isSaveReady);
     
     return isSaveReady;
@@ -83,29 +90,31 @@ const getMatchingCredentials = async (domain: string): Promise<Array<{
 }>> => {
   console.log('[Background] getMatchingCredentials called for domain:', domain);
   try {
-    // Get credentials from storage
-    const result = await chrome.storage.session.get(['credentials', 'items']);
-    console.log('[Background] Storage credentials result:', result);
-    
-    const credentials = result.credentials || result.items || [];
-    console.log('[Background] All credentials:', credentials);
+    // ✅ Use vaultService to get all items
+    const { vaultService } = await import('@common/core/services/vaultService');
+    const allItems = await vaultService.getLocalVault();
+    console.log('[Background] All vault items:', allItems.length);
     
     // Filter credentials that match the domain
-    const matchingCredentials = credentials.filter((cred: any) => {
-      if (!cred.url) return false;
-      try {
-        const credDomain = new URL(cred.url).hostname;
-        return credDomain === domain || credDomain.endsWith('.' + domain) || domain.endsWith('.' + credDomain);
-      } catch {
-        return false;
-      }
-    });
+    const matchingCredentials = allItems
+      .filter((item): item is import('@common/core/types/items.types').CredentialDecrypted => 
+        item.itemType === 'credential'
+      )
+      .filter((cred) => {
+        if (!cred.url) return false;
+        try {
+          const credDomain = new URL(cred.url).hostname;
+          return credDomain === domain || credDomain.endsWith('.' + domain) || domain.endsWith('.' + credDomain);
+        } catch {
+          return false;
+        }
+      });
     
     console.log('[Background] Matching credentials for domain', domain, ':', matchingCredentials.length);
-    return matchingCredentials.map((cred: any) => ({
-      id: cred.id || cred._id,
-      title: cred.title || cred.name || 'Untitled',
-      username: cred.username || cred.email || '',
+    return matchingCredentials.map((cred) => ({
+      id: cred.id,
+      title: cred.title || 'Untitled',
+      username: cred.username || '',
       url: cred.url
     }));
   } catch (error) {
@@ -123,21 +132,23 @@ const getCredentialForInjection = async (credentialId: string): Promise<{
 } | null> => {
   console.log('[Background] getCredentialForInjection called for id:', credentialId);
   try {
-    // Get credentials from storage
-    const result = await chrome.storage.session.get(['credentials', 'items']);
-    const credentials = result.credentials || result.items || [];
+    // ✅ Use vaultService to get all items
+    const { vaultService } = await import('@common/core/services/vaultService');
+    const allItems = await vaultService.getLocalVault();
     
     // Find the specific credential by ID
-    const credential = credentials.find((cred: any) => 
-      (cred.id || cred._id) === credentialId
-    );
+    const credential = allItems
+      .filter((item): item is import('@common/core/types/items.types').CredentialDecrypted => 
+        item.itemType === 'credential'
+      )
+      .find((cred) => cred.id === credentialId);
     
     if (credential) {
-      console.log('[Background] Found credential for injection:', credential.title || credential.name);
+      console.log('[Background] Found credential for injection:', credential.title);
       return {
-        id: credential.id || credential._id,
-        title: credential.title || credential.name || 'Untitled',
-        username: credential.username || credential.email || '',
+        id: credential.id,
+        title: credential.title || 'Untitled',
+        username: credential.username || '',
         password: credential.password || '',
         url: credential.url
       };
