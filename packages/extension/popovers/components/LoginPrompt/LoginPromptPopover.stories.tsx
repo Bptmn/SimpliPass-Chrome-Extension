@@ -5,6 +5,7 @@
  * showcasing different states and interactions.
  */
 
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { LoginPromptPopover } from './LoginPromptPopover';
 
@@ -178,90 +179,62 @@ export const WithLongText: Story = {
     onCancel: () => console.log('Cancel button clicked')
   },
   render: (args) => (
-    <div className="login-prompt-popover">
-      <div className="login-prompt">
-        <div className="title">SimpliPass</div>
-        <div className="message">
-          You need to log in to use autofill features. This will allow you to automatically fill in your saved credentials on websites.
-        </div>
-        <div className="buttons">
-          <button 
-            className="btn btn-cancel" 
-            onClick={args.onCancel}
-          >
-            Cancel
-          </button>
-          <button 
-            className="btn btn-login" 
-            onClick={args.onLogin}
-          >
-            Login
-          </button>
-        </div>
+    <div style={{
+      position: 'absolute',
+      zIndex: 10000,
+      background: 'white',
+      borderRadius: '8px',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+      padding: '16px',
+      width: '320px',
+      textAlign: 'center',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    }}>
+      <div style={{ marginBottom: '8px', fontSize: '16px', fontWeight: 600, color: '#333' }}>
+        SimpliPass
       </div>
-      
-      <style jsx>{`
-        .login-prompt-popover {
-          position: absolute;
-          z-index: 10000;
-          background: white;
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          padding: 16px;
-          width: 320px;
-          text-align: center;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-        
-        .title {
-          font-size: 16px;
-          font-weight: 600;
-          color: #333;
-          margin-bottom: 8px;
-        }
-        
-        .message {
-          font-size: 14px;
-          color: #666;
-          line-height: 1.4;
-          margin-bottom: 16px;
-        }
-        
-        .buttons {
-          display: flex;
-          gap: 8px;
-          justify-content: center;
-        }
-        
-        .btn {
-          padding: 8px 16px;
-          border: none;
-          border-radius: 4px;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          min-width: 80px;
-          transition: background-color 0.2s;
-        }
-        
-        .btn-cancel {
-          background-color: #F2F2F7;
-          color: #333;
-        }
-        
-        .btn-cancel:hover {
-          background-color: #E5E5EA;
-        }
-        
-        .btn-login {
-          background-color: #007AFF;
-          color: white;
-        }
-        
-        .btn-login:hover {
-          background-color: #0056CC;
-        }
-      `}</style>
+      <div style={{ 
+        marginBottom: '16px', 
+        fontSize: '14px', 
+        color: '#666', 
+        lineHeight: 1.4 
+      }}>
+        You need to log in to use autofill features. This will allow you to automatically fill in your saved credentials on websites.
+      </div>
+      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+        <button 
+          style={{
+            padding: '8px 16px',
+            border: 'none',
+            borderRadius: '4px',
+            fontSize: '14px',
+            fontWeight: 500,
+            cursor: 'pointer',
+            minWidth: '80px',
+            backgroundColor: '#F2F2F7',
+            color: '#333'
+          }}
+          onClick={args.onCancel}
+        >
+          Cancel
+        </button>
+        <button 
+          style={{
+            padding: '8px 16px',
+            border: 'none',
+            borderRadius: '4px',
+            fontSize: '14px',
+            fontWeight: 500,
+            cursor: 'pointer',
+            minWidth: '80px',
+            backgroundColor: '#007AFF',
+            color: 'white'
+          }}
+          onClick={args.onLogin}
+        >
+          Login
+        </button>
+      </div>
     </div>
   )
 };

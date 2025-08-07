@@ -5,6 +5,7 @@
  * showcasing different popover scenarios and interactions.
  */
 
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { PopoverManager } from './PopoverManager';
 
