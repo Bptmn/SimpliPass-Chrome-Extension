@@ -26,63 +26,40 @@ interface PageInfo {
 
 // Real field detection implementation
 const detectLoginFields = (): LoginField[] => {
-  console.log('[Content Script] detectLoginFields called');
+  const fields: LoginField[] = [];
   
-  const loginFields: LoginField[] = [];
-  
-  // Find all input fields that could be login fields
-  const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
-  
-  inputs.forEach((input) => {
-    const element = input as HTMLInputElement;
-    
-    // Skip if not visible
-    if (element.style.display === 'none' || element.style.visibility === 'hidden') {
-      return;
-    }
-    
-    // Skip if autocomplete is explicitly disabled
-    if (element.autocomplete === 'off') {
-      return;
-    }
-    
-    // Check if this looks like a login field
-    const name = element.name?.toLowerCase() || '';
-    const id = element.id?.toLowerCase() || '';
-    const placeholder = element.placeholder?.toLowerCase() || '';
-    const type = element.type?.toLowerCase() || '';
-    
-    // Common patterns for login fields
-    const isLoginField = 
-      name.includes('email') || name.includes('username') || name.includes('login') ||
-      id.includes('email') || id.includes('username') || id.includes('login') ||
-      placeholder.includes('email') || placeholder.includes('phone') || placeholder.includes('username') ||
-      type === 'email' ||
-      element.autocomplete === 'username' ||
-      element.autocomplete === 'email';
-    
-    if (isLoginField) {
-      const form = element.closest('form') || undefined;
-      const fieldType: 'username' | 'email' = type === 'email' ? 'email' : 'username';
-      
-      loginFields.push({
-        element,
-        type: fieldType,
-        form
-      });
-      
-      console.log('[Content Script] Found login field:', {
-        name: element.name,
-        id: element.id,
-        placeholder: element.placeholder,
-        type: element.type,
-        autocomplete: element.autocomplete
-      });
-    }
+  // Find username/email fields
+  const usernameSelectors = [
+    'input[type="text"][name*="user" i]',
+    'input[type="email"]',
+    'input[name*="email" i]',
+    'input[name*="login" i]',
+    'input[name*="account" i]',
+    'input[placeholder*="email" i]',
+    'input[placeholder*="user" i]',
+    'input[placeholder*="login" i]',
+    'input[placeholder*="account" i]',
+    'input[id*="email" i]',
+    'input[id*="user" i]',
+    'input[id*="login" i]',
+    'input[id*="account" i]',
+  ];
+
+  usernameSelectors.forEach(selector => {
+    const elements = document.querySelectorAll(selector) as NodeListOf<HTMLInputElement>;
+    elements.forEach(element => {
+      if (element.offsetParent !== null && element.style.display !== 'none' && element.style.visibility !== 'hidden') {
+        const form = element.closest('form');
+        fields.push({
+          element,
+          type: element.type === 'email' ? 'email' : 'username',
+          form: form || undefined
+        });
+      }
+    });
   });
-  
-  console.log('[Content Script] Total login fields detected:', loginFields.length);
-  return loginFields;
+
+  return fields;
 };
 
 const getPageInfo = (): PageInfo => {
@@ -437,7 +414,13 @@ const updatePickerSize = (height?: number, width?: number) => {
 
 // Real credential injection implementation
 const injectCredential = async (field: HTMLElement, credential: any) => {
-  console.log('[Content Script] injectCredential called for credential:', credential.title);
+  console.log('[Content Script] injectCredential called for credential:', credential?.title || 'undefined');
+  
+  // Guard against undefined credential
+  if (!credential || !credential.id) {
+    console.error('[Content Script] Invalid credential object:', credential);
+    return;
+  }
   
   try {
     // Get the full credential data from background script
@@ -471,7 +454,7 @@ const injectCredential = async (field: HTMLElement, credential: any) => {
         }
       }
     } else {
-      console.error('[Content Script] Credential injection failed:', response?.error);
+      console.error('[Content Script] Credential injection failed:', response?.error || 'Unknown error');
     }
   } catch (error) {
     console.error('[Content Script] Error injecting credential:', error);
@@ -552,7 +535,7 @@ const passwordGenerationService = {
     console.log('[Content Script] Field eligible for generation:', isSignupForm);
     return isSignupForm;
   },
-  getSuggestedOptions: (field: HTMLInputElement) => {
+  getSuggestedOptions: (_field: HTMLInputElement) => {
     console.log('[Content Script] passwordGenerationService.getSuggestedOptions called');
     return {
       length: 16,
@@ -908,10 +891,31 @@ chrome.runtime.onMessage.addListener(async (msg: { type: string; username?: stri
     // Find the current focused field for injection
     const activeElement = document.activeElement as HTMLElement;
     if (activeElement) {
-      injectCredential(activeElement, { username: msg.username, password: msg.password });
+      // Inject the credential data directly without calling injectCredential again
+      console.log('[Content Script] Injecting credential from background script');
+      
+      // Find login fields in the form
+      const form = activeElement.closest('form');
+      if (form) {
+        // Find username/email field
+        const usernameField = form.querySelector('input[type="text"], input[type="email"], input[autocomplete="username"], input[autocomplete="email"]') as HTMLInputElement;
+        if (usernameField) {
+          usernameField.value = msg.username;
+          usernameField.dispatchEvent(new Event('input', { bubbles: true }));
+          console.log('[Content Script] Username injected from background:', msg.username);
+        }
+        
+        // Find password field
+        const passwordField = form.querySelector('input[type="password"]') as HTMLInputElement;
+        if (passwordField) {
+          passwordField.value = msg.password;
+          passwordField.dispatchEvent(new Event('input', { bubbles: true }));
+          console.log('[Content Script] Password injected from background');
+        }
+      }
     }
     removeInPagePicker();
-      } else if (msg && msg.type === 'CAPTURE_CREDENTIALS' && msg.data) {
+  } else if (msg && msg.type === 'CAPTURE_CREDENTIALS' && msg.data) {
       // Handle captured credentials
       try {
         await credentialCaptureService.processCapturedCredentials(msg.data);
@@ -928,6 +932,7 @@ chrome.runtime.onMessage.addListener(async (msg: { type: string; username?: stri
           
           if (shouldShowPrompt) {
             const suggestedTitle = credentialCaptureService.getSuggestedTitle(msg.data);
+            const _suggestedTitle = suggestedTitle; // Mark as intentionally unused for now
             showSaveCredentialPopover(msg.data);
           }
         }
@@ -1010,6 +1015,7 @@ chrome.runtime.onMessage.addListener(async (msg: { type: string; username?: stri
               showUpdateCredentialPopover(fullCapturedData);
             } else {
               const suggestedTitle = credentialCaptureService.getSuggestedTitle(fullCapturedData);
+              const _suggestedTitle = suggestedTitle; // Mark as intentionally unused for now
               showSaveCredentialPopover(fullCapturedData);
             }
           }

@@ -8,24 +8,28 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
+          src: 'packages/extension/popovers/components/CredentialPicker/CredentialPickerPopover.html',
+          dest: 'src/content/popovers',
+        },
+        {
+          src: 'packages/extension/popovers/components/LoginPrompt/LoginPromptPopover.html',
+          dest: 'src/content/popovers',
+        },
+        {
+          src: 'packages/extension/popovers/components/PasswordGenerator/PasswordGeneratorPopover.html',
+          dest: 'src/content/popovers',
+        },
+        {
+          src: 'packages/extension/popovers/components/SaveCredential/SaveCredentialPopover.html',
+          dest: 'src/content/popovers',
+        },
+        {
+          src: 'packages/extension/popovers/components/UpdateCredential/UpdateCredentialPopover.html',
+          dest: 'src/content/popovers',
+        },
+        {
           src: 'packages/extension/public/manifest.json',
           dest: '.',
-        },
-        {
-          src: 'packages/extension/PopoverCredentialPicker.html',
-          dest: 'src/content/popovers',
-        },
-        {
-          src: 'packages/extension/LoginPromptPopover.html',
-          dest: 'src/content/popovers',
-        },
-        {
-          src: 'packages/extension/LoginPromptPopover.js',
-          dest: 'src/content/popovers',
-        },
-        {
-          src: 'packages/extension/PopoverCredentialPicker.css',
-          dest: 'src/content/popovers',
         },
         {
           src: 'packages/extension/popup/popup.html',

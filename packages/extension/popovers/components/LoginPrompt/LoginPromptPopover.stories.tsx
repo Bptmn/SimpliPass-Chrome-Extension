@@ -32,23 +32,7 @@ const meta: Meta<typeof LoginPromptPopover> = {
   },
   decorators: [
     (Story) => (
-      <div style={{ 
-        position: 'relative', 
-        width: '400px', 
-        height: '300px',
-        border: '1px solid #ccc',
-        padding: '20px',
-        backgroundColor: '#f5f5f5'
-      }}>
-        <div style={{ 
-          position: 'absolute',
-          top: '50px',
-          left: '50px',
-          width: '280px'
-        }}>
-          <Story />
-        </div>
-      </div>
+      <Story />
     )
   ]
 };
@@ -97,18 +81,22 @@ export const DarkContext: Story = {
     (Story) => (
       <div style={{ 
         position: 'relative', 
-        width: '400px', 
-        height: '300px',
+        width: '100vw', 
+        height: '100vh',
         border: '1px solid #333',
         padding: '20px',
         backgroundColor: '#2a2a2a',
-        color: 'white'
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}>
         <div style={{ 
-          position: 'absolute',
-          top: '50px',
-          left: '50px',
-          width: '280px'
+          position: 'relative',
+          width: '320px',
+          maxWidth: '90vw',
+          maxHeight: '90vh',
+          overflow: 'auto'
         }}>
           <Story />
         </div>
@@ -130,17 +118,20 @@ export const NearFormField: Story = {
     (Story) => (
       <div style={{ 
         position: 'relative', 
-        width: '500px', 
-        height: '400px',
+        width: '100vw', 
+        height: '100vh',
         border: '1px solid #ccc',
         padding: '20px',
-        backgroundColor: '#f9f9f9'
+        backgroundColor: '#f9f9f9',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}>
         {/* Simulate a form field */}
         <div style={{
           position: 'absolute',
-          top: '100px',
-          left: '50px',
+          top: '20%',
+          left: '10%',
           width: '200px',
           height: '40px',
           border: '1px solid #ccc',
@@ -150,17 +141,20 @@ export const NearFormField: Story = {
           alignItems: 'center',
           padding: '0 12px',
           fontSize: '14px',
-          color: '#666'
+          color: '#666',
+          zIndex: 1
         }}>
           Email or username
         </div>
         
         {/* Popover positioned below the field */}
         <div style={{ 
-          position: 'absolute',
-          top: '150px',
-          left: '50px',
-          width: '280px'
+          position: 'relative',
+          width: '320px',
+          maxWidth: '90vw',
+          maxHeight: '90vh',
+          overflow: 'auto',
+          marginTop: '200px'
         }}>
           <Story />
         </div>

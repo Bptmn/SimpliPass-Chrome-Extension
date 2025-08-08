@@ -1,13 +1,13 @@
 /**
  * Credential Picker Popover Storybook Stories
  * 
- * This file contains stories for the PopoverCredentialPicker component,
+ * This file contains stories for the CredentialPickerPopover component,
  * showcasing different credential scenarios and interactions with CredentialCard.
  */
 
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { PopoverCredentialPicker } from '../../../PopoverCredentialPicker';
+import { CredentialPickerPopover } from './CredentialPickerPopover';
 
 // Type for credential data used in stories
 type CredentialData = {
@@ -19,9 +19,9 @@ type CredentialData = {
   passwordCipher: string;
 };
 
-const meta: Meta<typeof PopoverCredentialPicker> = {
+const meta: Meta<typeof CredentialPickerPopover> = {
   title: 'Extension/Popovers/CredentialPicker',
-  component: PopoverCredentialPicker,
+  component: CredentialPickerPopover,
   parameters: {
     layout: 'centered',
     docs: {
@@ -35,34 +35,18 @@ const meta: Meta<typeof PopoverCredentialPicker> = {
       description: 'Array of matching credentials to display',
       control: { type: 'object' }
     },
-    onPick: {
+    onSelectCredential: {
       description: 'Callback when a credential is selected',
       action: 'credential-picked'
     },
-    onClose: {
-      description: 'Callback when close button is clicked',
+    onCancel: {
+      description: 'Callback when cancel button is clicked',
       action: 'close-clicked'
     }
   },
   decorators: [
     (Story) => (
-      <div style={{ 
-        position: 'relative', 
-        width: '500px', 
-        height: '400px',
-        border: '1px solid #ccc',
-        padding: '20px',
-        backgroundColor: '#f5f5f5'
-      }}>
-        <div style={{ 
-          position: 'absolute',
-          top: '50px',
-          left: '50px',
-          width: '320px'
-        }}>
-          <Story />
-        </div>
-      </div>
+      <Story />
     )
   ]
 };
@@ -115,7 +99,7 @@ const sampleCredentials = [
 export const Default: Story = {
   args: {
     credentials: sampleCredentials,
-    onPick: (credential: {
+    onSelectCredential: (credential: {
       id: string;
       title: string;
       username: string;
@@ -126,7 +110,7 @@ export const Default: Story = {
       console.log('Credential picked:', credential);
       alert(`Selected: ${credential.title} (${credential.username})`);
     },
-    onClose: () => {
+    onCancel: () => {
       console.log('Close clicked');
       alert('Credential picker closed');
     }
@@ -140,11 +124,11 @@ export const Default: Story = {
 export const SingleCredential: Story = {
   args: {
     credentials: [sampleCredentials[0]],
-    onPick: (credential: CredentialData) => {
+    onSelectCredential: (credential: CredentialData) => {
       console.log('Credential picked:', credential);
       alert(`Selected: ${credential.title} (${credential.username})`);
     },
-    onClose: () => {
+    onCancel: () => {
       console.log('Close clicked');
       alert('Credential picker closed');
     }
@@ -158,10 +142,10 @@ export const SingleCredential: Story = {
 export const NoCredentials: Story = {
   args: {
     credentials: [],
-    onPick: (credential: CredentialData) => {
+    onSelectCredential: (credential: CredentialData) => {
       console.log('Credential picked:', credential);
     },
-    onClose: () => {
+    onCancel: () => {
       console.log('Close clicked');
       alert('Credential picker closed');
     }
@@ -225,11 +209,11 @@ export const ManyCredentials: Story = {
         passwordCipher: 'encrypted-password-10'
       }
     ],
-    onPick: (credential: CredentialData) => {
+    onSelectCredential: (credential: CredentialData) => {
       console.log('Credential picked:', credential);
       alert(`Selected: ${credential.title} (${credential.username})`);
     },
-    onClose: () => {
+    onCancel: () => {
       console.log('Close clicked');
       alert('Credential picker closed');
     }
@@ -268,11 +252,11 @@ export const LongTitles: Story = {
         passwordCipher: 'encrypted-password-long-3'
       }
     ],
-    onPick: (credential: CredentialData) => {
+    onSelectCredential: (credential: CredentialData) => {
       console.log('Credential picked:', credential);
       alert(`Selected: ${credential.title} (${credential.username})`);
     },
-    onClose: () => {
+    onCancel: () => {
       console.log('Close clicked');
       alert('Credential picker closed');
     }
@@ -311,74 +295,15 @@ export const LongUsernames: Story = {
         passwordCipher: 'encrypted-password-long-user-3'
       }
     ],
-    onPick: (credential: CredentialData) => {
+    onSelectCredential: (credential: CredentialData) => {
       console.log('Credential picked:', credential);
       alert(`Selected: ${credential.title} (${credential.username})`);
     },
-    onClose: () => {
+    onCancel: () => {
       console.log('Close clicked');
       alert('Credential picker closed');
     }
   }
-};
-
-/**
- * Credential Picker Near Form Field
- * Simulates the popover appearing near a login form field using CredentialCard
- */
-export const NearFormField: Story = {
-  args: {
-    credentials: sampleCredentials,
-    onPick: (credential: CredentialData) => {
-      console.log('Credential picked:', credential);
-      alert(`Selected: ${credential.title} (${credential.username})`);
-    },
-    onClose: () => {
-      console.log('Close clicked');
-      alert('Credential picker closed');
-    }
-  },
-  decorators: [
-    (Story) => (
-      <div style={{ 
-        position: 'relative', 
-        width: '600px', 
-        height: '500px',
-        border: '1px solid #ccc',
-        padding: '20px',
-        backgroundColor: '#f9f9f9'
-      }}>
-        {/* Simulate a form field */}
-        <div style={{
-          position: 'absolute',
-          top: '100px',
-          left: '50px',
-          width: '200px',
-          height: '40px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          backgroundColor: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 12px',
-          fontSize: '14px',
-          color: '#666'
-        }}>
-          Email or username
-        </div>
-        
-        {/* Popover positioned below the field */}
-        <div style={{ 
-          position: 'absolute',
-          top: '150px',
-          left: '50px',
-          width: '320px'
-        }}>
-          <Story />
-        </div>
-      </div>
-    )
-  ]
 };
 
 /**
@@ -388,35 +313,18 @@ export const NearFormField: Story = {
 export const DarkContext: Story = {
   args: {
     credentials: sampleCredentials,
-    onPick: (credential: CredentialData) => {
+    onSelectCredential: (credential: CredentialData) => {
       console.log('Credential picked:', credential);
       alert(`Selected: ${credential.title} (${credential.username})`);
     },
-    onClose: () => {
+    onCancel: () => {
       console.log('Close clicked');
       alert('Credential picker closed');
     }
   },
   decorators: [
     (Story) => (
-      <div style={{ 
-        position: 'relative', 
-        width: '500px', 
-        height: '400px',
-        border: '1px solid #333',
-        padding: '20px',
-        backgroundColor: '#2a2a2a',
-        color: 'white'
-      }}>
-        <div style={{ 
-          position: 'absolute',
-          top: '50px',
-          left: '50px',
-          width: '320px'
-        }}>
-          <Story />
-        </div>
-      </div>
+      <Story />
     )
   ]
 };

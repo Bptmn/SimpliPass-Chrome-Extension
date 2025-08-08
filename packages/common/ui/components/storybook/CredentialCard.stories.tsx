@@ -102,6 +102,26 @@ export const WithoutCopyButtonDark = () => (
   </DarkThemeProvider>
 );
 
+export const WithoutFavicon = () => (
+  <LightThemeProvider>
+    <CredentialCard 
+      credential={mockCredential} 
+      onPress={() => console.log('Card pressed')} 
+      disableFavicon={true}
+    />
+  </LightThemeProvider>
+);
+
+export const WithoutFaviconDark = () => (
+  <DarkThemeProvider>
+    <CredentialCard 
+      credential={mockCredential} 
+      onPress={() => console.log('Card pressed')} 
+      disableFavicon={true}
+    />
+  </DarkThemeProvider>
+);
+
 export const PopoverStyle = () => (
   <LightThemeProvider>
     <div style={{ 
@@ -121,16 +141,19 @@ export const PopoverStyle = () => (
           credential={mockCredential} 
           onPress={() => console.log('Facebook selected')} 
           hideCopyBtn={true}
+          disableFavicon={true}
         />
         <CredentialCard 
           credential={mockCredentialWithLongData} 
           onPress={() => console.log('Google selected')} 
           hideCopyBtn={true}
+          disableFavicon={true}
         />
         <CredentialCard 
           credential={mockCredential} 
           onPress={() => console.log('GitHub selected')} 
           hideCopyBtn={true}
+          disableFavicon={true}
         />
       </View>
     </div>

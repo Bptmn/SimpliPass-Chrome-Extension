@@ -97,7 +97,8 @@ export class SecurityService {
         protocol,
         riskLevel
       };
-    } catch (error) {
+    } catch (_error) {
+      console.warn('[SecurityService] Error validating origin:', _error);
       return {
         isValid: false,
         isTrusted: false,
@@ -114,29 +115,34 @@ export class SecurityService {
   public validateIframeContext(): SecurityValidationResult {
     try {
       // Check if we're in an iframe
+      if (window.top === null) {
+        return {
+          isValid: false,
+          reason: 'Cannot access top window',
+          riskLevel: 'high'
+        };
+      }
+
       const isInIframe = window !== window.top;
       
       if (isInIframe) {
-        // Check if it's a cross-origin iframe
-        const isCrossOrigin = window.location.origin !== window.top.location.origin;
-        
-        if (isCrossOrigin) {
-          return {
-            isValid: false,
-            reason: 'Cross-origin iframe detected - potential security risk',
-            riskLevel: 'high'
-          };
-        }
+        return {
+          isValid: false,
+          reason: 'Running in iframe context',
+          riskLevel: 'high'
+        };
       }
 
       return {
         isValid: true,
+        reason: 'Valid window context',
         riskLevel: 'low'
       };
-    } catch (error) {
+    } catch (_error) {
+      console.warn('[SecurityService] Error validating iframe context:', _error);
       return {
         isValid: false,
-        reason: 'Error validating iframe context',
+        reason: 'Iframe validation failed',
         riskLevel: 'high'
       };
     }
@@ -200,7 +206,7 @@ export class SecurityService {
         isValid: true,
         riskLevel: 'low'
       };
-    } catch (error) {
+    } catch (_error) {
       return {
         isValid: false,
         reason: 'Error validating form data',
@@ -256,7 +262,7 @@ export class SecurityService {
         isValid: true,
         riskLevel: originValidation.riskLevel
       };
-    } catch (error) {
+    } catch (_error) {
       return {
         isValid: false,
         reason: 'Error validating message origin',
@@ -272,20 +278,20 @@ export class SecurityService {
     try {
       if (typeof data === 'string') {
         // Overwrite string with random data
-        const randomData = Array(data.length).fill('*').join('');
+        const _randomData = crypto.getRandomValues(new Uint8Array(32));
         // Note: In a real implementation, you'd want to use a more secure method
         // to clear memory, but this is a reasonable approximation for strings
       } else if (typeof data === 'object' && data !== null) {
         // Recursively clear object properties
         for (const key in data) {
-          if (data.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(data, key)) {
             this.clearSensitiveData(data[key]);
             delete data[key];
           }
         }
       }
-    } catch (error) {
-      console.error('[SecurityService] Error clearing sensitive data:', error);
+    } catch (_error) {
+      console.error('[SecurityService] Error clearing sensitive data:', _error);
     }
   }
 
@@ -325,7 +331,7 @@ export class SecurityService {
         isValid: true,
         riskLevel: 'low'
       };
-    } catch (error) {
+    } catch (_error) {
       return {
         isValid: false,
         reason: 'Error validating popover content',
@@ -369,7 +375,7 @@ export class SecurityService {
         isValid: true,
         riskLevel: 'low'
       };
-    } catch (error) {
+    } catch (_error) {
       return {
         isValid: false,
         reason: 'Error checking autofill safety',
@@ -410,7 +416,7 @@ export class SecurityService {
       }
 
       return recommendations;
-    } catch (error) {
+    } catch (_error) {
       recommendations.push('Unable to determine security recommendations');
       return recommendations;
     }

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
  * Hook for LazyCredentialIcon component UI state management
  * Handles favicon loading, domain parsing, and fallback logic
  */
-export const useLazyCredentialIcon = (url: string, title: string) => {
+export const useLazyCredentialIcon = (url: string, title: string, disableFavicon: boolean = false) => {
   // Step 1: Initialize UI state
   const [faviconUrl, setFaviconUrl] = useState<string | null>(null);
   const [isFaviconLoaded, setIsFaviconLoaded] = useState(false);
@@ -12,7 +12,7 @@ export const useLazyCredentialIcon = (url: string, title: string) => {
 
   // Step 2: Parse domain and generate favicon URL
   const parseDomainAndSetFavicon = useCallback((inputUrl: string) => {
-    if (!inputUrl || inputUrl.trim() === '') {
+    if (!inputUrl || inputUrl.trim() === '' || disableFavicon) {
       setFaviconUrl(null);
       setIsFaviconLoaded(false);
       setShowFavicon(false);
@@ -33,7 +33,7 @@ export const useLazyCredentialIcon = (url: string, title: string) => {
       setIsFaviconLoaded(false);
       setShowFavicon(false);
     }
-  }, []);
+  }, [disableFavicon]);
 
   // Step 3: Handle favicon load success
   const handleFaviconLoad = useCallback(() => {

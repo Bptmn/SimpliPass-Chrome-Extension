@@ -139,7 +139,7 @@ export const PasswordGeneratorPopover: React.FC<PasswordGeneratorPopoverProps> =
 
   const styles = StyleSheet.create({
     container: {
-      backgroundColor: themeColors.background,
+      backgroundColor: themeColors.primaryBackground,
       borderRadius: radius.lg,
       borderWidth: 1,
       borderColor: themeColors.borderColor,
@@ -157,14 +157,14 @@ export const PasswordGeneratorPopover: React.FC<PasswordGeneratorPopoverProps> =
     title: {
       fontSize: typography.fontSize.lg,
       fontWeight: typography.fontWeight.bold,
-      color: themeColors.primaryText,
+      color: themeColors.primary,
     },
     closeButton: {
       padding: spacing.xs,
     },
     closeText: {
       fontSize: typography.fontSize.xl,
-      color: themeColors.tertiaryText,
+      color: themeColors.tertiary,
     },
     passwordContainer: {
       backgroundColor: themeColors.secondaryBackground,
@@ -177,7 +177,7 @@ export const PasswordGeneratorPopover: React.FC<PasswordGeneratorPopoverProps> =
     passwordText: {
       fontSize: typography.fontSize.lg,
       fontFamily: 'monospace',
-      color: themeColors.primaryText,
+      color: themeColors.primary,
       textAlign: 'center',
       letterSpacing: 1,
     },
@@ -189,7 +189,7 @@ export const PasswordGeneratorPopover: React.FC<PasswordGeneratorPopoverProps> =
     },
     strengthText: {
       fontSize: typography.fontSize.sm,
-      color: themeColors.secondaryText,
+      color: themeColors.tertiary,
     },
     strengthIndicator: {
       flexDirection: 'row',
@@ -211,7 +211,7 @@ export const PasswordGeneratorPopover: React.FC<PasswordGeneratorPopoverProps> =
     },
     optionLabel: {
       fontSize: typography.fontSize.sm,
-      color: themeColors.primaryText,
+      color: themeColors.primary,
     },
     toggle: {
       width: 44,
@@ -373,21 +373,19 @@ export const PasswordGeneratorPopover: React.FC<PasswordGeneratorPopoverProps> =
       {/* Action Buttons */}
       <View style={styles.actionsContainer}>
         <Button
-          variant="secondary"
+          text="Régénérer"
+          color={themeColors.secondary}
           onPress={handleRegenerate}
           style={styles.actionButton}
           testID="regenerate-password"
-        >
-          <Text>Régénérer</Text>
-        </Button>
+        />
         <Button
-          variant="primary"
+          text="Accepter"
+          color={themeColors.primary}
           onPress={() => onAccept(password)}
           style={styles.actionButton}
           testID="accept-password"
-        >
-          <Text>Accepter</Text>
-        </Button>
+        />
       </View>
     </View>
   );

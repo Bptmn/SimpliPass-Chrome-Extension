@@ -5,7 +5,8 @@
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { PopoverCredentialPicker } from '../PopoverCredentialPicker';
+import { CredentialPickerPopover } from './components/CredentialPicker/CredentialPickerPopover';
+import { LoginPromptPopover } from './components/LoginPrompt/LoginPromptPopover';
 
 export interface PopoverOptions {
   position?: 'top' | 'bottom' | 'left' | 'right';
@@ -30,41 +31,37 @@ export class PopoverManager {
    */
   showLoginPrompt(targetField: HTMLElement, onLogin: () => void, onCancel: () => void): void {
     this.removeCurrentPopover();
-    
+
+    // Create container for React component - minimal styling to avoid double container
     const popover = document.createElement('div');
     popover.className = 'simplipass-login-prompt-popover';
-    popover.innerHTML = `
-      <div class="login-prompt">
-        <div class="title">SimpliPass</div>
-        <div class="message">You need to log in to use autofill features.</div>
-        <div class="buttons">
-          <button id="cancel-btn" class="btn btn-cancel">Cancel</button>
-          <button id="login-btn" class="btn btn-login">Login</button>
-        </div>
-      </div>
+    popover.style.cssText = `
+      position: absolute;
+      z-index: 10000;
     `;
 
-    // Add styles
-    this.addPopoverStyles(popover);
-    
-    // Add event listeners
-    popover.querySelector('#cancel-btn')?.addEventListener('click', () => {
-      this.removeCurrentPopover();
-      onCancel();
-    });
-    
-    popover.querySelector('#login-btn')?.addEventListener('click', () => {
-      this.removeCurrentPopover();
-      onLogin();
-    });
-    
     // Position and show
     this.positionPopover(popover, targetField);
     document.body.appendChild(popover);
-    
+
+    // Render LoginPromptPopover using React
+    const root = createRoot(popover);
+    root.render(
+      React.createElement(LoginPromptPopover, {
+        onLogin: () => {
+          this.removeCurrentPopover();
+          onLogin();
+        },
+        onCancel: () => {
+          this.removeCurrentPopover();
+          onCancel();
+        }
+      })
+    );
+
     this.currentPopover = popover;
     this.currentField = targetField;
-    
+
     // Add click outside handler
     this.addClickOutsideHandler(popover, () => {
       this.removeCurrentPopover();
@@ -73,7 +70,7 @@ export class PopoverManager {
   }
 
   /**
-   * Create and show a credential picker popover using PopoverCredentialPicker component
+   * Create and show a credential picker popover using CredentialPickerPopover component
    */
   showCredentialPicker(
     targetField: HTMLElement, 
@@ -83,27 +80,19 @@ export class PopoverManager {
   ): void {
     this.removeCurrentPopover();
     
-    // Create container for React component
+    // Create container for React component - minimal styling to avoid double container
     const popover = document.createElement('div');
     popover.className = 'simplipass-credential-picker-popover';
     popover.style.cssText = `
       position: absolute;
       z-index: 10000;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      padding: 16px;
-      width: 320px;
-      max-height: 400px;
-      overflow-y: auto;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     `;
     
     // Position the popover
     this.positionPopover(popover, targetField);
     document.body.appendChild(popover);
     
-    // Convert credentials to the format expected by PopoverCredentialPicker
+    // Convert credentials to the format expected by CredentialPickerPopover
     const popoverCredentials = credentials.map(cred => ({
       id: cred.id,
       title: cred.title,
@@ -113,13 +102,13 @@ export class PopoverManager {
       passwordCipher: 'encrypted-password' // Placeholder - will be filled by parent
     }));
     
-    // Create React root and render PopoverCredentialPicker
+    // Create React root and render CredentialPickerPopover
     const root = createRoot(popover);
     
     root.render(
-      React.createElement(PopoverCredentialPicker, {
+      React.createElement(CredentialPickerPopover, {
         credentials: popoverCredentials,
-        onPick: (credential: any) => {
+        onSelectCredential: (credential: any) => {
           this.removeCurrentPopover();
           // Convert back to the original credential format
           const originalCredential = credentials.find(c => c.id === credential.id);
@@ -127,7 +116,7 @@ export class PopoverManager {
             onSelectCredential(originalCredential);
           }
         },
-        onClose: () => {
+        onCancel: () => {
           this.removeCurrentPopover();
           onCancel();
         }
@@ -160,7 +149,7 @@ export class PopoverManager {
    */
   private positionPopover(popover: HTMLElement, targetField: HTMLElement): void {
     const rect = targetField.getBoundingClientRect();
-    const popoverRect = popover.getBoundingClientRect();
+    const _popoverRect = popover.getBoundingClientRect(); // Mark as intentionally unused for now
     
     // Position below the field by default
     const top = rect.bottom + window.scrollY + 5;
@@ -175,7 +164,7 @@ export class PopoverManager {
   /**
    * Add popover styles
    */
-  private addPopoverStyles(popover: HTMLElement): void {
+  private addPopoverStyles(_popover: HTMLElement): void {
     const style = document.createElement('style');
     style.textContent = `
       .simplipass-login-prompt-popover,

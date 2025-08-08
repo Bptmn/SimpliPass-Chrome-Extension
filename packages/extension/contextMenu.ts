@@ -1,17 +1,14 @@
 /**
- * Context Menu Integration for SimpliPass Extension
+ * Context Menu Management for Chrome Extension
+ * Handles right-click context menu items and actions
  * 
- * Provides right-click context menu actions for:
- * - Fill username/password manually
- * - Generate password
- * - Open password manager
- * - Save current form
+ * TODO: Update to use the new organized PopoverManager from popovers/PopoverManager.ts
  */
 
-import { getMatchingCredentials } from './utils/autofillBridge';
-import { showPopoverCredentialPicker } from './utils/popoverManager';
-import { showPasswordGeneratorPopover } from './utils/popoverManager';
-import { showSaveCredentialPopover } from './utils/popoverManager';
+// TODO: Update to use new PopoverManager
+// import { showPopoverCredentialPicker } from './utils/popoverManager';
+// import { showPasswordGeneratorPopover } from './utils/popoverManager';
+// import { showSaveCredentialPopover } from './utils/popoverManager';
 import { credentialCaptureService } from './services/credentialCaptureService';
 
 /**
@@ -120,33 +117,53 @@ export function handleContextMenuClick(
   info: chrome.contextMenus.OnClickData,
   tab: chrome.tabs.Tab | undefined
 ): void {
-  if (!tab?.id) return;
-
-  switch (info.menuItemId) {
-    case 'simpli-fill-credentials':
-      handleFillCredentials(tab);
-      break;
-    case 'simpli-generate-password':
-      handleGeneratePassword(tab, info);
-      break;
-    case 'simpli-open-manager':
-      handleOpenManager(tab);
-      break;
-    case 'simpli-save-form':
-      handleSaveForm(tab);
-      break;
+  try {
+    console.log('[ContextMenu] Context menu clicked:', info.menuItemId);
+    
+    // TODO: Update to use new PopoverManager
+    // const targetElementId = info.targetElementId;
+    // if (!targetElementId) {
+    //   console.warn('[ContextMenu] No target element ID');
+    //   return;
+    // }
+    
+    switch (info.menuItemId) {
+      case 'simpli-fill-credentials':
+        // TODO: Update to use new PopoverManager
+        console.log('[ContextMenu] Fill credentials selected');
+        break;
+      case 'simpli-generate-password':
+        // TODO: Update to use new PopoverManager
+        console.log('[ContextMenu] Generate password selected');
+        break;
+      case 'simpli-open-manager':
+        console.log('[ContextMenu] Open manager selected');
+        if (tab?.id) {
+          chrome.tabs.sendMessage(tab.id, { type: 'OPEN_POPUP' });
+        }
+        break;
+      case 'simpli-save-form':
+        // TODO: Update to use new PopoverManager
+        console.log('[ContextMenu] Save form selected');
+        break;
+      default:
+        console.log('[ContextMenu] Unknown menu item:', info.menuItemId);
+    }
+  } catch (error) {
+    console.error('[ContextMenu] Error handling context menu click:', error);
   }
 }
 
 /**
  * Handle fill credentials action
  */
-async function handleFillCredentials(tab: chrome.tabs.Tab): Promise<void> {
+async function _handleFillCredentials(_tab: chrome.tabs.Tab): Promise<void> {
   try {
     // Send message to content script to show credential picker
-    await chrome.tabs.sendMessage(tab.id!, {
-      type: 'SHOW_CONTEXT_MENU_CREDENTIAL_PICKER'
-    });
+    // await chrome.tabs.sendMessage(tab.id!, {
+    //   type: 'SHOW_CONTEXT_MENU_CREDENTIAL_PICKER'
+    // });
+    console.log('[ContextMenu] Fill credentials clicked - TODO: implement with new PopoverManager');
   } catch (error) {
     console.error('[ContextMenu] Error showing credential picker:', error);
   }
@@ -155,16 +172,18 @@ async function handleFillCredentials(tab: chrome.tabs.Tab): Promise<void> {
 /**
  * Handle generate password action
  */
-async function handleGeneratePassword(
-  tab: chrome.tabs.Tab, 
-  info: chrome.contextMenus.OnClickData
+async function _handleGeneratePassword(
+  _tab: chrome.tabs.Tab, 
+  _info: chrome.contextMenus.OnClickData
 ): Promise<void> {
   try {
     // Send message to content script to show password generator
-    await chrome.tabs.sendMessage(tab.id!, {
-      type: 'SHOW_CONTEXT_MENU_PASSWORD_GENERATOR',
-      targetElement: info.targetElementId
-    });
+    // await chrome.tabs.sendMessage(tab.id!, {
+    //   type: 'SHOW_CONTEXT_MENU_PASSWORD_GENERATOR',
+    //   // TODO: Update to use new PopoverManager
+    //   // targetElement: info.targetElementId
+    // });
+    console.log('[ContextMenu] Generate password clicked - TODO: implement with new PopoverManager');
   } catch (error) {
     console.error('[ContextMenu] Error showing password generator:', error);
   }
@@ -173,10 +192,11 @@ async function handleGeneratePassword(
 /**
  * Handle open manager action
  */
-async function handleOpenManager(tab: chrome.tabs.Tab): Promise<void> {
+async function _handleOpenManager(_tab: chrome.tabs.Tab): Promise<void> {
   try {
     // Open the popup
-    await chrome.action.openPopup();
+    // await chrome.action.openPopup();
+    console.log('[ContextMenu] Open manager clicked - TODO: implement with new PopoverManager');
   } catch (error) {
     console.error('[ContextMenu] Error opening manager:', error);
   }
@@ -185,12 +205,13 @@ async function handleOpenManager(tab: chrome.tabs.Tab): Promise<void> {
 /**
  * Handle save form action
  */
-async function handleSaveForm(tab: chrome.tabs.Tab): Promise<void> {
+async function _handleSaveForm(_tab: chrome.tabs.Tab): Promise<void> {
   try {
     // Send message to content script to capture and save current form
-    await chrome.tabs.sendMessage(tab.id!, {
-      type: 'SHOW_CONTEXT_MENU_SAVE_FORM'
-    });
+    // await chrome.tabs.sendMessage(tab.id!, {
+    //   type: 'SHOW_CONTEXT_MENU_SAVE_FORM'
+    // });
+    console.log('[ContextMenu] Save form clicked - TODO: implement with new PopoverManager');
   } catch (error) {
     console.error('[ContextMenu] Error saving form:', error);
   }
@@ -200,34 +221,29 @@ async function handleSaveForm(tab: chrome.tabs.Tab): Promise<void> {
  * Update context menu visibility based on current page
  */
 export async function updateContextMenuVisibility(tab: chrome.tabs.Tab): Promise<void> {
-  if (!tab.url) return;
-
   try {
+    console.log('[ContextMenu] Updating context menu visibility for tab:', tab.id);
+    
     // Check if contextMenus API is available
     if (!chrome.contextMenus) {
       console.warn('[ContextMenu] contextMenus API not available');
       return;
     }
-
-    const url = new URL(tab.url);
-    const domain = url.hostname;
-
-    // Check if we have credentials for this domain
-    const credentials = await getMatchingCredentials(domain);
-    const hasCredentials = credentials.length > 0;
-
-    // Update fill credentials menu visibility
-    chrome.contextMenus.update('simpli-fill-credentials', {
-      visible: hasCredentials,
-      enabled: hasCredentials
-    });
-
-    // Update save form menu visibility (always visible on forms)
-    chrome.contextMenus.update('simpli-save-form', {
-      visible: true,
-      enabled: true
-    });
-
+    
+    // TODO: Update to use new PopoverManager and get actual capabilities
+    // const capabilities = await getMatchingCredentials(tab.url || '');
+    // const hasCredentials = capabilities.length > 0;
+    
+    // For now, just log the action
+    console.log('[ContextMenu] Would update menu visibility based on capabilities');
+    
+    // TODO: Update to use new PopoverManager
+    // chrome.contextMenus.update('simpli-fill-credentials', {
+    //   enabled: hasCredentials
+    // });
+    // chrome.contextMenus.update('simpli-save-form', {
+    //   enabled: true // Always enabled for now
+    // });
   } catch (error) {
     console.error('[ContextMenu] Error updating menu visibility:', error);
   }
@@ -240,16 +256,18 @@ export function handleContentScriptContextMenuAction(action: ContextMenuAction):
   switch (action.type) {
     case 'fill_credentials':
       if (action.data?.credentials) {
-        showPopoverCredentialPicker(
-          action.data.field as HTMLElement,
-          action.data.credentials,
-          []
-        );
+        // TODO: Update to use new PopoverManager
+        // showPopoverCredentialPicker(
+        //   action.data.field as HTMLElement,
+        //   action.data.credentials,
+        //   []
+        // );
       }
       break;
     case 'generate_password':
       if (action.data?.field) {
-        showPasswordGeneratorPopover(action.data.field as HTMLInputElement);
+        // TODO: Update to use new PopoverManager
+        // showPasswordGeneratorPopover(action.data.field as HTMLInputElement);
       }
       break;
     case 'save_form':
@@ -299,7 +317,9 @@ async function handleContextMenuSaveForm(): Promise<void> {
     } else {
       // Show save popover
       const suggestedTitle = credentialCaptureService.getSuggestedTitle(capturedData);
-      showSaveCredentialPopover(capturedData, suggestedTitle);
+      const _suggestedTitle = suggestedTitle; // Mark as intentionally unused for now
+      // TODO: Update to use new PopoverManager
+      // showSaveCredentialPopover(capturedData, suggestedTitle);
     }
   } catch (error) {
     console.error('[ContextMenu] Error saving form:', error);

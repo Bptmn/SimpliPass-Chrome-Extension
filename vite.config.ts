@@ -10,19 +10,23 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: 'packages/extension/PopoverCredentialPicker.html',
+          src: 'packages/extension/popovers/components/CredentialPicker/CredentialPickerPopover.html',
           dest: 'src/content/popovers',
         },
         {
-          src: 'packages/extension/LoginPromptPopover.html',
+          src: 'packages/extension/popovers/components/LoginPrompt/LoginPromptPopover.html',
           dest: 'src/content/popovers',
         },
         {
-          src: 'packages/extension/LoginPromptPopover.js',
+          src: 'packages/extension/popovers/components/PasswordGenerator/PasswordGeneratorPopover.html',
           dest: 'src/content/popovers',
         },
         {
-          src: 'packages/extension/PopoverCredentialPicker.css',
+          src: 'packages/extension/popovers/components/SaveCredential/SaveCredentialPopover.html',
+          dest: 'src/content/popovers',
+        },
+        {
+          src: 'packages/extension/popovers/components/UpdateCredential/UpdateCredentialPopover.html',
           dest: 'src/content/popovers',
         },
         {
@@ -50,13 +54,11 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: 'packages/extension/popup/index.tsx',
-        credentialPicker: 'packages/extension/PopoverCredentialPicker.tsx',
       },
       external: ['chrome'],
       output: {
         entryFileNames: chunk => {
           if (chunk.name === 'popup') return 'assets/index.js';
-          if (chunk.name === 'credentialPicker') return 'src/content/popovers/PopoverCredentialPicker.js';
           return 'assets/[name]-[hash].js';
         },
         format: 'es',

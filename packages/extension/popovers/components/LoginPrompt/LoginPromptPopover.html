@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimpliPass - Login Prompt</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: transparent;
+        }
+        
+        #root {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module">
+        import React from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { LoginPromptPopover } from './LoginPromptPopover.tsx';
+        
+        // Initialize the popover
+        const root = createRoot(document.getElementById('root'));
+        
+        // Handle messages from parent
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'SHOW_LOGIN_PROMPT') {
+                root.render(
+                    React.createElement(LoginPromptPopover, {
+                        onLogin: () => {
+                            // Send login request to parent
+                            window.parent.postMessage({
+                                type: 'LOGIN_PROMPT_LOGIN'
+                            }, '*');
+                        },
+                        onCancel: () => {
+                            // Send cancel event to parent
+                            window.parent.postMessage({
+                                type: 'LOGIN_PROMPT_CANCEL'
+                            }, '*');
+                        }
+                    })
+                );
+            }
+        });
+        
+        // Notify parent that popover is ready
+        window.parent.postMessage({
+            type: 'LOGIN_PROMPT_READY'
+        }, '*');
+    </script>
+</body>
+</html>

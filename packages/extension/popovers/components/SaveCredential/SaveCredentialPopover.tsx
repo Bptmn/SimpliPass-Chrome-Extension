@@ -23,7 +23,6 @@ export interface SaveCredentialPopoverProps {
   capturedData: CapturedCredentials;
   onSave: (credential: SaveCredentialFormData) => Promise<void>;
   onDismiss: () => void;
-  suggestedTitle?: string;
 }
 
 export interface SaveCredentialFormData {
@@ -38,17 +37,13 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
   capturedData,
   onSave,
   onDismiss,
-  suggestedTitle,
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
   
   // Step 1: Initialize form state
-  const [title, setTitle] = useState(suggestedTitle || capturedData.domain || '');
   const [username, setUsername] = useState(capturedData.username || '');
   const [password, setPassword] = useState(capturedData.password || '');
-  const [url, setUrl] = useState(capturedData.url || '');
-  const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,17 +54,17 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
       setError(null);
 
       // Validate form
-      if (!title.trim() || !username.trim() || !password.trim()) {
+      if (!username.trim() || !password.trim()) {
         setError('Please fill in all required fields');
         return;
       }
 
       const formData: SaveCredentialFormData = {
-        title: title.trim(),
+        title: capturedData.domain || 'Unknown Site',
         username: username.trim(),
         password: password.trim(),
-        url: url.trim(),
-        notes: notes.trim() || undefined
+        url: capturedData.url || '',
+        notes: undefined
       };
 
       await onSave(formData);
@@ -79,7 +74,7 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [title, username, password, url, notes, onSave]);
+  }, [username, password, capturedData.domain, capturedData.url, onSave]);
 
   // Step 2: Handle keyboard shortcuts
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
@@ -103,11 +98,11 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
     };
   }, [handleKeyDown]);
 
-  // Step 4: Auto-focus on title field
+  // Step 4: Auto-focus on username field
   useEffect(() => {
-    const titleInput = document.querySelector('[data-testid="credential-title-input"]');
-    if (titleInput) {
-      (titleInput as HTMLElement).focus();
+    const usernameInput = document.querySelector('[data-testid="credential-username-input"]');
+    if (usernameInput) {
+      (usernameInput as HTMLElement).focus();
     }
   }, []);
 
@@ -124,7 +119,7 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
 
   const styles = StyleSheet.create({
     container: {
-      backgroundColor: themeColors.background,
+      backgroundColor: themeColors.primaryBackground,
       borderRadius: radius.lg,
       borderWidth: 1,
       borderColor: themeColors.borderColor,
@@ -142,14 +137,14 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
     title: {
       fontSize: typography.fontSize.lg,
       fontWeight: typography.fontWeight.bold,
-      color: themeColors.primaryText,
+      color: themeColors.primary,
     },
     closeButton: {
       padding: spacing.xs,
     },
     closeText: {
       fontSize: typography.fontSize.xl,
-      color: themeColors.tertiaryText,
+      color: themeColors.tertiary,
     },
     formContainer: {
       gap: spacing.md,
@@ -160,7 +155,7 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
     fieldLabel: {
       fontSize: typography.fontSize.sm,
       fontWeight: typography.fontWeight.medium,
-      color: themeColors.primaryText,
+      color: themeColors.primary,
     },
     domainInfo: {
       flexDirection: 'row',
@@ -170,14 +165,14 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
     },
     domainText: {
       fontSize: typography.fontSize.sm,
-      color: themeColors.secondaryText,
+      color: themeColors.tertiary,
     },
     secureIcon: {
       fontSize: typography.fontSize.sm,
       color: themeColors.success,
     },
     errorContainer: {
-      backgroundColor: themeColors.errorBackground,
+      backgroundColor: themeColors.secondaryBackground,
       borderWidth: 1,
       borderColor: themeColors.error,
       borderRadius: radius.md,
@@ -203,7 +198,7 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
     },
     loadingText: {
       fontSize: typography.fontSize.sm,
-      color: themeColors.secondaryText,
+      color: themeColors.tertiary,
     },
   });
 
@@ -234,66 +229,26 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
 
       {/* Form */}
       <View style={styles.formContainer}>
-        {/* Title Field */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Title</Text>
-          <Input
-            value={title}
-            onChangeText={setTitle}
-            placeholder="Enter title for this credential"
-            testID="credential-title-input"
-            accessibilityLabel="Credential title"
-          />
-        </View>
-
         {/* Username Field */}
         <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Username</Text>
           <Input
+            label="Username"
+            _id="credential-username-input"
             value={username}
-            onChangeText={setUsername}
+            onChange={setUsername}
             placeholder="Enter username"
-            testID="credential-username-input"
-            accessibilityLabel="Username"
           />
         </View>
 
         {/* Password Field */}
         <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Password</Text>
           <Input
+            label="Password"
+            _id="credential-password-input"
             value={password}
-            onChangeText={setPassword}
+            onChange={setPassword}
             placeholder="Enter password"
-            secureTextEntry
-            testID="credential-password-input"
-            accessibilityLabel="Password"
-          />
-        </View>
-
-        {/* URL Field */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>URL</Text>
-          <Input
-            value={url}
-            onChangeText={setUrl}
-            placeholder="Enter URL"
-            testID="credential-url-input"
-            accessibilityLabel="URL"
-          />
-        </View>
-
-        {/* Notes Field */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Notes (Optional)</Text>
-          <Input
-            value={notes}
-            onChangeText={setNotes}
-            placeholder="Add notes about this credential"
-            multiline
-            numberOfLines={3}
-            testID="credential-notes-input"
-            accessibilityLabel="Notes"
+            type="password"
           />
         </View>
       </View>
@@ -308,23 +263,21 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
       {/* Action Buttons */}
       <View style={styles.actionsContainer}>
         <Button
-          variant="secondary"
+          text="Cancel"
+          color={themeColors.secondary}
           onPress={onDismiss}
           style={styles.actionButton}
           testID="dismiss-save-credential"
           disabled={isLoading}
-        >
-          <Text>Cancel</Text>
-        </Button>
+        />
         <Button
-          variant="primary"
+          text="Save"
+          color={themeColors.primary}
           onPress={handleSave}
           style={styles.actionButton}
           testID="save-credential"
           disabled={isLoading}
-        >
-          <Text>Save</Text>
-        </Button>
+        />
       </View>
     </View>
   );

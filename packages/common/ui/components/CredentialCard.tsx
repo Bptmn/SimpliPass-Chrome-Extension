@@ -26,6 +26,7 @@ interface CredentialCardProps {
   testID?: string;
   hideCopyBtn?: boolean;
   onCopy?: () => void;
+  disableFavicon?: boolean;
 }
 
 export const CredentialCard: React.FC<CredentialCardProps> = ({
@@ -34,6 +35,7 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
   testID,
   hideCopyBtn,
   onCopy,
+  disableFavicon = false,
 }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
@@ -126,7 +128,7 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
         accessibilityLabel={`Credential ${credential.title}`}
       >
         <View style={styles.credentialCardLeft}>
-          <LazyCredentialIcon title={credential.title} url={credential.url} />
+          <LazyCredentialIcon title={credential.title} url={credential.url} disableFavicon={disableFavicon} />
           <View style={styles.credentialCardInfo}>
             <Text style={styles.credentialCardTitle} numberOfLines={1}>
               {credential.title}

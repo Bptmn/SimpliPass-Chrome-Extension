@@ -8,9 +8,10 @@ interface LazyCredentialIconProps {
   title: string;
   url: string;
   style?: StyleProp<ViewStyle>;
+  disableFavicon?: boolean;
 }
 
-const LazyCredentialIconComponent: React.FC<LazyCredentialIconProps> = ({ title, url, style }) => {
+const LazyCredentialIconComponent: React.FC<LazyCredentialIconProps> = ({ title, url, style, disableFavicon = false }) => {
   const { mode } = useThemeMode();
   const themeColors = getColors(mode);
 
@@ -50,7 +51,7 @@ const LazyCredentialIconComponent: React.FC<LazyCredentialIconProps> = ({ title,
     placeholderLetter,
     handleFaviconLoad,
     handleFaviconError,
-  } = useLazyCredentialIcon(url, title);
+  } = useLazyCredentialIcon(url, title, disableFavicon);
 
   const containerStyle = [
     {
