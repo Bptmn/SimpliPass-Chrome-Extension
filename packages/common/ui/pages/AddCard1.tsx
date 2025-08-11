@@ -16,6 +16,7 @@ import { getColors } from '@ui/design/colors';
 import { ROUTES } from '@common/ui/router/ROUTES';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { useCardForm } from '@common/hooks/useCardForm';
+import { cardValidationService } from '@common/core/services/validationService';
 
 const AddCard1: React.FC = () => {
   const { mode } = useThemeMode();
@@ -28,11 +29,26 @@ const AddCard1: React.FC = () => {
     formData, 
     errors, 
     handleFieldChange, 
-    isFormValid 
+    setFieldError
   } = useCardForm();
 
   const handleNext = () => {
-    if (!isFormValid()) return;
+    // ✅ Validate required fields when Next button is clicked
+    const titleResult = cardValidationService.validateField('title', formData.title);
+    const cardholderResult = cardValidationService.validateField('cardholderName', formData.cardholderName);
+    
+    let hasErrors = false;
+    if (!titleResult.isValid) {
+      setFieldError('title', titleResult.error);
+      hasErrors = true;
+    }
+    if (!cardholderResult.isValid) {
+      setFieldError('cardholderName', cardholderResult.error);
+      hasErrors = true;
+    }
+    
+    if (hasErrors) return;
+    
     router.navigateTo(ROUTES.ADD_CARD_2, { 
       title: formData.title, 
       bankName: formData.cardholderName 
@@ -72,7 +88,7 @@ const AddCard1: React.FC = () => {
           width="full"
           height="full"
           onPress={handleNext}
-          disabled={!isFormValid()}
+          disabled={!formData.title.trim() || !formData.cardholderName.trim()}
         />
       </View>
     </View>

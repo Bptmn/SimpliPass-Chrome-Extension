@@ -35,29 +35,34 @@ export interface IDatabaseAdapter {
 // This can be easily swapped for other providers (e.g., MongoDB, PostgreSQL, etc.)
 export const db: IDatabaseAdapter = new Proxy({} as IDatabaseAdapter, {
   get(target, prop) {
-    return async (...args: any[]) => {
-      // Map adapter methods to their respective library functions
-      const methodMap: Record<string, any> = {
-        getCollection: firebaseDb.getCollectionWrapper,
-        getDocument: firebaseDb.getDocumentWrapper,
-        addDocument: firebaseDb.addDocumentWrapper,
-        updateDocument: firebaseDb.updateDocumentWrapper,
-        deleteDocument: firebaseDb.deleteDocumentWrapper,
-        generateItemDatabaseId: firebaseDb.generateItemDatabaseId,
-        startListeners: firebaseDb.startListenersWrapper,
-        stopListeners: firebaseDb.stopListenersWrapper,
-        getListenersState: firebaseDb.getListenersStateWrapper,
-        isListening: firebaseDb.isListeningWrapper,
-        getListenersError: firebaseDb.getListenersErrorWrapper,
-        clearListenersError: firebaseDb.clearListenersErrorWrapper,
-      };
-
-      const method = methodMap[prop as string];
-      if (method) {
-        return method(...args);
-      }
-      
-      throw new Error(`Method ${String(prop)} not found in database adapter`);
+    const propName = prop as string;
+    
+    // Map adapter methods to their respective library functions
+    const methodMap: Record<string, any> = {
+      getCollection: firebaseDb.getCollectionWrapper,
+      getDocument: firebaseDb.getDocumentWrapper,
+      addDocument: firebaseDb.addDocumentWrapper,
+      updateDocument: firebaseDb.updateDocumentWrapper,
+      deleteDocument: firebaseDb.deleteDocumentWrapper,
+      generateItemDatabaseId: firebaseDb.generateItemDatabaseId,
+      startListeners: firebaseDb.startListenersWrapper,
+      stopListeners: firebaseDb.stopListenersWrapper,
+      getListenersState: firebaseDb.getListenersStateWrapper,
+      isListening: firebaseDb.isListeningWrapper,
+      getListenersError: firebaseDb.getListenersErrorWrapper,
+      clearListenersError: firebaseDb.clearListenersErrorWrapper,
     };
+
+    const method = methodMap[propName];
+    if (method) {
+      // Special handling for synchronous methods
+      if (propName === 'generateItemDatabaseId') {
+        return (...args: any[]) => method(...args); // Return synchronously
+      }
+      // Async methods
+      return async (...args: any[]) => method(...args);
+    }
+    
+    throw new Error(`Method ${propName} not found in database adapter`);
   }
 });

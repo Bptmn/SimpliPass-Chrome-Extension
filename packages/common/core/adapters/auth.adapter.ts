@@ -2,16 +2,19 @@
 import { User as FirebaseUser } from 'firebase/auth';
 import * as firebaseAuth from '../libraries/auth/firebase';
 import * as cognitoAuth from '../libraries/auth/cognito';
+import type { MfaChallenge } from '../types/auth.types';
 
 export interface IAuthAdapter {
   initialize(platform?: 'extension' | 'mobile'): Promise<void>;
-  login(email: string, password: string): Promise<string>;
+  loginToAuthProvider1(email: string, password: string): Promise<string | MfaChallenge>;
+  confirmMfa(code: string): Promise<string>;
   isAuthenticated(): Promise<boolean>;
   signOut(): Promise<void>;
   fetchUserSalt(): Promise<string>;
   startAuthListeners(callback: (user: FirebaseUser | null) => Promise<void>): Promise<void>;
   stopAuthListeners(): void;
   getCurrentUser(): Promise<FirebaseUser | null>;
+  loginToAuthProvider2(token: string): Promise<FirebaseUser>;
 }
 
 // 🔌 Current implementation using Firebase and Cognito
@@ -24,7 +27,8 @@ export const auth: IAuthAdapter = {
   },
   
   // Pure provider functions - no business logic
-  login: cognitoAuth.loginWithCognitoAndGetUserId,
+  loginToAuthProvider1: cognitoAuth.loginWithCognito,
+  confirmMfa: cognitoAuth.confirmMfaAndCompleteCognitoAuth,
   isAuthenticated: firebaseAuth.isAuthenticated,
   signOut: cognitoAuth.signOutFromAllProviders,
   fetchUserSalt: cognitoAuth.fetchUserSaltCognito,
@@ -33,4 +37,5 @@ export const auth: IAuthAdapter = {
   startAuthListeners: firebaseAuth.startAuthListeners,
   stopAuthListeners: firebaseAuth.stopAuthListeners,
   getCurrentUser: firebaseAuth.getCurrentUser,
+  loginToAuthProvider2: firebaseAuth.signInWithFirebaseToken,
 };

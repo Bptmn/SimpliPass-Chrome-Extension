@@ -61,9 +61,20 @@ export const signInWithFirebaseToken = async (token: string, platform: 'extensio
   }
   
   try {
+    console.log('[Firebase] Attempting to sign in with custom token...');
+    console.log('[Firebase] Token length:', token.length);
+    console.log('[Firebase] Token starts with:', token.substring(0, 20) + '...');
+    
     const userCredential = await signInWithCustomToken(firebaseAuth, token);
+    console.log('[Firebase] Sign in successful, user ID:', userCredential.user.uid);
     return userCredential.user;
   } catch (error) {
+    console.error('[Firebase] Sign in with custom token failed:', error);
+    console.error('[Firebase] Error details:', {
+      code: (error as any)?.code,
+      message: (error as any)?.message,
+      stack: (error as any)?.stack
+    });
     throw new AuthenticationError('Failed to sign in with Firebase token', error as Error);
   }
 };

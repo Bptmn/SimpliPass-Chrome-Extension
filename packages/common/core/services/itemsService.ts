@@ -15,11 +15,6 @@ export interface IItemsService {
     addItem(item: ItemDecrypted): Promise<void>;
     updateItem(itemId: string, updatedItem: ItemDecrypted): Promise<void>;
     deleteItem(itemId: string): Promise<void>;
-    // ✅ NEW: External change handling
-    handleExternalDatabaseChange(encryptedItems: ItemEncrypted[]): Promise<void>;
-    handleExternalItemAdded(encryptedItem: ItemEncrypted): Promise<void>;
-    handleExternalItemUpdated(itemId: string, encryptedItem: ItemEncrypted): Promise<void>;
-    handleExternalItemDeleted(itemId: string): Promise<void>;
 }
 
 // State management for UI updates
@@ -165,14 +160,16 @@ export class ItemsService implements IItemsService {
       const completeItem = { ...item, id: databaseId };
       const encryptedItem = await this.cryptoService.encryptItem(userSecretKey, completeItem);
       
-      // ✅ Update all 3 sources for internal changes
-      await this.db.addDocument(collectionPath, { ...encryptedItem, id: databaseId });
+      // ✅ Update database and local storage only
+      // Let the database listener handle state manager updates
+      const documentData = { ...encryptedItem, id: databaseId };
+      await this.db.addDocument(collectionPath, documentData);
       await this.storage.updateVaultInSecureLocalStorage({
         userId,
         items: [...this.itemsStateManager.getItems(), completeItem],
         lastModified: new Date(),
       });
-      this.itemsStateManager.addItem(completeItem);
+      // Removed: this.itemsStateManager.addItem(completeItem);
 
     } catch (error) {
       this.handleServiceError(error, 'add item');
@@ -192,14 +189,15 @@ export class ItemsService implements IItemsService {
       if (!realUserId) throw new AuthenticationError('User not authenticated');
       const collectionPath = `users/${realUserId}/my_items`;
 
-      // ✅ Update all 3 sources for internal changes
+      // ✅ Update database and local storage only
+      // Let the database listener handle state manager updates
       await this.db.updateDocument(`${collectionPath}/${itemId}`, encryptedUpdates);
       await this.storage.updateVaultInSecureLocalStorage({
         userId: realUserId,
         items: this.itemsStateManager.getItems().map(item => item.id === itemId ? updatedItem : item),
         lastModified: new Date(),
       });
-      this.itemsStateManager.updateItem(itemId, updatedItem);
+      // Removed: this.itemsStateManager.updateItem(itemId, updatedItem);
       
     } catch (error) {
       this.handleServiceError(error, 'update item');
@@ -212,100 +210,18 @@ export class ItemsService implements IItemsService {
       if (!realUserId) throw new AuthenticationError('User not authenticated');
       const collectionPath = `users/${realUserId}/my_items`;
 
-      // ✅ Update all 3 sources for internal changes
+      // ✅ Update database and local storage only
+      // Let the database listener handle state manager updates
       await this.db.deleteDocument(`${collectionPath}/${itemId}`);
       await this.storage.updateVaultInSecureLocalStorage({
         userId: realUserId,
         items: this.itemsStateManager.getItems().filter(item => item.id !== itemId),
         lastModified: new Date(),
       });
-      this.itemsStateManager.removeItem(itemId);
+      // Removed: this.itemsStateManager.removeItem(itemId);
       
     } catch (error) {
       this.handleServiceError(error, 'delete item');
-    }
-  }
-
-  // External change handling
-  public async handleExternalDatabaseChange(encryptedItems: ItemEncrypted[]): Promise<void> {
-    try {
-      const userSecretKey = await this.secretsService.getUserSecretKey();
-      if (!userSecretKey) {
-        throw new AuthenticationError('No user secret key found for external change');
-      }
-
-      const decryptedItems = await this.cryptoService.decryptAllItems(userSecretKey, encryptedItems);
-      this.itemsStateManager.setItems(decryptedItems);
-      await this.storage.updateVaultInSecureLocalStorage({
-        userId: this.authService.getCurrentUserId() || 'unknown',
-        items: decryptedItems,
-        lastModified: new Date(),
-      });
-    } catch (error) {
-      console.error('[ItemsService] Failed to handle external database change:', error);
-      throw new ItemError('Failed to handle external database change', error as Error);
-    }
-  }
-
-  public async handleExternalItemAdded(encryptedItem: ItemEncrypted): Promise<void> {
-    try {
-      const userSecretKey = await this.secretsService.getUserSecretKey();
-      if (!userSecretKey) {
-        throw new AuthenticationError('No user secret key found for external change');
-      }
-
-      const decryptedItem = await this.cryptoService.decryptItem(userSecretKey, encryptedItem);
-      if (!decryptedItem) {
-        throw new ItemError('Failed to decrypt external item');
-      }
-      
-      this.itemsStateManager.addItem(decryptedItem);
-      await this.storage.updateVaultInSecureLocalStorage({
-        userId: this.authService.getCurrentUserId() || 'unknown',
-        items: [...this.itemsStateManager.getItems(), decryptedItem],
-        lastModified: new Date(),
-      });
-    } catch (error) {
-      console.error('[ItemsService] Failed to handle external item added:', error);
-      throw new ItemError('Failed to handle external item added', error as Error);
-    }
-  }
-
-  public async handleExternalItemUpdated(itemId: string, encryptedItem: ItemEncrypted): Promise<void> {
-    try {
-      const userSecretKey = await this.secretsService.getUserSecretKey();
-      if (!userSecretKey) {
-        throw new AuthenticationError('No user secret key found for external change');
-      }
-
-      const decryptedItem = await this.cryptoService.decryptItem(userSecretKey, encryptedItem);
-      if (!decryptedItem) {
-        throw new ItemError('Failed to decrypt external item');
-      }
-      
-      this.itemsStateManager.updateItem(itemId, decryptedItem);
-      await this.storage.updateVaultInSecureLocalStorage({
-        userId: this.authService.getCurrentUserId() || 'unknown',
-        items: this.itemsStateManager.getItems().map(item => item.id === itemId ? decryptedItem : item),
-        lastModified: new Date(),
-      });
-    } catch (error) {
-      console.error('[ItemsService] Failed to handle external item updated:', error);
-      throw new ItemError('Failed to handle external item updated', error as Error);
-    }
-  }
-
-  public async handleExternalItemDeleted(itemId: string): Promise<void> {
-    try {
-      this.itemsStateManager.removeItem(itemId);
-      await this.storage.updateVaultInSecureLocalStorage({
-        userId: this.authService.getCurrentUserId() || 'unknown',
-        items: this.itemsStateManager.getItems(),
-        lastModified: new Date(),
-      });
-    } catch (error) {
-      console.error('[ItemsService] Failed to handle external item deleted:', error);
-      throw new ItemError('Failed to handle external item deleted', error as Error);
     }
   }
 }

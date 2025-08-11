@@ -89,7 +89,13 @@ export const useCardForm = (initialData?: CardFormData): UseCardFormReturn => {
 
   // Submit handler
   const handleSubmit = useCallback(async () => {
-    if (!handleFormValidation()) {
+    // ✅ Validate all fields when submit button is clicked
+    const result = validateForm(formData);
+    if (!result.isValid) {
+      // Set all validation errors
+      Object.entries(result.errors).forEach(([field, error]) => {
+        setFieldError(field as keyof CardFormData, error);
+      });
       return;
     }
 
@@ -119,7 +125,7 @@ export const useCardForm = (initialData?: CardFormData): UseCardFormReturn => {
     } finally {
       setSubmitting(false);
     }
-  }, [formData, handleFormValidation, addItem, navigateTo, setSubmitting, setFieldError]);
+  }, [formData, validateForm, addItem, navigateTo, setSubmitting, setFieldError]);
 
   // Reset form (unused - removed)
   // const resetForm = useCallback(() => {
@@ -144,29 +150,29 @@ export const useCardForm = (initialData?: CardFormData): UseCardFormReturn => {
   //   });
   // }, [errors, setFieldError]);
 
-  // Field change handler
+  // Field change handler - NO validation on change
   const handleFieldChange = useCallback((field: keyof CardFormData, value: string) => {
     updateField(field, value);
-    handleFieldValidation(field);
-  }, [updateField, handleFieldValidation]);
+    // Removed: handleFieldValidation(field);
+  }, [updateField]);
 
-  // Card number change handler
+  // Card number change handler - NO validation on change
   const handleCardNumberChange = useCallback((value: string) => {
     updateField('cardNumber', value);
-    handleFieldValidation('cardNumber');
-  }, [updateField, handleFieldValidation]);
+    // Removed: handleFieldValidation('cardNumber');
+  }, [updateField]);
 
-  // Expiration date change handler
+  // Expiration date change handler - NO validation on change
   const handleExpirationDateChange = useCallback((value: string) => {
     updateField('expirationDate', value);
-    handleFieldValidation('expirationDate');
-  }, [updateField, handleFieldValidation]);
+    // Removed: handleFieldValidation('expirationDate');
+  }, [updateField]);
 
-  // CVV change handler
+  // CVV change handler - NO validation on change
   const handleCVVChange = useCallback((value: string) => {
     updateField('cvv', value);
-    handleFieldValidation('cvv');
-  }, [updateField, handleFieldValidation]);
+    // Removed: handleFieldValidation('cvv');
+  }, [updateField]);
 
   // Form validation check
   const isFormValid = useCallback(() => {

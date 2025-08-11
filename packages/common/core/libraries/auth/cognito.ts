@@ -1,7 +1,7 @@
 // packages/common/core/libraries/auth/cognito.ts
 import { Amplify } from 'aws-amplify';
 import { NetworkError, AuthenticationError } from '../../types/errors.types';
-import { CognitoUser } from '../../types/auth.types';
+import { CognitoUser, MfaChallenge } from '../../types/auth.types';
 import { getCognitoConfig } from '@common/config/platform';
 
 export class CognitoAuth {
@@ -108,9 +108,53 @@ export class CognitoAuth {
   public async confirmMfaWithCognito(code: string): Promise<CognitoUser> {
     await this.initCognito();
     try {
-      const { confirmSignIn } = await import('aws-amplify/auth');
-      const result = await confirmSignIn({ challengeResponse: code });
-      return result as unknown as CognitoUser;
+      const { confirmSignIn, fetchAuthSession, fetchUserAttributes } = await import('aws-amplify/auth');
+      
+      console.log('[Cognito] Confirming MFA with code:', code);
+      const user = await confirmSignIn({ challengeResponse: code });
+      
+      // ✅ NEW: Wait for session to be properly established
+      console.log('[Cognito] MFA confirmed, waiting for session to be established...');
+      
+      // Wait a bit for the session to be fully established
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Verify session is available and get tokens
+      try {
+        const session = await fetchAuthSession();
+        if (!session.tokens) {
+          throw new Error('No tokens available after MFA confirmation');
+        }
+        console.log('[Cognito] Session verified after MFA confirmation');
+        
+        // ✅ FIXED: Get tokens and attributes like in old code
+        const idToken = session.tokens.idToken?.toString();
+        if (!idToken) throw new Error('No IdToken found');
+        
+        const parts = idToken.split('.');
+        if (parts.length !== 3) throw new Error('Invalid JWT structure');
+        
+        const payload = JSON.parse(atob(parts[1]));
+        const firebaseToken = payload.firebaseToken;
+        if (!firebaseToken) throw new Error('Firebase token not found in Cognito ID token claims');
+        
+        const userAttributes = await fetchUserAttributes();
+        
+        console.log('[Cognito] confirmMfaWithCognito success');
+        
+        // ✅ Return complete result like old code
+        return {
+          ...user,
+          idToken,
+          firebaseToken,
+          userAttributes,
+        } as unknown as CognitoUser;
+        
+      } catch (sessionError) {
+        console.error('[Cognito] Session verification failed after MFA:', sessionError);
+        throw new Error('Session not properly established after MFA confirmation');
+      }
+      
     } catch (error) {
       console.error('[Cognito] MFA confirmation failed:', error);
       throw new AuthenticationError('Cognito MFA confirmation failed', error as Error);
@@ -161,16 +205,41 @@ export class CognitoAuth {
   public async getCognitoTokensAndFirebaseToken(): Promise<{ idToken: string; firebaseToken: string }> {
     await this.initCognito();
     try {
+      console.log('[Cognito] Getting Cognito tokens and Firebase token...');
       const { fetchAuthSession } = await import('aws-amplify/auth');
       const session = await fetchAuthSession();
+      
+      console.log('[Cognito] Session fetched:', !!session.tokens);
+      
       if (!session.tokens) {
         throw new Error('No tokens available in Cognito session');
       }
+      
       const idToken = session.tokens.idToken?.toString() || '';
-      const firebaseToken = session.tokens.accessToken?.toString() || '';
-      if (!idToken || !firebaseToken) {
-        throw new Error('Missing required tokens from Cognito session');
+      
+      console.log('[Cognito] ID Token exists:', !!idToken);
+      
+      if (!idToken) {
+        throw new Error('Missing ID token from Cognito session');
       }
+      
+      // ✅ NEW: Validate token structure
+      if (idToken.split('.').length !== 3) {
+        throw new Error('Invalid ID token structure');
+      }
+      
+      // ✅ FIXED: Extract Firebase token from ID token claims (like in old code)
+      const parts = idToken.split('.');
+      const payload = JSON.parse(atob(parts[1]));
+      const firebaseToken = payload.firebaseToken;
+      
+      console.log('[Cognito] Firebase token extracted from ID token claims:', !!firebaseToken);
+      
+      if (!firebaseToken) {
+        throw new Error('Firebase token not found in Cognito ID token claims');
+      }
+      
+      console.log('[Cognito] Tokens validated successfully');
       return { idToken, firebaseToken };
     } catch (error) {
       console.error('[Cognito] Failed to get tokens:', error);
@@ -193,12 +262,75 @@ export const isCognitoInitialized = async (): Promise<boolean> => {
   return await cognitoAuth.isCognitoInitialized();
 };
 
-export const loginWithCognito = async (email: string, password: string): Promise<CognitoUser> => {
-  const cognitoAuth = CognitoAuth.getInstance(); // ✅ Use singleton
-  return cognitoAuth.loginWithCognito(email, password);
+// ✅ Cognito authentication that returns status to master login function
+let pendingMfaUser: CognitoUser | null = null;
+
+export const loginWithCognito = async (email: string, password: string): Promise<string | MfaChallenge> => {
+  const cognitoAuth = CognitoAuth.getInstance();
+  const cognitoUser = await cognitoAuth.loginWithCognito(email, password);
+  
+  // Check if MFA is required
+  const mfaSteps = [
+    'CONFIRM_SIGN_IN_WITH_SMS_CODE',
+    'CONFIRM_SIGN_IN_WITH_TOTP_CODE',
+    'CONFIRM_SIGN_IN_WITH_EMAIL_CODE',
+    'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
+    'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED',
+    'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
+  ];
+  
+  if (cognitoUser.nextStep && mfaSteps.includes(cognitoUser.nextStep.signInStep)) {
+    console.log('[Cognito] MFA required:', cognitoUser.nextStep.signInStep);
+    // Store the pending MFA user for later confirmation
+    pendingMfaUser = cognitoUser;
+    return {
+      mfaRequired: true,
+      mfaUser: cognitoUser,
+      challengeType: cognitoUser.nextStep.signInStep,
+      challengeName: cognitoUser.nextStep.signInStep,
+    };
+  }
+  
+  // No MFA required, return user ID
+  console.log('[Cognito] No MFA required, authentication complete');
+  return cognitoUser.username || email;
 };
 
-// Pure provider function that returns user ID string for adapter compatibility
+// ✅ NEW: Confirm MFA and complete Cognito authentication
+export const confirmMfaAndCompleteCognitoAuth = async (code: string): Promise<string> => {
+  if (!pendingMfaUser) {
+    throw new Error('No pending MFA user found. Please start login process first.');
+  }
+  
+  const cognitoAuth = CognitoAuth.getInstance();
+  const result = await cognitoAuth.confirmMfaWithCognito(code);
+  
+  // Clear the pending user
+  pendingMfaUser = null;
+  
+  console.log('[Cognito] MFA confirmed and Cognito authentication complete');
+  return (result as any).username || '';
+};
+
+
+
+// ✅ NEW: Confirm MFA and return user ID
+export const confirmMfaAndGetUserId = async (code: string): Promise<string> => {
+  const cognitoAuth = CognitoAuth.getInstance();
+  const result = await cognitoAuth.confirmMfaWithCognito(code);
+  
+  // ✅ FIXED: Handle the new return format with tokens and attributes
+  if (result && typeof result === 'object' && 'firebaseToken' in result) {
+    // The result contains the complete data from confirmMfaWithCognito
+    console.log('[Cognito] MFA confirmation completed with tokens');
+    return (result as any).username || '';
+  }
+  
+  // Fallback to old format
+  return (result as any).username || '';
+};
+
+// Pure provider function that returns user ID string for adapter compatibility (legacy)
 export const loginWithCognitoAndGetUserId = async (email: string, password: string): Promise<string> => {
   const cognitoAuth = CognitoAuth.getInstance(); // ✅ Use singleton
   const cognitoUser = await cognitoAuth.loginWithCognito(email, password);

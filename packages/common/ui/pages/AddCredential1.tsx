@@ -15,6 +15,7 @@ import { useThemeMode } from '@common/ui/design/theme';
 import { ROUTES } from '@common/ui/router';
 import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
 import { useCredentialForm } from '@common/hooks/useCredentialForm';
+import { credentialValidationService } from '@common/core/services/validationService';
 
 const AddCredential1: React.FC = () => {
   const { mode } = useThemeMode();
@@ -26,11 +27,17 @@ const AddCredential1: React.FC = () => {
     formData, 
     errors, 
     handleFieldChange, 
-    isFormValid 
+    setFieldError
   } = useCredentialForm();
 
   const handleNext = () => {
-    if (!isFormValid()) return;
+    // ✅ Validate title field when Next button is clicked
+    const result = credentialValidationService.validateField('title', formData.title);
+    if (!result.isValid) {
+      setFieldError('title', result.error);
+      return;
+    }
+    
     router.navigateTo(ROUTES.ADD_CREDENTIAL_2, { 
       title: formData.title 
     });
@@ -55,7 +62,7 @@ const AddCredential1: React.FC = () => {
             text="Suivant"
             color="#2AB2A3"
             onPress={handleNext}
-            disabled={!isFormValid()}
+            disabled={!formData.title.trim()}
             width="full"
             height="full"
           />

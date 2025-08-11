@@ -40,6 +40,21 @@ export interface LoginCredentials {
   password: string;
 }
 
+// ===== MFA Types =====
+
+export interface MfaChallenge {
+  mfaRequired: boolean;
+  mfaUser: CognitoUser;
+  challengeType?: string;
+  challengeName?: string;
+}
+
+export interface MfaConfirmationResult {
+  success: boolean;
+  user?: CognitoUser;
+  error?: string;
+}
+
 export interface CognitoUser {
   username: string;
   attributes: {
@@ -47,7 +62,7 @@ export interface CognitoUser {
     email_verified: boolean;
     sub: string;
   };
-  signInUserSession: {
+  signInUserSession?: {
     accessToken: {
       jwtToken: string;
     };
@@ -56,6 +71,14 @@ export interface CognitoUser {
     };
     refreshToken: {
       token: string;
+    };
+  };
+  nextStep?: {
+    signInStep: string;
+    codeDeliveryDetails?: {
+      destination: string;
+      deliveryMedium: string;
+      attributeName: string;
     };
   };
 }

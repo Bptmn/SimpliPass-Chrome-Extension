@@ -78,9 +78,20 @@ export const addDocument = async <T extends DocumentData = DocumentData>(
   data: T
 ): Promise<string> => {
   const colRef = collection(firestore, collectionPath);
-  const docRef = doc(colRef); // generates a new doc ref with an ID
-  await setDoc(docRef, { ...data, id: docRef.id });
-  return docRef.id;
+  
+  // Use the ID from the data to create the document reference
+  const documentId = (data as any).id;
+  if (!documentId) {
+    throw new Error('Document data must contain an id field');
+  }
+  
+  if (typeof documentId !== 'string') {
+    throw new Error(`Document ID must be a string, got: ${typeof documentId} (${documentId})`);
+  }
+  
+  const docRef = doc(colRef, documentId);
+  await setDoc(docRef, data);
+  return documentId;
 };
 
 // Pure provider function: Update document

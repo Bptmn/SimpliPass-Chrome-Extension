@@ -46,7 +46,7 @@ class DatabaseListeners implements IDatabaseListenerService {
         },
         onItemsUpdate: async (encryptedItems: any[]) => {
           try {
-            console.log('[DatabaseListeners] Items updated in database, checking if user has secret key...');
+            console.log('[DatabaseListeners] Items updated in database, fetching latest data...');
             
             // ✅ Check if user has secret key before processing updates
             const appState = this.appStateStore.getState();
@@ -62,12 +62,12 @@ class DatabaseListeners implements IDatabaseListenerService {
               return;
             }
             
-            console.log('[DatabaseListeners] User has secret key, handling external database change...');
-            // ✅ Use external change handling to update local storage and state
-            await this.itemsService.handleExternalDatabaseChange(encryptedItems);
-            console.log('[DatabaseListeners] External items update processed successfully');
+            // ✅ SIMPLE APPROACH: Always fetch and store latest data
+            console.log('[DatabaseListeners] Fetching and storing latest items...');
+            await this.itemsService.fetchAndStoreItems(currentUserId);
+            console.log('[DatabaseListeners] Latest items fetched and stored successfully');
           } catch (error) {
-            console.error('[DatabaseListeners] Error processing external items update:', error);
+            console.error('[DatabaseListeners] Error processing items update:', error);
             // Don't throw here as this is a callback - just log the error
           }
         },

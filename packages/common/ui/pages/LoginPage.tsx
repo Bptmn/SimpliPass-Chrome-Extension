@@ -9,6 +9,8 @@ import { Input } from '@ui/components/InputFields';
 import { ErrorBanner } from '@ui/components/ErrorBanner';
 import { useLogin } from '@common/hooks/useLogin'; // ✅ Use new focused hook
 import { useLoginStorage } from '@common/hooks/useLoginStorage';
+import { useMfaConfirmation } from '@common/hooks/useMfaConfirmation';
+import CodeConfirmationPage from './CodeConfirmationPage';
 import logo from '../../../../assets/logo/logo_simplify_long.png';
 import type { User } from '@common/core/types/auth.types';
 
@@ -31,11 +33,21 @@ const LoginPage: React.FC<LoginPageProps> = ({ user: _user }) => { // ✅ Rename
     rememberEmail,
     isLoading, 
     error,
+    mfaChallenge,
     setEmail,
     setPassword,
     setRememberEmail,
-    handleLogin
+    handleLogin,
+    clearMfaChallenge
   } = useLogin(); // ✅ Removed clearError since it's not used
+  
+  // ✅ Use MFA confirmation hook
+  const {
+    isLoading: mfaIsLoading,
+    error: mfaError,
+    handleConfirmMfa,
+    clearError: clearMfaError,
+  } = useMfaConfirmation();
   
   const { getRememberedEmail, setRememberedEmail, removeRememberedEmail } = useLoginStorage();
 
@@ -62,6 +74,55 @@ const LoginPage: React.FC<LoginPageProps> = ({ user: _user }) => { // ✅ Rename
     };
     updateRememberedEmail();
   }, [rememberEmail, email, setRememberedEmail, removeRememberedEmail]);
+
+  // Handle back from MFA page
+  const handleBackFromMfa = () => {
+    clearMfaChallenge();
+    clearMfaError();
+  };
+
+  // Get MFA challenge display info
+  const getMfaDisplayInfo = () => {
+    if (!mfaChallenge) return { title: '', subtitle: '' };
+    
+    const getChallengeDisplayName = (challengeType?: string): string => {
+      switch (challengeType) {
+        case 'CONFIRM_SIGN_IN_WITH_SMS_CODE':
+          return 'SMS';
+        case 'CONFIRM_SIGN_IN_WITH_TOTP_CODE':
+          return 'Authenticator App';
+        case 'CONFIRM_SIGN_IN_WITH_EMAIL_CODE':
+          return 'Email';
+        default:
+          return 'Code';
+      }
+    };
+
+    const challengeType = getChallengeDisplayName(mfaChallenge.challengeType);
+    
+    return {
+      title: 'Vérification en deux étapes',
+      subtitle: `Entrez le code de vérification envoyé par ${challengeType}`,
+    };
+  };
+
+  // Show MFA confirmation page if MFA challenge is present
+  if (mfaChallenge) {
+    const { title, subtitle } = getMfaDisplayInfo();
+    
+    return (
+      <CodeConfirmationPage
+        title={title}
+        subtitle={subtitle}
+        onConfirm={handleConfirmMfa}
+        onBack={handleBackFromMfa}
+        showResendButton={false}
+        showBackButton={true}
+        isLoading={mfaIsLoading}
+        error={mfaError}
+      />
+    );
+  }
 
   if (error) {
     return <ErrorBanner message={error} />;

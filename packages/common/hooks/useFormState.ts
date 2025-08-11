@@ -24,11 +24,9 @@ export const useFormState = <T extends Record<string, any>>(
     setFormData(prev => ({ ...prev, [field]: value }));
     setIsDirty(true);
     
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
-  }, [errors, setFormData, setErrors]);
+    // Removed: Clear error when user starts typing
+    // Errors should only be cleared when validation is explicitly triggered
+  }, [setFormData]);
 
   /**
    * Updates multiple fields at once
@@ -37,16 +35,9 @@ export const useFormState = <T extends Record<string, any>>(
     setFormData(prev => ({ ...prev, ...updates }));
     setIsDirty(true);
     
-    // Clear errors for updated fields
-    const updatedFields = Object.keys(updates) as (keyof T)[];
-    const newErrors = { ...errors };
-    updatedFields.forEach(field => {
-      if (newErrors[field]) {
-        delete newErrors[field];
-      }
-    });
-    setErrors(newErrors);
-  }, [errors, setFormData, setErrors]);
+    // Removed: Clear errors for updated fields
+    // Errors should only be cleared when validation is explicitly triggered
+  }, [setFormData]);
 
   /**
    * Sets a specific error for a field

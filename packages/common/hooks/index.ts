@@ -3,6 +3,7 @@ export { useAppStateStore } from './core/useAppState';
 export { useAppInitialization } from './core/useAppInitialization';
 export { useAuth } from './core/useAuth';
 export { useLogin } from './core/useLogin';
+export { useMfaConfirmation } from './useMfaConfirmation';
 
 // Form hooks (form state, validation)
 export { useFormState } from './forms/useFormState';

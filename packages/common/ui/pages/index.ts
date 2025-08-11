@@ -23,4 +23,5 @@ export { HomePage } from './HomePage';
 export { default as LoginPage } from './LoginPage';
 export { LockPage } from './LockPage';
 export { EmailConfirmationPage } from './EmailConfirmationPage';
+export { default as CodeConfirmationPage } from './CodeConfirmationPage';
 export { GeneratorPage } from './GeneratorPage'; 

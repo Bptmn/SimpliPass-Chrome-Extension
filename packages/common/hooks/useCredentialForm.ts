@@ -47,6 +47,7 @@ export interface UseCredentialFormReturn {
   handleGeneratePassword: () => void;
   handleReset: () => void;
   isFormValid: () => boolean;
+  isTitleValid: () => boolean;
 }
 
 export const useCredentialForm = (): UseCredentialFormReturn => {
@@ -87,7 +88,13 @@ export const useCredentialForm = (): UseCredentialFormReturn => {
 
   // Submit handler
   const handleSubmit = useCallback(async () => {
-    if (!handleFormValidation()) {
+    // ✅ Validate all fields when submit button is clicked
+    const result = validateForm(formData);
+    if (!result.isValid) {
+      // Set all validation errors
+      Object.entries(result.errors).forEach(([field, error]) => {
+        setFieldError(field as keyof CredentialFormData, error);
+      });
       return;
     }
 
@@ -117,25 +124,25 @@ export const useCredentialForm = (): UseCredentialFormReturn => {
     } finally {
       setSubmitting(false);
     }
-  }, [formData, handleFormValidation, addItem, navigateTo, setSubmitting, setFieldError]);
+  }, [formData, validateForm, addItem, navigateTo, setSubmitting, setFieldError]);
 
-  // Field change handler
+  // Field change handler - NO validation on change
   const handleFieldChange = useCallback((field: keyof CredentialFormData, value: string) => {
     updateField(field, value);
-    handleFieldValidation(field);
-  }, [updateField, handleFieldValidation]);
+    // Removed: handleFieldValidation(field);
+  }, [updateField]);
 
-  // Email change handler
+  // Email change handler - NO validation on change
   const handleEmailChange = useCallback((value: string) => {
     updateField('username', value);
-    handleFieldValidation('username');
-  }, [updateField, handleFieldValidation]);
+    // Removed: handleFieldValidation('username');
+  }, [updateField]);
 
-  // URL change handler
+  // URL change handler - NO validation on change
   const handleURLChange = useCallback((value: string) => {
     updateField('url', value);
-    handleFieldValidation('url');
-  }, [updateField, handleFieldValidation]);
+    // Removed: handleFieldValidation('url');
+  }, [updateField]);
 
   // Generate password handler
   const handleGeneratePassword = useCallback(() => {
@@ -157,6 +164,12 @@ export const useCredentialForm = (): UseCredentialFormReturn => {
     return handleFormValidation();
   }, [handleFormValidation]);
 
+  // Step-specific validation for AddCredential1 (title only)
+  const isTitleValid = useCallback(() => {
+    const result = validateField('title', formData.title);
+    return result.isValid;
+  }, [validateField, formData.title]);
+
   return {
     formData,
     errors,
@@ -169,6 +182,7 @@ export const useCredentialForm = (): UseCredentialFormReturn => {
     handleURLChange,
     handleGeneratePassword,
     handleReset,
-    isFormValid
+    isFormValid,
+    isTitleValid
   };
 }; 

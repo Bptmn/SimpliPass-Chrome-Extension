@@ -6,6 +6,7 @@
  * - Loading states
  * - User feedback and error handling
  * - Navigation after successful login
+ * - MFA challenge handling
  * 
  * Business logic is delegated to authService.
  */
@@ -14,6 +15,7 @@ import { useState, useCallback } from 'react';
 import { authService } from '../core/services/authService';
 import { useAppRouterContext } from '../ui/router/AppRouterProvider';
 import { ROUTES } from '../ui/router/ROUTES';
+import type { MfaChallenge } from '../core/types/auth.types';
 
 export interface UseLoginReturn {
   // Form state
@@ -26,6 +28,7 @@ export interface UseLoginReturn {
   // UI state
   isLoading: boolean;
   error: string | null;
+  mfaChallenge: MfaChallenge | null;
   
   // Actions
   setEmail: (email: string) => void;
@@ -33,6 +36,7 @@ export interface UseLoginReturn {
   setRememberEmail: (remember: boolean) => void;
   handleLogin: () => Promise<void>;
   clearError: () => void;
+  clearMfaChallenge: () => void;
   validateForm: () => boolean;
 }
 
@@ -47,6 +51,7 @@ export const useLogin = (): UseLoginReturn => {
   // UI state
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mfaChallenge, setMfaChallenge] = useState<MfaChallenge | null>(null);
   
   // Navigation
   const router = useAppRouterContext();
@@ -76,8 +81,9 @@ export const useLogin = (): UseLoginReturn => {
 
   // Login handler
   const handleLogin = useCallback(async () => {
-    // Clear previous errors
+    // Clear previous errors and MFA challenge
     setError(null);
+    setMfaChallenge(null);
     
     // Validate form
     if (!validateForm()) {
@@ -88,11 +94,18 @@ export const useLogin = (): UseLoginReturn => {
     
     try {
       // ✅ Hook calls service for business logic
-      await authService.login(email, password);
+      const loginResult = await authService.login(email, password);
       
       // ✅ Hook handles UI-specific logic
-      console.log('[useLogin] Login successful, navigating to home');
-      router.navigateTo(ROUTES.HOME);
+      if (typeof loginResult === 'object' && loginResult.mfaRequired) {
+        // MFA required - set challenge for UI
+        console.log('[useLogin] MFA required, setting challenge');
+        setMfaChallenge(loginResult);
+      } else {
+        // No MFA required - navigate to home
+        console.log('[useLogin] Login successful, navigating to home');
+        router.navigateTo(ROUTES.HOME);
+      }
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
@@ -108,6 +121,11 @@ export const useLogin = (): UseLoginReturn => {
     setError(null);
   }, []);
 
+  // Clear MFA challenge
+  const clearMfaChallenge = useCallback(() => {
+    setMfaChallenge(null);
+  }, []);
+
   return {
     // Form state
     email,
@@ -119,6 +137,7 @@ export const useLogin = (): UseLoginReturn => {
     // UI state
     isLoading,
     error,
+    mfaChallenge,
     
     // Actions
     setEmail,
@@ -126,6 +145,7 @@ export const useLogin = (): UseLoginReturn => {
     setRememberEmail,
     handleLogin,
     clearError,
+    clearMfaChallenge,
     validateForm,
   };
 };
