@@ -136,8 +136,8 @@ export const useItemsState = ({ user }: UseItemsStateProps): UseItemsStateReturn
 
   // Derive data for convenience
   const credentials = items.filter(item => item.itemType === 'credential') as CredentialDecrypted[];
-  const bankCards = items.filter(item => item.itemType === 'bankCard') as BankCardDecrypted[];
-  const secureNotes = items.filter(item => item.itemType === 'secureNote') as SecureNoteDecrypted[];
+  const bankCards = items.filter(item => item.itemType === 'bank_card') as BankCardDecrypted[];
+  const secureNotes = items.filter(item => item.itemType === 'secure_note') as SecureNoteDecrypted[];
 
   // Derive loading state from items state
   const _shouldShowLoading = loading && items.length === 0;
@@ -177,7 +177,7 @@ export const useItemsState = ({ user }: UseItemsStateProps): UseItemsStateReturn
       }
 
       // Search in bank name for bank cards
-      if (item.itemType === 'bankCard' && 'bankName' in item) {
+      if (item.itemType === 'bank_card' && 'bankName' in item) {
         const bankCard = item as BankCardDecrypted;
         if (bankCard.bankName && bankCard.bankName.toLowerCase().includes(searchLower)) {
           return true;
@@ -194,13 +194,13 @@ export const useItemsState = ({ user }: UseItemsStateProps): UseItemsStateReturn
     [filteredItems]
   );
 
-  const filteredBankCards = useMemo(() => 
-    filteredItems.filter(item => item.itemType === 'bankCard') as BankCardDecrypted[],
+    const filteredBankCards = useMemo(() =>
+    filteredItems.filter(item => item.itemType === 'bank_card') as BankCardDecrypted[],
     [filteredItems]
   );
 
-  const filteredSecureNotes = useMemo(() => 
-    filteredItems.filter(item => item.itemType === 'secureNote') as SecureNoteDecrypted[],
+  const filteredSecureNotes = useMemo(() =>
+    filteredItems.filter(item => item.itemType === 'secure_note') as SecureNoteDecrypted[],
     [filteredItems]
   );
 

@@ -82,9 +82,9 @@ export async function saveVaultToStorage(userSecretKey: string): Promise<boolean
     allItems.forEach((item: ItemDecrypted) => {
       if (item.itemType === 'credential') {
         credentials.push(item as CredentialDecrypted);
-      } else if (item.itemType === 'bankCard') {
+      } else if (item.itemType === 'bank_card') {
         bankCards.push(item as BankCardDecrypted);
-      } else if (item.itemType === 'secureNote') {
+              } else if (item.itemType === 'secure_note') {
         secureNotes.push(item as SecureNoteDecrypted);
       }
     });

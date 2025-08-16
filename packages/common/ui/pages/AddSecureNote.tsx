@@ -43,7 +43,7 @@ const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
         title: title || '',
         note: content,
         color: selectedColor,
-        itemType: 'secureNote',
+        itemType: 'secure_note',
         createdDateTime: new Date(),
         lastUseDateTime: new Date(),
         itemKey: generateItemKey(),

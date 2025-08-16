@@ -51,11 +51,11 @@ export const useItemDetails = ({ onBack, showToast, copyToClipboard }: UseItemDe
         case 'credential':
           router.navigateTo(ROUTES.MODIFY_CREDENTIAL, { credential: item });
           break;
-        case 'bankCard':
-          router.navigateTo(ROUTES.MODIFY_BANK_CARD, { bankCard: item });
-          break;
-        case 'secureNote':
-          router.navigateTo(ROUTES.MODIFY_SECURE_NOTE, { secureNote: item });
+              case 'bank_card':
+        router.navigateTo(ROUTES.MODIFY_BANK_CARD, { bankCard: item });
+        break;
+      case 'secure_note':
+        router.navigateTo(ROUTES.MODIFY_SECURE_NOTE, { secureNote: item });
           break;
         default:
           throw new Error(`Unknown item type: ${(item as any).itemType}`);

@@ -204,12 +204,12 @@ export const useItemsOperations = ({ user }: UseItemsOperationsProps): UseItemsO
   );
 
   const bankCards = useMemo(() => 
-    items.filter(item => item.itemType === 'bankCard') as BankCardDecrypted[], 
+    items.filter(item => item.itemType === 'bank_card') as BankCardDecrypted[], 
     [items]
   );
 
   const secureNotes = useMemo(() => 
-    items.filter(item => item.itemType === 'secureNote') as SecureNoteDecrypted[], 
+    items.filter(item => item.itemType === 'secure_note') as SecureNoteDecrypted[], 
     [items]
   );
 
@@ -248,7 +248,7 @@ export const useItemsOperations = ({ user }: UseItemsOperationsProps): UseItemsO
       }
 
       // Search in bank name for bank cards
-      if (item.itemType === 'bankCard' && 'bankName' in item) {
+      if (item.itemType === 'bank_card' && 'bankName' in item) {
         const bankCard = item as BankCardDecrypted;
         if (bankCard.bankName && bankCard.bankName.toLowerCase().includes(searchLower)) {
           return true;
@@ -266,12 +266,12 @@ export const useItemsOperations = ({ user }: UseItemsOperationsProps): UseItemsO
   );
 
   const filteredBankCards = useMemo(() => 
-    filteredItems.filter(item => item.itemType === 'bankCard') as BankCardDecrypted[],
+    filteredItems.filter(item => item.itemType === 'bank_card') as BankCardDecrypted[],
     [filteredItems]
   );
 
   const filteredSecureNotes = useMemo(() => 
-    filteredItems.filter(item => item.itemType === 'secureNote') as SecureNoteDecrypted[],
+    filteredItems.filter(item => item.itemType === 'secure_note') as SecureNoteDecrypted[],
     [filteredItems]
   );
 

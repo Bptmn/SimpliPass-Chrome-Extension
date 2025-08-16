@@ -6,7 +6,7 @@ import { DarkScreenThemeProvider } from '@ui/components/storybook/ThemeProviders
 
 const mockBankCard: BankCardDecrypted = {
   id: '1',
-  itemType: 'bankCard',
+  itemType: 'bank_card',
   createdDateTime: new Date(),
   lastUseDateTime: new Date(),
   title: 'Chase Credit Card',

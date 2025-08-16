@@ -43,7 +43,7 @@ export const cardFormTransformationService = {
       
       return {
         id: itemKey,
-        itemType: 'bankCard',
+        itemType: 'bank_card',
         createdDateTime: new Date(),
         lastUseDateTime: new Date(),
         title: formData.title,
@@ -228,7 +228,7 @@ export const secureNoteFormTransformationService = {
       
       return {
         id: itemKey,
-        itemType: 'secureNote',
+        itemType: 'secure_note',
         createdDateTime: new Date(),
         lastUseDateTime: new Date(),
         title: formData.title,
@@ -314,11 +314,11 @@ export const genericFormTransformationService = {
   transformItemToForm: <T extends Record<string, any>>(item: ItemDecrypted): T => {
     try {
       const itemType = item.itemType;
-      if (itemType === 'bankCard') {
+      if (itemType === 'bank_card') {
         return cardFormTransformationService.transformCardToForm(item as BankCardDecrypted) as unknown as T;
       } else if (itemType === 'credential') {
         return credentialFormTransformationService.transformCredentialToForm(item as CredentialDecrypted) as unknown as T;
-      } else if (itemType === 'secureNote') {
+              } else if (itemType === 'secure_note') {
         return secureNoteFormTransformationService.transformSecureNoteToForm(item as SecureNoteDecrypted) as unknown as T;
       } else {
         throw new ItemError(`Unknown item type: ${itemType}`);

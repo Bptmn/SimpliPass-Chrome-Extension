@@ -22,7 +22,7 @@ export interface CredentialDecrypted {
 }
 
 export interface BankCardDecrypted {
-  itemType: 'bankCard';
+  itemType: 'bank_card';
   createdDateTime: Date;
   lastUseDateTime: Date;
   title: string;
@@ -39,7 +39,7 @@ export interface BankCardDecrypted {
 }
 
 export interface SecureNoteDecrypted {
-  itemType: 'secureNote';
+  itemType: 'secure_note';
   createdDateTime: Date;
   lastUseDateTime: Date;
   title: string;

@@ -6,7 +6,7 @@ import { DarkScreenThemeProvider } from '@ui/components/storybook/ThemeProviders
 
 const mockSecureNote: SecureNoteDecrypted = {
   id: '1',
-  itemType: 'secureNote',
+  itemType: 'secure_note',
   createdDateTime: new Date(),
   lastUseDateTime: new Date(),
   title: 'WiFi Password',

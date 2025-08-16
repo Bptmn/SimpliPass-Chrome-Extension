@@ -59,7 +59,7 @@ export const useItemsList = ({ user }: UseItemsListProps): UseItemsListReturn =>
         if (credential.url && credential.url.toLowerCase().includes(searchLower)) return true;
         if (credential.username && credential.username.toLowerCase().includes(searchLower)) return true;
       }
-      if (item.itemType === 'bankCard' && 'bankName' in item) {
+      if (item.itemType === 'bank_card' && 'bankName' in item) {
         const bankCard = item as BankCardDecrypted;
         if (bankCard.bankName && bankCard.bankName.toLowerCase().includes(searchLower)) return true;
       }
@@ -68,8 +68,8 @@ export const useItemsList = ({ user }: UseItemsListProps): UseItemsListReturn =>
   }, [items, filter]);
 
   const credentials = useMemo(() => items.filter(i => i.itemType === 'credential') as CredentialDecrypted[], [items]);
-  const bankCards = useMemo(() => items.filter(i => i.itemType === 'bankCard') as BankCardDecrypted[], [items]);
-  const secureNotes = useMemo(() => items.filter(i => i.itemType === 'secureNote') as SecureNoteDecrypted[], [items]);
+  const bankCards = useMemo(() => items.filter(i => i.itemType === 'bank_card') as BankCardDecrypted[], [items]);
+  const secureNotes = useMemo(() => items.filter(i => i.itemType === 'secure_note') as SecureNoteDecrypted[], [items]);
 
   return {
     items,

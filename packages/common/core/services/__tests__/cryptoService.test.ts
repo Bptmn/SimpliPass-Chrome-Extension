@@ -125,7 +125,7 @@ describe('Crypto Service', () => {
   describe('decryptAllItems', () => {
     it('should decrypt a list of items', async () => {
         const item1: CredentialDecrypted = { id: '1', title: 'item1', itemType: 'credential', itemKey: 'key1' } as any;
-        const item2: BankCardDecrypted = { id: '2', title: 'item2', itemType: 'bankCard', itemKey: 'key2' } as any;
+        const item2: BankCardDecrypted = { id: '2', title: 'item2', itemType: 'bank_card', itemKey: 'key2' } as any;
 
         const encryptedItems: ItemEncrypted[] = [
             { id: '1', content_encrypted: 'enc1', item_key_encrypted: 'encKey1' } as any,

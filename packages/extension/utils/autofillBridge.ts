@@ -203,7 +203,7 @@ export async function getAllBankCards(): Promise<Array<{
     }
 
     const items = await getItemsFromService();
-    const bankCards = items.filter(item => item.itemType === 'bankCard') as BankCardDecrypted[];
+    const bankCards = items.filter(item => item.itemType === 'bank_card') as BankCardDecrypted[];
     return bankCards.map((card) => ({
       id: card.id,
       title: card.title,
@@ -231,7 +231,7 @@ export async function getAllSecureNotes(): Promise<Array<{
     }
 
     const items = await getItemsFromService();
-    const secureNotes = items.filter(item => item.itemType === 'secureNote') as SecureNoteDecrypted[];
+    const secureNotes = items.filter(item => item.itemType === 'secure_note') as SecureNoteDecrypted[];
     return secureNotes.map((note) => ({
       id: note.id,
       title: note.title,

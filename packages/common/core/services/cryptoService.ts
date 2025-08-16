@@ -59,7 +59,7 @@ export const decryptItem = async (userSecretKey: string, itemToDecrypt: ItemEncr
               owner: contentJson.owner || '',
               note: contentJson.note || '',
               color: contentJson.color || '',
-              itemType: 'bankCard',
+              itemType: 'bank_card',
               itemKey,
               cardNumber: contentJson.cardNumber || '',
               expirationDate,
@@ -77,7 +77,7 @@ export const decryptItem = async (userSecretKey: string, itemToDecrypt: ItemEncr
               title: contentJson.title || '',
               note: contentJson.note || '',
               color: contentJson.color || '',
-              itemType: 'secureNote',
+              itemType: 'secure_note',
               itemKey,
             } as SecureNoteDecrypted;
           default:
