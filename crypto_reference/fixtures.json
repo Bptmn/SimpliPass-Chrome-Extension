@@ -1,0 +1,11 @@
+[
+  {
+    "name": "test_credential",
+    "masterPassword": "testPassword123",
+    "saltB64Url": "dGVzdFNhbHQxMjM",
+    "expectedDerivedKeyB64Url": "test_derived_key_placeholder",
+    "keyB64Url": "dGVzdEtleTEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3ODkwYWJjZGVm",
+    "plaintext": "{\"itemType\":\"credential\",\"title\":\"Test Credential\",\"username\":\"test@example.com\",\"password\":\"testPassword123\",\"note\":\"Test note\",\"url\":\"https://example.com\"}",
+    "ciphertextBase64": "test_ciphertext_placeholder"
+  }
+]

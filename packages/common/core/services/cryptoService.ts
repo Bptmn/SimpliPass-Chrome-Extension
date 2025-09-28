@@ -27,13 +27,39 @@ export const decryptItem = async (userSecretKey: string, itemToDecrypt: ItemEncr
         const cryptoUtils = await getCryptoUtils();
         const itemKey = await cryptoUtils.decryptData(userSecretKey, itemToDecrypt.item_key_encrypted);
         const decryptedContent = await cryptoUtils.decryptData(itemKey, itemToDecrypt.content_encrypted);
+        console.log('[Cryptography] Decrypted content length:', decryptedContent.length);
+        console.log('[Cryptography] Decrypted content (first 100 chars):', decryptedContent.substring(0, 100) + (decryptedContent.length > 100 ? '...' : ''));
+        
         const contentJson = JSON.parse(decryptedContent);
+        console.log('[Cryptography] Parsed JSON keys:', Object.keys(contentJson));
+        console.log('[Cryptography] Parsed JSON itemType:', contentJson.itemType);
+        console.log('[Cryptography] Full parsed JSON:', JSON.stringify(contentJson, null, 2));
         
         // ✅ Database adapter now provides standard Date objects
         const createdDateTime = itemToDecrypt.created_at;
         const lastUseDateTime = itemToDecrypt.last_used_at;
         
-        const itemType = contentJson.itemType;
+        // Handle backward compatibility for items without itemType
+        let itemType = contentJson.itemType;
+        
+        // If itemType is missing, try to infer it from the data structure
+        if (!itemType) {
+          // Check for credential: has username field (even if empty) or password field
+          if ('username' in contentJson || 'password' in contentJson) {
+            itemType = 'credential';
+            console.log('[Cryptography] Inferred itemType as credential from data structure (has username/password fields)');
+          } else if (contentJson.cardNumber || contentJson.owner) {
+            itemType = 'bank_card';
+            console.log('[Cryptography] Inferred itemType as bank_card from data structure');
+          } else if (contentJson.note && !('username' in contentJson)) {
+            itemType = 'secure_note';
+            console.log('[Cryptography] Inferred itemType as secure_note from data structure');
+          } else {
+            console.error('[Cryptography] Cannot infer itemType from data structure:', Object.keys(contentJson));
+            throw new ItemError('Cannot determine item type from decrypted data');
+          }
+        }
+        
         switch (itemType) {
           case 'credential':
             return {
@@ -133,16 +159,17 @@ export const decryptAllItems = async (userSecretKey: string, itemsList: ItemEncr
         }
     }
     
-    // ✅ Propagate errors if all items failed
+    // ✅ If all items failed, log and return empty (do not crash UI)
     if (decryptedItems.length === 0 && errors.length > 0) {
-        throw new CryptographyError('Failed to decrypt any items', errors[0]);
+        console.error('[Cryptography] Failed to decrypt any items. Returning empty list to avoid UI crash.');
+        return [];
     }
-    
+
     // Log partial failures but don't throw
     if (errors.length > 0) {
         console.warn(`[Cryptography] ${errors.length} items failed to decrypt out of ${itemsList.length} total items`);
     }
-    
+
     return decryptedItems;
 };
 
@@ -159,6 +186,7 @@ export const encryptItem = async (userSecretKey: string, itemToEncrypt: ItemDecr
             content_encrypted,
             item_key_encrypted,
             last_used_at: itemToEncrypt.lastUseDateTime,
+            // item_type kept only for statistics - not used in decryption logic
             item_type: itemToEncrypt.itemType,
         };
     } catch (error) {

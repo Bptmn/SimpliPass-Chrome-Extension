@@ -1,5 +1,4 @@
-- terminer le refactoring des hooks
-- tester toutes les features de l'app et s'assurer que tout fonctionne comme prévu et que je comprennes tout
+- executer le plan IOS_SIMULATOR_LAUNCH_PLAN pour essayer de lancer l'app mobile
 
 Settings:
 - Faire les pages de settings (ou les enregistrer? persistent?)

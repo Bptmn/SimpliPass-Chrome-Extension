@@ -37,6 +37,6 @@
   "include": [
     "src",
     "packages",
-    "global.d.ts"
+    "configs/types/global.d.ts"
   ]
 }

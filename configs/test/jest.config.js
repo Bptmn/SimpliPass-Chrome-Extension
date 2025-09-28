@@ -2,7 +2,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/configs/test/jest.setup.js'],
   transform: {
     '^.+\\.[tj]sx?$': 'babel-jest',
     '^packages/common/config/platform\\.ts$': 'babel-jest',
@@ -53,15 +53,10 @@ module.exports = {
   testEnvironmentOptions: {
     url: 'http://localhost'
   },
-  globals: {
-    'ts-jest': {
-      tsconfig: {
-        jsx: 'react-jsx',
-      },
-    },
-  },
   testTimeout: 30000,
   maxWorkers: '50%',
   verbose: false,
   cache: true,
 };
+
+

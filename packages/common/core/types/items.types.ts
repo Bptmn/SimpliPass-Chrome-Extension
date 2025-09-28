@@ -59,7 +59,7 @@ export interface ItemEncrypted {
   item_key_encrypted: string;
   created_at: Date; // ✅ Standard Date object (provider-agnostic)
   last_used_at: Date; // ✅ Standard Date object (provider-agnostic)
-  item_type: string;
+  item_type: string; // 📊 Statistics only - decryption uses itemType from content_encrypted
 }
 
 export interface CredentialEncrypted {

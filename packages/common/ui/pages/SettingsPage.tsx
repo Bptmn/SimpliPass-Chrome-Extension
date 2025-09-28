@@ -93,6 +93,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     signOut,
   } = useSettings();
 
+
   // Load user data on mount
   useEffect(() => {
     loadCurrentUser();
@@ -137,12 +138,14 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     }
   };
 
+
   // Clear refresh error when component mounts or error changes
   React.useEffect(() => {
     if (refreshError) {
       clearError();
     }
   }, [refreshError, clearError]);
+
 
   return (
     <View style={pageStyles.pageContainer}>
@@ -211,6 +214,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               />
             </View>
           </View>
+
           
           <View style={styles.pageSection}>
             <View style={styles.modeSwitchWrapper}>
