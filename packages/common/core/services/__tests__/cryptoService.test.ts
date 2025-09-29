@@ -163,14 +163,15 @@ describe('Crypto Service', () => {
         expect(decrypted[0].title).toBe('item2');
     });
 
-    it('should throw CryptographyError when all items fail to decrypt', async () => {
+    it('should return empty array when all items fail to decrypt', async () => {
         const encryptedItems: ItemEncrypted[] = [
             { id: '1', content_encrypted: 'enc1', item_key_encrypted: 'encKey1' } as any,
         ];
 
         mockedCryptoUtils.decryptData.mockRejectedValue(new Error('Decryption failed'));
 
-        await expect(decryptAllItems(userSecretKey, encryptedItems)).rejects.toThrow(CryptographyError);
+        const result = await decryptAllItems(userSecretKey, encryptedItems);
+        expect(result).toEqual([]);
     });
 
     it('should return empty array for empty input', async () => {

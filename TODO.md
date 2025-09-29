@@ -1,4 +1,7 @@
-- executer le plan IOS_SIMULATOR_LAUNCH_PLAN pour essayer de lancer l'app mobile
+
+Priorité:
+- Terminer les test hors UI
+- Refonte de l'UI depuis un design kit/framework pour simplifier le code
 
 Settings:
 - Faire les pages de settings (ou les enregistrer? persistent?)

@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Input } from '@common/ui/components/InputFields';
-import { Button } from '@common/ui/components/Buttons';
-import { useThemeMode } from '@common/ui/design/theme';
-import { getColors } from '@common/ui/design/colors';
-import { spacing, radius } from '@common/ui/design/layout';
-import { typography } from '@common/ui/design/typography';
+import { Button } from '@extension/ui/components/Button';
+import { Input } from '@extension/ui/components/Input';
 import { CapturedCredentials } from '../../../utils/formCapture';
 
 /**
@@ -38,8 +33,6 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
   onSave,
   onDismiss,
 }) => {
-  const { mode } = useThemeMode();
-  const themeColors = getColors(mode);
   
   // Step 1: Initialize form state
   const [username, setUsername] = useState(capturedData.username || '');
@@ -117,168 +110,91 @@ export const SaveCredentialPopover: React.FC<SaveCredentialPopoverProps> = ({
 
   const { domain, isSecure } = getDomainInfo();
 
-  const styles = StyleSheet.create({
-    container: {
-      backgroundColor: themeColors.primaryBackground,
-      borderRadius: radius.lg,
-      borderWidth: 1,
-      borderColor: themeColors.borderColor,
-      padding: spacing.lg,
-      width: 400,
-      maxWidth: '90vw',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-    },
-    header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: spacing.md,
-    },
-    title: {
-      fontSize: typography.fontSize.lg,
-      fontWeight: typography.fontWeight.bold,
-      color: themeColors.primary,
-    },
-    closeButton: {
-      padding: spacing.xs,
-    },
-    closeText: {
-      fontSize: typography.fontSize.xl,
-      color: themeColors.tertiary,
-    },
-    formContainer: {
-      gap: spacing.md,
-    },
-    fieldContainer: {
-      gap: spacing.xs,
-    },
-    fieldLabel: {
-      fontSize: typography.fontSize.sm,
-      fontWeight: typography.fontWeight.medium,
-      color: themeColors.primary,
-    },
-    domainInfo: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: spacing.xs,
-      marginBottom: spacing.sm,
-    },
-    domainText: {
-      fontSize: typography.fontSize.sm,
-      color: themeColors.tertiary,
-    },
-    secureIcon: {
-      fontSize: typography.fontSize.sm,
-      color: themeColors.success,
-    },
-    errorContainer: {
-      backgroundColor: themeColors.secondaryBackground,
-      borderWidth: 1,
-      borderColor: themeColors.error,
-      borderRadius: radius.md,
-      padding: spacing.sm,
-      marginBottom: spacing.md,
-    },
-    errorText: {
-      fontSize: typography.fontSize.sm,
-      color: themeColors.error,
-    },
-    actionsContainer: {
-      flexDirection: 'row',
-      gap: spacing.sm,
-      marginTop: spacing.lg,
-    },
-    actionButton: {
-      flex: 1,
-    },
-    loadingContainer: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: spacing.md,
-    },
-    loadingText: {
-      fontSize: typography.fontSize.sm,
-      color: themeColors.tertiary,
-    },
-  });
+  const styles: Record<string, React.CSSProperties> = {
+    container: { background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: 16, width: 400, maxWidth: '90vw', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)' },
+    header: { display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+    title: { fontSize: 16, fontWeight: 700, color: '#2D6CDF' },
+    closeButton: { padding: 6, border: 'none', background: 'transparent', cursor: 'pointer' },
+    closeText: { fontSize: 18, color: '#9CA3AF' },
+    formContainer: { display: 'flex', gap: 12 },
+    fieldContainer: { display: 'flex', gap: 6 },
+    fieldLabel: { fontSize: 12, fontWeight: 600, color: '#111827' },
+    domainInfo: { display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 },
+    domainText: { fontSize: 12, color: '#6B7280' },
+    secureIcon: { fontSize: 12, color: '#10B981' },
+    errorContainer: { background: '#FEF2F2', border: '1px solid #DC2626', borderRadius: 8, padding: 8, marginBottom: 12 },
+    errorText: { fontSize: 12, color: '#DC2626' },
+    actionsContainer: { display: 'flex', flexDirection: 'row', gap: 8, marginTop: 16 },
+    actionButton: { flex: 1 } as React.CSSProperties,
+    loadingContainer: { display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 12 },
+    loadingText: { fontSize: 12, color: '#6B7280' },
+  };
 
   return (
-    <View style={styles.container} data-testid="save-credential-popover">
+    <div style={styles.container} data-testid="save-credential-popover">
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Save Credential</Text>
-        <Pressable style={styles.closeButton} onPress={onDismiss}>
-          <Text style={styles.closeText}>×</Text>
-        </Pressable>
-      </View>
+      <div style={styles.header}>
+        <div style={styles.title}>Save Credential</div>
+        <button style={styles.closeButton} onClick={onDismiss}>
+          <span style={styles.closeText}>×</span>
+        </button>
+      </div>
 
       {/* Domain Info */}
-      <View style={styles.domainInfo}>
-        <Text style={styles.domainText}>{domain}</Text>
+      <div style={styles.domainInfo}>
+        <div style={styles.domainText}>{domain}</div>
         {isSecure && (
-          <Text style={styles.secureIcon}>🔒</Text>
+          <div style={styles.secureIcon}>🔒</div>
         )}
-      </View>
+      </div>
 
       {/* Error Message */}
       {error && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
+        <div style={styles.errorContainer}>
+          <div style={styles.errorText}>{error}</div>
+        </div>
       )}
 
       {/* Form */}
-      <View style={styles.formContainer}>
+      <div style={styles.formContainer}>
         {/* Username Field */}
-        <View style={styles.fieldContainer}>
+        <div style={styles.fieldContainer}>
+          <label style={styles.fieldLabel}>Username</label>
           <Input
-            label="Username"
-            _id="credential-username-input"
+            data-testid="credential-username-input"
             value={username}
-            onChange={setUsername}
+            onChange={(e) => setUsername(e.target.value)}
             placeholder="Enter username"
+            fullWidth
           />
-        </View>
+        </div>
 
         {/* Password Field */}
-        <View style={styles.fieldContainer}>
+        <div style={styles.fieldContainer}>
+          <label style={styles.fieldLabel}>Password</label>
           <Input
-            label="Password"
-            _id="credential-password-input"
+            data-testid="credential-password-input"
             value={password}
-            onChange={setPassword}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter password"
             type="password"
+            fullWidth
           />
-        </View>
-      </View>
+        </div>
+      </div>
 
       {/* Loading State */}
       {isLoading && (
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Saving credential...</Text>
-        </View>
+        <div style={styles.loadingContainer}>
+          <div style={styles.loadingText}>Saving credential...</div>
+        </div>
       )}
 
       {/* Action Buttons */}
-      <View style={styles.actionsContainer}>
-        <Button
-          text="Cancel"
-          color={themeColors.secondary}
-          onPress={onDismiss}
-          style={styles.actionButton}
-          testID="dismiss-save-credential"
-          disabled={isLoading}
-        />
-        <Button
-          text="Save"
-          color={themeColors.primary}
-          onPress={handleSave}
-          style={styles.actionButton}
-          testID="save-credential"
-          disabled={isLoading}
-        />
-      </View>
-    </View>
+      <div style={styles.actionsContainer}>
+        <Button onClick={onDismiss} style={styles.actionButton} data-testid="dismiss-save-credential" disabled={isLoading}>Cancel</Button>
+        <Button onClick={handleSave} style={styles.actionButton} data-testid="save-credential" disabled={isLoading}>Save</Button>
+      </div>
+    </div>
   );
 }; 

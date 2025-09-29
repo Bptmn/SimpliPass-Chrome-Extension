@@ -5,6 +5,8 @@
  * Determines which config to use based on the current environment
  */
 
+// Removed environment import - using direct import.meta.env access
+
 // Removed circular dependency - platform detection should be done at app initialization
 
 export const isTestEnvironment = process.env.NODE_ENV === 'test';
@@ -60,7 +62,7 @@ export const getPlatformConfig = (platform: 'extension' | 'mobile') => {
     };
   }
   
-  // Production environment config - can use import.meta
+  // Production environment config - use centralized environment variables
   if (platform === 'extension') {
     return {
       storageKey: 'userSecretKey',

@@ -1,7 +1,10 @@
 // jest.config.js
+require('dotenv').config({ path: '.env' });
+
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  rootDir: '../..',
   setupFilesAfterEnv: ['<rootDir>/configs/test/jest.setup.js'],
   transform: {
     '^.+\\.[tj]sx?$': 'babel-jest',
@@ -43,10 +46,16 @@ module.exports = {
     '**/?(*.)+(spec|test).(ts|tsx|js)'
   ],
   collectCoverageFrom: [
-    'packages/app/**/*.{ts,tsx}',
-    '!packages/app/**/*.d.ts',
-    '!packages/app/**/__tests__/**',
-    '!packages/app/**/storybook/**',
+    'packages/common/**/*.{ts,tsx}',
+    'packages/extension/**/*.{ts,tsx}',
+    'packages/mobile/**/*.{ts,tsx}',
+    'packages/shared/**/*.{ts,tsx}',
+    '!**/*.d.ts',
+    '!**/__tests__/**',
+    '!**/storybook/**',
+    '!**/node_modules/**',
+    '!**/dist/**',
+    '!**/coverage/**',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],

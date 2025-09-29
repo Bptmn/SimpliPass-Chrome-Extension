@@ -12,10 +12,10 @@
 // 4. AppRouterView renders the appropriate page
 
 import React, { useState } from 'react';
-import { AppRouterProvider, AppRouterView, useAppRouter } from '@common/ui/router';
+import { AppRouterProvider, AppRouterView, useAppRouter } from '@extension/ui/router';
 import { PageState } from '@common/core/types/auth.types';
-import { useAppInitialization } from '@common/hooks/useAppInitialization';
-import { InitializationErrorBoundary } from '@common/ui/components/InitializationErrorBoundary';
+import { useAppInitialization } from '@extension/hooks/useAppInitialization';
+import { InitializationErrorBoundary } from '@extension/ui/components/InitializationErrorBoundary';
 import { injectCredentialIntoCurrentTab } from '../services/credentialInjection';
 
 export const PopupApp: React.FC = () => {
@@ -50,6 +50,7 @@ export const PopupApp: React.FC = () => {
           pageState={pageState}
           onInjectCredential={handleInjectCredential}
           theme={theme}
+          router={{ currentRoute: router.currentRoute, error: router.error }}
         />
       </AppRouterProvider>
     </InitializationErrorBoundary>

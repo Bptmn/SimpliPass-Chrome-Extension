@@ -1,12 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { usePasswordGenerator } from '@common/hooks/usePasswordGenerator';
-import { Slider } from '@common/ui/components/Slider';
-import { Button } from '@common/ui/components/Buttons';
-import { useThemeMode } from '@common/ui/design/theme';
-import { getColors } from '@common/ui/design/colors';
-import { spacing, radius } from '@common/ui/design/layout';
-import { typography } from '@common/ui/design/typography';
+import { Button } from '@extension/ui/components/Button';
+import { usePasswordGenerator } from '@extension/hooks/usePasswordGenerator';
 
 /**
  * Password Generator Popover Component
@@ -37,8 +31,6 @@ export const PasswordGeneratorPopover: React.FC<PasswordGeneratorPopoverProps> =
   onCancel,
   initialOptions,
 }) => {
-  const { mode } = useThemeMode();
-  const themeColors = getColors(mode);
   
   // Step 1: Initialize password generator hook
   const {
@@ -105,25 +97,107 @@ export const PasswordGeneratorPopover: React.FC<PasswordGeneratorPopoverProps> =
     }
   }, []);
 
-  // Step 6: Get strength color
-  const getStrengthColor = () => {
-    switch (strength) {
-      case 'weak':
-        return themeColors.error;
-      case 'average':
-        return themeColors.warning;
-      case 'strong':
-        return themeColors.success;
-      case 'perfect':
-        return themeColors.primary;
-      default:
-        return themeColors.error;
-    }
+  // Strength helpers moved below: strengthColor(), strengthText()
+
+  const styles: Record<string, React.CSSProperties> = {
+    container: { background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: 16, width: 320, maxWidth: '90vw', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' },
+    header: { display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+    title: { fontSize: 16, fontWeight: 700, color: '#2D6CDF' },
+    closeButton: { padding: 6, border: 'none', background: 'transparent', cursor: 'pointer' },
+    closeText: { fontSize: 18, color: '#9CA3AF' },
+    passwordContainer: { background: '#F3F4F6', borderRadius: 8, padding: 12, marginBottom: 12, border: '1px solid #E5E7EB' },
+    passwordText: { fontSize: 16, fontFamily: 'monospace', color: '#2D6CDF', textAlign: 'center', letterSpacing: 1 },
+    strengthContainer: { display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+    strengthText: { fontSize: 12, color: '#6B7280' },
+    strengthIndicator: { display: 'flex', flexDirection: 'row', gap: 6, alignItems: 'center' },
+    strengthBar: { height: 4, borderRadius: 2, flex: 1, background: '#D1D5DB' },
+    optionsContainer: { display: 'flex', gap: 12, marginBottom: 16 },
+    optionRow: { display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    optionLabel: { fontSize: 12, color: '#111827' },
+    actionsContainer: { display: 'flex', flexDirection: 'row', gap: 8 },
+    actionButton: { flex: 1 } as React.CSSProperties,
   };
 
-  // Step 7: Get strength text
-  const getStrengthText = () => {
-    switch (strength) {
+  return (
+    <div style={styles.container} data-testid="password-generator">
+      {/* Header */}
+      <div style={styles.header}>
+        <div style={styles.title}>Générateur de mot de passe</div>
+        <button style={styles.closeButton} onClick={onCancel}>
+          <span style={styles.closeText}>×</span>
+        </button>
+      </div>
+
+      {/* Generated Password */}
+      <div style={styles.passwordContainer}>
+        <div style={styles.passwordText}>{password}</div>
+      </div>
+
+      {/* Strength Indicator */}
+      <div style={styles.strengthContainer}>
+        <div style={styles.strengthText}>Force du mot de passe</div>
+        <div style={styles.strengthIndicator}>
+          <div style={{ ...styles.strengthBar, background: strengthColor(strength) }} />
+          <div style={{ ...styles.strengthText, color: strengthColor(strength) }}>{strengthText(strength)}</div>
+        </div>
+      </div>
+
+      {/* Options */}
+      <div style={styles.optionsContainer}>
+        {/* Length Slider */}
+        <div>
+          <div style={styles.optionLabel}>Longueur: {length}</div>
+          <input type="range" min={8} max={64} step={1} value={length} onChange={(e) => setLength(Number(e.target.value))} data-testid="password-length-slider" />
+        </div>
+
+        {/* Character Type Options */}
+        <div style={styles.optionRow}>
+          <div style={styles.optionLabel}>Lettres majuscules</div>
+          <input type="checkbox" checked={hasUppercase} onChange={() => setHasUppercase(!hasUppercase)} />
+        </div>
+
+        <div style={styles.optionRow}>
+          <div style={styles.optionLabel}>Lettres minuscules</div>
+          <input type="checkbox" checked={hasLowercase} onChange={() => setHasLowercase(!hasLowercase)} />
+        </div>
+
+        <div style={styles.optionRow}>
+          <div style={styles.optionLabel}>Chiffres</div>
+          <input type="checkbox" checked={hasNumbers} onChange={() => setHasNumbers(!hasNumbers)} />
+        </div>
+
+        <div style={styles.optionRow}>
+          <div style={styles.optionLabel}>Symboles</div>
+          <input type="checkbox" checked={hasSymbols} onChange={() => setHasSymbols(!hasSymbols)} />
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div style={styles.actionsContainer}>
+        <Button onClick={handleRegenerate} style={styles.actionButton} data-testid="regenerate-password">Régénérer</Button>
+        <Button onClick={() => onAccept(password)} style={styles.actionButton} data-testid="accept-password">Accepter</Button>
+      </div>
+    </div>
+  );
+}; 
+
+function strengthColor(level: string): string {
+  switch (level) {
+      case 'weak':
+      return '#DC2626';
+      case 'average':
+      return '#F59E0B';
+      case 'strong':
+      return '#10B981';
+      case 'perfect':
+      return '#2D6CDF';
+      default:
+      return '#DC2626';
+  }
+    }
+
+function strengthText(level: string): string {
+  switch (level) {
       case 'weak':
         return 'Faible';
       case 'average':
@@ -135,258 +209,4 @@ export const PasswordGeneratorPopover: React.FC<PasswordGeneratorPopoverProps> =
       default:
         return 'Faible';
     }
-  };
-
-  const styles = StyleSheet.create({
-    container: {
-      backgroundColor: themeColors.primaryBackground,
-      borderRadius: radius.lg,
-      borderWidth: 1,
-      borderColor: themeColors.borderColor,
-      padding: spacing.lg,
-      width: 320,
-      maxWidth: '90vw',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-    },
-    header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: spacing.md,
-    },
-    title: {
-      fontSize: typography.fontSize.lg,
-      fontWeight: typography.fontWeight.bold,
-      color: themeColors.primary,
-    },
-    closeButton: {
-      padding: spacing.xs,
-    },
-    closeText: {
-      fontSize: typography.fontSize.xl,
-      color: themeColors.tertiary,
-    },
-    passwordContainer: {
-      backgroundColor: themeColors.secondaryBackground,
-      borderRadius: radius.md,
-      padding: spacing.md,
-      marginBottom: spacing.md,
-      borderWidth: 1,
-      borderColor: themeColors.borderColor,
-    },
-    passwordText: {
-      fontSize: typography.fontSize.lg,
-      fontFamily: 'monospace',
-      color: themeColors.primary,
-      textAlign: 'center',
-      letterSpacing: 1,
-    },
-    strengthContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: spacing.sm,
-    },
-    strengthText: {
-      fontSize: typography.fontSize.sm,
-      color: themeColors.tertiary,
-    },
-    strengthIndicator: {
-      flexDirection: 'row',
-      gap: spacing.xs,
-    },
-    strengthBar: {
-      height: 4,
-      borderRadius: 2,
-      flex: 1,
-    },
-    optionsContainer: {
-      gap: spacing.md,
-      marginBottom: spacing.lg,
-    },
-    optionRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    optionLabel: {
-      fontSize: typography.fontSize.sm,
-      color: themeColors.primary,
-    },
-    toggle: {
-      width: 44,
-      height: 24,
-      borderRadius: 12,
-      padding: 2,
-    },
-    toggleActive: {
-      backgroundColor: themeColors.primary,
-    },
-    toggleInactive: {
-      backgroundColor: themeColors.secondary,
-    },
-    toggleThumb: {
-      width: 20,
-      height: 20,
-      borderRadius: 10,
-      backgroundColor: themeColors.white,
-    },
-    actionsContainer: {
-      flexDirection: 'row',
-      gap: spacing.sm,
-    },
-    actionButton: {
-      flex: 1,
-    },
-  });
-
-  return (
-    <View style={styles.container} data-testid="password-generator">
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Générateur de mot de passe</Text>
-        <Pressable style={styles.closeButton} onPress={onCancel}>
-          <Text style={styles.closeText}>×</Text>
-        </Pressable>
-      </View>
-
-      {/* Generated Password */}
-      <View style={styles.passwordContainer}>
-        <Text style={styles.passwordText} selectable>
-          {password}
-        </Text>
-      </View>
-
-      {/* Strength Indicator */}
-      <View style={styles.strengthContainer}>
-        <Text style={styles.strengthText}>Force du mot de passe</Text>
-        <View style={styles.strengthIndicator}>
-          <View
-            style={[
-              styles.strengthBar,
-              { backgroundColor: getStrengthColor() },
-            ]}
-          />
-          <Text style={[styles.strengthText, { color: getStrengthColor() }]}>
-            {getStrengthText()}
-          </Text>
-        </View>
-      </View>
-
-      {/* Options */}
-      <View style={styles.optionsContainer}>
-        {/* Length Slider */}
-        <View>
-          <Text style={styles.optionLabel}>Longueur: {length}</Text>
-          <Slider
-            value={length}
-            onValueChange={setLength}
-            min={8}
-            max={64}
-            step={1}
-            testID="password-length-slider"
-          />
-        </View>
-
-        {/* Character Type Options */}
-        <View style={styles.optionRow}>
-          <Text style={styles.optionLabel}>Lettres majuscules</Text>
-          <Pressable
-            style={[
-              styles.toggle,
-              hasUppercase ? styles.toggleActive : styles.toggleInactive,
-            ]}
-            onPress={() => setHasUppercase(!hasUppercase)}
-          >
-            <View
-              style={[
-                styles.toggleThumb,
-                {
-                  transform: [{ translateX: hasUppercase ? 20 : 0 }],
-                },
-              ]}
-            />
-          </Pressable>
-        </View>
-
-        <View style={styles.optionRow}>
-          <Text style={styles.optionLabel}>Lettres minuscules</Text>
-          <Pressable
-            style={[
-              styles.toggle,
-              hasLowercase ? styles.toggleActive : styles.toggleInactive,
-            ]}
-            onPress={() => setHasLowercase(!hasLowercase)}
-          >
-            <View
-              style={[
-                styles.toggleThumb,
-                {
-                  transform: [{ translateX: hasLowercase ? 20 : 0 }],
-                },
-              ]}
-            />
-          </Pressable>
-        </View>
-
-        <View style={styles.optionRow}>
-          <Text style={styles.optionLabel}>Chiffres</Text>
-          <Pressable
-            style={[
-              styles.toggle,
-              hasNumbers ? styles.toggleActive : styles.toggleInactive,
-            ]}
-            onPress={() => setHasNumbers(!hasNumbers)}
-          >
-            <View
-              style={[
-                styles.toggleThumb,
-                {
-                  transform: [{ translateX: hasNumbers ? 20 : 0 }],
-                },
-              ]}
-            />
-          </Pressable>
-        </View>
-
-        <View style={styles.optionRow}>
-          <Text style={styles.optionLabel}>Symboles</Text>
-          <Pressable
-            style={[
-              styles.toggle,
-              hasSymbols ? styles.toggleActive : styles.toggleInactive,
-            ]}
-            onPress={() => setHasSymbols(!hasSymbols)}
-          >
-            <View
-              style={[
-                styles.toggleThumb,
-                {
-                  transform: [{ translateX: hasSymbols ? 20 : 0 }],
-                },
-              ]}
-            />
-          </Pressable>
-        </View>
-      </View>
-
-      {/* Action Buttons */}
-      <View style={styles.actionsContainer}>
-        <Button
-          text="Régénérer"
-          color={themeColors.secondary}
-          onPress={handleRegenerate}
-          style={styles.actionButton}
-          testID="regenerate-password"
-        />
-        <Button
-          text="Accepter"
-          color={themeColors.primary}
-          onPress={() => onAccept(password)}
-          style={styles.actionButton}
-          testID="accept-password"
-        />
-      </View>
-    </View>
-  );
-}; 
+}

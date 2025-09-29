@@ -55,7 +55,7 @@ export default defineConfig({
       input: {
         popup: 'packages/extension/popup/index.tsx',
       },
-      external: ['chrome'],
+      external: ['chrome', 'expo', 'expo-modules-core', 'expo-secure-store'],
       output: {
         entryFileNames: chunk => {
           if (chunk.name === 'popup') return 'assets/index.js';
@@ -74,8 +74,11 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      'react-native$': 'react-native-web',
-      'react-native': 'react-native-web',
+      // Drop RNW aliases for extension UI
+      'react-native': '/packages/extension/shims/reactNative.ts',
+      'expo': '/packages/extension/shims/empty.ts',
+      'expo-modules-core': '/packages/extension/shims/empty.ts',
+      '@unimodules/core': '/packages/extension/shims/empty.ts',
       '@app': '/packages/app',
       '@design': '/packages/app/design',
       '@components': '/packages/app/components',
@@ -85,14 +88,15 @@ export default defineConfig({
       '@logic': '/packages/app/core/logic',
       '@shared': '/packages/shared',
       '@extension': '/packages/extension',
-      '@mobile': '/packages/mobile',
+      // Prevent accidental mobile imports in extension build
+      '@mobile': '/packages/extension/shims/empty.ts',
     },
-    extensions: ['.web.ts', '.web.tsx', '.ts', '.tsx', '.js', '.json'],
+    extensions: ['.ts', '.tsx', '.js', '.json'],
   },
   envPrefix: 'VITE_',
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-native-web'],
-    exclude: ['chrome', 'react-native'],
+    include: ['react', 'react-dom'],
+    exclude: ['chrome', 'react-native', 'expo', 'expo-modules-core', '@unimodules/core'],
   },
   define: {
     global: 'globalThis',

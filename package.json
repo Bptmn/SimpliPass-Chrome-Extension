@@ -9,6 +9,7 @@
     "dev:extension": "vite --config configs/vite/vite.config.ts",
     "build:extension": "vite build --config configs/vite/vite.config.ts",
     "type-check": "tsc --noEmit",
+    "type-check:extension": "tsc --noEmit -p configs/types/tsconfig.extension.json",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write .",
@@ -20,7 +21,10 @@
     "build-storybook": "storybook build",
     "emulator": "firebase emulators:start --only firestore --project test-project",
     "test:firestore": "start-server-and-test emulator http-get://localhost:8080 test:firestore-jest",
-    "test:firestore-jest": "jest packages/common/core/libraries/database/__tests__/firestore.integration.test.ts"
+    "test:firestore-jest": "jest packages/common/core/libraries/database/__tests__/firestore.integration.test.ts",
+    "lint:extension": "eslint packages/extension --ext .ts,.tsx",
+    "lint:extension:fix": "eslint packages/extension --ext .ts,.tsx --fix",
+    "test:extension": "jest --config configs/test/jest.config.js packages/extension packages/common/core packages/common/utils packages/common/hooks"
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "^8.4.2",
@@ -87,6 +91,7 @@
     "babel-loader": "^10.0.0",
     "babel-plugin-module-resolver": "^5.0.2",
     "babel-plugin-react-native-web": "^0.20.0",
+    "babel-plugin-transform-import-meta": "^2.3.3",
     "css-loader": "^7.1.2",
     "dotenv": "^16.6.1",
     "eslint": "^8.57.1",

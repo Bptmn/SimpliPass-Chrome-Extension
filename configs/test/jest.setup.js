@@ -14,21 +14,44 @@ Object.defineProperty(globalThis, 'crypto', {
 });
 
 // Mock import.meta.env for Vite environment variables
+// Using actual environment variables from .env file
 const mockEnv = {
-  VITE_FIREBASE_API_KEY: 'test-api-key',
-  VITE_FIREBASE_AUTH_DOMAIN: 'test-project.firebaseapp.com',
-  VITE_FIREBASE_PROJECT_ID: 'test-project',
-  VITE_FIREBASE_STORAGE_BUCKET: 'test-project.appspot.com',
-  VITE_FIREBASE_MESSAGING_SENDER_ID: '123456789',
-  VITE_FIREBASE_APP_ID: 'test-app-id',
-  VITE_FIREBASE_MEASUREMENT_ID: 'test-measurement-id',
-  VITE_COGNITO_USER_POOL_ID: 'test-user-pool-id',
-  VITE_COGNITO_USER_POOL_WEB_CLIENT_ID: 'test-client-id',
-  VITE_COGNITO_REGION: 'us-east-1',
+  // Vite environment variables (for extension)
+  VITE_FIREBASE_API_KEY: process.env.VITE_FIREBASE_API_KEY || 'test-api-key',
+  VITE_FIREBASE_AUTH_DOMAIN: process.env.VITE_FIREBASE_AUTH_DOMAIN || 'test-project.firebaseapp.com',
+  VITE_FIREBASE_PROJECT_ID: process.env.VITE_FIREBASE_PROJECT_ID || 'test-project',
+  VITE_FIREBASE_STORAGE_BUCKET: process.env.VITE_FIREBASE_STORAGE_BUCKET || 'test-project.appspot.com',
+  VITE_FIREBASE_MESSAGING_SENDER_ID: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '123456789',
+  VITE_FIREBASE_APP_ID: process.env.VITE_FIREBASE_APP_ID || 'test-app-id',
+  VITE_FIREBASE_MEASUREMENT_ID: process.env.VITE_FIREBASE_MEASUREMENT_ID || 'test-measurement-id',
+  VITE_COGNITO_USER_POOL_ID: process.env.VITE_COGNITO_USER_POOL_ID || 'test-user-pool-id',
+  VITE_COGNITO_CLIENT_ID: process.env.VITE_COGNITO_CLIENT_ID || 'test-client-id',
+  VITE_COGNITO_REGION: process.env.VITE_COGNITO_REGION || 'us-east-1',
+  
+  // React Native environment variables (for mobile)
+  REACT_NATIVE_API_KEY: process.env.REACT_NATIVE_API_KEY || 'test-api-key',
+  REACT_NATIVE_AUTH_DOMAIN: process.env.REACT_NATIVE_AUTH_DOMAIN || 'test-project.firebaseapp.com',
+  REACT_NATIVE_PROJECT_ID: process.env.REACT_NATIVE_PROJECT_ID || 'test-project',
+  REACT_NATIVE_STORAGE_BUCKET: process.env.REACT_NATIVE_STORAGE_BUCKET || 'test-project.appspot.com',
+  REACT_NATIVE_MESSAGING_SENDER_ID: process.env.REACT_NATIVE_MESSAGING_SENDER_ID || '123456789',
+  REACT_NATIVE_APP_ID: process.env.REACT_NATIVE_APP_ID || 'test-app-id',
+  REACT_NATIVE_COGNITO_USER_POOL_ID: process.env.REACT_NATIVE_COGNITO_USER_POOL_ID || 'test-user-pool-id',
+  REACT_NATIVE_COGNITO_CLIENT_ID: process.env.REACT_NATIVE_COGNITO_CLIENT_ID || 'test-client-id',
+  REACT_NATIVE_COGNITO_REGION: process.env.REACT_NATIVE_COGNITO_REGION || 'us-east-1',
 };
 
 // Mock import.meta.env globally
 Object.defineProperty(global, 'import', {
+  value: {
+    meta: {
+      env: mockEnv
+    }
+  },
+  writable: true
+});
+
+// Also mock it on globalThis for better compatibility
+Object.defineProperty(globalThis, 'import', {
   value: {
     meta: {
       env: mockEnv
@@ -80,6 +103,18 @@ const mockChrome = {
 Object.defineProperty(global, 'chrome', {
   value: mockChrome,
   writable: true
+});
+
+// Mock setTimeout and clearTimeout for React hooks
+const originalSetTimeout = global.setTimeout;
+const originalClearTimeout = global.clearTimeout;
+
+global.setTimeout = jest.fn((fn, delay) => {
+  return originalSetTimeout(fn, delay);
+});
+
+global.clearTimeout = jest.fn((id) => {
+  return originalClearTimeout(id);
 });
 
 module.exports = async () => {

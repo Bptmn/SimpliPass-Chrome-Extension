@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "baseUrl": "../../",
+    "paths": {
+      "@common/*": ["packages/common/*"],
+      "@extension/*": ["packages/extension/*"],
+      "@shared/*": ["packages/shared/*"]
+    }
+  },
+  "include": [
+    "../../packages/extension/**/*",
+    "../../packages/common/core/types/**/*",
+    "../../packages/common/utils/**/*",
+    "../../packages/shared/**/*"
+  ],
+  "exclude": [
+    "../../packages/common/ui/**",
+    "../../packages/mobile/**",
+    "../../packages/common/hooks/**",
+    "../../packages/common/**/__tests__/**",
+    "../../packages/extension/__tests__/**"
+  ]
+}
+
+

@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Input } from '@common/ui/components/InputFields';
-import { Button } from '@common/ui/components/Buttons';
-import { useThemeMode } from '@common/ui/design/theme';
-import { getColors } from '@common/ui/design/colors';
-import { spacing, radius } from '@common/ui/design/layout';
-import { typography } from '@common/ui/design/typography';
+import { Button } from '@extension/ui/components/Button';
+import { Input } from '@extension/ui/components/Input';
 import { CapturedCredentials } from '../../../utils/formCapture';
 
 /**
@@ -56,8 +51,6 @@ export const UpdateCredentialPopover: React.FC<UpdateCredentialPopoverProps> = (
   onKeepExisting,
   onDismiss,
 }) => {
-  const { mode } = useThemeMode();
-  const themeColors = getColors(mode);
   
   // Step 1: Initialize form state with captured data
   const [title, setTitle] = useState(capturedData.domain || existingCredential.title);
@@ -171,318 +164,191 @@ export const UpdateCredentialPopover: React.FC<UpdateCredentialPopoverProps> = (
   // Step 8: Check if any changes were made
   const hasChanges = Object.values(diff).some(field => field.changed);
 
-  const styles = StyleSheet.create({
-    container: {
-      backgroundColor: themeColors.background,
-      borderRadius: radius.lg,
-      borderWidth: 1,
-      borderColor: themeColors.borderColor,
-      padding: spacing.lg,
-      width: 450,
-      maxWidth: '90vw',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-    },
-    header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: spacing.md,
-    },
-    title: {
-      fontSize: typography.fontSize.lg,
-      fontWeight: typography.fontWeight.bold,
-      color: themeColors.primaryText,
-    },
-    closeButton: {
-      padding: spacing.xs,
-    },
-    closeText: {
-      fontSize: typography.fontSize.xl,
-      color: themeColors.tertiaryText,
-    },
-    domainInfo: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: spacing.xs,
-      marginBottom: spacing.sm,
-    },
-    domainText: {
-      fontSize: typography.fontSize.sm,
-      color: themeColors.secondaryText,
-    },
-    secureIcon: {
-      fontSize: typography.fontSize.sm,
-      color: themeColors.success,
-    },
-    diffSection: {
-      marginBottom: spacing.md,
-      padding: spacing.sm,
-      backgroundColor: themeColors.secondaryBackground,
-      borderRadius: radius.md,
-    },
-    diffTitle: {
-      fontSize: typography.fontSize.sm,
-      fontWeight: typography.fontWeight.medium,
-      color: themeColors.primaryText,
-      marginBottom: spacing.xs,
-    },
-    diffItem: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: spacing.xs,
-    },
-    diffLabel: {
-      fontSize: typography.fontSize.xs,
-      color: themeColors.secondaryText,
-      flex: 1,
-    },
-    diffValue: {
-      fontSize: typography.fontSize.xs,
-      color: themeColors.primaryText,
-      flex: 2,
-      textAlign: 'right',
-    },
-    changedIndicator: {
-      fontSize: typography.fontSize.xs,
-      color: themeColors.warning,
-      fontWeight: typography.fontWeight.bold,
-    },
-    formContainer: {
-      gap: spacing.md,
-    },
-    fieldContainer: {
-      gap: spacing.xs,
-    },
-    fieldLabel: {
-      fontSize: typography.fontSize.sm,
-      fontWeight: typography.fontWeight.medium,
-      color: themeColors.primaryText,
-    },
-    errorContainer: {
-      backgroundColor: themeColors.errorBackground,
-      borderWidth: 1,
-      borderColor: themeColors.error,
-      borderRadius: radius.md,
-      padding: spacing.sm,
-      marginBottom: spacing.md,
-    },
-    errorText: {
-      fontSize: typography.fontSize.sm,
-      color: themeColors.error,
-    },
-    actionsContainer: {
-      flexDirection: 'row',
-      gap: spacing.sm,
-      marginTop: spacing.lg,
-    },
-    actionButton: {
-      flex: 1,
-    },
-    loadingContainer: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: spacing.md,
-    },
-    loadingText: {
-      fontSize: typography.fontSize.sm,
-      color: themeColors.secondaryText,
-    },
-    noChangesMessage: {
-      textAlign: 'center',
-      padding: spacing.md,
-      color: themeColors.secondaryText,
-      fontStyle: 'italic',
-    },
-  });
+  const styles: Record<string, React.CSSProperties> = {
+    container: { background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: 16, width: 450, maxWidth: '90vw', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' },
+    header: { display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+    title: { fontSize: 16, fontWeight: 700, color: '#111827' },
+    closeButton: { padding: 6, border: 'none', background: 'transparent', cursor: 'pointer' },
+    closeText: { fontSize: 18, color: '#9CA3AF' },
+    domainInfo: { display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 },
+    domainText: { fontSize: 12, color: '#6B7280' },
+    secureIcon: { fontSize: 12, color: '#10B981' },
+    diffSection: { marginBottom: 12, padding: 8, background: '#F3F4F6', borderRadius: 8 },
+    diffTitle: { fontSize: 12, fontWeight: 600, color: '#111827', marginBottom: 6 },
+    diffItem: { display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
+    diffLabel: { fontSize: 12, color: '#6B7280', flex: 1 },
+    diffValue: { fontSize: 12, color: '#111827', flex: 2, textAlign: 'right' },
+    changedIndicator: { fontSize: 12, color: '#F59E0B', fontWeight: 700 },
+    formContainer: { display: 'flex', gap: 12 },
+    fieldContainer: { display: 'flex', gap: 6 },
+    fieldLabel: { fontSize: 12, fontWeight: 600, color: '#111827' },
+    errorContainer: { background: '#FEF2F2', border: '1px solid #DC2626', borderRadius: 8, padding: 8, marginBottom: 12 },
+    errorText: { fontSize: 12, color: '#DC2626' },
+    actionsContainer: { display: 'flex', flexDirection: 'row', gap: 8, marginTop: 16 },
+    actionButton: { flex: 1 } as React.CSSProperties,
+    loadingContainer: { display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 12 },
+    loadingText: { fontSize: 12, color: '#6B7280' },
+    noChangesMessage: { textAlign: 'center', padding: 12, color: '#6B7280', fontStyle: 'italic' },
+  };
 
   return (
-    <View style={styles.container} data-testid="update-credential-popover">
+    <div style={styles.container} data-testid="update-credential-popover">
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Update Credential</Text>
-        <Pressable style={styles.closeButton} onPress={onDismiss}>
-          <Text style={styles.closeText}>×</Text>
-        </Pressable>
-      </View>
+      <div style={styles.header}>
+        <div style={styles.title}>Update Credential</div>
+        <button style={styles.closeButton} onClick={onDismiss}>
+          <span style={styles.closeText}>×</span>
+        </button>
+      </div>
 
       {/* Domain Info */}
-      <View style={styles.domainInfo}>
-        <Text style={styles.domainText}>{domain}</Text>
+      <div style={styles.domainInfo}>
+        <div style={styles.domainText}>{domain}</div>
         {isSecure && (
-          <Text style={styles.secureIcon}>🔒</Text>
+          <div style={styles.secureIcon}>🔒</div>
         )}
-      </View>
+      </div>
 
       {/* Error Message */}
       {error && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
+        <div style={styles.errorContainer}>
+          <div style={styles.errorText}>{error}</div>
+        </div>
       )}
 
       {/* Changes Summary */}
       {hasChanges && (
-        <View style={styles.diffSection}>
-          <Text style={styles.diffTitle}>Changes Detected:</Text>
+        <div style={styles.diffSection}>
+          <div style={styles.diffTitle}>Changes Detected:</div>
           {diff.title.changed && (
-            <View style={styles.diffItem}>
-              <Text style={styles.diffLabel}>Title:</Text>
-              <Text style={styles.diffValue}>
+            <div style={styles.diffItem}>
+              <div style={styles.diffLabel}>Title:</div>
+              <div style={styles.diffValue}>
                 {diff.title.old} → {diff.title.new}
-                <Text style={styles.changedIndicator}> *</Text>
-              </Text>
-            </View>
+                <span style={styles.changedIndicator}> *</span>
+              </div>
+            </div>
           )}
           {diff.username.changed && (
-            <View style={styles.diffItem}>
-              <Text style={styles.diffLabel}>Username:</Text>
-              <Text style={styles.diffValue}>
+            <div style={styles.diffItem}>
+              <div style={styles.diffLabel}>Username:</div>
+              <div style={styles.diffValue}>
                 {diff.username.old} → {diff.username.new}
-                <Text style={styles.changedIndicator}> *</Text>
-              </Text>
-            </View>
+                <span style={styles.changedIndicator}> *</span>
+              </div>
+            </div>
           )}
           {diff.password.changed && (
-            <View style={styles.diffItem}>
-              <Text style={styles.diffLabel}>Password:</Text>
-              <Text style={styles.diffValue}>
+            <div style={styles.diffItem}>
+              <div style={styles.diffLabel}>Password:</div>
+              <div style={styles.diffValue}>
                 {'••••••••'} → {'••••••••'}
-                <Text style={styles.changedIndicator}> *</Text>
-              </Text>
-            </View>
+                <span style={styles.changedIndicator}> *</span>
+              </div>
+            </div>
           )}
           {diff.url.changed && (
-            <View style={styles.diffItem}>
-              <Text style={styles.diffLabel}>URL:</Text>
-              <Text style={styles.diffValue}>
+            <div style={styles.diffItem}>
+              <div style={styles.diffLabel}>URL:</div>
+              <div style={styles.diffValue}>
                 {diff.url.old} → {diff.url.new}
-                <Text style={styles.changedIndicator}> *</Text>
-              </Text>
-            </View>
+                <span style={styles.changedIndicator}> *</span>
+              </div>
+            </div>
           )}
           {diff.notes.changed && (
-            <View style={styles.diffItem}>
-              <Text style={styles.diffLabel}>Notes:</Text>
-              <Text style={styles.diffValue}>
+            <div style={styles.diffItem}>
+              <div style={styles.diffLabel}>Notes:</div>
+              <div style={styles.diffValue}>
                 {diff.notes.old || '(none)'} → {diff.notes.new || '(none)'}
-                <Text style={styles.changedIndicator}> *</Text>
-              </Text>
-            </View>
+                <span style={styles.changedIndicator}> *</span>
+              </div>
+            </div>
           )}
-        </View>
+        </div>
       )}
 
       {/* No Changes Message */}
       {!hasChanges && (
-        <View style={styles.noChangesMessage}>
-          <Text>No changes detected. The credential appears to be the same.</Text>
-        </View>
+        <div style={styles.noChangesMessage}>No changes detected. The credential appears to be the same.</div>
       )}
 
       {/* Form */}
-      <View style={styles.formContainer}>
+      <div style={styles.formContainer}>
         {/* Title Field */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Title</Text>
+        <div style={styles.fieldContainer}>
+          <label style={styles.fieldLabel}>Title</label>
           <Input
             value={title}
-            onChangeText={setTitle}
+            onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter title for this credential"
-            testID="update-credential-title-input"
-            accessibilityLabel="Credential title"
+            data-testid="update-credential-title-input"
+            fullWidth
           />
-        </View>
+        </div>
 
         {/* Username Field */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Username</Text>
+        <div style={styles.fieldContainer}>
+          <label style={styles.fieldLabel}>Username</label>
           <Input
             value={username}
-            onChangeText={setUsername}
+            onChange={(e) => setUsername(e.target.value)}
             placeholder="Enter username"
-            testID="update-credential-username-input"
-            accessibilityLabel="Username"
+            data-testid="update-credential-username-input"
+            fullWidth
           />
-        </View>
+        </div>
 
         {/* Password Field */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Password</Text>
+        <div style={styles.fieldContainer}>
+          <label style={styles.fieldLabel}>Password</label>
           <Input
             value={password}
-            onChangeText={setPassword}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter password"
-            secureTextEntry
-            testID="update-credential-password-input"
-            accessibilityLabel="Password"
+            type="password"
+            data-testid="update-credential-password-input"
+            fullWidth
           />
-        </View>
+        </div>
 
         {/* URL Field */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>URL</Text>
+        <div style={styles.fieldContainer}>
+          <label style={styles.fieldLabel}>URL</label>
           <Input
             value={url}
-            onChangeText={setUrl}
+            onChange={(e) => setUrl(e.target.value)}
             placeholder="Enter URL"
-            testID="update-credential-url-input"
-            accessibilityLabel="URL"
+            data-testid="update-credential-url-input"
+            fullWidth
           />
-        </View>
+        </div>
 
         {/* Notes Field */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Notes (Optional)</Text>
+        <div style={styles.fieldContainer}>
+          <label style={styles.fieldLabel}>Notes (Optional)</label>
           <Input
             value={notes}
-            onChangeText={setNotes}
+            onChange={(e) => setNotes(e.target.value)}
             placeholder="Add notes about this credential"
-            multiline
-            numberOfLines={3}
-            testID="update-credential-notes-input"
-            accessibilityLabel="Notes"
+            fullWidth
           />
-        </View>
-      </View>
+        </div>
+      </div>
 
       {/* Loading State */}
       {isLoading && (
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Updating credential...</Text>
-        </View>
+        <div style={styles.loadingContainer}>
+          <div style={styles.loadingText}>Updating credential...</div>
+        </div>
       )}
 
       {/* Action Buttons */}
-      <View style={styles.actionsContainer}>
-        <Button
-          variant="secondary"
-          onPress={onDismiss}
-          style={styles.actionButton}
-          testID="dismiss-update-credential"
-          disabled={isLoading}
-        >
-          <Text>Cancel</Text>
-        </Button>
-        <Button
-          variant="secondary"
-          onPress={onKeepExisting}
-          style={styles.actionButton}
-          testID="keep-existing-credential"
-          disabled={isLoading}
-        >
-          <Text>Keep Existing</Text>
-        </Button>
-        <Button
-          variant="primary"
-          onPress={handleUpdate}
-          style={styles.actionButton}
-          testID="update-credential"
-          disabled={isLoading || !hasChanges}
-        >
-          <Text>Update</Text>
-        </Button>
-      </View>
-    </View>
+      <div style={styles.actionsContainer}>
+        <Button variant="secondary" onClick={onDismiss} style={styles.actionButton} data-testid="dismiss-update-credential" disabled={isLoading}>Cancel</Button>
+        <Button variant="secondary" onClick={onKeepExisting} style={styles.actionButton} data-testid="keep-existing-credential" disabled={isLoading}>Keep Existing</Button>
+        <Button variant="primary" onClick={handleUpdate} style={styles.actionButton} data-testid="update-credential" disabled={isLoading || !hasChanges}>Update</Button>
+      </div>
+    </div>
   );
 }; 

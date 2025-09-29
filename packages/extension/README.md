@@ -1,3 +1,22 @@
+## Architecture (UI split from React Native Web)
+
+- UI is DOM-based (React DOM) for popup and popovers.
+- Business logic, services, and adapters remain under `packages/common` for reuse.
+- Avoid React Native Web in extension to simplify tests and configs.
+
+### Key Directories
+
+- `packages/extension/ui`: DOM components (Buttons, Inputs, ErrorBoundary, etc.)
+- `packages/extension/popup`: Popup React app (uses DOM components)
+- `packages/extension/popovers`: Isolated popover UIs (DOM)
+- `packages/extension/services`: Extension services orchestrating common adapters
+
+### Testing
+
+- Unit tests focus on services/adapters/utils.
+- UI tests use `@testing-library/react` (DOM), not React Native.
+- No E2E yet (planned later).
+
 # SimpliPass Chrome Extension
 
 ## 🎯 Overview
