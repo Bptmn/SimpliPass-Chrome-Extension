@@ -1,4 +1,4 @@
-// Mock platform configuration for tests
+// Mock platform configuration for tests - Extension only
 const mockFirebaseConfig = {
   apiKey: 'test-api-key',
   authDomain: 'test-project.firebaseapp.com',
@@ -20,17 +20,12 @@ module.exports = {
   // Test environment flag
   isTestEnvironment: true,
   
-  // Platform detection
-  getPlatform: () => 'extension',
-  isExtension: () => true,
-  isMobile: () => false,
-  
-  // Configuration functions
-  getPlatformConfig: (platform) => ({
+  // Extension configuration
+  getExtensionConfig: () => ({
     storageKey: 'userSecretKey',
-    vaultKey: platform === 'extension' ? 'encryptedVault' : null,
-    deviceFingerprintKey: platform === 'extension' ? 'deviceFingerprint' : null,
-    sessionTimeout: platform === 'extension' ? 30 * 60 * 1000 : 15 * 60 * 1000,
+    vaultKey: 'encryptedVault',
+    deviceFingerprintKey: 'deviceFingerprint',
+    sessionTimeout: 30 * 60 * 1000, // 30 minutes
     maxRetryAttempts: 3,
     encryptionAlgorithm: 'AES-256-GCM',
     firebaseConfig: mockFirebaseConfig,
@@ -40,8 +35,8 @@ module.exports = {
   }),
   
   // Async configuration functions
-  getFirebaseConfig: async (platform) => mockFirebaseConfig,
-  getCognitoConfig: async (platform) => mockCognitoConfig,
-  validateFirebaseConfig: async (platform) => true,
-  validateCognitoConfig: async (platform) => true
+  getFirebaseConfig: async () => mockFirebaseConfig,
+  getCognitoConfig: async () => mockCognitoConfig,
+  validateFirebaseConfig: async () => true,
+  validateCognitoConfig: async () => true
 }; 

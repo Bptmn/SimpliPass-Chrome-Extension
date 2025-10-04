@@ -41,26 +41,13 @@ export interface PlatformAdapter {
   deleteSessionMetadata(): Promise<void>;
 }
 
-// 🔌 Current implementation using platform-specific adapters
-// This can be easily swapped for other platform implementations
+// 🔌 Extension-only platform adapter implementation
 export const platform: PlatformAdapter = new Proxy({} as PlatformAdapter, {
   get(target, prop) {
     return async (...args: any[]) => {
-      // Get platform from global state
-      const platform = useAppStateStore.getState().platform;
-      if (!platform) {
-        throw new Error('Platform not set in global state');
-      }
-
-      // Dynamically import the appropriate platform adapter
-      let adapter;
-      if (platform === 'mobile') {
-        const { MobilePlatformAdapter } = await import('../../../mobile/adapters/platform.adapter');
-        adapter = new MobilePlatformAdapter();
-      } else {
-        const { ExtensionPlatformAdapter } = await import('../../../extension/adapters/platform.adapter');
-        adapter = new ExtensionPlatformAdapter();
-      }
+      // Import the extension platform adapter directly
+      const { ExtensionPlatformAdapter } = await import('../../../extension/adapters/platform.adapter');
+      const adapter = new ExtensionPlatformAdapter();
 
       const method = (adapter as any)[prop];
       if (method) return method(...args);

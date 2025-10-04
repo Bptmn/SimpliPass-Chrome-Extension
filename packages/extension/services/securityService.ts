@@ -156,12 +156,14 @@ export class SecurityService {
       return '';
     }
 
-    // Remove potentially dangerous characters and patterns
+    // Remove potentially dangerous patterns
     return input
-      .replace(/[<>]/g, '') // Remove < and >
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+      .replace(/<[^>]*>/g, '') // Remove any HTML tags
       .replace(/javascript:/gi, '') // Remove javascript: protocol
       .replace(/data:/gi, '') // Remove data: protocol
       .replace(/vbscript:/gi, '') // Remove vbscript: protocol
+      .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '') // Remove event handlers with quotes
       .replace(/on\w+\s*=/gi, '') // Remove event handlers
       .trim();
   }
@@ -188,13 +190,12 @@ export class SecurityService {
         }
       }
 
-      // Sanitize inputs
-      const sanitizedUsername = this.sanitizeInput(formData.username || '');
-      const sanitizedPassword = this.sanitizeInput(formData.password || '');
-
-      // Check for suspicious patterns
-      if (this.containsSuspiciousPatterns(sanitizedUsername) || 
-          this.containsSuspiciousPatterns(sanitizedPassword)) {
+      // Check for suspicious patterns BEFORE sanitizing
+      const username = formData.username || '';
+      const password = formData.password || '';
+      
+      if (this.containsSuspiciousPatterns(username) || 
+          this.containsSuspiciousPatterns(password)) {
         return {
           isValid: false,
           reason: 'Suspicious patterns detected in form data',

@@ -1,9 +1,2 @@
-{
-  "semi": true,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "printWidth": 100,
-  "tabWidth": 2,
-  "bracketSpacing": true,
-  "arrowParens": "avoid"
-} 
+// Root Prettier config - delegates to configs/lint/.prettierrc
+module.exports = require('./configs/lint/.prettierrc');

@@ -3,21 +3,20 @@
 // Responsibilities:
 // - Clipboard copy functionality
 // - Success/error state management
-// - Toast notification integration
+// Note: Toast notifications should be handled by the UI layer
 
 import { useState, useCallback } from 'react';
-import { useToast } from '@common/ui/components/Toast';
 
 export const useClipboard = () => {
   const [isCopying, setIsCopying] = useState(false);
-  const { showToast } = useToast();
+  const [lastMessage, setLastMessage] = useState<string>('');
 
   /**
    * Copies text to clipboard with success/error feedback
    */
   const copyToClipboard = useCallback(async (text: string, successMessage: string = 'Copied to clipboard', errorMessage: string = 'Failed to copy') => {
     if (!text) {
-      showToast('Nothing to copy');
+      setLastMessage('Nothing to copy');
       return false;
     }
 
@@ -25,15 +24,15 @@ export const useClipboard = () => {
 
     try {
       await navigator.clipboard.writeText(text);
-      showToast(successMessage);
+      setLastMessage(successMessage);
       return true;
     } catch (_error) {
-      showToast(errorMessage);
+      setLastMessage(errorMessage);
       return false;
     } finally {
       setIsCopying(false);
     }
-  }, [showToast]);
+  }, []);
 
   /**
    * Copies text to clipboard without toast notifications
@@ -64,6 +63,7 @@ export const useClipboard = () => {
 
   return {
     isCopying,
+    lastMessage,
     copyToClipboard,
     copyToClipboardSilent,
     isClipboardAvailable

@@ -4,59 +4,55 @@ alwaysApply: true
 
 ## 🏩 Layered Architecture (Three-Layer Model)
 
-### Layer 1: Hooks (UI Layer)
+### Layer 1: UI Layer (Extension-Specific)
 
-* **Purpose**: Pure UI state management and user interactions
-* **Location**: `packages/common/hooks/`
+* **Purpose**: Pure UI state management and user interactions for Chrome extension
+* **Location**: `packages/extension/ui/`, `packages/extension/hooks/`
 * **Responsibilities**:
-
-  * Form state
+  * Form state management
   * Validation integration
   * Clipboard operations
   * Password visibility
   * Content sizing
+  * Extension-specific UI interactions
 * **Characteristics**:
-
   * Simple, readable functions
   * Manage UI state only (no business logic)
   * Handle loading states and local errors
   * Must return stable, typed results for UI consumption
   * Steps in comments must be clearly numbered (e.g., Step 1, Step 2)
   * **Never directly call adapters/libraries (Layer 3)** — only services (Layer 2)
-  * **Testable**: Test UI state and user interactions
+  * **Testable**: Test UI state and user interactions with React Testing Library
 
 ### Layer 2: Services (Business Logic Layer)
 
 * **Purpose**: Business logic orchestration, validation, formatting, and data transformation
 * **Location**: `packages/common/core/services/`
 * **Responsibilities**:
-
   * Form validation and formatting
   * Business rules and orchestration
   * Authentication/session flows
   * Error interpretation and rethrowing
+  * Data transformation for UI consumption
 * **Characteristics**:
-
   * Coordinate multiple lower-level libraries
   * Transform data for UI
   * Propagate and wrap errors
   * May call adapters and libraries
-  * **Testable**: Test business logic in isolation
+  * **Testable**: Test business logic in isolation with comprehensive mocking
 
 ### Layer 3: Libraries/Adapters (Integration Layer)
 
 * **Purpose**: Platform-specific APIs and external integrations
-* **Location**: `packages/common/core/libraries/`, `packages/common/core/adapters/`
+* **Location**: `packages/common/core/libraries/`, `packages/common/core/adapters/`, `packages/extension/adapters/`
 * **Responsibilities**:
-
   * Low-level external API calls (e.g., Firebase, crypto, storage)
-  * Platform-specific code (extension, mobile)
+  * Chrome extension-specific platform code
   * Must remain logic-free and stateless
 * **Characteristics**:
-
   * Pure implementation
   * No conditionals or orchestration
-  * **Testable**: With mocks for external APIs
+  * **Testable**: With mocks for external APIs and Chrome extension APIs
 
 ---
 
@@ -67,7 +63,7 @@ alwaysApply: true
 * Always throw errors using custom error classes from the correct layer
 * Always propagate errors **up to the calling layer** — never silently catch
 * Errors should only be interpreted or transformed in Layer 2 (services)
-* **Hooks (Layer 1)**: must not catch or transform — simply expose error to UI state
+* **UI Layer (Layer 1)**: must not catch or transform — simply expose error to UI state
 * **Libraries/Adapters (Layer 3)**: throw native or wrapped low-level errors only
 * **Global error boundaries** (e.g., `InitializationErrorBoundary`) catch unrecoverable errors only
 
@@ -94,27 +90,31 @@ export class SimpliPassError extends Error {
 * Reuse logic via services/hooks where possible
 * Never let UI directly access Layer 3
 * Logic must flow: **UI (hooks) → services → adapters/libraries** only
+* Extension UI components should be DOM-based, not React Native Web
 
 ---
 
 ## 💪 Testing Strategy by Layer
 
-### Hooks (Layer 1)
+### UI Layer (Layer 1)
 
-* UI state only
+* DOM component testing with React Testing Library
 * Mock all service dependencies
 * Test loading, success, error states
+* Focus on user interactions and accessibility
 
 ### Services (Layer 2)
 
 * Full business logic coverage
 * Mock adapters and libraries
 * Test business rules, transformations, and error wrapping
+* Test error propagation and handling
 
-### Libraries (Layer 3)
+### Libraries/Adapters (Layer 3)
 
-* Integration-focused
+* Integration-focused testing
 * Test raw integration logic only
+* Mock external APIs (Firebase, Chrome APIs)
 * Do not add business conditions in this layer
 
 ---
@@ -126,6 +126,7 @@ export class SimpliPassError extends Error {
 * Pages should not perform navigation decisions
 * Routing must remain testable and explicit
 * Routes must be declared in one central place (router file)
+* Extension routing should be DOM-based, not React Native Web
 
 ---
 
@@ -134,19 +135,21 @@ export class SimpliPassError extends Error {
 ```ts
 // External
 import React from 'react';
-// Hooks
-import { useCardForm } from '@common/hooks';
-// Services
+// Extension UI
+import { Button, Input } from '@extension/ui/components';
+// Extension Hooks
+import { useAppInitialization } from '@extension/hooks';
+// Common Services
 import { cardValidationService } from '@common/core/services';
-// Libraries
+// Common Libraries
 import { getPlatformAdapter } from '@common/core/adapters';
 // Types
 import type { CardFormData } from '@common/core/types';
 ```
 
-* Always use absolute imports (`@common`, `@core`, etc.)
+* Always use absolute imports (`@common`, `@extension`, `@shared`)
 * Never use relative imports like `../../../`
-* Group by layer in order: external → hooks → services → libraries → types
+* Group by layer in order: external → extension UI → extension hooks → common services → common libraries → types
 
 ---
 
@@ -157,26 +160,28 @@ import type { CardFormData } from '@common/core/types';
 * Platform adapters hydrate vault and handle local persistence
 * All decrypted data lives in RAM only and never persisted
 * `logout()` must wipe all memory state and secure storage
+* Extension uses Chrome storage APIs for persistence
 
 ---
 
-## 🔐 Secure Storage by Platform
+## 🔐 Secure Storage (Chrome Extension)
 
-### Mobile
-
-* Use `expo-secure-store`
-
-### Chrome Extension
-
-* Use `chrome.storage.session`
+* Use `chrome.storage.session` for temporary data
+* Use `chrome.storage.local` for persistent data (encrypted)
+* Never store plaintext passwords or sensitive data
+* All sensitive data must be encrypted before storage
+* Use extension-specific storage adapters in `packages/extension/adapters/`
 
 ---
 
-## 🎨 Styling Rules
+## 🎨 Styling Rules (DOM Components)
 
+* Use CSS-in-JS or inline styles for extension components
 * Use only `gap` for vertical spacing (not `marginTop`/`marginBottom`)
 * Layout classes: `formContainer`, `scrollView`, `pageContainer`, etc.
 * No inline spacing logic — always through centralized layout system
+* Ensure components work in Chrome extension popup and content script contexts
+* Use semantic HTML elements for accessibility
 
 ---
 
@@ -185,9 +190,10 @@ import type { CardFormData } from '@common/core/types';
 After any structural or logic-level change:
 
 ```bash
-npm run lint
-npm run test
-npm run build
+npm run lint:extension
+npm run test:extension
+npm run build:extension
+npm run type-check:extension
 ```
 
 * All tests must pass
@@ -195,21 +201,45 @@ npm run build
 * > 80% test coverage for business logic
 * No ESLint/TypeScript warnings
 * Must follow 3-layer separation strictly
+* Extension must build successfully with Vite
 
 ---
 
-## Other rules
-- Always look for existing code to iterate on instead of creating new code.
-- Do not drastically change the patterns before trying to iterate on existing patterns.
-- Always kill all existing related servers that may have been created in previous testing before trying to start a new server.
+## 🚀 Extension-Specific Rules
+
+### Chrome Extension Development
+* Use React DOM components, not React Native Web
+* Follow Chrome extension manifest V3 requirements
+* Ensure popup, content scripts, and background scripts work correctly
+* Use extension-specific adapters for platform operations
+* Test in actual Chrome extension environment
+
+### Popover Development
+* Popovers should be DOM-based and isolated
+* Use extension-specific popover components
+* Ensure proper security for content script injection
+* Test autofill functionality thoroughly
+
+### Security Considerations
+* All user data must be encrypted before storage
+* Content scripts must sanitize all input
+* Never expose sensitive data in popup or content scripts
+* Use secure communication between extension contexts
+
+---
+
+## Other Rules
+- Always look for existing code to iterate on instead of creating new code
+- Do not drastically change the patterns before trying to iterate on existing patterns
+- Always kill all existing related servers that may have been created in previous testing before trying to start a new server
 - Always prefer simple solutions
 - Avoid duplication of code whenever possible, which means checking for other areas of the codebase that might already have similar code and functionality
 - Write code that takes into account the different environments: dev, test, and prod
 - You are careful to only make changes that are requested or you are confident are well understood and related to the change being requested
-- When fixing an issue or bug, do not introduce a new pattern or technology without first exhausting all options for the existing implementation. And if you finally do this, make sure to remove the old implementation afterwards so we don't have duplicate logic.
+- When fixing an issue or bug, do not introduce a new pattern or technology without first exhausting all options for the existing implementation. And if you finally do this, make sure to remove the old implementation afterwards so we don't have duplicate logic
 - Keep the codebase very clean and organized
 - Avoid writing scripts in files if possible, especially if the script is likely only to be run once
-- Avoid having files over 200-300 lines of code. Refactor at that point.
+- Avoid having files over 200-300 lines of code. Refactor at that point
 - Mocking data is only needed for tests, never mock data for dev or prod
 - Never add stubbing or fake data patterns to code that affects the dev or prod environments
 - Never overwrite my .env file without first asking and confirming
@@ -229,4 +259,7 @@ npm run build
 * ✅ Only libraries/adapters touch external systems
 * ✅ Only Zustand handles UI-bound data
 * ✅ Global error boundaries catch unrecoverable app-wide failures only
+* ✅ Use React DOM components, not React Native Web
+* ✅ Follow Chrome extension security best practices
+* ✅ Test extension functionality in actual Chrome environment
 * ✅ Cursor must validate tests, types, and build before any PR is considered complete

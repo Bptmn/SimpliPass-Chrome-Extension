@@ -13,8 +13,6 @@
 
 import { useState, useCallback } from 'react';
 import { authService } from '../core/services/authService';
-import { useAppRouterContext } from '../ui/router/AppRouterProvider';
-import { ROUTES } from '../ui/router/ROUTES';
 import type { MfaChallenge } from '../core/types/auth.types';
 
 export interface UseLoginReturn {
@@ -29,6 +27,7 @@ export interface UseLoginReturn {
   isLoading: boolean;
   error: string | null;
   mfaChallenge: MfaChallenge | null;
+  loginSuccess: boolean;
   
   // Actions
   setEmail: (email: string) => void;
@@ -52,9 +51,7 @@ export const useLogin = (): UseLoginReturn => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mfaChallenge, setMfaChallenge] = useState<MfaChallenge | null>(null);
-  
-  // Navigation
-  const router = useAppRouterContext();
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   // Form validation
   const validateForm = useCallback((): boolean => {
@@ -84,6 +81,7 @@ export const useLogin = (): UseLoginReturn => {
     // Clear previous errors and MFA challenge
     setError(null);
     setMfaChallenge(null);
+    setLoginSuccess(false);
     
     // Validate form
     if (!validateForm()) {
@@ -102,9 +100,9 @@ export const useLogin = (): UseLoginReturn => {
         console.log('[useLogin] MFA required, setting challenge');
         setMfaChallenge(loginResult);
       } else {
-        // No MFA required - navigate to home
-        console.log('[useLogin] Login successful, navigating to home');
-        router.navigateTo(ROUTES.HOME);
+        // No MFA required - mark success (navigation handled by parent)
+        console.log('[useLogin] Login successful');
+        setLoginSuccess(true);
       }
       
     } catch (err) {
@@ -114,7 +112,7 @@ export const useLogin = (): UseLoginReturn => {
     } finally {
       setIsLoading(false);
     }
-  }, [email, password, validateForm, router]);
+  }, [email, password, validateForm]);
 
   // Clear error
   const clearError = useCallback(() => {
@@ -138,6 +136,7 @@ export const useLogin = (): UseLoginReturn => {
     isLoading,
     error,
     mfaChallenge,
+    loginSuccess,
     
     // Actions
     setEmail,

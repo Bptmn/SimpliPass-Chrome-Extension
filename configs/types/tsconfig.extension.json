@@ -16,8 +16,6 @@
     "../../packages/shared/**/*"
   ],
   "exclude": [
-    "../../packages/common/ui/**",
-    "../../packages/mobile/**",
     "../../packages/common/hooks/**",
     "../../packages/common/**/__tests__/**",
     "../../packages/extension/__tests__/**"

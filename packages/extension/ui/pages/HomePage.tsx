@@ -1,27 +1,61 @@
 /**
  * HomePage (Extension / DOM)
  *
- * Purpose: Minimal home screen placeholder for the extension popup.
- * - Renders a basic layout with actions.
+ * Purpose: Home screen for the extension popup.
+ * - Displays vault items
+ * - Handles navigation to generator
+ * - Handles logout
  */
 
 import React from 'react';
 import { Button } from '@extension/ui/components/Button';
+import { useAuth } from '@common/hooks/useAuth';
+import { useAppStateStore } from '@common/hooks/useAppState';
+import { useAppRouterContext } from '../router/AppRouterProvider';
+import { ROUTES } from '../router/ROUTES';
 
-type HomePageProps = {
-  onOpenGenerator?: () => void;
-};
+export const HomePage: React.FC = () => {
+  // Get user from global state
+  const user = useAppStateStore(state => state.user);
+  
+  // Get auth operations
+  const { logout, isLoading: isLoggingOut } = useAuth({ user });
+  
+  // Get router for navigation
+  const router = useAppRouterContext();
 
-export const HomePage: React.FC<HomePageProps> = ({ onOpenGenerator }) => {
+  // Handle navigation to generator
+  const handleOpenGenerator = () => {
+    router.navigateTo(ROUTES.GENERATOR);
+  };
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // Auth listeners will handle navigation to login
+    } catch (error) {
+      console.error('[HomePage] Logout failed:', error);
+    }
+  };
+
   return (
-    <div style={styles.container}>
+    <div style={styles.container} data-testid="home-page">
       <div style={styles.header}>SimpliPass</div>
       <div style={styles.section}>
         <div style={styles.title}>Vault</div>
-        <div style={styles.text}>Your credentials will appear here.</div>
+        <div style={styles.text} data-testid="credentials-list">Your credentials will appear here.</div>
       </div>
       <div style={styles.actions}>
-        <Button onClick={onOpenGenerator}>Open Password Generator</Button>
+        <Button onClick={handleOpenGenerator}>Open Password Generator</Button>
+        <Button 
+          onClick={handleLogout} 
+          variant="secondary" 
+          data-testid="logout-button"
+          disabled={isLoggingOut}
+        >
+          {isLoggingOut ? 'Logging out...' : 'Logout'}
+        </Button>
       </div>
     </div>
   );

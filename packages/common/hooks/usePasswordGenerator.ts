@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { checkPasswordStrength } from '@common/utils/checkPasswordStrength';
 import { passwordGenerator } from '@common/utils/passwordGenerator';
-import { useToast } from '@common/ui/components/Toast';
 
 /**
  * Hook for password generator UI state management
  * Handles password generation, strength checking, and regeneration
+ * Note: Toast notifications should be handled by the UI layer
  */
 export const usePasswordGenerator = () => {
-  const { showToast } = useToast();
+  const [lastMessage, setLastMessage] = useState<string>('');
 
   // Step 1: Initialize password options state
   const [hasUppercase, setHasUppercase] = useState(true);
@@ -49,8 +49,8 @@ export const usePasswordGenerator = () => {
 
   // Step 5: Handle copy password
   const handleCopyPassword = useCallback(() => {
-    showToast('Mot de passe copié !');
-  }, [showToast]);
+    setLastMessage('Mot de passe copié !');
+  }, []);
 
   return {
     // State
@@ -61,6 +61,7 @@ export const usePasswordGenerator = () => {
     length,
     password,
     strength,
+    lastMessage,
     
     // Actions
     setHasUppercase,

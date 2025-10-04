@@ -22,16 +22,11 @@
     "baseUrl": ".",
     "paths": {
       "@common/*": ["packages/common/*"],
-      "@ui/*": ["packages/common/ui/*"],
-      "@design/*": ["packages/common/ui/design/*"],
-      "@components/*": ["packages/common/ui/components/*"],
-      "@pages/*": ["packages/common/ui/pages/*"],
       "@hooks/*": ["packages/common/hooks/*"],
       "@utils/*": ["packages/common/utils/*"],
       "@logic/*": ["packages/common/core/services/*"],
       "@shared/*": ["packages/shared/*"],
-      "@extension/*": ["packages/extension/*"],
-      "@mobile/*": ["packages/mobile/*"]
+      "@extension/*": ["packages/extension/*"]
     }
   },
   "include": [

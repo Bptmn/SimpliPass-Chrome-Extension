@@ -5,13 +5,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useClipboard } from '../useClipboard';
 
-// Mock the Toast hook
-const mockShowToast = jest.fn();
-jest.mock('@common/ui/components/Toast', () => ({
-  useToast: () => ({
-    showToast: mockShowToast
-  })
-}));
+// Toast functionality removed from hook, no longer needed in tests
 
 // Mock navigator.clipboard
 const mockWriteText = jest.fn();

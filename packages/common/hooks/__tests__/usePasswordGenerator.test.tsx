@@ -6,11 +6,6 @@ import { passwordGenerator } from '@common/utils/passwordGenerator';
 // Mock dependencies
 jest.mock('@common/utils/checkPasswordStrength');
 jest.mock('@common/utils/passwordGenerator');
-jest.mock('@common/ui/components/Toast', () => ({
-  useToast: () => ({
-    showToast: jest.fn()
-  })
-}));
 
 const mockCheckPasswordStrength = checkPasswordStrength as jest.MockedFunction<typeof checkPasswordStrength>;
 const mockPasswordGenerator = passwordGenerator as jest.MockedFunction<typeof passwordGenerator>;

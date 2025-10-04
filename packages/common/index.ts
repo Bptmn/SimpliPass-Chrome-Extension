@@ -23,4 +23,7 @@ export type { PlatformAdapter } from './core/adapters/platform.adapter';
 
 // Types (specific exports to avoid conflicts)
 export type { User, UserSession, PageState } from './core/types/auth.types';
-export * from './core/types/errors.types'; 
+export * from './core/types/errors.types';
+
+// Utils
+export * from './utils'; 

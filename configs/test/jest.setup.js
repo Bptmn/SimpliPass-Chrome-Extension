@@ -27,17 +27,6 @@ const mockEnv = {
   VITE_COGNITO_USER_POOL_ID: process.env.VITE_COGNITO_USER_POOL_ID || 'test-user-pool-id',
   VITE_COGNITO_CLIENT_ID: process.env.VITE_COGNITO_CLIENT_ID || 'test-client-id',
   VITE_COGNITO_REGION: process.env.VITE_COGNITO_REGION || 'us-east-1',
-  
-  // React Native environment variables (for mobile)
-  REACT_NATIVE_API_KEY: process.env.REACT_NATIVE_API_KEY || 'test-api-key',
-  REACT_NATIVE_AUTH_DOMAIN: process.env.REACT_NATIVE_AUTH_DOMAIN || 'test-project.firebaseapp.com',
-  REACT_NATIVE_PROJECT_ID: process.env.REACT_NATIVE_PROJECT_ID || 'test-project',
-  REACT_NATIVE_STORAGE_BUCKET: process.env.REACT_NATIVE_STORAGE_BUCKET || 'test-project.appspot.com',
-  REACT_NATIVE_MESSAGING_SENDER_ID: process.env.REACT_NATIVE_MESSAGING_SENDER_ID || '123456789',
-  REACT_NATIVE_APP_ID: process.env.REACT_NATIVE_APP_ID || 'test-app-id',
-  REACT_NATIVE_COGNITO_USER_POOL_ID: process.env.REACT_NATIVE_COGNITO_USER_POOL_ID || 'test-user-pool-id',
-  REACT_NATIVE_COGNITO_CLIENT_ID: process.env.REACT_NATIVE_COGNITO_CLIENT_ID || 'test-client-id',
-  REACT_NATIVE_COGNITO_REGION: process.env.REACT_NATIVE_COGNITO_REGION || 'us-east-1',
 };
 
 // Mock import.meta.env globally
@@ -105,17 +94,14 @@ Object.defineProperty(global, 'chrome', {
   writable: true
 });
 
-// Mock setTimeout and clearTimeout for React hooks
-const originalSetTimeout = global.setTimeout;
-const originalClearTimeout = global.clearTimeout;
-
-global.setTimeout = jest.fn((fn, delay) => {
-  return originalSetTimeout(fn, delay);
-});
-
-global.clearTimeout = jest.fn((id) => {
-  return originalClearTimeout(id);
-});
+// Ensure setTimeout and clearTimeout are properly available
+// Jest should provide these, but we ensure they're correctly bound
+if (typeof global.setTimeout === 'undefined') {
+  global.setTimeout = setTimeout;
+}
+if (typeof global.clearTimeout === 'undefined') {
+  global.clearTimeout = clearTimeout;
+}
 
 module.exports = async () => {
   console.log('Starting Firestore emulator in global setup...');

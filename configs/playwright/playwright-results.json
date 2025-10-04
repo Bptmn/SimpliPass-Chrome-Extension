@@ -1,0 +1,308 @@
+{
+  "config": {
+    "configFile": "/Users/baptisteveyrard/Local/Simplipass-React-ReactNative/configs/playwright/playwright.config.ts",
+    "rootDir": "/Users/baptisteveyrard/Local/Simplipass-React-ReactNative/packages/extension/__tests__/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "playwright-results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/baptisteveyrard/Local/Simplipass-React-ReactNative/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-extension",
+        "name": "chromium-extension",
+        "testDir": "/Users/baptisteveyrard/Local/Simplipass-React-ReactNative/packages/extension/__tests__/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "01-initialization.spec.ts",
+      "file": "01-initialization.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Extension Initialization",
+          "file": "01-initialization.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should load extension successfully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 850,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Extension ID: ldobcfgjehkmddppfmmkbemehoppoeio\n"
+                        },
+                        {
+                          "text": "Extension loaded with ID: ldobcfgjehkmddppfmmkbemehoppoeio\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:58064) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-10-04T19:43:30.637Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "558bc0e1eb87e0887064-053f198437d26c3101c6",
+              "file": "01-initialization.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "should open popup without errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1887,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Extension ID: ldobcfgjehkmddppfmmkbemehoppoeio\n"
+                        },
+                        {
+                          "text": "=== Console Logs ===\n"
+                        },
+                        {
+                          "text": "[log] [InitializationService] Starting application initialization\n"
+                        },
+                        {
+                          "text": "[log] [useAppState] Setting initialization state: {isInitializing: true, error: null}\n"
+                        },
+                        {
+                          "text": "[log] [useAppState] Setting platform: extension\n"
+                        },
+                        {
+                          "text": "[log] [InitializationService] Platform set to: extension\n"
+                        },
+                        {
+                          "text": "[log] [Firebase] Initializing Firebase...\n"
+                        },
+                        {
+                          "text": "[log] [Firebase] Initialization complete\n"
+                        },
+                        {
+                          "text": "[log] [Firebase] Already initialized, skipping\n"
+                        },
+                        {
+                          "text": "[log] [InitializationService] No auth available, will initialize\n"
+                        },
+                        {
+                          "text": "[log] [InitializationService] Initializing auth provider\n"
+                        },
+                        {
+                          "text": "[log] [Firebase] Already initialized, skipping\n"
+                        },
+                        {
+                          "text": "[log] [Cognito] UserPool not configured\n"
+                        },
+                        {
+                          "text": "[log] [Cognito] Initializing Cognito...\n"
+                        },
+                        {
+                          "text": "[log] [Cognito] Initialization complete\n"
+                        },
+                        {
+                          "text": "[log] [InitializationService] Starting auth listeners\n"
+                        },
+                        {
+                          "text": "[log] [AuthListeners] Starting authentication listeners\n"
+                        },
+                        {
+                          "text": "[log] [Firebase] Already initialized, skipping\n"
+                        },
+                        {
+                          "text": "[log] [Firebase] Starting auth listeners...\n"
+                        },
+                        {
+                          "text": "[log] [Firebase] Auth listeners started\n"
+                        },
+                        {
+                          "text": "[log] [AuthListeners] Authentication listeners started successfully\n"
+                        },
+                        {
+                          "text": "[log] [useAppState] Setting initialization state: {isInitializing: false, error: undefined}\n"
+                        },
+                        {
+                          "text": "[log] [useAppState] Setting auth availability: true\n"
+                        },
+                        {
+                          "text": "[log] [InitializationService] Application fully initialized\n"
+                        },
+                        {
+                          "text": "[log] [AuthListeners] Handling user sign out\n"
+                        },
+                        {
+                          "text": "[log] [DatabaseListeners] Stopping database listeners\n"
+                        },
+                        {
+                          "text": "[log] [AuthListeners] Database listeners stopped due to sign out\n"
+                        },
+                        {
+                          "text": "[log] [useAppState] Setting user and secret key: {userId: undefined, hasSecretKey: false}\n"
+                        },
+                        {
+                          "text": "[log] [AuthListeners] User signed out\n"
+                        },
+                        {
+                          "text": "[log] [useAppState] Setting auth availability: true\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-04T19:43:31.495Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "558bc0e1eb87e0887064-c280529bc3bee4ce20ef",
+              "file": "01-initialization.spec.ts",
+              "line": 12,
+              "column": 7
+            },
+            {
+              "title": "should have correct manifest configuration",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1734,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Extension ID: ldobcfgjehkmddppfmmkbemehoppoeio\n"
+                        },
+                        {
+                          "text": "Extension name: SimpliPass\n"
+                        },
+                        {
+                          "text": "Extension version: 1.0.1\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-04T19:43:33.388Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "558bc0e1eb87e0887064-9a04d77e63c1998631c8",
+              "file": "01-initialization.spec.ts",
+              "line": 51,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-10-04T19:43:30.340Z",
+    "duration": 4793.785000000001,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
