@@ -7,13 +7,11 @@
 
 import { useState, useCallback } from 'react';
 import { itemsService } from '@common/core/services/itemsService';
-import { ROUTES } from '@common/ui/router/ROUTES';
-import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+// Note: Router imports removed - navigation should be handled by the calling component
 import { CATEGORIES } from '@common/core/types/categories.types';
 import type { SecureNoteDecrypted } from '@common/core/types/items.types';
 
 export const useModifySecureNote = (secureNote: SecureNoteDecrypted | null) => {
-  const router = useAppRouterContext();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -41,13 +39,13 @@ export const useModifySecureNote = (secureNote: SecureNoteDecrypted | null) => {
       
       await itemsService.updateItem(secureNote.id, updatedNote);
       showToast('Note modifiée avec succès');
-      router.navigateTo(ROUTES.HOME, { category: CATEGORIES.SECURE_NOTES });
+      // Navigation should be handled by the calling component
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la modification de la note.');
     } finally {
       setLoading(false);
     }
-  }, [secureNote, router]);
+  }, [secureNote]);
 
   return {
     error,

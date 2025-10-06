@@ -1,259 +1,204 @@
 /**
- * Authentication E2E Tests
+ * Authentication Tests
  * 
- * Tests the login flow of the SimpliPass extension.
- * Note: There is no signup in the extension (only via mobile app).
- * 
- * Test Coverage:
- * - Login with valid credentials
- * - Login with invalid credentials
- * - Email validation
- * - Password visibility toggle
- * - Error handling and display
- * - Logout flow
+ * Tests the complete authentication flow with real AWS Cognito
  */
 
 import { test, expect } from './helpers/extensionContext';
-import { createConsoleMonitor } from './helpers/consoleMonitor';
-import { TEST_CONFIG, getPopupUrl } from './config/test.config';
+import { openPopup, loginToExtension, waitForHomePage, logoutFromExtension, setupConsoleMonitoring } from './helpers/extensionHelpers';
+import { TEST_USER_ACCOUNTS, TEST_TIMEOUTS } from './helpers/testData';
 
-test.describe('Authentication', () => {
-  
-  test('should display login form on first load', async ({ context, extensionId }) => {
-    const popup = await context.newPage();
-    const consoleMonitor = createConsoleMonitor(popup);
+test.describe('Authentication Flow', () => {
+  test('should show login page when not authenticated', async ({ context, extensionId }) => {
+    const popup = await openPopup(context, extensionId);
     
-    await popup.goto(getPopupUrl(extensionId));
-    await popup.waitForLoadState('networkidle');
+    // Monitor console for errors
+    const { logs, errors } = setupConsoleMonitoring(popup);
     
-    // Verify login form is visible
-    await expect(popup.locator(TEST_CONFIG.selectors.login.emailInput)).toBeVisible();
-    await expect(popup.locator(TEST_CONFIG.selectors.login.passwordInput)).toBeVisible();
-    await expect(popup.locator(TEST_CONFIG.selectors.login.loginButton)).toBeVisible();
+    // Should see login form elements
+    await expect(popup.locator('[data-testid="email-input"]')).toBeVisible({ timeout: TEST_TIMEOUTS.medium });
+    await expect(popup.locator('[data-testid="password-input"]')).toBeVisible({ timeout: TEST_TIMEOUTS.medium });
+    await expect(popup.locator('[data-testid="login-button"]')).toBeVisible({ timeout: TEST_TIMEOUTS.medium });
     
-    // Verify no unexpected errors
-    const unexpectedErrors = consoleMonitor.getUnexpectedErrors();
+    // Check for any console errors
+    const unexpectedErrors = errors.filter(error => 
+      !error.includes('DevTools') && 
+      !error.includes('Extension')
+    );
+    
+    if (unexpectedErrors.length > 0) {
+      console.error('Console errors on login page:', unexpectedErrors);
+    }
+    
     expect(unexpectedErrors).toHaveLength(0);
     
-    // Debug output
-    consoleMonitor.printSummary();
-    
-    await popup.close();
-  });
-
-  test('should show error with invalid email format', async ({ context, extensionId }) => {
-    const popup = await context.newPage();
-    const consoleMonitor = createConsoleMonitor(popup);
-    
-    await popup.goto(getPopupUrl(extensionId));
-    await popup.waitForLoadState('networkidle');
-    
-    // Fill form with malformed email
-    await popup.fill(
-      TEST_CONFIG.selectors.login.emailInput, 
-      TEST_CONFIG.credentials.malformedEmail.email
-    );
-    await popup.fill(
-      TEST_CONFIG.selectors.login.passwordInput, 
-      TEST_CONFIG.credentials.malformedEmail.password
-    );
-    
-    // Try to submit
-    await popup.click(TEST_CONFIG.selectors.login.loginButton);
-    
-    // Wait for error message
-    await popup.waitForSelector(TEST_CONFIG.selectors.login.errorMessage, {
-      timeout: TEST_CONFIG.timeouts.default,
-    });
-    
-    // Verify error message is displayed
-    const errorMessage = await popup.locator(TEST_CONFIG.selectors.login.errorMessage).textContent();
-    expect(errorMessage).toBeTruthy();
-    console.log('Error message for invalid email:', errorMessage);
-    
-    // Debug output
-    consoleMonitor.printErrors();
-    
-    await popup.close();
-  });
-
-  test('should show error with invalid credentials', async ({ context, extensionId }) => {
-    const popup = await context.newPage();
-    const consoleMonitor = createConsoleMonitor(popup);
-    
-    await popup.goto(getPopupUrl(extensionId));
-    await popup.waitForLoadState('networkidle');
-    
-    // Fill form with invalid credentials
-    await popup.fill(
-      TEST_CONFIG.selectors.login.emailInput, 
-      TEST_CONFIG.credentials.invalidUser.email
-    );
-    await popup.fill(
-      TEST_CONFIG.selectors.login.passwordInput, 
-      TEST_CONFIG.credentials.invalidUser.password
-    );
-    
-    // Submit login
-    await popup.click(TEST_CONFIG.selectors.login.loginButton);
-    
-    // Wait for error message
-    await popup.waitForSelector(TEST_CONFIG.selectors.login.errorBanner, {
-      timeout: TEST_CONFIG.timeouts.authentication,
-    });
-    
-    // Verify error message is displayed
-    const errorBanner = await popup.locator(TEST_CONFIG.selectors.login.errorBanner);
-    await expect(errorBanner).toBeVisible();
-    
-    const errorText = await errorBanner.textContent();
-    console.log('Error message for invalid credentials:', errorText);
-    
-    // Verify we're still on login page (not redirected)
-    await expect(popup.locator(TEST_CONFIG.selectors.login.loginButton)).toBeVisible();
-    
-    // Debug output
-    consoleMonitor.printAll();
+    console.log('Login page displayed correctly');
     
     await popup.close();
   });
 
   test('should login successfully with valid credentials', async ({ context, extensionId }) => {
-    const popup = await context.newPage();
-    const consoleMonitor = createConsoleMonitor(popup);
+    const popup = await openPopup(context, extensionId);
     
-    await popup.goto(getPopupUrl(extensionId));
-    await popup.waitForLoadState('networkidle');
+    // Monitor console for errors
+    const { logs, errors } = setupConsoleMonitoring(popup);
     
-    // Fill form with valid credentials
-    await popup.fill(
-      TEST_CONFIG.selectors.login.emailInput, 
-      TEST_CONFIG.credentials.validUser.email
-    );
-    await popup.fill(
-      TEST_CONFIG.selectors.login.passwordInput, 
-      TEST_CONFIG.credentials.validUser.password
+    // Login with valid credentials
+    await loginToExtension(
+      popup, 
+      TEST_USER_ACCOUNTS.standard.email, 
+      TEST_USER_ACCOUNTS.standard.password
     );
     
-    // Submit login
-    await popup.click(TEST_CONFIG.selectors.login.loginButton);
+    // Should be on home page
+    await waitForHomePage(popup);
+    await expect(popup.locator('[data-testid="home-page"]')).toBeVisible();
     
-    // Wait for home page to load
-    await popup.waitForSelector(TEST_CONFIG.selectors.home.page, {
-      timeout: TEST_CONFIG.timeouts.authentication,
-    });
+    // Check for any console errors during login
+    const unexpectedErrors = errors.filter(error => 
+      !error.includes('DevTools') && 
+      !error.includes('Extension') &&
+      !error.includes('chrome-extension://')
+    );
     
-    // Verify we're on the home page
-    await expect(popup.locator(TEST_CONFIG.selectors.home.page)).toBeVisible();
+    if (unexpectedErrors.length > 0) {
+      console.error('Console errors during login:', unexpectedErrors);
+    }
     
-    // Verify login form is no longer visible
-    await expect(popup.locator(TEST_CONFIG.selectors.login.loginButton)).not.toBeVisible();
+    expect(unexpectedErrors).toHaveLength(0);
     
-    // Check for successful authentication logs
-    const hasAuthSuccess = consoleMonitor.hasMessage('authenticated') || 
-                          consoleMonitor.hasMessage('login') ||
-                          consoleMonitor.hasMessage('sign in');
+    console.log('Login successful');
+    console.log('Console logs:', logs.slice(0, 10)); // Show first 10 logs
     
-    console.log('Authentication successful:', hasAuthSuccess);
+    await popup.close();
+  });
+
+  test('should display home page after login', async ({ context, extensionId }) => {
+    const popup = await openPopup(context, extensionId);
     
-    // Debug output
-    consoleMonitor.printSummary();
+    // Login first
+    await loginToExtension(
+      popup, 
+      TEST_USER_ACCOUNTS.standard.email, 
+      TEST_USER_ACCOUNTS.standard.password
+    );
     
-    // Note: We don't check for console errors here because the app may have
-    // decryption errors or other expected errors after login that are handled gracefully
+    // Wait for home page
+    await waitForHomePage(popup);
+    
+    // Check home page elements
+    await expect(popup.locator('[data-testid="home-page"]')).toBeVisible();
+    await expect(popup.locator('[data-testid="credentials-list"]')).toBeVisible();
+    await expect(popup.locator('[data-testid="category-credentials"]')).toBeVisible();
+    await expect(popup.locator('[data-testid="category-bank-cards"]')).toBeVisible();
+    await expect(popup.locator('[data-testid="category-secure-notes"]')).toBeVisible();
+    
+    console.log('Home page displayed correctly');
+    
+    await popup.close();
+  });
+
+  test('should handle invalid credentials gracefully', async ({ context, extensionId }) => {
+    const popup = await openPopup(context, extensionId);
+    
+    // Try to login with invalid credentials
+    await popup.fill('[data-testid="email-input"]', 'invalid@example.com');
+    await popup.fill('[data-testid="password-input"]', 'wrongpassword');
+    await popup.click('[data-testid="login-button"]');
+    
+    // Should show error message
+    await expect(popup.locator('[data-testid="error-message"]')).toBeVisible({ timeout: TEST_TIMEOUTS.medium });
+    
+    // Should still be on login page
+    await expect(popup.locator('[data-testid="email-input"]')).toBeVisible();
+    await expect(popup.locator('[data-testid="password-input"]')).toBeVisible();
+    
+    console.log('Invalid credentials handled correctly');
     
     await popup.close();
   });
 
   test('should logout successfully', async ({ context, extensionId }) => {
-    const popup = await context.newPage();
-    const consoleMonitor = createConsoleMonitor(popup);
+    const popup = await openPopup(context, extensionId);
     
-    await popup.goto(getPopupUrl(extensionId));
-    await popup.waitForLoadState('networkidle');
-    
-    // First, login
-    await popup.fill(
-      TEST_CONFIG.selectors.login.emailInput, 
-      TEST_CONFIG.credentials.validUser.email
+    // Login first
+    await loginToExtension(
+      popup, 
+      TEST_USER_ACCOUNTS.standard.email, 
+      TEST_USER_ACCOUNTS.standard.password
     );
-    await popup.fill(
-      TEST_CONFIG.selectors.login.passwordInput, 
-      TEST_CONFIG.credentials.validUser.password
-    );
-    await popup.click(TEST_CONFIG.selectors.login.loginButton);
     
-    // Wait for home page
-    await popup.waitForSelector(TEST_CONFIG.selectors.home.page, {
-      timeout: TEST_CONFIG.timeouts.authentication,
-    });
+    await waitForHomePage(popup);
     
-    // Now logout
-    await popup.click(TEST_CONFIG.selectors.home.logoutButton);
+    // Logout
+    await logoutFromExtension(popup);
     
-    // Wait for login form to reappear
-    await popup.waitForSelector(TEST_CONFIG.selectors.login.loginButton, {
-      timeout: TEST_CONFIG.timeouts.default,
-    });
+    // Should be back on login page
+    await expect(popup.locator('[data-testid="email-input"]')).toBeVisible({ timeout: TEST_TIMEOUTS.medium });
+    await expect(popup.locator('[data-testid="password-input"]')).toBeVisible();
+    await expect(popup.locator('[data-testid="login-button"]')).toBeVisible();
     
-    // Verify we're back on login page
-    await expect(popup.locator(TEST_CONFIG.selectors.login.loginButton)).toBeVisible();
-    await expect(popup.locator(TEST_CONFIG.selectors.home.page)).not.toBeVisible();
-    
-    // Check for logout logs
-    const hasLogoutLog = consoleMonitor.hasMessage('logout') || 
-                        consoleMonitor.hasMessage('sign out');
-    
-    console.log('Logout successful:', hasLogoutLog);
-    
-    // Debug output
-    consoleMonitor.printSummary();
+    console.log('Logout successful');
     
     await popup.close();
   });
 
-  test('should toggle password visibility', async ({ context, extensionId }) => {
-    const popup = await context.newPage();
-    const consoleMonitor = createConsoleMonitor(popup);
+  test('should redirect to login after logout', async ({ context, extensionId }) => {
+    const popup = await openPopup(context, extensionId);
     
-    await popup.goto(getPopupUrl(extensionId));
+    // Login first
+    await loginToExtension(
+      popup, 
+      TEST_USER_ACCOUNTS.standard.email, 
+      TEST_USER_ACCOUNTS.standard.password
+    );
+    
+    await waitForHomePage(popup);
+    
+    // Logout
+    await logoutFromExtension(popup);
+    
+    // Try to access home page directly (should redirect to login)
+    await popup.goto(`chrome-extension://${extensionId}/popup.html#/home`);
     await popup.waitForLoadState('networkidle');
     
-    const passwordInput = popup.locator(TEST_CONFIG.selectors.login.passwordInput);
-    const toggleButton = popup.locator('[data-testid="password-toggle"]');
+    // Should be redirected to login
+    await expect(popup.locator('[data-testid="email-input"]')).toBeVisible({ timeout: TEST_TIMEOUTS.medium });
     
-    // Fill password
-    await popup.fill(TEST_CONFIG.selectors.login.passwordInput, 'TestPassword123!');
+    console.log('Redirect to login after logout works correctly');
     
-    // Initially should be type="password"
-    const initialType = await passwordInput.getAttribute('type');
-    expect(initialType).toBe('password');
+    await popup.close();
+  });
+
+  test('should handle session timeout', async ({ context, extensionId }) => {
+    const popup = await openPopup(context, extensionId);
     
-    // Click toggle to show password
-    if (await toggleButton.isVisible()) {
-      await toggleButton.click();
-      
-      // Should now be type="text"
-      const visibleType = await passwordInput.getAttribute('type');
-      expect(visibleType).toBe('text');
-      
-      // Click toggle to hide password again
-      await toggleButton.click();
-      
-      // Should be back to type="password"
-      const hiddenType = await passwordInput.getAttribute('type');
-      expect(hiddenType).toBe('password');
-      
-      console.log('Password visibility toggle works correctly');
-    } else {
-      console.log('Password toggle button not found - skipping test');
-    }
+    // Login first
+    await loginToExtension(
+      popup, 
+      TEST_USER_ACCOUNTS.standard.email, 
+      TEST_USER_ACCOUNTS.standard.password
+    );
     
-    // Verify no errors
-    const unexpectedErrors = consoleMonitor.getUnexpectedErrors();
-    expect(unexpectedErrors).toHaveLength(0);
+    await waitForHomePage(popup);
+    
+    // Simulate session timeout by clearing storage
+    await popup.evaluate(() => {
+      if (chrome && chrome.storage) {
+        chrome.storage.local.clear();
+        chrome.storage.session.clear();
+      }
+    });
+    
+    // Try to access home page (should redirect to login)
+    await popup.goto(`chrome-extension://${extensionId}/popup.html#/home`);
+    await popup.waitForLoadState('networkidle');
+    
+    // Should be redirected to login
+    await expect(popup.locator('[data-testid="email-input"]')).toBeVisible({ timeout: TEST_TIMEOUTS.medium });
+    
+    console.log('Session timeout handled correctly');
     
     await popup.close();
   });
 });
-

@@ -22,7 +22,7 @@ describe('useClipboard', () => {
   });
 
   describe('copyToClipboard', () => {
-    it('should copy text successfully with toast', async () => {
+    it('should copy text successfully and set success message', async () => {
       const { result } = renderHook(() => useClipboard());
       const text = 'test text';
       const successMessage = 'Copied successfully';
@@ -35,11 +35,11 @@ describe('useClipboard', () => {
       });
 
       expect(mockWriteText).toHaveBeenCalledWith(text);
-      expect(mockShowToast).toHaveBeenCalledWith(successMessage);
+      expect(result.current.lastMessage).toBe(successMessage);
       expect(copyResult).toBe(true);
     });
 
-    it('should handle clipboard errors with toast', async () => {
+    it('should handle clipboard errors and set error message', async () => {
       const { result } = renderHook(() => useClipboard());
       const text = 'test text';
       const errorMessage = 'Copy failed';
@@ -52,11 +52,11 @@ describe('useClipboard', () => {
       });
 
       expect(mockWriteText).toHaveBeenCalledWith(text);
-      expect(mockShowToast).toHaveBeenCalledWith(errorMessage);
+      expect(result.current.lastMessage).toBe(errorMessage);
       expect(copyResult).toBe(false);
     });
 
-    it('should show toast for empty text', async () => {
+    it('should set message for empty text', async () => {
       const { result } = renderHook(() => useClipboard());
 
       let copyResult: boolean;
@@ -65,7 +65,7 @@ describe('useClipboard', () => {
       });
 
       expect(mockWriteText).not.toHaveBeenCalled();
-      expect(mockShowToast).toHaveBeenCalledWith('Nothing to copy');
+      expect(result.current.lastMessage).toBe('Nothing to copy');
       expect(copyResult).toBe(false);
     });
 
@@ -86,7 +86,7 @@ describe('useClipboard', () => {
   });
 
   describe('copyToClipboardSilent', () => {
-    it('should copy text successfully without toast', async () => {
+    it('should copy text successfully without setting message', async () => {
       const { result } = renderHook(() => useClipboard());
       const text = 'test text';
 
@@ -98,11 +98,11 @@ describe('useClipboard', () => {
       });
 
       expect(mockWriteText).toHaveBeenCalledWith(text);
-      expect(mockShowToast).not.toHaveBeenCalled();
+      expect(result.current.lastMessage).toBe(''); // Should not set message
       expect(copyResult).toBe(true);
     });
 
-    it('should handle clipboard errors without toast', async () => {
+    it('should handle clipboard errors without setting message', async () => {
       const { result } = renderHook(() => useClipboard());
       const text = 'test text';
 
@@ -114,7 +114,7 @@ describe('useClipboard', () => {
       });
 
       expect(mockWriteText).toHaveBeenCalledWith(text);
-      expect(mockShowToast).not.toHaveBeenCalled();
+      expect(result.current.lastMessage).toBe(''); // Should not set message
       expect(copyResult).toBe(false);
     });
 
@@ -127,7 +127,7 @@ describe('useClipboard', () => {
       });
 
       expect(mockWriteText).not.toHaveBeenCalled();
-      expect(mockShowToast).not.toHaveBeenCalled();
+      expect(result.current.lastMessage).toBe(''); // Should not set message
       expect(copyResult).toBe(false);
     });
   });

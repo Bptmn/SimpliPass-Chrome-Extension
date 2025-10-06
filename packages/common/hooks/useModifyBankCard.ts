@@ -7,13 +7,11 @@
 
 import { useState, useCallback } from 'react';
 import { itemsService } from '@common/core/services/itemsService';
-import { ROUTES } from '@common/ui/router/ROUTES';
-import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
+// Note: Router imports removed - navigation should be handled by the calling component
 import { CATEGORIES } from '@common/core/types/categories.types';
 import type { BankCardDecrypted } from '@common/core/types/items.types';
 
 export const useModifyBankCard = (bankCard: BankCardDecrypted) => {
-  const router = useAppRouterContext();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -53,13 +51,13 @@ export const useModifyBankCard = (bankCard: BankCardDecrypted) => {
 
       await itemsService.updateItem(bankCard.id, updatedCard);
       showToast('Carte modifiée avec succès');
-      router.navigateTo(ROUTES.HOME, { category: CATEGORIES.BANK_CARDS });
+      // Navigation should be handled by the calling component
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la modification de la carte.');
     } finally {
       setLoading(false);
     }
-  }, [bankCard, router]);
+  }, [bankCard]);
 
   return {
     error,

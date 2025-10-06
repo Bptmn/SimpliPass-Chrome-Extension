@@ -126,6 +126,27 @@ export class SecurityService {
       const isInIframe = window !== window.top;
       
       if (isInIframe) {
+        // Check for cross-origin iframe
+        try {
+          const currentOrigin = window.location.origin;
+          const topOrigin = window.top.location.origin;
+          
+          if (currentOrigin !== topOrigin) {
+            return {
+              isValid: false,
+              reason: 'Cross-origin iframe detected',
+              riskLevel: 'high'
+            };
+          }
+        } catch (_error) {
+          // Cross-origin access blocked
+          return {
+            isValid: false,
+            reason: 'Cross-origin iframe',
+            riskLevel: 'high'
+          };
+        }
+        
         return {
           isValid: false,
           reason: 'Running in iframe context',
@@ -156,15 +177,27 @@ export class SecurityService {
       return '';
     }
 
-    // Remove potentially dangerous patterns
+    // Check for dangerous protocols - if found, return empty string
+    const dangerousProtocols = [
+      /javascript:/gi,
+      /data:/gi,
+      /vbscript:/gi,
+      /on\w+\s*=/gi
+    ];
+
+    for (const pattern of dangerousProtocols) {
+      if (pattern.test(input)) {
+        return '';
+      }
+    }
+
+    // Remove dangerous HTML tags and any remaining HTML tags
     return input
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
-      .replace(/<[^>]*>/g, '') // Remove any HTML tags
-      .replace(/javascript:/gi, '') // Remove javascript: protocol
-      .replace(/data:/gi, '') // Remove data: protocol
-      .replace(/vbscript:/gi, '') // Remove vbscript: protocol
-      .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '') // Remove event handlers with quotes
-      .replace(/on\w+\s*=/gi, '') // Remove event handlers
+      .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '') // Remove iframe tags
+      .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '') // Remove object tags
+      .replace(/<embed\b[^<]*>/gi, '') // Remove embed tags
+      .replace(/<[^>]*>/g, '') // Remove any remaining HTML tags
       .trim();
   }
 

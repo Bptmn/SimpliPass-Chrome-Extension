@@ -1,5 +1,8 @@
 # SimpliPass Chrome Extension - TODO
 
+- Est-ce que les tests lorsqu'un service est mocked sont utiles et fiable ? Authentication, adapters... ? Il existe des méthodes pour tester ça? Ou il vaut mieux que ce soit via playwright pour une situation réelle?
+- Pourquoi il y a un hook CRUD mais aussi des hooks spécifiques aux modifications des items?
+
 ## 🎯 Current Priorities
 
 ### High Priority

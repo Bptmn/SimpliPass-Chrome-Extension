@@ -1,0 +1,121 @@
+---
+alwaysApply: true
+---
+
+## 🏗️ Three-Layer Architecture
+
+### Layer 1: UI Layer (Extension-Specific)
+
+**Purpose**: Pure UI state management and user interactions for Chrome extension
+
+**Location**: `packages/extension/ui/`, `packages/extension/hooks/`
+
+**Responsibilities**:
+* Form state management
+* Validation integration
+* Clipboard operations
+* Password visibility
+* Content sizing
+* Extension-specific UI interactions
+
+**Characteristics**:
+* Simple, readable functions
+* Manage UI state only (no business logic)
+* Handle loading states and local errors
+* Must return stable, typed results for UI consumption
+* Steps in comments must be clearly numbered (e.g., Step 1, Step 2)
+* **Never directly call adapters/libraries (Layer 3)** — only services (Layer 2)
+
+**Testing**: Test UI state and user interactions with React Testing Library
+
+---
+
+### Layer 2: Services (Business Logic Layer)
+
+**Purpose**: Business logic orchestration, validation, formatting, and data transformation
+
+**Location**: `packages/common/core/services/`
+
+**Responsibilities**:
+* Form validation and formatting
+* Business rules and orchestration
+* Authentication/session flows
+* Error interpretation and rethrowing
+* Data transformation for UI consumption
+
+**Characteristics**:
+* Coordinate multiple lower-level libraries
+* Transform data for UI
+* Propagate and wrap errors
+* May call adapters and libraries
+
+**Testing**: Test business logic in isolation with comprehensive mocking
+
+---
+
+### Layer 3: Libraries/Adapters (Integration Layer)
+
+**Purpose**: Platform-specific APIs and external integrations
+
+**Location**: `packages/common/core/libraries/`, `packages/common/core/adapters/`, `packages/extension/adapters/`
+
+**Responsibilities**:
+* Low-level external API calls (e.g., Firebase, crypto, storage)
+* Chrome extension-specific platform code
+* Must remain logic-free and stateless
+
+**Characteristics**:
+* Pure implementation
+* No conditionals or orchestration
+
+**Testing**: With mocks for external APIs and Chrome extension APIs (in unit tests), or with real APIs in E2E tests
+
+---
+
+## ⚠️ Error Handling Strategy
+
+### General Rules
+
+* Always throw errors using custom error classes from the correct layer
+* Always propagate errors **up to the calling layer** — never silently catch
+* Errors should only be interpreted or transformed in Layer 2 (services)
+* **UI Layer (Layer 1)**: must not catch or transform — simply expose error to UI state
+* **Libraries/Adapters (Layer 3)**: throw native or wrapped low-level errors only
+* **Global error boundaries** (e.g., `InitializationErrorBoundary`) catch unrecoverable errors only
+
+### Example
+
+```ts
+export class SimpliPassError extends Error {
+  constructor(message: string, code: string, layer: string, originalError?: Error) {
+    super(message);
+    this.code = code;
+    this.layer = layer;
+    this.originalError = originalError;
+  }
+}
+```
+
+---
+
+## 🔄 Modular Design Principles
+
+* Single responsibility per function
+* Dependencies should be passed via injection or adapter
+* Pure functions preferred in all layers
+* Reuse logic via services/hooks where possible
+* Never let UI directly access Layer 3
+* Logic must flow: **UI (hooks) → services → adapters/libraries** only
+* Extension UI components should be DOM-based, not React Native Web
+
+---
+
+## ✅ Architecture Constraints
+
+* ✅ Never bypass layer separation
+* ✅ UI (Layer 1) calls only services (Layer 2)
+* ✅ Services (Layer 2) call adapters/libraries (Layer 3)
+* ✅ Always propagate errors upward
+* ✅ Only services handle business decisions
+* ✅ Only libraries/adapters touch external systems
+* ✅ Global error boundaries catch unrecoverable app-wide failures only

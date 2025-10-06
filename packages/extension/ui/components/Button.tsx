@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import { colors, radius, spacing, typography } from '../design/tokens';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
 
@@ -39,18 +40,20 @@ export const Button: React.FC<ButtonProps> = ({
 const baseStyle: React.CSSProperties = {
   appearance: 'none',
   border: 'none',
-  borderRadius: 8,
-  padding: '10px 14px',
-  fontSize: 14,
-  fontWeight: 600,
+  borderRadius: radius.sm,
+  padding: `${spacing.sm}px ${spacing.md}px`,
+  fontSize: typography.fontSize.sm,
+  fontWeight: typography.fontWeight.bold,
+  fontFamily: typography.fontFamily.base,
   cursor: 'pointer',
+  transition: 'opacity 0.2s',
 };
 
 const variantStyles: Record<ButtonVariant, React.CSSProperties> = {
-  primary: { background: '#2D6CDF', color: '#FFFFFF' },
-  secondary: { background: '#EEF2FF', color: '#1E3A8A' },
-  danger: { background: '#DC2626', color: '#FFFFFF' },
-  ghost: { background: 'transparent', color: '#1F2937', border: '1px solid #D1D5DB' },
+  primary: { backgroundColor: colors.primary, color: colors.white },
+  secondary: { backgroundColor: colors.secondary, color: colors.white },
+  danger: { backgroundColor: colors.error, color: colors.white },
+  ghost: { backgroundColor: 'transparent', color: colors.primary, border: `1px solid ${colors.borderColor}` },
 };
 
 export default Button;

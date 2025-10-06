@@ -8,6 +8,8 @@ import { useDebouncedValue } from '../debouncedValue';
 describe('useDebouncedValue', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    // Ensure clearTimeout is available in fake timers
+    global.clearTimeout = jest.fn();
   });
 
   afterEach(() => {

@@ -1,38 +1,28 @@
 # SimpliPass Documentation
 
-This directory contains all documentation for the SimpliPass Chrome Extension project.
+This directory contains essential documentation for the SimpliPass Chrome Extension project.
 
-## 📚 Documentation Structure
+## 📚 Current Documentation
 
-### Core Documentation
-- **[EXTENSION_ARCHITECTURE.md](./EXTENSION_ARCHITECTURE.md)** - Project architecture and development guidelines
-- **[TESTING_OVERVIEW.md](./TESTING_OVERVIEW.md)** - Testing strategy and best practices
+### Testing
+- **[TESTING_OVERVIEW.md](./TESTING_OVERVIEW.md)** - Current testing status and coverage
 
 ### Development Plans
-- **[development/](./development/)** - Feature development plans and technical specifications
-  - `POPOVER_FEATURES_DEVELOPMENT_PLAN.md` - Advanced popover features roadmap
-  - `simplipass-chrome-extension-autofill-plan.md` - Autofill functionality analysis
-  - `extension_popovers_study.md` - Popover implementation study
+- **[POPOVER_FEATURES_DEVELOPMENT_PLAN.md](./POPOVER_FEATURES_DEVELOPMENT_PLAN.md)** - Autofill and popover feature roadmap
 
-## 🎯 Quick Start
+## 🎯 Important Note
 
-1. **New to the project?** Start with [EXTENSION_ARCHITECTURE.md](./EXTENSION_ARCHITECTURE.md)
-2. **Writing tests?** Check [TESTING_OVERVIEW.md](./TESTING_OVERVIEW.md)
-3. **Developing features?** See the [development/](./development/) folder
+**Most documentation is now in Cursor Rules** for easy AI access:
 
-## 📖 Documentation Guidelines
+- **Architecture & Patterns**: See `.cursor/rules/global-rules.mdc`
+- **Testing Strategy**: See `.cursor/rules/testing-strategy-rules.mdc`
+- **Playwright E2E Testing**: See `.cursor/rules/playwright-testing-rules.mdc`
 
-- Keep documentation up-to-date with code changes
-- Use clear, concise language
-- Include code examples where helpful
-- Focus on current state, not historical changes
-- Organize by topic, not by chronology
+## 📖 Documentation Philosophy
 
-## 🔄 Maintenance
+We keep documentation:
+- **Minimal**: Only what's actively needed
+- **Current**: Representing the actual state of the project
+- **Actionable**: Plans for future work, not historical changes
 
-This documentation is maintained alongside the codebase. When making significant changes:
-
-1. Update relevant documentation files
-2. Remove outdated information
-3. Add new sections as needed
-4. Keep the structure clean and organized
+**Completed plans and implementation notes are removed** to avoid confusion.

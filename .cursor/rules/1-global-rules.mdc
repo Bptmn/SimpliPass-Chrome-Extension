@@ -1,0 +1,150 @@
+---
+alwaysApply: true
+---
+
+## 🎯 Global Cursor AI Behavior Rules
+
+### General Development Principles
+
+- Always look for existing code to iterate on instead of creating new code
+- Do not drastically change the patterns before trying to iterate on existing patterns
+- Always kill all existing related servers that may have been created in previous testing before trying to start a new server
+- Always prefer simple solutions
+- Avoid duplication of code whenever possible, which means checking for other areas of the codebase that might already have similar code and functionality
+- Write code that takes into account the different environments: dev, test, and prod
+- You are careful to only make changes that are requested or you are confident are well understood and related to the change being requested
+- When fixing an issue or bug, do not introduce a new pattern or technology without first exhausting all options for the existing implementation. And if you finally do this, make sure to remove the old implementation afterwards so we don't have duplicate logic
+- Keep the codebase very clean and organized
+- Avoid writing scripts in files if possible, especially if the script is likely only to be run once
+- Avoid having files over 200-300 lines of code. Refactor at that point
+- Mocking data is only needed for tests, never mock data for dev or prod
+- Never add stubbing or fake data patterns to code that affects the dev or prod environments
+- Never overwrite my .env file without first asking and confirming
+- Focus on the areas of code relevant to the task
+- Do not touch code that is unrelated to the task
+- Write thorough tests for all major functionality
+- Avoid making major changes to the patterns and architecture of how a feature works, after it has shown to work well, unless explicitly instructed
+- Always think about what other methods and areas of code might be affected by code changes
+
+---
+
+## 🛆 Import Convention
+
+```ts
+// External
+import React from 'react';
+// Extension UI
+import { Button, Input } from '@extension/ui/components';
+// Extension Hooks
+import { useAppInitialization } from '@extension/hooks';
+// Common Services
+import { cardValidationService } from '@common/core/services';
+// Common Libraries
+import { getPlatformAdapter } from '@common/core/adapters';
+// Types
+import type { CardFormData } from '@common/core/types';
+```
+
+* Always use absolute imports (`@common`, `@extension`, `@shared`)
+* Never use relative imports like `../../../`
+* Group by layer in order: external → extension UI → extension hooks → common services → common libraries → types
+
+---
+
+## 📊 State & Data Flow
+
+* UI reads only from Zustand and secure local storage
+* Never access Firestore, local storage, or platform APIs in hooks or pages
+* Platform adapters hydrate vault and handle local persistence
+* All decrypted data lives in RAM only and never persisted
+* `logout()` must wipe all memory state and secure storage
+* Extension uses Chrome storage APIs for persistence
+
+---
+
+## 🔐 Secure Storage (Chrome Extension)
+
+* Use `chrome.storage.session` for temporary data
+* Use `chrome.storage.local` for persistent data (encrypted)
+* Never store plaintext passwords or sensitive data
+* All sensitive data must be encrypted before storage
+* Use extension-specific storage adapters in `packages/extension/adapters/`
+
+---
+
+## 🎨 Styling Rules (DOM Components)
+
+* Use CSS-in-JS or inline styles for extension components
+* Use only `gap` for vertical spacing (not `marginTop`/`marginBottom`)
+* Layout classes: `formContainer`, `scrollView`, `pageContainer`, etc.
+* No inline spacing logic — always through centralized layout system
+* Ensure components work in Chrome extension popup and content script contexts
+* Use semantic HTML elements for accessibility
+
+---
+
+## 🛍️ Navigation (Routing) Rules
+
+* Navigation must only occur from hooks or UI using the `useAppRouterContext()`
+* Do not pass fallback callbacks (e.g., `onSuccess`) — use router directly
+* Pages should not perform navigation decisions
+* Routing must remain testable and explicit
+* Routes must be declared in one central place (router file)
+* Extension routing should be DOM-based, not React Native Web
+
+---
+
+## 🏗️ Build & Validation Checklist
+
+After any structural or logic-level change:
+
+```bash
+npm run lint:extension
+npm run test:extension
+npm run build:extension
+npm run type-check:extension
+```
+
+* All tests must pass
+* TypeScript build must succeed
+* > 80% test coverage for business logic
+* No ESLint/TypeScript warnings
+* Must follow 3-layer separation strictly
+* Extension must build successfully with Vite
+
+---
+
+## 🚀 Extension-Specific Rules
+
+### Chrome Extension Development
+* Use React DOM components, not React Native Web
+* Follow Chrome extension manifest V3 requirements
+* Ensure popup, content scripts, and background scripts work correctly
+* Use extension-specific adapters for platform operations
+* Test in actual Chrome extension environment
+
+### Popover Development
+* Popovers should be DOM-based and isolated
+* Use extension-specific popover components
+* Ensure proper security for content script injection
+* Test autofill functionality thoroughly
+
+### Security Considerations
+* All user data must be encrypted before storage
+* Content scripts must sanitize all input
+* Never expose sensitive data in popup or content scripts
+* Use secure communication between extension contexts
+
+---
+
+## ✅ Summary Constraints
+
+* ✅ Use React DOM components, not React Native Web
+* ✅ Follow Chrome extension security best practices
+* ✅ Test extension functionality in actual Chrome environment
+* ✅ Never persist decrypted secrets
+* ✅ Never access storage or APIs from hooks or UI
+* ✅ Only Zustand handles UI-bound data
+* ✅ Never overwrite .env file without asking
+* ✅ Keep codebase clean and organized
+* ✅ Cursor must validate tests, types, and build before any PR is considered complete

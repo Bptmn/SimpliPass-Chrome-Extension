@@ -8,7 +8,8 @@
 import React from 'react';
 import type { User } from '@common/core/types/auth.types';
 import type { PageState } from '@common/core/types/auth.types';
-import { ROUTES, routeComponents, requiresAuth, hasLayout } from './ROUTES';
+import { ROUTES, requiresAuth, hasLayout } from './ROUTES';
+import { routeComponents } from './ROUTES.tsx';
 
 export type UseAppRouterReturn = {
   currentRoute: keyof typeof ROUTES;

@@ -11,6 +11,23 @@ import { HomePage } from '@extension/ui/pages/HomePage';
 import { LoginPage } from '@extension/ui/pages/LoginPage';
 import { GeneratorPage } from '@extension/ui/pages/GeneratorPage';
 import { SettingsPage } from '@extension/ui/pages/SettingsPage';
+import { LockPage } from '@extension/ui/pages/LockPage';
+import { AddCredential1 } from '@extension/ui/pages/AddCredential1';
+import { AddCredential2 } from '@extension/ui/pages/AddCredential2';
+import { AddCard1 } from '@extension/ui/pages/AddCard1';
+import { AddCard2 } from '@extension/ui/pages/AddCard2';
+import { AddSecureNote } from '@extension/ui/pages/AddSecureNote';
+import { BankCardDetailsPage } from '@extension/ui/pages/BankCardDetailsPage';
+import { CodeConfirmationPage } from '@extension/ui/pages/CodeConfirmationPage';
+import { CredentialDetailsPage } from '@extension/ui/pages/CredentialDetailsPage';
+import { EmailConfirmationPage } from '@extension/ui/pages/EmailConfirmationPage';
+import { ModifyBankCardPage } from '@extension/ui/pages/ModifyBankCardPage';
+import { ModifyCredentialPage } from '@extension/ui/pages/ModifyCredentialPage';
+import { ModifySecureNotePage } from '@extension/ui/pages/ModifySecureNotePage';
+import { SecureNoteDetailsPage } from '@extension/ui/pages/SecureNoteDetailsPage';
+import { BackButton } from '@extension/ui/components';
+import { useAppRouterContext } from './AppRouterProvider';
+import { colors, spacing, typography } from '@extension/ui/design/tokens';
 
 export const ROUTES = {
   LOGIN: 'LOGIN',
@@ -36,35 +53,74 @@ export const ROUTES = {
 
 export type AppRoute = keyof typeof ROUTES;
 
-const Placeholder: React.FC<{ title: string; description?: string }> = ({ title, description }) => (
-  <div style={{ padding: 16 }}>
-    <h3 style={{ margin: 0, fontSize: 16 }}>{title}</h3>
-    {description ? (
-      <p style={{ color: '#4B5563', fontSize: 14, marginTop: 8 }}>{description}</p>
-    ) : null}
-  </div>
-);
+const Placeholder: React.FC<{ title: string; description?: string }> = ({ title, description }) => {
+  const router = useAppRouterContext();
+
+  const handleBack = () => {
+    router.goBack();
+  };
+
+  return (
+    <div style={placeholderStyles.container}>
+      <div style={placeholderStyles.header}>
+        <BackButton onClick={handleBack} label="Retour" />
+        <h2 style={placeholderStyles.title}>{title}</h2>
+      </div>
+      {description && (
+        <p style={placeholderStyles.description}>{description}</p>
+      )}
+    </div>
+  );
+};
+
+const placeholderStyles: Record<string, React.CSSProperties> = {
+  container: {
+    padding: spacing.lg,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: spacing.md,
+  },
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  title: {
+    margin: 0,
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.bold,
+    fontFamily: typography.fontFamily.base,
+    color: colors.primary,
+  },
+  description: {
+    color: colors.tertiary,
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.base,
+    marginTop: spacing.sm,
+  },
+};
 
 export const routeComponents: Record<AppRoute, React.ComponentType<any>> = {
   LOGIN: () => <LoginPage />, 
-  LOCK: () => <Placeholder title="Locked" description="Session locked. Unlock to proceed." />, 
+  LOCK: () => <LockPage reason="expired" user={null} />, 
   HOME: () => <HomePage />, 
   GENERATOR: () => <GeneratorPage />, 
   SETTINGS: () => <SettingsPage />, 
-  ADD_CREDENTIAL_1: () => <Placeholder title="Add Credential (1)" />, 
-  ADD_CREDENTIAL_2: () => <Placeholder title="Add Credential (2)" />, 
-  ADD_CARD_1: () => <Placeholder title="Add Card (1)" />, 
-  ADD_CARD_2: () => <Placeholder title="Add Card (2)" />, 
-  ADD_SECURENOTE: () => <Placeholder title="Add Secure Note" />, 
-  MODIFY_BANK_CARD: () => <Placeholder title="Modify Bank Card" />, 
-  MODIFY_CREDENTIAL: () => <Placeholder title="Modify Credential" />, 
-  MODIFY_SECURENOTE: () => <Placeholder title="Modify Secure Note" />, 
+  ADD_CREDENTIAL_1: () => <AddCredential1 />, 
+  ADD_CREDENTIAL_2: () => <AddCredential2 title="" />, 
+  ADD_CARD_1: () => <AddCard1 />, 
+  ADD_CARD_2: () => <AddCard2 title="" bankName="" />, 
+  ADD_SECURENOTE: () => <AddSecureNote />, 
+  MODIFY_BANK_CARD: () => <Placeholder title="Modify Bank Card" description="Pass bankCard prop" />, 
+  MODIFY_CREDENTIAL: () => <Placeholder title="Modify Credential" description="Pass credential prop" />, 
+  MODIFY_SECURENOTE: () => <Placeholder title="Modify Secure Note" description="Pass secureNote prop" />, 
   LOADING: () => null,
   ERROR: () => null,
-  CREDENTIAL_DETAILS: () => <Placeholder title="Credential Details" />, 
-  BANK_CARD_DETAILS: () => <Placeholder title="Bank Card Details" />, 
-  SECURE_NOTE_DETAILS: () => <Placeholder title="Secure Note Details" />, 
-  EMAIL_CONFIRMATION: () => <Placeholder title="Email Confirmation" />, 
+  CREDENTIAL_DETAILS: () => <Placeholder title="Credential Details" description="Pass credential prop" />, 
+  BANK_CARD_DETAILS: () => <Placeholder title="Bank Card Details" description="Pass card prop" />, 
+  SECURE_NOTE_DETAILS: () => <Placeholder title="Secure Note Details" description="Pass note prop" />, 
+  EMAIL_CONFIRMATION: () => <Placeholder title="Email Confirmation" description="Pass email prop" />, 
 };
 
 export const PUBLIC_ROUTES: AppRoute[] = [

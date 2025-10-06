@@ -12,8 +12,7 @@ import { useFormState } from './useFormState';
 import { useFormValidation } from './useFormValidation';
 import { useItemsState } from './useItemsState';
 import { useAppStateStore } from './useAppState';
-import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
-import { ROUTES } from '@common/ui/router/ROUTES';
+// Note: Router imports removed - navigation should be handled by the calling component
 import { cardValidationService } from '@common/core/services/validationService';
 import { cardFormTransformationService } from '@common/core/services/formTransformationService';
 import type { CardFormData } from '@common/core/types/items.types';
@@ -67,7 +66,6 @@ export const useCardForm = (initialData?: CardFormData): UseCardFormReturn => {
 
   const { validateField, validateForm } = useFormValidation(cardValidationService);
   const { addItem } = useItemsState({ user });
-  const { navigateTo } = useAppRouterContext();
 
   // Field validation handler
   const handleFieldValidation = useCallback((field: keyof CardFormData) => {
@@ -116,16 +114,14 @@ export const useCardForm = (initialData?: CardFormData): UseCardFormReturn => {
       if (card) {
         // Add item to vault
         await addItem(card);
-        
-        // Navigate to success page
-        navigateTo(ROUTES.HOME);
+        // Navigation should be handled by the calling component
       }
     } catch (error) {
       console.error('Failed to submit card form:', error);
     } finally {
       setSubmitting(false);
     }
-  }, [formData, validateForm, addItem, navigateTo, setSubmitting, setFieldError]);
+  }, [formData, validateForm, addItem, setSubmitting, setFieldError]);
 
   // Reset form (unused - removed)
   // const resetForm = useCallback(() => {

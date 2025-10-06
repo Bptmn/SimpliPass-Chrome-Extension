@@ -13,8 +13,7 @@ import { useFormState } from './useFormState';
 import { useFormValidation } from './useFormValidation';
 import { useItemsState } from './useItemsState';
 import { useAppStateStore } from './useAppState';
-import { useAppRouterContext } from '@common/ui/router/AppRouterProvider';
-import { ROUTES } from '@common/ui/router/ROUTES';
+// Router imports removed - navigation should be handled in components
 import { credentialValidationService } from '@common/core/services/validationService';
 import { credentialFormTransformationService } from '@common/core/services/formTransformationService';
 // Removed unused import
@@ -66,7 +65,7 @@ export const useCredentialForm = (): UseCredentialFormReturn => {
 
   const { validateField, validateForm } = useFormValidation(credentialValidationService);
   const { addItem } = useItemsState({ user });
-  const { navigateTo } = useAppRouterContext();
+  // Navigation removed - should be handled by components
 
   // Field validation handler
   const handleFieldValidation = useCallback((field: keyof CredentialFormData) => {
@@ -117,14 +116,14 @@ export const useCredentialForm = (): UseCredentialFormReturn => {
         await addItem(credential);
         
         // Navigate to success page
-        navigateTo(ROUTES.HOME);
+        // Navigation should be handled by component
       }
     } catch (error) {
       console.error('Failed to submit credential form:', error);
     } finally {
       setSubmitting(false);
     }
-  }, [formData, validateForm, addItem, navigateTo, setSubmitting, setFieldError]);
+  }, [formData, validateForm, addItem, setSubmitting, setFieldError]);
 
   // Field change handler - NO validation on change
   const handleFieldChange = useCallback((field: keyof CredentialFormData, value: string) => {

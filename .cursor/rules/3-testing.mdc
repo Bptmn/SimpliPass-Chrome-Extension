@@ -1,0 +1,383 @@
+---
+alwaysApply: true
+---
+
+## 🧪 Testing Strategy - Essential Tests Only
+
+### Core Philosophy
+**EFFICIENCY FIRST** - Only test what prevents real bugs and ensures core functionality works. Skip low-value tests that require excessive mocking, configuration, or are unstable.
+
+### Essential Testing Principles
+1. **Test Pure Functions** - Utilities, validators, formatters (fast, reliable)
+2. **Test Critical Business Logic** - Authentication, CRUD operations, form validation
+3. **Test User Interactions** - Button clicks, form submissions, navigation
+4. **Skip Complex Mocks** - Avoid tests requiring extensive service mocking
+5. **Skip Implementation Details** - Don't test internal state or CSS classes
+6. **Skip Unstable Tests** - Avoid tests that break frequently or require complex setup
+
+### What NOT to Test
+- ❌ Pure rendering without logic
+- ❌ Styling and CSS details  
+- ❌ Complex service integrations with mocks
+- ❌ Implementation details
+- ❌ Tests requiring extensive configuration
+- ❌ Flaky or unstable tests
+
+---
+
+## 📊 Essential Testing Pyramid
+
+```
+           /\
+          /  \          ← E2E Tests (Playwright) - MINIMAL
+         /    \           5% of tests (CRITICAL FLOWS ONLY)
+        /------\          Only for real user journeys
+       /        \
+      /  E2E     \
+     /    REAL   \
+    /   Services  \     ← Integration Tests (Jest + RTL)
+   /----------------\     25% of tests (USER INTERACTIONS)
+  /   Integration   \    Fast, reliable, essential only
+ /--------------------\
+/                      \  ← Unit Tests (Jest) - MAXIMUM
+/    Unit Tests         \   70% of tests (PURE FUNCTIONS)
+/    Pure Logic Only    \   Fast, reliable, focused
+/________________________\  NO EXTERNAL DEPENDENCIES
+```
+
+### Test Distribution (Essential Only)
+- **70% Unit Tests** - Pure functions, utilities, business logic
+- **25% Integration Tests** - User interactions, form validation, navigation  
+- **5% E2E Tests** - Critical user flows only
+
+---
+
+## 🎯 What to Test Where
+
+### 1️⃣ Unit Tests (Jest) - 70% of Tests - ESSENTIAL ONLY
+
+**Purpose**: Test pure functions and business logic in isolation
+
+**What to Test**:
+- ✅ **Utilities** (pure functions): Password strength, domain extraction, date formatting, string manipulation
+- ✅ **Form Validation Logic**: Email validation, password requirements, field validation
+- ✅ **Data Transformation**: Formatting, parsing, data conversion
+- ❌ **Services with Complex Dependencies**: Skip services requiring extensive mocking
+- ❌ **Adapters**: Skip platform integration tests
+
+**Why Jest**: Fast (milliseconds), no browser needed, deterministic results, essential for preventing bugs
+
+---
+
+### 2️⃣ Integration Tests (Jest + React Testing Library) - 25% of Tests - ESSENTIAL ONLY
+
+**Purpose**: Test essential user interactions and component behavior
+
+**What to Test**:
+- ✅ **Critical User Interactions**: Login form, form validation, button clicks
+- ✅ **Essential Hooks**: Form state, clipboard operations, password visibility
+- ✅ **Key Component Behavior**: Form submissions, navigation, error display
+- ❌ **Complex Component Logic**: Skip components requiring extensive mocking
+- ❌ **Styling and Layout**: Skip CSS and visual tests
+
+**Why Jest + RTL**: Fast (no real browser), tests actual DOM behavior, essential for user experience
+
+---
+
+### 3️⃣ E2E Tests (Playwright) - 5% of Tests - CRITICAL FLOWS ONLY
+
+**Purpose**: Test only the most critical user journeys with real services
+
+**What to Test**:
+- ✅ **Critical Authentication Flow**: Login → Home → Logout (with real services)
+- ✅ **Essential Extension Behavior**: Popup functionality, basic navigation
+- ❌ **Complex User Flows**: Skip detailed CRUD operations, complex workflows
+- ❌ **Non-Critical Features**: Skip advanced features, edge cases
+
+**Why Playwright**: Only for absolutely critical flows that cannot be tested otherwise
+
+---
+
+## ❌ What NOT to Test with Playwright
+
+1. **❌ Form Validation Logic** - Use Jest (pure logic, no browser needed)
+2. **❌ Button Click Handlers** - Use React Testing Library (DOM events work in jsdom)
+3. **❌ State Management** - Use Jest (state logic doesn't need browser)
+4. **❌ Utility Functions** - Use Jest (pure functions are fastest with Jest)
+5. **❌ Component Rendering** - Use React Testing Library (jsdom handles rendering fine)
+
+---
+
+## 🔥 Testing with Real External Services
+
+### ✅ Use Playwright with REAL Services
+
+**Firebase/Firestore**:
+- Use real Firebase test environment
+- Test actual data persistence
+- Verify encryption/decryption works end-to-end
+
+**AWS Cognito**:
+- Use real Cognito test user pool
+- Create dedicated test users
+- Don't delete test users (reuse them)
+
+**Chrome Storage**:
+- Test real Chrome Storage persistence
+- Verify data survives popup close/reopen
+
+### ❌ Never Mock External Services in E2E
+
+Mocking Firebase, Cognito, or Chrome APIs in E2E tests defeats the purpose. If you need mocks, use Jest instead.
+
+---
+
+## 🔄 Test-Driven Development Workflow (MANDATORY)
+
+### For Every Feature or Bug Fix:
+
+1. **Build Extension First**
+   ```bash
+   npm run build:extension
+   ```
+
+2. **Run Existing Tests**
+   ```bash
+   npm run test:e2e
+   ```
+   - If tests fail, understand why before proceeding
+   - Fix broken tests before adding new features
+
+3. **Write Test First (TDD Approach)**
+   - Write E2E test that describes expected behavior
+   - Test should fail initially (red)
+   - This validates the test is actually testing something
+
+4. **Implement Feature**
+   - Write minimal code to make test pass
+   - Follow architecture rules (3-layer separation)
+
+5. **Verify Test Passes**
+   ```bash
+   npm run build:extension && npm run test:e2e
+   ```
+   - Test should now pass (green)
+   - If not, iterate until it does
+
+6. **Check for Regressions**
+   ```bash
+   npm run test:all
+   ```
+   - Ensure all tests still pass
+   - If any test breaks, fix immediately
+
+7. **Refactor If Needed**
+   - Improve code quality
+   - Re-run tests to ensure behavior unchanged
+
+---
+
+## 📝 Writing E2E Tests
+
+### Test Structure
+
+```typescript
+import { test, expect } from './helpers/extensionContext';
+
+test.describe('Feature Name', () => {
+  test('should do specific thing', async ({ context, extensionId }) => {
+    // Arrange: Setup test data and state
+    const popup = await context.newPage();
+    await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+    
+    // Act: Perform the action
+    await popup.click('[data-testid="some-button"]');
+    
+    // Assert: Verify the result
+    await expect(popup.locator('[data-testid="result"]')).toBeVisible();
+  });
+});
+```
+
+### Test Naming Convention
+
+- ✅ `should show error when email is invalid`
+- ✅ `should save credential after successful login`
+- ✅ `should not autofill on HTTP sites`
+- ❌ `test login` (too vague)
+- ❌ `checkEmailValidation` (not descriptive)
+
+### Always Include Console Monitoring
+
+```typescript
+test('feature name', async ({ context, extensionId }) => {
+  const popup = await context.newPage();
+  
+  // Monitor console
+  const logs: string[] = [];
+  const errors: string[] = [];
+  
+  popup.on('console', msg => {
+    logs.push(`[${msg.type()}] ${msg.text()}`);
+    if (msg.type() === 'error') errors.push(msg.text());
+  });
+  
+  // Your test code...
+  
+  // Print logs for debugging
+  console.log('Console logs:', logs);
+  
+  // Verify no unexpected errors
+  const unexpectedErrors = errors.filter(e => !e.includes('DevTools'));
+  expect(unexpectedErrors).toHaveLength(0);
+});
+```
+
+---
+
+## 🏗️ Component Requirements for Testability
+
+### Always Add data-testid Attributes
+
+```tsx
+// ✅ Good - Easy to test
+<button data-testid="login-button">Login</button>
+<div data-testid="error-message">{error}</div>
+<form data-testid="login-form">...</form>
+
+// ❌ Bad - Hard to test
+<button className="btn-primary">Login</button>
+<div className="error">{error}</div>
+<form>...</form>
+```
+
+### Naming Convention for data-testid
+- Use kebab-case
+- Be descriptive and specific
+- Include context when needed
+- Examples: `login-button`, `email-input`, `error-message`, `home-page`, `credential-list`
+
+---
+
+## 🚫 Anti-Patterns to Avoid
+
+### DON'T Skip Tests
+- ❌ Never comment out failing tests
+- ❌ Never skip tests with `.skip()`
+- ❌ Never disable tests to "fix later"
+- ✅ **Instead**: Fix the test or fix the code
+
+### DON'T Write Flaky Tests
+- ❌ `await page.waitForTimeout(1000)` (arbitrary waits)
+- ✅ `await page.waitForSelector('[data-testid="element"]')` (wait for condition)
+- ❌ Relying on timing
+- ✅ Relying on state
+
+### DON'T Test Implementation Details
+- ❌ Testing internal state
+- ❌ Testing CSS classes or styles
+- ✅ Testing user-visible behavior
+- ✅ Testing actual functionality
+
+---
+
+## 🔍 Using Test Results to Debug
+
+### When a Test Fails:
+
+1. **Read the Error Message** - Playwright provides detailed error messages
+2. **Check Console Logs** - `console.log('Console logs:', logs);`
+3. **View Screenshots** - Located in `playwright-report/`
+4. **Watch Video** - Located in `playwright-report/`
+5. **Use Debug Mode** - `npx playwright test path/to/test.spec.ts --debug`
+6. **Add More Logging** - Log current URL, element text, take screenshots
+
+---
+
+## 📊 Test Commands Reference
+
+### Development Commands
+```bash
+# Build extension (ALWAYS do this first)
+npm run build:extension
+
+# Run all E2E tests
+npm run test:e2e
+
+# Run specific test (headed mode - see browser)
+npx playwright test path/to/test.spec.ts --headed
+
+# Debug mode (step through test)
+npx playwright test path/to/test.spec.ts --debug
+
+# Run with UI (interactive)
+npx playwright test --ui
+
+# Run only failed tests
+npx playwright test --last-failed
+
+# View test report
+npm run test:e2e:report
+```
+
+### Test Verification Commands
+```bash
+# Run all tests (unit + E2E)
+npm run test:all
+
+# Run unit tests only
+npm run test:extension
+
+# Type check
+npm run type-check:extension
+
+# Lint check
+npm run lint:extension
+```
+
+---
+
+## 🎯 Quick Decision Matrix
+
+| What are you testing? | Which test? |
+|-----------------------|-------------|
+| Password validation | ✅ Jest (Unit) |
+| Email format check | ✅ Jest (Unit) |
+| Data formatting | ✅ Jest (Unit) |
+| Encryption logic | ✅ Jest (Unit) |
+| Button click | ✅ Jest + RTL |
+| Form submission | ✅ Jest + RTL |
+| Input validation UI | ✅ Jest + RTL |
+| Conditional rendering | ✅ Jest + RTL |
+| Complete login flow | ✅ Playwright |
+| Autofill on real site | ✅ Playwright |
+| Popup → Website interaction | ✅ Playwright |
+| Chrome API behavior | ✅ Playwright |
+
+---
+
+## 🎯 Success Criteria
+
+### Before Considering Any Task Complete:
+
+- [ ] E2E test exists for the feature (if needed)
+- [ ] Test passes consistently (run 3 times)
+- [ ] No console errors in test output
+- [ ] All existing tests still pass
+- [ ] Extension builds without errors
+- [ ] Component has data-testid attributes
+- [ ] Code follows architecture rules
+
+---
+
+## 🔥 Essential Testing Key Takeaways
+
+1. **Unit tests (Jest)** = Test PURE FUNCTIONS (70% of tests)
+2. **Integration tests (Jest + RTL)** = Test ESSENTIAL USER INTERACTIONS (25% of tests)
+3. **E2E tests (Playwright)** = Test CRITICAL FLOWS ONLY (5% of tests)
+4. **EFFICIENCY FIRST** - Only test what prevents real bugs
+5. **Skip complex mocks** - Avoid tests requiring extensive setup
+6. **Skip unstable tests** - Avoid flaky or unreliable tests
+7. **Focus on essentials** - Pure functions, critical user interactions, key flows
+
+**Remember**: Test only what's essential for preventing bugs and ensuring core functionality! 🎯

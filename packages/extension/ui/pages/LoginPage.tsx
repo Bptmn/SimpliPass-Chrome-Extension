@@ -6,9 +6,10 @@
  */
 
 import React from 'react';
-import { Button } from '@extension/ui/components/Button';
+import { Button } from '@extension/ui/components/Buttons';
 import { Input } from '@extension/ui/components/Input';
 import { useLogin } from '@common/hooks/useLogin';
+import { colors, spacing, radius, typography } from '../design/tokens';
 
 export const LoginPage: React.FC = () => {
   const {
@@ -37,6 +38,7 @@ export const LoginPage: React.FC = () => {
       {/* Email Input */}
       <div style={styles.field}>
         <Input 
+          type="text"
           placeholder="Email" 
           value={email} 
           onChange={(e) => setEmail(e.target.value)}
@@ -71,7 +73,7 @@ export const LoginPage: React.FC = () => {
       <Button 
         onClick={handleLogin}
         disabled={isLoading}
-        data-testid="login-button"
+        testID="login-button"
       >
         {isLoading ? 'Logging in...' : 'Login'}
       </Button>
@@ -80,21 +82,30 @@ export const LoginPage: React.FC = () => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
-  container: { padding: 16, display: 'flex', flexDirection: 'column', gap: 12 },
-  header: { fontWeight: 700, fontSize: 18, marginBottom: 4, textAlign: 'center' },
-  field: { display: 'flex', flexDirection: 'column', gap: 4 },
+  container: { padding: spacing.lg, display: 'flex', flexDirection: 'column', gap: spacing.md },
+  header: { 
+    fontWeight: typography.fontWeight.bold, 
+    fontSize: typography.fontSize.lg, 
+    fontFamily: typography.fontFamily.base,
+    marginBottom: spacing.xs, 
+    textAlign: 'center',
+    color: colors.primary,
+  },
+  field: { display: 'flex', flexDirection: 'column', gap: spacing.xs },
   errorBanner: {
-    padding: 12,
+    padding: spacing.md,
     backgroundColor: '#FEE2E2',
-    border: '1px solid #EF4444',
-    borderRadius: 6,
-    color: '#DC2626',
-    fontSize: 14,
+    border: `1px solid ${colors.error}`,
+    borderRadius: radius.sm,
+    color: colors.error,
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.base,
   },
   errorMessage: {
-    color: '#DC2626',
-    fontSize: 12,
-    marginTop: 4,
+    color: colors.error,
+    fontSize: typography.fontSize.xs,
+    fontFamily: typography.fontFamily.base,
+    marginTop: spacing.xs,
   },
 };
 

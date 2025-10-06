@@ -11,7 +11,9 @@ import { usePasswordGenerator } from '@extension/hooks/usePasswordGenerator';
 import { useClipboard } from '@common/hooks/useClipboard';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
-import { Button } from '@extension/ui/components/Button';
+import { Button } from '@extension/ui/components/Buttons';
+import { Slider, BackButton } from '@extension/ui/components';
+import { colors, spacing, radius, typography } from '../design/tokens';
 
 export const GeneratorPage: React.FC = () => {
   // Get password generator state and actions
@@ -50,8 +52,8 @@ export const GeneratorPage: React.FC = () => {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <Button onClick={handleBack} variant="ghost">← Back</Button>
-        <h2 style={styles.title}>Password Generator</h2>
+        <BackButton onClick={handleBack} label="Retour" />
+        <h2 style={styles.title}>Générateur de mot de passe</h2>
       </div>
 
       {/* Password Display */}
@@ -95,17 +97,14 @@ export const GeneratorPage: React.FC = () => {
           <span>Symbols (!@#$%)</span>
         </label>
         
-        <div style={styles.lengthControl}>
-          <label>Length: {length}</label>
-          <input 
-            type="range" 
-            min="8" 
-            max="32" 
-            value={length} 
-            onChange={(e) => setLength(Number(e.target.value))}
-            style={styles.slider}
-          />
-        </div>
+        <Slider
+          label={`Length: ${length}`}
+          value={length}
+          onValueChange={setLength}
+          min={8}
+          max={32}
+          testID="password-length-slider"
+        />
       </div>
 
       {/* Actions */}
@@ -122,17 +121,62 @@ export const GeneratorPage: React.FC = () => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
-  container: { padding: 16, display: 'flex', flexDirection: 'column', gap: 16 },
-  header: { display: 'flex', alignItems: 'center', gap: 8 },
-  title: { margin: 0, fontSize: 18, fontWeight: 600 },
-  passwordSection: { padding: 16, background: '#F3F4F6', borderRadius: 8, display: 'flex', flexDirection: 'column', gap: 8 },
-  passwordDisplay: { fontSize: 16, fontFamily: 'monospace', wordBreak: 'break-all' },
-  strengthBadge: { fontSize: 12, color: '#6B7280', textTransform: 'capitalize' },
-  options: { display: 'flex', flexDirection: 'column', gap: 12 },
-  option: { display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' },
-  lengthControl: { display: 'flex', flexDirection: 'column', gap: 4 },
-  slider: { width: '100%' },
-  actions: { display: 'flex', gap: 8 },
+  container: { 
+    padding: spacing.lg, 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: spacing.lg 
+  },
+  header: { 
+    display: 'flex', 
+    alignItems: 'center', 
+    gap: spacing.sm 
+  },
+  title: { 
+    margin: 0, 
+    fontSize: typography.fontSize.lg, 
+    fontWeight: typography.fontWeight.bold,
+    fontFamily: typography.fontFamily.base,
+    color: colors.primary,
+  },
+  passwordSection: { 
+    padding: spacing.lg, 
+    background: colors.secondaryBackground, 
+    borderRadius: radius.sm, 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: spacing.sm 
+  },
+  passwordDisplay: { 
+    fontSize: typography.fontSize.md, 
+    fontFamily: 'monospace', 
+    wordBreak: 'break-all',
+    color: colors.primary,
+  },
+  strengthBadge: { 
+    fontSize: typography.fontSize.xs, 
+    color: colors.tertiary, 
+    textTransform: 'capitalize',
+    fontFamily: typography.fontFamily.base,
+  },
+  options: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: spacing.md 
+  },
+  option: { 
+    display: 'flex', 
+    alignItems: 'center', 
+    gap: spacing.sm, 
+    cursor: 'pointer',
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.base,
+    color: colors.blackText,
+  },
+  actions: { 
+    display: 'flex', 
+    gap: spacing.sm 
+  },
 };
 
 export default GeneratorPage;

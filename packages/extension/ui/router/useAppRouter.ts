@@ -111,11 +111,11 @@ export const useAppRouter = ({ platform }: UseAppRouterProps): UseAppRouterRetur
   }, []);
 
   const setParams = useCallback((params: Record<string, any>) => {
-    setRouteParams(params);
+    setRouteParams(prev => ({ ...prev, ...params }));
     setRouteHistory(prev => {
       if (prev.length === 0) return prev;
       const last = prev[prev.length - 1];
-      return [...prev.slice(0, -1), { ...last, params }];
+      return [...prev.slice(0, -1), { ...last, params: { ...last.params, ...params } }];
     });
   }, []);
 

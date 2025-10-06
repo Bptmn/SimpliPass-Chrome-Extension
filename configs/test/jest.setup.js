@@ -2,6 +2,10 @@
 const { exec } = require('child_process');
 const waitOn = require('wait-on');
 const { TextEncoder, TextDecoder } = require('util');
+const React = require('react');
+
+// Import Jest DOM matchers
+require('@testing-library/jest-dom');
 
 // Add TextEncoder and TextDecoder polyfills for Node.js environment
 global.TextEncoder = TextEncoder;
@@ -102,6 +106,9 @@ if (typeof global.setTimeout === 'undefined') {
 if (typeof global.clearTimeout === 'undefined') {
   global.clearTimeout = clearTimeout;
 }
+
+// Mock clearTimeout for fake timers
+global.clearTimeout = global.clearTimeout || (() => {});
 
 module.exports = async () => {
   console.log('Starting Firestore emulator in global setup...');
