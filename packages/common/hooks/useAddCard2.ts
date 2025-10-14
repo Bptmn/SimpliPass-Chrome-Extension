@@ -26,21 +26,21 @@ export const useAddCard2 = (
   // Step 1: Generate card preview object
   const previewCard: BankCardDecrypted = useMemo(() => ({
     id: 'preview',
-    itemType: 'bankCard',
+    itemType: 'bank_card',
     title: formData.title || 'Titre de la carte',
     owner: formData.cardholderName || 'Nom du titulaire',
+    cardholderName: formData.cardholderName || 'Nom du titulaire',
     note: formData.notes || '',
     color: selectedColor,
     itemKey: '',
     cardNumber: formData.cardNumber || '0000 0000 0000 0000',
     expirationDate: parseExpirationDate(formData.expirationDate) || createExpirationDate(1, new Date().getFullYear() + 1),
     verificationNumber: formData.cvv || '123',
+    cvv: formData.cvv || '123',
     bankName: formData.cardholderName || 'Nom du titulaire',
     bankDomain: '',
     lastUseDateTime: new Date(),
-    createdAt: new Date(),
     createdDateTime: new Date(),
-    updatedAt: new Date(),
   }), [formData, selectedColor]);
 
   // Step 2: Handle date picker visibility

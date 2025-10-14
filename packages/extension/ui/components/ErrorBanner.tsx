@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { colors, radius, spacing, typography } from '../design/tokens';
+import { colors, radius, spacing, textStyles } from '../design';
 
 interface ErrorBannerProps {
   message: string;
@@ -29,6 +29,7 @@ export const ErrorBanner: React.FC<ErrorBannerProps> = ({ message }) => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...textStyles,
   errorBanner: {
     backgroundColor: colors.primaryBackground,
     border: `1px solid ${colors.error}`,
@@ -38,16 +39,12 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
   },
   errorTitle: {
-    color: colors.error,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.bold,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.error,
+    fontWeight: 'bold' as const,
     marginBottom: spacing.sm,
   },
   errorMessage: {
-    color: colors.tertiary,
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.description,
   },
 };
 

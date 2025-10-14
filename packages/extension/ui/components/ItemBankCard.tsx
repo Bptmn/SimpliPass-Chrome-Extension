@@ -7,7 +7,7 @@
 import React from 'react';
 import type { BankCardDecrypted } from '@common/core/types/items.types';
 import { formatExpirationDateFromExp } from '@common/utils';
-import { colors, spacing, typography } from '../design/tokens';
+import { colors, spacing, typography, textStyles } from '../design';
 import { useItemBankCard } from '@common/hooks/useItemBankCard';
 
 interface ItemBankCardProps {
@@ -57,6 +57,7 @@ export const ItemBankCard: React.FC<ItemBankCardProps> = ({ cred, onPress }) => 
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...textStyles,
   bankCard: {
     alignSelf: 'center',
     border: 'none',
@@ -70,7 +71,7 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
     cursor: 'pointer',
     transition: 'transform 0.2s',
-    textAlign: 'left',
+    textAlign: 'left' as const,
   },
   bankCardTop: {
     display: 'flex',

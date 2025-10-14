@@ -5,16 +5,19 @@
  */
 
 import React, { useState } from 'react';
-import { HeaderTitle } from '@extension/ui/components/HeaderTitle';
+import { HeaderBar } from '@extension/ui/components/HeaderBar';
 import { ErrorBanner } from '@extension/ui/components/ErrorBanner';
 import { Button } from '@extension/ui/components/Buttons';
 import { DetailField } from '@extension/ui/components/DetailField';
 import { MoreInfo } from '@extension/ui/components/MoreInfo';
 import { LazyCredentialIcon } from '@extension/ui/components/LazyCredentialIcon';
+import { CopyButton } from '@extension/ui/components/CopyButton';
+import { ConfirmDialog } from '@extension/ui/components/ConfirmDialog';
 import { useClipboard } from '@common/hooks/useClipboard';
 import { usePasswordVisibility } from '@common/hooks/usePasswordVisibility';
-// Note: useCredentialDetails hook has import issues, implementing logic directly
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { useAppRouterContext } from '../router/AppRouterProvider';
+import { ROUTES } from '../router/ROUTES';
+import { colors, spacing, radius, typography, pageStyles, commonStyles } from '../design';
 import type { CredentialDecrypted } from '@common/core/types/items.types';
 
 interface CredentialDetailsPageProps {
@@ -30,13 +33,13 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
+  const router = useAppRouterContext();
   const { copyToClipboard } = useClipboard();
   const { isPasswordVisible, togglePasswordVisibility } = usePasswordVisibility();
   
-  // Implement credential details logic directly
+  // Navigate to modify credential page
   const handleEdit = () => {
-    // Navigate to modify credential page
-    console.log('Edit credential:', credential.id);
+    router.navigateTo(ROUTES.MODIFY_CREDENTIAL, { credential });
   };
 
   const handleLaunch = () => {
@@ -85,89 +88,87 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
     <div style={styles.pageContainer} data-testid="credential-details-page">
       {error && <ErrorBanner message={error} />}
       
-      {showDeleteConfirm && (
-        <div style={styles.confirmOverlay}>
-          <div style={styles.confirmDialog}>
-            <h3 style={styles.confirmTitle}>Confirmation</h3>
-            <p style={styles.confirmMessage}>
-              Êtes-vous sûr de vouloir supprimer cet identifiant ?
-            </p>
-            <div style={styles.confirmButtons}>
-              <Button
-                onClick={() => setShowDeleteConfirm(false)}
-                variant="secondary"
-                fullWidth
-                data-testid="delete-cancel-button"
-              >
-                Annuler
-              </Button>
-              <Button
-                onClick={handleConfirmDelete}
-                variant="danger"
-                fullWidth
-                data-testid="delete-confirm-button"
-              >
-                Supprimer
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Confirmation"
+        message="Êtes-vous sûr de vouloir supprimer cet identifiant ?"
+        confirmText="Supprimer"
+        cancelText="Annuler"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+        testId="delete-confirm-dialog"
+      />
+      
+      {/* Header - Fixed, non-scrollable */}
+      <HeaderBar title={credential.title} onBackPress={onBack} />
       
       <div style={styles.pageContent}>
-        {/* Header */}
-        <HeaderTitle title="Détails de l'identifiant" onBackPress={onBack} />
-        
-        <div style={styles.headerRow}>
-          <LazyCredentialIcon 
-            title={credential.title} 
-            url={credential.url || ''} 
-          />
-          <div style={styles.headerInfo}>
-            <h2 style={styles.title}>{credential.title}</h2>
-            {credential.url && (
-              <p style={styles.url}>{credential.url}</p>
+
+        {/* Grouped card: username & password */}
+        <div style={styles.cardGroup}>
+          {/* Username */}
+          <div style={styles.credentialFieldRow}>
+            <div style={styles.fieldLeft}>
+              <span style={styles.fieldLabel}>Email / Nom d'utilisateur :</span>
+              <span style={styles.fieldValue}>{credential.username}</span>
+            </div>
+            {credential.username && (
+              <CopyButton
+                textToCopy={credential.username}
+              />
+            )}
+          </div>
+          <div style={styles.divider} />
+          {/* Password */}
+          <div style={styles.credentialFieldRow}>
+            <div style={styles.fieldLeft}>
+              <span style={styles.fieldLabel}>Mot de passe :</span>
+              <div style={styles.passwordRow}>
+                <span style={styles.fieldValue}>{isPasswordVisible ? credential.password : '••••••••'}</span>
+                <button
+                  style={styles.eyeBtn}
+                  onClick={togglePasswordVisibility}
+                  aria-label={isPasswordVisible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    {isPasswordVisible ? (
+                      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22" stroke={colors.tertiary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    ) : (
+                      <>
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke={colors.tertiary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="12" cy="12" r="3" stroke={colors.tertiary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </>
+                    )}
+                  </svg>
+                </button>
+              </div>
+            </div>
+            {credential.password && (
+              <CopyButton
+                textToCopy={credential.password}
+              />
             )}
           </div>
         </div>
 
-        {/* Detail Fields */}
-        <div style={styles.detailsContainer}>
+        {/* Link card */}
+        <DetailField
+          label="Lien :"
+          value={credential.url}
+          showLaunchButton
+          onLaunch={handleLaunch}
+        />
+
+        {/* Note card */}
+        {credential.note && (
           <DetailField
-            label="Nom d'utilisateur"
-            value={credential.username}
+            label="Note :"
+            value={credential.note}
             showCopyButton
-            onCopy={handleCopyUsername}
-            copyText="Copier"
+            onCopy={handleCopyNote}
+            ariaLabel="Copier la note"
           />
-          
-          <DetailField
-            label="Mot de passe"
-            value={isPasswordVisible ? credential.password : '••••••••'}
-            showCopyButton
-            onCopy={handleCopyPassword}
-            copyText="Copier"
-          />
-          
-          {credential.note && (
-            <DetailField
-              label="Note"
-              value={credential.note}
-              showCopyButton
-              onCopy={handleCopyNote}
-              copyText="Copier"
-            />
-          )}
-          
-          {credential.url && (
-            <DetailField
-              label="URL"
-              value={credential.url}
-              showLaunchButton
-              onLaunch={handleLaunch}
-            />
-          )}
-        </div>
+        )}
 
         {/* More Info */}
         <MoreInfo
@@ -175,21 +176,23 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
           createdDateTime={credential.createdDateTime}
         />
 
-        {/* Action Buttons */}
-        <div style={styles.actions}>
+        {/* Actions */}
+        <div style={styles.actionsRow}>
           <Button
             onClick={handleEdit}
-            variant="primary"
-            fullWidth
+            variant="tertiary"
+            disabled={loading}
             data-testid="edit-credential-button"
+            style={{ flex: 1, maxWidth: 135 }}
           >
             Modifier
           </Button>
           <Button
             onClick={handleDelete}
             variant="danger"
-            fullWidth
+            disabled={loading}
             data-testid="delete-credential-button"
+            style={{ flex: 1, maxWidth: 135 }}
           >
             Supprimer
           </Button>
@@ -200,98 +203,93 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...pageStyles,
+  ...commonStyles,
   pageContainer: {
+    ...pageStyles.pageContainer,
+    overflow: 'hidden', // Let pageContent handle scrolling
+    // Force strict containment
+    maxWidth: '100%',
+    height: '100vh', // Use full viewport height
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: colors.primaryBackground,
-    padding: spacing.lg,
-    height: '100%',
-    overflow: 'auto',
   },
   pageContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
+    ...pageStyles.pageContentWithGap,
+    minHeight: 0, // Allow content to shrink
+    flex: 1, // Take available space
   },
-  headerRow: {
+  cardGroup: {
+    ...pageStyles.pageElement, // Applique width: 100%, marginLeft: 0, marginRight: 0
+    backgroundColor: colors.secondaryBackground,
+    border: `1px solid ${colors.borderColor}`,
+    borderRadius: radius.md,
+    padding: spacing.sm,
+    overflow: 'hidden',
+    flexShrink: 0, // Don't shrink the card group
+    minHeight: 'fit-content', // Ensure it takes the space it needs
+  },
+  credentialFieldRow: {
+    ...pageStyles.pageElement, // Applique width: 100%, marginLeft: 0, marginRight: 0
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
+    justifyContent: 'space-between',
+    minWidth: 0, // Allow flex items to shrink
+    flexShrink: 0, // Don't shrink the rows
+    minHeight: 'fit-content', // Ensure they take the space they need
   },
-  headerInfo: {
+  fieldLeft: {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
+    minWidth: 0, // Allow text to wrap/truncate
+    overflow: 'hidden',
+    flexShrink: 1, // Allow this to shrink if needed
   },
-  title: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.bold,
-    fontFamily: typography.fontFamily.base,
-    color: colors.primary,
-    margin: 0,
-    marginBottom: spacing.xs,
-  },
-  url: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.base,
+  fieldLabel: {
     color: colors.tertiaryText,
-    margin: 0,
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.regular,
+    fontFamily: typography.fontFamily.base,
+    marginBottom: spacing.xxs,
+  },
+  fieldValue: {
+    color: colors.primary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.regular,
+    fontFamily: typography.fontFamily.base,
     wordBreak: 'break-all' as const,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap' as const,
+    flexShrink: 1, // Allow this to shrink if needed
   },
-  detailsContainer: {
+  passwordRow: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexShrink: 1, // Allow this to shrink if needed
+    minWidth: 0, // Allow flex items to shrink
   },
-  actions: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.sm,
-    marginTop: spacing.lg,
-  },
-  confirmOverlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  eyeBtn: {
+    appearance: 'none',
+    border: 'none',
+    background: 'transparent',
+    cursor: 'pointer',
+    marginLeft: spacing.sm,
+    marginRight: spacing.sm,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000,
+    flexShrink: 0, // Don't shrink the eye button
   },
-  confirmDialog: {
-    backgroundColor: colors.primaryBackground,
-    borderRadius: radius.lg,
-    padding: spacing.xl,
-    maxWidth: 300,
-    width: '90%',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-  },
-  confirmTitle: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.bold,
-    fontFamily: typography.fontFamily.base,
-    color: colors.primary,
-    margin: 0,
-    marginBottom: spacing.md,
-  },
-  confirmMessage: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.base,
-    color: colors.tertiaryText,
-    margin: 0,
-    marginBottom: spacing.lg,
-    lineHeight: '1.4',
-  },
-  confirmButtons: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.sm,
+  divider: {
+    borderBottom: `1px solid ${colors.borderColor}`,
+    marginTop: spacing.xs,
+    marginBottom: spacing.xs,
+    width: '100%',
+    flexShrink: 0, // Don't shrink the divider
   },
 };
 

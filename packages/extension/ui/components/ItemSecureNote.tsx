@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { SecureNoteDecrypted } from '@common/core/types/items.types';
-import { colors, spacing, typography } from '../design/tokens';
+import { colors, spacing, cardStyles, textStyles } from '../design';
 
 interface ItemSecureNoteProps {
   note: SecureNoteDecrypted;
@@ -34,12 +34,13 @@ export const ItemSecureNote: React.FC<ItemSecureNoteProps> = ({ note, onPress })
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...cardStyles,
+  ...textStyles,
   secureNoteCard: {
+    ...cardStyles.card,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.secondaryBackground,
-    border: `1px solid ${colors.borderColor}`,
     borderRadius: 20,
     height: 50,
     width: '100%',
@@ -48,7 +49,7 @@ const styles: Record<string, React.CSSProperties> = {
     paddingRight: spacing.md,
     cursor: 'pointer',
     transition: 'background 0.2s',
-    textAlign: 'left',
+    textAlign: 'left' as const,
   },
   secureNoteColor: {
     borderRadius: 25,
@@ -57,14 +58,12 @@ const styles: Record<string, React.CSSProperties> = {
     marginRight: 15,
   },
   secureNoteTitle: {
-    color: colors.primary,
+    ...textStyles.cardTitle,
     flex: 1,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.bold,
-    fontFamily: typography.fontFamily.base,
+    fontWeight: 'bold' as const,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    whiteSpace: 'nowrap' as const,
   },
 };
 

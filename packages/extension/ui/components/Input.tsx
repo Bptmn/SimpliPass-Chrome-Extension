@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { colors, radius, spacing, typography } from '../design/tokens';
+import { colors, radius, spacing, textStyles } from '../design';
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   fullWidth?: boolean;
@@ -25,12 +25,11 @@ export const Input: React.FC<InputProps> = ({ fullWidth = false, style, ...rest 
 };
 
 const baseStyle: React.CSSProperties = {
-  appearance: 'none',
+  ...textStyles.input,
+  appearance: 'none' as const,
   borderRadius: radius.sm,
   border: `1px solid ${colors.borderColor}`,
   padding: `${spacing.sm}px ${spacing.md}px`,
-  fontSize: typography.fontSize.sm,
-  fontFamily: typography.fontFamily.base,
   outline: 'none',
   backgroundColor: colors.primaryBackground,
   color: colors.blackText,

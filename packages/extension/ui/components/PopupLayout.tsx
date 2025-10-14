@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { NavBar } from './NavBar';
-import { colors } from '../design/tokens';
+import { colors, pageStyles } from '../design';
 
 interface PopupLayoutProps {
   children: React.ReactNode;
@@ -22,15 +22,14 @@ export const PopupLayout: React.FC<PopupLayoutProps> = ({ children }) => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...pageStyles,
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: colors.primaryBackground,
+    ...pageStyles.pageContainer,
     height: 550,
     maxHeight: 550,
     width: 400,
     maxWidth: 400,
-    overflow: 'hidden',
+    padding: 0,
   },
   content: {
     flex: 1,

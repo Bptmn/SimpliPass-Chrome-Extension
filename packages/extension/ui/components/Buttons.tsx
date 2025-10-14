@@ -5,12 +5,12 @@
  */
 
 import React from 'react';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, typography } from '../design';
 
 export type ButtonWidth = 'full' | 'fit';
 export type ButtonHeight = 'full' | 'fit';
 export type ButtonAlign = 'left' | 'center' | 'right';
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
+export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'danger' | 'success';
 
 interface ButtonProps {
   children: React.ReactNode;
@@ -53,6 +53,12 @@ const getVariantStyles = (variant: ButtonVariant) => {
         color: colors.whiteText,
         border: 'none',
       };
+      case 'tertiary':
+        return {
+          backgroundColor: colors.tertiary,
+          color: colors.whiteText,
+          border: 'none',
+        };
     case 'ghost':
       return {
         backgroundColor: 'transparent',
@@ -152,6 +158,10 @@ export const PrimaryButton: React.FC<Omit<ButtonProps, 'variant'>> = (props) => 
 
 export const SecondaryButton: React.FC<Omit<ButtonProps, 'variant'>> = (props) => (
   <Button {...props} variant="secondary" />
+);
+
+export const TertiaryButton: React.FC<Omit<ButtonProps, 'variant'>> = (props) => (
+  <Button {...props} variant="tertiary" />
 );
 
 export const GhostButton: React.FC<Omit<ButtonProps, 'variant'>> = (props) => (

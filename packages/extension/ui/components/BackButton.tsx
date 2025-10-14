@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { colors, spacing, typography } from '../design/tokens';
+import { colors, spacing, textStyles } from '../design';
 
 interface BackButtonProps {
   onClick: () => void;
@@ -43,10 +43,7 @@ const styles: Record<string, React.CSSProperties> = {
     transition: 'background 0.2s',
   },
   backButtonText: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.label,
   },
 };
 

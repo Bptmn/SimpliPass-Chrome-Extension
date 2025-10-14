@@ -16,6 +16,7 @@ import { AppRouterProvider, AppRouterView, useAppRouter } from '@extension/ui/ro
 import { PageState } from '@common/core/types/auth.types';
 import { useAppInitialization } from '@extension/hooks/useAppInitialization';
 import { InitializationErrorBoundary } from '@extension/ui/components/InitializationErrorBoundary';
+import { DevModeIndicator } from '@extension/ui/components/DevModeIndicator';
 import { injectCredentialIntoCurrentTab } from '../services/credentialInjection';
 
 export const PopupApp: React.FC = () => {
@@ -24,7 +25,7 @@ export const PopupApp: React.FC = () => {
   const [theme] = useState<'light' | 'dark'>('light');
 
   // Step 1: Use initialization (uses Zustand store directly)
-  useAppInitialization({ platform: 'extension' });
+  useAppInitialization();
 
   // Step 2: Create router (subscribes to Zustand store automatically)
   const router = useAppRouter({
@@ -44,6 +45,7 @@ export const PopupApp: React.FC = () => {
         window.location.reload();
       }}
     >
+      <DevModeIndicator />
       <AppRouterProvider router={router}>
         <AppRouterView
           user={router.user}

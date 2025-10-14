@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { colors, spacing, typography } from '../design/tokens';
+import { colors, spacing, cardStyles, textStyles } from '../design';
 
 interface ColorSelectorProps {
   title: string;
@@ -63,40 +63,30 @@ export const ColorSelector: React.FC<ColorSelectorProps> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...cardStyles,
+  ...textStyles,
   container: {
     display: 'flex',
     flexDirection: 'column',
     gap: spacing.sm,
   },
   title: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.label,
   },
   colorRow: {
-    display: 'flex',
-    flexDirection: 'row',
+    ...cardStyles.colorRow,
     alignItems: 'center',
     gap: spacing.sm,
   },
   colorCircle: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-    height: 35,
-    width: 35,
+    ...cardStyles.colorCircle,
     border: 'none',
     cursor: 'pointer',
     outline: 'none',
     transition: 'transform 0.1s',
   },
   checkMark: {
-    color: colors.whiteText,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.bold,
-    fontFamily: typography.fontFamily.base,
+    ...cardStyles.checkMark,
   },
 };
 

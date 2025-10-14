@@ -42,15 +42,16 @@ export class AuthService implements IAuthService {
       // Step 1: Always sign out before login to avoid UserAlreadyAuthenticatedException
       console.log('[AuthService] Step 1: Signing out from all providers');
       await this.authAdapter.signOut();
+
+      // Step 2: Login with auth provider (pure provider call) - handles MFA
+      console.log('[AuthService] Step 3: Logging in with auth provider');
+      const loginResult = await this.authAdapter.loginToAuthProvider1(email, password);
       
-      // Step 2: Derive and store user secret key early (business logic)
+      // Step 3: Derive and store user secret key early (business logic)
       console.log('[AuthService] Step 2: Deriving and storing user secret key');
       const { deriveAndStoreUserSecretKey } = await import('./secretsService');
       await deriveAndStoreUserSecretKey(password);
-      
-      // Step 3: Login with auth provider (pure provider call) - now handles MFA
-      console.log('[AuthService] Step 3: Logging in with auth provider');
-      const loginResult = await this.authAdapter.loginToAuthProvider1(email, password);
+    
       
       // Step 4: Check if MFA is required
       if (typeof loginResult === 'object' && loginResult.mfaRequired) {

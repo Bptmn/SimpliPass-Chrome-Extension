@@ -8,12 +8,13 @@
 import React from 'react';
 import type { User } from '@common/core/types/auth.types';
 import type { PageState } from '@common/core/types/auth.types';
-import { ROUTES, requiresAuth, hasLayout } from './ROUTES';
-import { routeComponents } from './ROUTES.tsx';
+import { ROUTES, requiresAuth, hasLayout, routeComponents } from './ROUTES';
+import { NavBar } from '../components/NavBar';
 
 export type UseAppRouterReturn = {
   currentRoute: keyof typeof ROUTES;
   error: string | null;
+  routeParams?: Record<string, any>;
 };
 
 export type AppRouterViewProps = {
@@ -27,6 +28,7 @@ export type AppRouterViewProps = {
 
 export const AppRouterView: React.FC<AppRouterViewProps> = ({ user, pageState, onInjectCredential, theme = 'light', router }) => {
   const currentRoute = router?.currentRoute ?? 'LOADING';
+  const routeParams = router?.routeParams ?? {};
 
   if (requiresAuth(currentRoute) && !user) {
     return (
@@ -41,16 +43,17 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({ user, pageState, o
   if (!hasLayout(currentRoute)) {
     return (
       <div style={styles.fullPage}>
-        <RouteComponent />
+        <RouteComponent {...routeParams} />
       </div>
     );
   }
 
   return (
     <div style={styles.container}>
-      <nav style={styles.navbar}>SimpliPass</nav>
+      {/* Fixed NavBar at the top */}
+      <NavBar />
       <div style={styles.page}>
-        <RouteComponent />
+        <RouteComponent {...routeParams} />
       </div>
     </div>
   );
@@ -59,7 +62,6 @@ export const AppRouterView: React.FC<AppRouterViewProps> = ({ user, pageState, o
 const styles: Record<string, React.CSSProperties> = {
   container: { display: 'flex', flexDirection: 'column', height: '100%', background: '#FFFFFF' },
   fullPage: { display: 'flex', height: '100%', background: '#FFFFFF' },
-  navbar: { height: 44, display: 'flex', alignItems: 'center', padding: '0 12px', borderBottom: '1px solid #E5E7EB', fontWeight: 600 },
   page: { flex: 1, overflow: 'auto' },
   centerContent: { margin: 'auto', color: '#4B5563' },
 };

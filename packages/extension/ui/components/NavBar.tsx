@@ -8,7 +8,7 @@ import React from 'react';
 import { Icon } from './Icon';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, typography, textStyles } from '../design';
 import type { AppRoute } from '../router/ROUTES';
 
 interface NavItem {
@@ -85,14 +85,17 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'space-around',
     backgroundColor: colors.primaryBackground,
-    borderTop: `1px solid ${colors.borderColor}`,
-    height: 60,
-    paddingHorizontal: 16,
-    paddingVertical: 4,
+    borderBottom: `1px solid ${colors.borderColor}`,
+    height: 50,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 4,
+    paddingBottom: 4,
     width: '100%',
     zIndex: 1000,
-    position: 'sticky',
-    bottom: 0,
+    position: 'sticky' as const,
+    top: 0,
+    boxSizing: 'border-box',
   },
   navItem: {
     display: 'flex',
@@ -118,9 +121,8 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: 2,
   },
   navLabel: {
-    fontSize: 12,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.descriptionSmall,
+    fontSize: typography.fontSize.xxs,
     marginTop: 2,
   },
 };

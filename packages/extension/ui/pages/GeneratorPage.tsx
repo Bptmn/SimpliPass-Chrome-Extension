@@ -6,176 +6,279 @@
  * - Provides password generation and copying functionality
  */
 
-import React from 'react';
-import { usePasswordGenerator } from '@extension/hooks/usePasswordGenerator';
-import { useClipboard } from '@common/hooks/useClipboard';
+import React, { useState, useEffect } from 'react';
+import { checkPasswordStrength } from '@common/utils/checkPasswordStrength';
+import { passwordGenerator } from '@common/utils/passwordGenerator';
+import { Button } from '@extension/ui/components/Buttons';
+import { Slider } from '@extension/ui/components/Slider';
+import { CopyButton } from '@extension/ui/components/CopyButton';
+import { HeaderBar } from '@extension/ui/components/HeaderBar';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
-import { Button } from '@extension/ui/components/Buttons';
-import { Slider, BackButton } from '@extension/ui/components';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, typography, pageStyles } from '../design';
 
 export const GeneratorPage: React.FC = () => {
-  // Get password generator state and actions
-  const {
-    password,
-    strength,
-    hasUppercase,
-    hasLowercase,
-    hasNumbers,
-    hasSymbols,
-    length,
-    setHasUppercase,
-    setHasLowercase,
-    setHasNumbers,
-    setHasSymbols,
-    setLength,
-    handleRegenerate,
-  } = usePasswordGenerator();
-
-  // Get clipboard functionality
-  const { copyToClipboard, isCopying } = useClipboard();
-
-  // Get router for navigation
   const router = useAppRouterContext();
+  const [hasUppercase, setHasUppercase] = useState(true);
+  const [hasNumbers, setHasNumbers] = useState(true);
+  const [hasSymbols, setHasSymbols] = useState(true);
+  const [hasLowercase] = useState(true);
+  const [length, setLength] = useState(16);
+  const [password, setPassword] = useState('');
+  const [strength, setStrength] = useState<'weak' | 'average' | 'strong' | 'perfect'>('weak');
 
-  // Handle copy password
-  const handleCopyPassword = async () => {
-    await copyToClipboard(password, 'Password copied!');
+  // Generate password and check strength on mount and whenever options change
+  useEffect(() => {
+    const pwd = passwordGenerator(
+      hasNumbers,
+      hasUppercase,
+      hasLowercase,
+      hasSymbols,
+      length
+    );
+    setPassword(pwd);
+    setStrength(checkPasswordStrength(pwd));
+  }, [hasNumbers, hasUppercase, hasLowercase, hasSymbols, length]);
+
+  const handleRegenerate = () => {
+    const pwd = passwordGenerator(
+      hasNumbers,
+      hasUppercase,
+      hasLowercase,
+      hasSymbols,
+      length
+    );
+    setPassword(pwd);
+    setStrength(checkPasswordStrength(pwd));
   };
 
-  // Handle back to home
   const handleBack = () => {
     router.navigateTo(ROUTES.HOME);
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <BackButton onClick={handleBack} label="Retour" />
-        <h2 style={styles.title}>Générateur de mot de passe</h2>
-      </div>
+    <div style={styles.pageContainer}>      
+      <div style={styles.scrollView}>
+        <div style={styles.pageContent}>
+          <div style={styles.generatorForm}>
+            {/* Password Display Section */}
+            <div style={styles.pageSection}>
+              <span style={styles.sectionLabel}>Mot de passe</span>
+              <div style={styles.generatedPasswordCard}>
+                <div style={styles.passwordDisplay}>
+                  <div style={styles.passwordText}>{password}</div>
+                  <CopyButton textToCopy={password} />
+                </div>
+                <span 
+                  style={{
+                    ...styles.strengthLabel,
+                    ...(strength === 'weak' ? styles.strengthWeak :
+                      strength === 'average' ? styles.strengthAverage :
+                      strength === 'strong' ? styles.strengthStrong :
+                      styles.strengthPerfect)
+                  }}
+                >
+                  Sécurité :{' '}
+                  {strength === 'weak'
+                    ? 'faible'
+                    : strength === 'average'
+                      ? 'moyenne'
+                      : strength === 'perfect'
+                        ? 'parfaite !'
+                        : 'forte'}
+                </span>
+              </div>
+            </div>
 
-      {/* Password Display */}
-      <div style={styles.passwordSection}>
-        <div style={styles.passwordDisplay}>{password}</div>
-        <div style={styles.strengthBadge}>Strength: {strength}</div>
-      </div>
+            {/* Password Length Slider */}
+            <div style={styles.pageSection}>
+              <Slider
+                value={length}
+                onValueChange={setLength}
+                min={8}
+                max={25}
+                label="Longueur"
+              />
+            </div>
 
-      {/* Options */}
-      <div style={styles.options}>
-        <label style={styles.option}>
-          <input 
-            type="checkbox" 
-            checked={hasUppercase} 
-            onChange={(e) => setHasUppercase(e.target.checked)}
-          />
-          <span>Uppercase (A-Z)</span>
-        </label>
-        <label style={styles.option}>
-          <input 
-            type="checkbox" 
-            checked={hasLowercase} 
-            onChange={(e) => setHasLowercase(e.target.checked)}
-          />
-          <span>Lowercase (a-z)</span>
-        </label>
-        <label style={styles.option}>
-          <input 
-            type="checkbox" 
-            checked={hasNumbers} 
-            onChange={(e) => setHasNumbers(e.target.checked)}
-          />
-          <span>Numbers (0-9)</span>
-        </label>
-        <label style={styles.option}>
-          <input 
-            type="checkbox" 
-            checked={hasSymbols} 
-            onChange={(e) => setHasSymbols(e.target.checked)}
-          />
-          <span>Symbols (!@#$%)</span>
-        </label>
-        
-        <Slider
-          label={`Length: ${length}`}
-          value={length}
-          onValueChange={setLength}
-          min={8}
-          max={32}
-          testID="password-length-slider"
-        />
-      </div>
+            {/* Options Section */}
+            <div style={styles.pageSection}>
+              <span style={styles.sectionLabel}>Options</span>
+              <div style={styles.optionsSection}>
+                <div style={styles.optionRow}>
+                  <span style={styles.optionText}>Lettres majuscules (A-Z)</span>
+                  <button
+                    style={{
+                      ...styles.switch,
+                      ...(hasUppercase ? styles.switchActive : {})
+                    }}
+                    onClick={() => setHasUppercase(!hasUppercase)}
+                  >
+                    <div style={{
+                      ...styles.switchSlider,
+                      ...(hasUppercase ? styles.switchSliderActive : {})
+                    }} />
+                  </button>
+                </div>
+                <div style={styles.optionRow}>
+                  <span style={styles.optionText}>Chiffres (0-9)</span>
+                  <button
+                    style={{
+                      ...styles.switch,
+                      ...(hasNumbers ? styles.switchActive : {})
+                    }}
+                    onClick={() => setHasNumbers(!hasNumbers)}
+                  >
+                    <div style={{
+                      ...styles.switchSlider,
+                      ...(hasNumbers ? styles.switchSliderActive : {})
+                    }} />
+                  </button>
+                </div>
+                <div style={styles.optionRow}>
+                  <span style={styles.optionText}>Symboles (@!&*)</span>
+                  <button
+                    style={{
+                      ...styles.switch,
+                      ...(hasSymbols ? styles.switchActive : {})
+                    }}
+                    onClick={() => setHasSymbols(!hasSymbols)}
+                  >
+                    <div style={{
+                      ...styles.switchSlider,
+                      ...(hasSymbols ? styles.switchSliderActive : {})
+                    }} />
+                  </button>
+                </div>
+              </div>
+            </div>
 
-      {/* Actions */}
-      <div style={styles.actions}>
-        <Button onClick={handleRegenerate} variant="secondary" fullWidth>
-          Regenerate
-        </Button>
-        <Button onClick={handleCopyPassword} disabled={isCopying} fullWidth>
-          {isCopying ? 'Copying...' : 'Copy Password'}
-        </Button>
+            {/* Regenerate Button */}
+            <div style={styles.pageSection}>
+              <Button onClick={handleRegenerate} variant="primary" fullWidth>
+                Générer à nouveau
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
 const styles: Record<string, React.CSSProperties> = {
-  container: { 
-    padding: spacing.lg, 
-    display: 'flex', 
-    flexDirection: 'column', 
-    gap: spacing.lg 
+  ...pageStyles,
+  pageContent: {
+    ...pageStyles.pageContent,
   },
-  header: { 
-    display: 'flex', 
-    alignItems: 'center', 
-    gap: spacing.sm 
+  generatorForm: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: spacing.lg,
   },
-  title: { 
-    margin: 0, 
-    fontSize: typography.fontSize.lg, 
-    fontWeight: typography.fontWeight.bold,
+  pageSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: spacing.xs,
+  },
+  sectionLabel: {
+    color: colors.tertiaryText,
+    fontSize: typography.fontSize.xs,
+    fontWeight: '500',
     fontFamily: typography.fontFamily.base,
+    margin: 0,
+  },
+  generatedPasswordCard: {
+    backgroundColor: colors.secondaryBackground,
+    border: `1px solid ${colors.borderColor}`,
+    borderRadius: radius.md,
+    display: 'flex',
+    flexDirection: 'column',
+    padding: spacing.md,
+  },
+  passwordDisplay: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  passwordText: {
+    backgroundColor: colors.primaryBackground,
+    border: `1px solid ${colors.borderColor}`,
+    borderRadius: radius.md,
     color: colors.primary,
+    flex: 1,
+    fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace',
+    fontSize: typography.fontSize.md,
+    marginRight: spacing.sm,
+    minHeight: 20,
+    padding: spacing.sm,
+    wordBreak: 'break-all' as const,
   },
-  passwordSection: { 
-    padding: spacing.lg, 
-    background: colors.secondaryBackground, 
-    borderRadius: radius.sm, 
-    display: 'flex', 
-    flexDirection: 'column', 
-    gap: spacing.sm 
-  },
-  passwordDisplay: { 
-    fontSize: typography.fontSize.md, 
-    fontFamily: 'monospace', 
-    wordBreak: 'break-all',
-    color: colors.primary,
-  },
-  strengthBadge: { 
-    fontSize: typography.fontSize.xs, 
-    color: colors.tertiary, 
-    textTransform: 'capitalize',
-    fontFamily: typography.fontFamily.base,
-  },
-  options: { 
-    display: 'flex', 
-    flexDirection: 'column', 
-    gap: spacing.md 
-  },
-  option: { 
-    display: 'flex', 
-    alignItems: 'center', 
-    gap: spacing.sm, 
-    cursor: 'pointer',
+  strengthLabel: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
     fontSize: typography.fontSize.sm,
+    fontWeight: '500',
     fontFamily: typography.fontFamily.base,
-    color: colors.blackText,
+    marginRight: spacing.xs,
+    padding: 0,
   },
-  actions: { 
-    display: 'flex', 
-    gap: spacing.sm 
+  strengthWeak: { color: '#e57373' },
+  strengthAverage: { color: '#ffb300' },
+  strengthStrong: { color: colors.primary },
+  strengthPerfect: { color: colors.secondary },
+  optionsSection: {
+    backgroundColor: colors.secondaryBackground,
+    border: `1px solid ${colors.borderColor}`,
+    borderRadius: radius.md,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: spacing.md,
+    marginBottom: spacing.sm,
+    padding: spacing.md,
+  },
+  optionRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    color: colors.primary,
+    fontSize: typography.fontSize.sm,
+    justifyContent: 'space-between',
+  },
+  optionText: {
+    color: colors.primary,
+    flex: 1,
+    fontSize: typography.fontSize.sm,
+    fontWeight: '500',
+    fontFamily: typography.fontFamily.base,
+  },
+  switch: {
+    appearance: 'none',
+    border: 'none',
+    backgroundColor: colors.error,
+    borderRadius: 22,
+    height: 25,
+    position: 'relative',
+    width: 40,
+    cursor: 'pointer',
+  },
+  switchActive: {
+    backgroundColor: colors.secondary,
+  },
+  switchSlider: {
+    backgroundColor: colors.white,
+    borderRadius: radius.xl,
+    bottom: 1.5,
+    height: 22,
+    left: 1,
+    position: 'absolute',
+    width: 22,
+    transition: 'transform 0.2s',
+  },
+  switchSliderActive: {
+    transform: 'translateX(16px)',
   },
 };
 

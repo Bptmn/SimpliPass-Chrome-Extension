@@ -1,0 +1,27 @@
+// Source: lib/custom_code/actions/decrypt_data.dart
+// ChaCha20-Poly1305 decryption of Base64(concat(nonce|cipher|mac))
+
+import 'package:cryptography/cryptography.dart';
+import 'dart:convert';
+
+Future<String> decryptData(String userSecretKey, String encryptedData) async {
+  final algorithm = Chacha20.poly1305Aead();
+  final key = base64Url.decode(_padBase64(userSecretKey));
+  final secretKey = SecretKey(key);
+
+  final encryptedBytes = base64.decode(encryptedData);
+  final nonce = encryptedBytes.sublist(0, 12);
+  const macLength = 16;
+  final ciphertext = encryptedBytes.sublist(12, encryptedBytes.length - macLength);
+  final mac = encryptedBytes.sublist(encryptedBytes.length - macLength);
+
+  final clear = await algorithm.decrypt(
+    SecretBox(ciphertext, nonce: nonce, mac: Mac(mac)),
+    secretKey: secretKey,
+  );
+  return utf8.decode(clear);
+}
+
+String _padBase64(String input) {
+  return input + '=' * ((4 - input.length % 4) % 4);
+}

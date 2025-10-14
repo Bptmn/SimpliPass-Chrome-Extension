@@ -33,6 +33,13 @@ export const spacing = {
   lg: 18,
   xl: 24,
   xxl: 35,
+  // Layout-specific spacing
+  pageHorizontal: 20, // Horizontal padding for all pages
+  pageTop: 10, // Top padding for all pages
+  // Component-specific spacing
+  copyButtonWidth: 45,
+  copyButtonHeight: 38,
+  copyButtonIconSize: 16,
 } as const;
 
 export const radius = {
@@ -49,6 +56,7 @@ export const radius = {
 export const typography = {
   fontFamily: {
     base: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    mono: 'Monaco, Menlo, Ubuntu Mono, monospace',
   },
   fontSize: {
     xxs: 11,
@@ -61,6 +69,7 @@ export const typography = {
   fontWeight: {
     regular: '400',
     medium: '500',
+    semibold: '600',
     bold: '700',
   },
 } as const;

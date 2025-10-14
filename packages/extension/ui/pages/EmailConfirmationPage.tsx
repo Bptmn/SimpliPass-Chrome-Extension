@@ -5,12 +5,12 @@
  */
 
 import React, { useState } from 'react';
-import { HeaderTitle } from '@extension/ui/components/HeaderTitle';
+import { HeaderBar } from '@extension/ui/components/HeaderBar';
 import { ErrorBanner } from '@extension/ui/components/ErrorBanner';
 import { Button } from '@extension/ui/components/Buttons';
 import { CodeInput } from '@extension/ui/components/CodeInput';
 import { useAppRouterContext } from '../router/AppRouterProvider';
-import { colors, spacing, typography } from '../design/tokens';
+import { colors, spacing, typography, pageStyles, formStyles, commonStyles } from '../design';
 
 interface EmailConfirmationPageProps {
   email: string;
@@ -45,7 +45,7 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
       {error && <ErrorBanner message={error} />}
       
       <div style={styles.pageContent}>
-        <HeaderTitle 
+        <HeaderBar 
           title="Confirmation par email" 
           onBackPress={handleBack}
         />
@@ -95,25 +95,16 @@ export const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...pageStyles,
+  ...formStyles,
+  ...commonStyles,
   pageContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: colors.primaryBackground,
-    padding: spacing.lg,
-    height: '100%',
+    ...pageStyles.pageContainer,
     overflow: 'auto',
   },
-  pageContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
-  },
   formContainer: {
-    display: 'flex',
-    flexDirection: 'column',
+    ...formStyles.formContainer,
     justifyContent: 'center',
-    flex: 1,
   },
   confirmationForm: {
     display: 'flex',
@@ -153,12 +144,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: typography.fontWeight.medium,
     fontFamily: typography.fontFamily.base,
     color: colors.primary,
-  },
-  actions: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.sm,
-    width: '100%',
   },
 };
 

@@ -7,8 +7,6 @@
 import { useCallback } from 'react';
 import { useCardFormatting } from './useCardFormatting'; // ✅ Use focused formatting hook
 import { useItemsState } from './useItemsState';
-import { ROUTES } from '../ui/router/ROUTES';
-import { useAppRouterContext } from '../ui/router/AppRouterProvider';
 import type { BankCardDecrypted } from '../core/types/items.types';
 
 export const useBankCardDetails = (
@@ -19,7 +17,6 @@ export const useBankCardDetails = (
   showToast: (message: string) => void,
   copyToClipboard: (text: string, message: string) => void
 ) => {
-  const router = useAppRouterContext();
   const { deleteItem } = useItemsState({ user: null }); // User will be passed from parent
   const { formatCardNumber } = useCardFormatting(); // ✅ Use focused formatting hook
 
@@ -28,8 +25,9 @@ export const useBankCardDetails = (
 
   // Step 2: Handle edit operation
   const handleEdit = useCallback(() => {
-    router.navigateTo(ROUTES.MODIFY_BANK_CARD, { bankCard: card });
-  }, [router, card]);
+    // TODO: Navigate to edit page - let parent handle this
+    console.log('Edit bank card:', card.id);
+  }, [card]);
 
   // Step 3: Handle copy operations
   const handleCopyOwner = useCallback(() => {

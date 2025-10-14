@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, textStyles } from '../design';
 import { Icon } from './Icon';
 
 interface MoreInfoProps {
@@ -80,6 +80,7 @@ export const MoreInfo: React.FC<MoreInfoProps> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...textStyles,
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -104,10 +105,7 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'flex-start',
   },
   infoLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.label,
     marginRight: spacing.sm,
   },
   metaContainer: {
@@ -125,15 +123,12 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'flex-start',
   },
   metaLabelText: {
-    color: colors.tertiaryText,
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.descriptionSmall,
     marginRight: spacing.sm,
   },
   metaText: {
+    ...textStyles.descriptionSmall,
     color: colors.primary,
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.base,
   },
 };
 

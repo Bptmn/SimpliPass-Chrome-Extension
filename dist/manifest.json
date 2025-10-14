@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SimpliPass",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "A Chrome extension for password management",
   "permissions": [
     "tabs",
@@ -26,22 +26,26 @@
     "128": "assets/icons/icon128.png"
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["assets/content.js"],
-      "run_at": "document_idle"
+      "run_at": "document_idle",
+      "type": "module"
     }
   ],
   "web_accessible_resources": [
     {
       "resources": [
-        "src/content/popovers/PopoverCredentialPicker.html",
-        "src/content/popovers/PopoverCredentialPicker.css",
-        "src/content/popovers/LoginPromptPopover.html",
-        "src/content/popovers/LoginPromptPopover.js"
+        "assets/src/content/popovers/PopoverCredentialPicker.html",
+        "assets/src/content/popovers/PopoverCredentialPicker.css",
+        "assets/src/content/popovers/PopoverCredentialPicker.js",
+        "assets/popovers/components/PasswordGenerator/PasswordGeneratorPopover.html",
+        "assets/popovers/components/SaveCredential/SaveCredentialPopover.html",
+        "assets/popovers/components/UpdateCredential/UpdateCredentialPopover.html"
       ],
       "matches": ["<all_urls>"]
     }

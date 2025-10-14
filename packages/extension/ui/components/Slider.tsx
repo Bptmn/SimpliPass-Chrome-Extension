@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { colors, spacing, typography } from '../design/tokens';
+import { colors, spacing, textStyles } from '../design';
 
 export interface SliderProps {
   value: number;
@@ -55,16 +55,15 @@ export const Slider: React.FC<SliderProps> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...textStyles,
   container: {
     display: 'flex',
     flexDirection: 'column',
     gap: spacing.xs,
   },
   label: {
-    color: colors.tertiaryText,
-    fontSize: typography.fontSize.xs,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.labelSmall,
+    fontWeight: '500' as const,
   },
   sliderRow: {
     display: 'flex',
@@ -82,18 +81,14 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
   },
   minLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.body,
     minWidth: spacing.lg * 2,
-    textAlign: 'center',
+    textAlign: 'center' as const,
   },
   maxLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.body,
     minWidth: spacing.lg * 2,
-    textAlign: 'center',
+    textAlign: 'center' as const,
   },
 };
 

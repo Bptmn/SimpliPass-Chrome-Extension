@@ -44,18 +44,28 @@ export const decryptItem = async (userSecretKey: string, itemToDecrypt: ItemEncr
         
         // If itemType is missing, try to infer it from the data structure
         if (!itemType) {
+          console.log('[Cryptography] No itemType found, inferring from data structure...');
+          console.log('[Cryptography] Available fields:', Object.keys(contentJson));
+          console.log('[Cryptography] Field values:', contentJson);
+          
           // Check for credential: has username field (even if empty) or password field
           if ('username' in contentJson || 'password' in contentJson) {
             itemType = 'credential';
             console.log('[Cryptography] Inferred itemType as credential from data structure (has username/password fields)');
-          } else if (contentJson.cardNumber || contentJson.owner) {
+          } 
+          // Check for bank_card: has cardNumber, owner, or bankName fields
+          else if (contentJson.cardNumber || contentJson.owner || contentJson.bankName || contentJson.verificationNumber) {
             itemType = 'bank_card';
-            console.log('[Cryptography] Inferred itemType as bank_card from data structure');
-          } else if (contentJson.note && !('username' in contentJson)) {
+            console.log('[Cryptography] Inferred itemType as bank_card from data structure (has cardNumber/owner/bankName/verificationNumber fields)');
+          } 
+          // Check for secure_note: has note field but no username/password/cardNumber
+          else if (contentJson.note && !('username' in contentJson) && !('cardNumber' in contentJson)) {
             itemType = 'secure_note';
             console.log('[Cryptography] Inferred itemType as secure_note from data structure');
-          } else {
+          } 
+          else {
             console.error('[Cryptography] Cannot infer itemType from data structure:', Object.keys(contentJson));
+            console.error('[Cryptography] Field values for debugging:', contentJson);
             throw new ItemError('Cannot determine item type from decrypted data');
           }
         }

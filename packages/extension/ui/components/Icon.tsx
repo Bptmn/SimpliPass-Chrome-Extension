@@ -15,6 +15,10 @@ interface Props {
 
 export const Icon: React.FC<Props> = ({ name, size = 24, color }) => {
   const Comp = IconsMap[name];
+  if (!Comp) {
+    console.error(`Icon "${name}" not found in IconsMap`);
+    return null;
+  }
   return <Comp size={size} color={color} />;
 };
 

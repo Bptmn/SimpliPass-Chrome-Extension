@@ -27,12 +27,17 @@ export interface BankCardDecrypted {
   lastUseDateTime: Date;
   title: string;
   owner: string;
+  cardholderName?: string; // Alias for owner
+  ownerFirstName?: string; // First name of owner
+  ownerLastName?: string; // Last name of owner
   note: string;
   color: string;
   itemKey: string;
   cardNumber: string;
   expirationDate: import('@common/utils/expirationDate').ExpirationDate;
+  exp?: import('@common/utils/expirationDate').ExpirationDate; // Alias for expirationDate
   verificationNumber: string;
+  cvv?: string; // Alias for verificationNumber
   bankName: string;
   bankDomain: string;
   id: string;

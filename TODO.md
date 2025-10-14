@@ -17,7 +17,6 @@
 - [ ] Optimize extension bundle size
 
 ### Low Priority
-- [ ] Add Storybook stories for DOM components
 - [ ] Add performance monitoring
 - [ ] Create extension store listing
 

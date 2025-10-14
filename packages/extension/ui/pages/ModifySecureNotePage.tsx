@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { HeaderTitle } from '@extension/ui/components/HeaderTitle';
+import { HeaderBar } from '@extension/ui/components/HeaderBar';
 import { ErrorBanner } from '@extension/ui/components/ErrorBanner';
 import { Button } from '@extension/ui/components/Buttons';
 import { InputEdit } from '@extension/ui/components/InputEdit';
@@ -13,7 +13,7 @@ import { ColorSelector } from '@extension/ui/components/ColorSelector';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
 import { useModifySecureNote } from '@common/hooks/useModifySecureNote';
-import { colors, spacing, typography } from '../design/tokens';
+import { colors, pageStyles, formStyles, commonStyles, textStyles } from '../design';
 import type { SecureNoteDecrypted } from '@common/core/types/items.types';
 
 interface ModifySecureNotePageProps {
@@ -60,18 +60,20 @@ export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
     <div style={styles.pageContainer} data-testid="modify-secure-note-page">
       {error && <ErrorBanner message={error} />}
       
+      {/* Header - Fixed, non-scrollable */}
+      <HeaderBar 
+        title="Modifier une note" 
+        onBackPress={handleBack}
+      />
+      
       <div style={styles.pageContent}>
-        <HeaderTitle 
-          title="Modifier une note" 
-          onBackPress={handleBack}
-        />
         
         <div style={styles.formContainer}>
           <InputEdit
             label="Nom de la note"
             value={title}
             onChange={setTitle}
-            placeholder="[decryptedNote → title]"
+            placeholder="Nom de la note"
             onClear={() => setTitle('')}
             testID="note-title-input"
           />
@@ -86,7 +88,7 @@ export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
             label="Note"
             value={noteText}
             onChange={setNoteText}
-            placeholder="[decryptedNote → note]"
+            placeholder="Contenu de la note"
             isNote
             onClear={() => setNoteText('')}
             testID="note-content-input"
@@ -117,43 +119,20 @@ export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...pageStyles,
+  ...formStyles,
+  ...commonStyles,
+  ...textStyles,
   pageContainer: {
+    ...pageStyles.pageContainer,
+    height: '100vh', // Use full viewport height
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: colors.primaryBackground,
-    padding: spacing.lg,
-    height: '100%',
-    overflow: 'auto',
   },
   pageContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
-  },
-  formContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
-  },
-  actions: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.sm,
-  },
-  errorContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-  },
-  errorText: {
-    fontSize: typography.fontSize.md,
-    fontFamily: typography.fontFamily.base,
-    color: colors.error,
-    textAlign: 'center',
+    ...pageStyles.pageContentWithGap,
+    minHeight: 0, // Allow content to shrink
+    flex: 1, // Take available space
   },
 };
 

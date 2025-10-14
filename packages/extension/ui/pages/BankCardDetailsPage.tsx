@@ -5,16 +5,18 @@
  */
 
 import React, { useState } from 'react';
-import { HeaderTitle } from '@extension/ui/components/HeaderTitle';
+import { HeaderBar } from '@extension/ui/components/HeaderBar';
 import { ErrorBanner } from '@extension/ui/components/ErrorBanner';
 import { Button } from '@extension/ui/components/Buttons';
 import { DetailField } from '@extension/ui/components/DetailField';
 import { MoreInfo } from '@extension/ui/components/MoreInfo';
 import { ItemBankCard } from '@extension/ui/components/ItemBankCard';
+import { LazyCredentialIcon } from '@extension/ui/components/LazyCredentialIcon';
+import { ConfirmDialog } from '@extension/ui/components/ConfirmDialog';
 import { useClipboard } from '@common/hooks/useClipboard';
 import { useBankCardDetails } from '@common/hooks/useBankCardDetails';
 import { formatExpirationDateFromExp } from '@common/utils';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, typography, pageStyles, commonStyles } from '../design';
 import type { BankCardDecrypted } from '@common/core/types/items.types';
 
 interface BankCardDetailsPageProps {
@@ -65,86 +67,57 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
     <div style={styles.pageContainer} data-testid="bank-card-details-page">
       {error && <ErrorBanner message={error} />}
       
-      {showDeleteConfirm && (
-        <div style={styles.confirmOverlay}>
-          <div style={styles.confirmDialog}>
-            <h3 style={styles.confirmTitle}>Confirmation</h3>
-            <p style={styles.confirmMessage}>
-              Êtes-vous sûr de vouloir supprimer cette carte ?
-            </p>
-            <div style={styles.confirmButtons}>
-              <Button
-                onClick={() => setShowDeleteConfirm(false)}
-                variant="secondary"
-                fullWidth
-                data-testid="delete-cancel-button"
-              >
-                Annuler
-              </Button>
-              <Button
-                onClick={handleConfirmDelete}
-                variant="danger"
-                fullWidth
-                data-testid="delete-confirm-button"
-              >
-                Supprimer
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Confirmation"
+        message="Êtes-vous sûr de vouloir supprimer cette carte ?"
+        confirmText="Supprimer"
+        cancelText="Annuler"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+        testId="delete-confirm-dialog"
+      />
+      
+      {/* Header - Fixed, non-scrollable */}
+      <HeaderBar title={card.title} onBackPress={onBack} />
       
       <div style={styles.pageContent}>
-        {/* Header */}
-        <HeaderTitle title="Détails de la carte" onBackPress={onBack} />
-        
-        {/* Card Preview */}
-        <div style={styles.cardPreview}>
-          <ItemBankCard 
-            cred={card} 
-            onPress={() => {}} 
-          />
-        </div>
 
-        {/* Detail Fields */}
-        <div style={styles.detailsContainer}>
+        {/* Form fields */}
+        <div style={styles.detailsFieldsContainer}>
+          {/* Owner */}
           <DetailField
-            label="Titulaire"
-            value={card.cardholderName}
-            showCopyButton
+            label="Titulaire :"
+            value={card.cardholderName || card.owner}
+            showCopyButton={!!(card.cardholderName || card.owner)}
             onCopy={handleCopyOwner}
-            copyText="Copier"
           />
-          
+          {/* Card Number */}
           <DetailField
-            label="Numéro de carte"
+            label="Numéro de carte :"
             value={displayCardNumber}
-            showCopyButton
+            showCopyButton={!!card.cardNumber}
             onCopy={handleCopyCardNumber}
-            copyText="Copier"
           />
-          
+          {/* CVV */}
           <DetailField
-            label="Date d'expiration"
-            value={formatDate(card.expirationDate)}
-            showCopyButton={false}
-          />
-          
-          <DetailField
-            label="CVV"
-            value="***"
-            showCopyButton
+            label="CVV :"
+            value={card.verificationNumber || card.cvv || '***'}
+            showCopyButton={!!(card.verificationNumber || card.cvv)}
             onCopy={handleCopyCVV}
-            copyText="Copier"
           />
-          
+          {/* Expiration Date */}
+          <DetailField
+            label="Date d'expiration :"
+            value={formatDate(card.expirationDate)}
+          />
+          {/* Note */}
           {card.note && (
             <DetailField
-              label="Note"
+              label="Note :"
               value={card.note}
               showCopyButton
               onCopy={handleCopyNote}
-              copyText="Copier"
             />
           )}
         </div>
@@ -155,101 +128,50 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
           createdDateTime={card.createdDateTime}
         />
 
-        {/* Action Buttons */}
-        <div style={styles.actions}>
+        {/* Actions */}
+        <div style={styles.actionsRow}>
           <Button
             onClick={handleEdit}
-            variant="primary"
-            fullWidth
+            variant="secondary"
+            disabled={loading}
             data-testid="edit-card-button"
+            style={{ flex: 1, maxWidth: 135 }}
           >
             Modifier
           </Button>
           <Button
             onClick={handleDelete}
             variant="danger"
-            fullWidth
+            disabled={loading}
             data-testid="delete-card-button"
+            style={{ flex: 1, maxWidth: 135 }}
           >
             Supprimer
           </Button>
         </div>
       </div>
+      
     </div>
   );
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...pageStyles,
+  ...commonStyles,
   pageContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: colors.primaryBackground,
-    padding: spacing.lg,
-    height: '100%',
+    ...pageStyles.pageContainer,
     overflow: 'auto',
+    maxWidth: '100%',
   },
   pageContent: {
+    ...pageStyles.pageContentWithGap,
+  },
+  detailsFieldsContainer: {
+    ...pageStyles.pageElement, // Applique width: 100%, marginLeft: 0, marginRight: 0
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
-  },
-  cardPreview: {
-    display: 'flex',
-    justifyContent: 'center',
-    padding: spacing.md,
-  },
-  detailsContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-  },
-  actions: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.sm,
-    marginTop: spacing.lg,
-  },
-  confirmOverlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000,
-  },
-  confirmDialog: {
-    backgroundColor: colors.primaryBackground,
-    borderRadius: radius.lg,
-    padding: spacing.xl,
-    maxWidth: 300,
-    width: '90%',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-  },
-  confirmTitle: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.bold,
-    fontFamily: typography.fontFamily.base,
-    color: colors.primary,
-    margin: 0,
-    marginBottom: spacing.md,
-  },
-  confirmMessage: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.base,
-    color: colors.tertiaryText,
-    margin: 0,
-    marginBottom: spacing.lg,
-    lineHeight: '1.4',
-  },
-  confirmButtons: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.sm,
+    gap: spacing.md, // 12px entre les DetailField
+    overflow: 'hidden',
   },
 };
 

@@ -10,7 +10,7 @@ export * from './Slider';
 export * from './ModeSwitch';
 export * from './BackButton';
 export * from './Icon';
-export * from './HeaderTitle';
+export * from './HeaderBar';
 export * from './InputFields';
 export * from './CodeInput';
 export * from './SkeletonCard';
@@ -23,5 +23,6 @@ export * from './LazyCredentialIcon';
 export * from './HelperBar';
 export * from './NavBar';
 export * from './PopupLayout';
+export * from './ConfirmDialog';
 
 

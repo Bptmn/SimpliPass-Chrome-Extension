@@ -5,9 +5,12 @@
  * - Clipboard operations
  * - Network detection
  * - Email remembering
+ * 
+ * Works in both web mode (dev) and extension mode (production).
  */
 
 import { PlatformAdapter} from '@common/core/adapters/platform.adapter';
+import { browser } from '@extension/shims/browserAPI';
 
 export class ExtensionPlatformAdapter implements PlatformAdapter {
 
@@ -15,7 +18,7 @@ export class ExtensionPlatformAdapter implements PlatformAdapter {
 
   async getAppVersion(): Promise<string> {
     try {
-      const manifest = chrome.runtime.getManifest();
+      const manifest = browser.runtime.getManifest();
       return manifest.version || '1.0.0';
     } catch (_error) {
       return '1.0.0';
@@ -85,9 +88,9 @@ export class ExtensionPlatformAdapter implements PlatformAdapter {
   async setRememberedEmail(email: string | null): Promise<void> {
     try {
       if (email) {
-        await chrome.storage.local.set({ rememberedEmail: email });
+        await browser.storage.local.set({ rememberedEmail: email });
       } else {
-        await chrome.storage.local.remove('rememberedEmail');
+        await browser.storage.local.remove('rememberedEmail');
       }
     } catch (_error) {
       throw new Error('Failed to set remembered email');
@@ -96,7 +99,7 @@ export class ExtensionPlatformAdapter implements PlatformAdapter {
 
   async getRememberedEmail(): Promise<string | null> {
     try {
-      const result = await chrome.storage.local.get('rememberedEmail');
+      const result = await browser.storage.local.get('rememberedEmail');
       return result.rememberedEmail || null;
     } catch (_error) {
       return null;
@@ -107,7 +110,7 @@ export class ExtensionPlatformAdapter implements PlatformAdapter {
 
   async clearSession(): Promise<void> {
     try {
-      await chrome.storage.local.remove(['rememberedEmail', 'sessionMetadata']);
+      await browser.storage.local.remove(['rememberedEmail', 'sessionMetadata']);
     } catch (_error) {
       throw new Error('Failed to clear session');
     }
@@ -117,7 +120,7 @@ export class ExtensionPlatformAdapter implements PlatformAdapter {
 
   async storeSessionMetadata(metadata: any): Promise<void> {
     try {
-      await chrome.storage.local.set({ sessionMetadata: metadata });
+      await browser.storage.local.set({ sessionMetadata: metadata });
     } catch (_error) {
       throw new Error('Failed to store session metadata');
     }
@@ -125,7 +128,7 @@ export class ExtensionPlatformAdapter implements PlatformAdapter {
 
   async getSessionMetadata(): Promise<any> {
     try {
-      const result = await chrome.storage.local.get('sessionMetadata');
+      const result = await browser.storage.local.get('sessionMetadata');
       return result.sessionMetadata || null;
     } catch (_error) {
       return null;
@@ -134,7 +137,7 @@ export class ExtensionPlatformAdapter implements PlatformAdapter {
 
   async deleteSessionMetadata(): Promise<void> {
     try {
-      await chrome.storage.local.remove('sessionMetadata');
+      await browser.storage.local.remove('sessionMetadata');
     } catch (_error) {
       throw new Error('Failed to delete session metadata');
     }

@@ -5,11 +5,11 @@
  */
 
 import React from 'react';
-import { colors, radius, spacing, typography } from '../design/tokens';
+import { colors, radius, spacing, textStyles } from '../design';
 
 export const ModeSwitch: React.FC = () => {
   // For now, extension only supports light mode
-  const mode = 'light';
+  const mode: 'light' | 'dark' = 'light';
 
   return (
     <div style={styles.container} data-testid="mode-switch-container">
@@ -95,22 +95,16 @@ const styles: Record<string, React.CSSProperties> = {
     border: 'none',
   },
   optionTextActiveLight: {
+    ...textStyles.bodySmall,
     color: colors.secondary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
   },
   optionTextActiveDark: {
+    ...textStyles.bodySmall,
     color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
   },
   optionTextInactive: {
+    ...textStyles.bodySmall,
     color: colors.tertiary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
   },
 };
 

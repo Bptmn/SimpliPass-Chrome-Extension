@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { FormInput, TextArea } from '@extension/ui/components/InputFields';
 import { Button } from '@extension/ui/components/Buttons';
-import { HeaderTitle } from '@extension/ui/components/HeaderTitle';
+import { HeaderBar } from '@extension/ui/components/HeaderBar';
 import { ColorSelector } from '@extension/ui/components/ColorSelector';
 import { ErrorBanner } from '@extension/ui/components/ErrorBanner';
 import { useAppRouterContext } from '../router/AppRouterProvider';
@@ -15,7 +15,7 @@ import { ROUTES } from '../router/ROUTES';
 import { useUser } from '@common/hooks/useUser';
 import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { generateItemKey } from '@common/core/libraries/crypto';
-import { colors, spacing, typography } from '../design/tokens';
+import { pageStyles, formStyles, commonStyles } from '../design';
 import type { SecureNoteDecrypted } from '@common/core/types/items.types';
 
 interface AddSecureNoteProps {
@@ -66,7 +66,7 @@ export const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
       {error && <ErrorBanner message={error} />}
       
       <div style={styles.pageContent}>
-        <HeaderTitle 
+        <HeaderBar 
           title="Ajouter une note" 
           onBackPress={handleBack}
         />
@@ -100,14 +100,6 @@ export const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
 
         <div style={styles.actions}>
           <Button
-            onClick={handleBack}
-            variant="ghost"
-            fullWidth
-            data-testid="add-note-cancel-button"
-          >
-            Annuler
-          </Button>
-          <Button
             onClick={handleConfirm}
             disabled={isLoading || !title.trim()}
             fullWidth
@@ -122,30 +114,12 @@ export const AddSecureNote: React.FC<AddSecureNoteProps> = ({ onCancel }) => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...pageStyles,
+  ...formStyles,
+  ...commonStyles,
   pageContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: colors.primaryBackground,
-    padding: spacing.lg,
-    height: '100%',
+    ...pageStyles.pageContainer,
     overflow: 'auto',
-  },
-  pageContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
-  },
-  formContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
-  },
-  actions: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.sm,
   },
 };
 

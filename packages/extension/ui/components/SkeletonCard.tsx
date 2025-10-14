@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { colors, spacing, radius } from '../design/tokens';
+import { colors, spacing, radius, cardStyles } from '../design';
 
 export const SkeletonCard: React.FC = () => {
   return (
@@ -21,16 +21,15 @@ export const SkeletonCard: React.FC = () => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...cardStyles,
   skeletonCard: {
+    ...cardStyles.card,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.secondaryBackground,
-    border: `1px solid ${colors.borderColor}`,
     borderRadius: radius.lg,
     marginBottom: spacing.xs,
     padding: 6,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
   },
   skeletonAvatar: {
     backgroundColor: colors.disabled,

@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { colors, radius, spacing, typography } from '../design/tokens';
+import { colors, radius, spacing, typography } from '../design';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
 

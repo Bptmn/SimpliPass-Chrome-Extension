@@ -9,7 +9,7 @@ import React from 'react';
 import { Button } from '@extension/ui/components/Buttons';
 import { Input } from '@extension/ui/components/Input';
 import { useLogin } from '@common/hooks/useLogin';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, typography, pageStyles, formStyles } from '../design';
 
 export const LoginPage: React.FC = () => {
   const {
@@ -25,7 +25,8 @@ export const LoginPage: React.FC = () => {
   } = useLogin();
 
   return (
-    <div style={styles.container} data-testid="login-page">
+    <div style={styles.pageContainer} data-testid="login-page">
+      <div style={styles.pageContent}>
       <div style={styles.header}>SimpliPass Login</div>
       
       {/* Error Banner */}
@@ -77,21 +78,32 @@ export const LoginPage: React.FC = () => {
       >
         {isLoading ? 'Logging in...' : 'Login'}
       </Button>
+      </div>
     </div>
   );
 };
 
 const styles: Record<string, React.CSSProperties> = {
-  container: { padding: spacing.lg, display: 'flex', flexDirection: 'column', gap: spacing.md },
+  ...pageStyles,
+  ...formStyles,
+  pageContainer: { 
+    ...pageStyles.pageContainer,
+    gap: spacing.md,
+  },
+  pageContent: {
+    ...pageStyles.pageContentWithGap,
+  },
   header: { 
     fontWeight: typography.fontWeight.bold, 
     fontSize: typography.fontSize.lg, 
     fontFamily: typography.fontFamily.base,
     marginBottom: spacing.xs, 
-    textAlign: 'center',
+    textAlign: 'center' as const,
     color: colors.primary,
   },
-  field: { display: 'flex', flexDirection: 'column', gap: spacing.xs },
+  field: { 
+    ...formStyles.formField,
+  },
   errorBanner: {
     padding: spacing.md,
     backgroundColor: '#FEE2E2',

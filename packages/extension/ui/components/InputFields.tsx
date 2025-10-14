@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, typography, formStyles, textStyles } from '../design';
 import { Icon } from './Icon';
 
 // --- Input classique ---
@@ -148,17 +148,14 @@ export const TextArea: React.FC<TextAreaProps> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...formStyles,
+  ...textStyles,
   inputContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.xs,
+    ...formStyles.formField,
     width: '100%',
   },
   inputLabel: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.label,
   },
   inputWrapper: {
     position: 'relative',
@@ -214,9 +211,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: spacing.xs,
   },
   inputError: {
-    color: colors.error,
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.error,
   },
 };
 

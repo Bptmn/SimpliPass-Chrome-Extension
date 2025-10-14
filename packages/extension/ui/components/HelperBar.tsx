@@ -8,7 +8,7 @@ import React from 'react';
 import { Icon } from './Icon';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, textStyles } from '../design';
 import type { Category } from '@common/core/types/categories.types';
 import { CATEGORIES } from '@common/core/types/categories.types';
 
@@ -108,9 +108,11 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: colors.primaryBackground,
     borderTop: `1px solid ${colors.borderColor}`,
     padding: spacing.sm,
+    height: 55,
     position: 'sticky',
     bottom: 0,
     zIndex: 100,
+    boxSizing: 'border-box',
   },
   actionButton: {
     display: 'flex',
@@ -127,12 +129,10 @@ const styles: Record<string, React.CSSProperties> = {
     minWidth: 60,
   },
   buttonText: {
+    ...textStyles.descriptionSmall,
     color: colors.primary,
-    fontSize: typography.fontSize.xs,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
     marginTop: spacing.xxs,
-    textAlign: 'center',
+    textAlign: 'center' as const,
   },
 };
 

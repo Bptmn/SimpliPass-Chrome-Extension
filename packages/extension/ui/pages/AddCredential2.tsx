@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { FormInput, TextArea } from '@extension/ui/components/InputFields';
 import { Button } from '@extension/ui/components/Buttons';
-import { HeaderTitle } from '@extension/ui/components/HeaderTitle';
+import { HeaderBar } from '@extension/ui/components/HeaderBar';
 import { ErrorBanner } from '@extension/ui/components/ErrorBanner';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
@@ -16,7 +16,7 @@ import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { passwordGenerator } from '@common/utils/passwordGenerator';
 import { generateItemKey } from '@common/core/libraries/crypto';
 import { checkPasswordStrength } from '@common/utils/checkPasswordStrength';
-import { colors, spacing, typography } from '../design/tokens';
+import { colors, spacing, typography, pageStyles, formStyles } from '../design';
 import type { CredentialDecrypted } from '@common/core/types/items.types';
 
 interface AddCredential2Props {
@@ -86,7 +86,7 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({
       {error && <ErrorBanner message={error} />}
       
       <div style={styles.pageContent}>
-        <HeaderTitle 
+        <HeaderBar 
           title="Ajouter un identifiant" 
           onBackPress={handleBack}
         />
@@ -161,14 +161,6 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({
         
         <div style={styles.actions}>
           <Button
-            onClick={handleBack}
-            variant="ghost"
-            fullWidth
-            testID="add-credential-back-button"
-          >
-            Retour
-          </Button>
-          <Button
             onClick={handleSubmit}
             disabled={isLoading || !title.trim() || !username.trim() || !password.trim()}
             fullWidth
@@ -183,25 +175,11 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...pageStyles,
+  ...formStyles,
   pageContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: colors.primaryBackground,
-    padding: spacing.lg,
-    height: '100%',
+    ...pageStyles.pageContainer,
     overflow: 'auto',
-  },
-  pageContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
-  },
-  formContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
   },
   passwordStrength: {
     display: 'flex',
@@ -209,7 +187,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: spacing.xs,
   },
   passwordStrengthLabel: {
-    fontSize: typography.fontSize.xs,
+    fontSize: typography.fontSize.xxs,
     fontWeight: typography.fontWeight.medium,
     fontFamily: typography.fontFamily.base,
     color: colors.tertiaryText,
@@ -218,7 +196,7 @@ const styles: Record<string, React.CSSProperties> = {
     height: 4,
     backgroundColor: colors.borderColor,
     borderRadius: 2,
-    overflow: 'hidden',
+    overflow: 'hidden' as const,
   },
   passwordStrengthFill: {
     height: '100%',

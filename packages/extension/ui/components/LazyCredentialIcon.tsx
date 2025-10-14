@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { colors } from '../design/tokens';
+import { colors, typography, textStyles } from '../design';
 import { useLazyCredentialIcon } from '@common/hooks/useLazyCredentialIcon';
 
 interface LazyCredentialIconProps {
@@ -60,31 +60,34 @@ export const LazyCredentialIcon: React.FC<LazyCredentialIconProps> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...textStyles,
   iconContainer: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.white,
     border: `1px solid ${colors.borderColor}`,
-    borderRadius: 10,
-    height: 35,
-    width: 35,
+    borderRadius: 8,
+    height: 32,
+    width: 32,
+    flexShrink: 0,
   },
   iconContainerNoBg: {
     backgroundColor: 'transparent',
+    border: 'none',
   },
   iconLetter: {
-    color: colors.tertiary,
-    fontSize: 16,
-    fontWeight: '600',
-    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    textAlign: 'center',
+    ...textStyles.descriptionSmall,
+    fontSize: typography.fontSize.xs + 1,
+    fontWeight: '600' as const,
+    textAlign: 'center' as const,
     width: '100%',
+    lineHeight: '32px',
   },
   favicon: {
-    borderRadius: 10,
-    height: 35,
-    width: 35,
+    borderRadius: 8,
+    height: 32,
+    width: 32,
     objectFit: 'cover' as const,
   },
 };

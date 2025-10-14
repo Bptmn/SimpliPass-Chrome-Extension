@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useCallback, createContext, ReactNode, useContext, useEffect } from 'react';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, textStyles } from '../design';
 import { Icon } from './Icon';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
@@ -36,11 +36,11 @@ export const Toast: React.FC<ToastProps> = ({
     }
   }, [message, duration, onClose]);
 
-  const getToastStyles = () => {
-    const baseStyles = {
+  const getToastStyles = (): React.CSSProperties => {
+    const baseStyles: React.CSSProperties = {
       display: 'flex',
       alignItems: 'center',
-      flexDirection: 'row',
+      flexDirection: 'row' as const,
       gap: spacing.sm,
       backgroundColor: colors.primaryBackground,
       border: `1px solid ${colors.borderColor}`,
@@ -54,7 +54,7 @@ export const Toast: React.FC<ToastProps> = ({
       zIndex: 9999,
       opacity: isVisible ? 1 : 0,
       transition: 'opacity 0.3s ease-in-out',
-      pointerEvents: isVisible ? 'auto' : 'none',
+      pointerEvents: (isVisible ? 'auto' : 'none') as const,
       maxWidth: 320,
       minWidth: 120,
     };
@@ -180,11 +180,9 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...textStyles,
   toastText: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.regular,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.body,
   },
 };
 

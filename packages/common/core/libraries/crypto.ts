@@ -57,7 +57,7 @@ export async function deriveKey(masterPassword: string, saltBase64Url: string): 
   const derivedBits = await crypto.subtle.deriveBits(
     {
       name: 'PBKDF2',
-      salt: salt,
+      salt: new Uint8Array(salt),
       iterations: 300000,
       hash: 'SHA-256',
     },
@@ -101,12 +101,13 @@ export function encryptData(symmetricKey: string, plainText: string): string {
   console.log('[Crypto] Encrypted data length:', encrypted.length);
   console.log('[Crypto] Encrypted data (first 20 bytes):', Array.from(encrypted.slice(0, 20)));
   
-  // Flutter format: nonce + ciphertext + mac (separate components)
+  // Flutter format: nonce + ciphertext + mac
   // @stablelib returns ciphertext + mac combined, so we need to split them
   const MAC_LENGTH = 16;
   const ciphertext = encrypted.slice(0, encrypted.length - MAC_LENGTH);
   const mac = encrypted.slice(encrypted.length - MAC_LENGTH);
   
+  // Flutter format: nonce + ciphertext + mac (exactly like Flutter)
   const result = new Uint8Array(nonce.length + ciphertext.length + mac.length);
   result.set(nonce, 0);
   result.set(ciphertext, nonce.length);
@@ -114,6 +115,7 @@ export function encryptData(symmetricKey: string, plainText: string): string {
   console.log('[Crypto] Final result length:', result.length);
   console.log('[Crypto] Final result (first 20 bytes):', Array.from(result.slice(0, 20)));
   
+  // Flutter uses standard Base64 (not Base64URL)
   const base64Result = bytesToBase64(result);
   console.log('[Crypto] Base64 result length:', base64Result.length);
   console.log('[Crypto] Base64 result (first 30 chars):', base64Result.substring(0, 30) + '...');
@@ -133,7 +135,7 @@ export function decryptData(symmetricKey: string, encryptedData: string): string
   console.log('[Crypto] Decoded key (first 10 bytes):', Array.from(key.slice(0, 10)));
 
   const algo = new ChaCha20Poly1305(key);
-  // Accept Base64 or Base64URL and add padding if necessary
+  // Flutter uses standard Base64 (not Base64URL)
   const encryptedBytes = base64ToBytes(encryptedData);
   console.log('[Crypto] Decoded encrypted data length:', encryptedBytes.length);
   console.log('[Crypto] Decoded encrypted data (first 20 bytes):', Array.from(encryptedBytes.slice(0, 20)));
@@ -142,7 +144,7 @@ export function decryptData(symmetricKey: string, encryptedData: string): string
   console.log('[Crypto] Extracted nonce length:', nonce.length);
   console.log('[Crypto] Extracted nonce:', Array.from(nonce));
 
-  // CRITICAL FIX: Separate ciphertext and MAC correctly
+  // Flutter format: nonce(12) | ciphertext | mac(16)
   const MAC_LENGTH = 16; // MAC is always 16 bytes for ChaCha20-Poly1305
   const ciphertext = encryptedBytes.slice(12, encryptedBytes.length - MAC_LENGTH);
   const mac = encryptedBytes.slice(encryptedBytes.length - MAC_LENGTH);
@@ -152,7 +154,7 @@ export function decryptData(symmetricKey: string, encryptedData: string): string
   console.log('[Crypto] MAC length:', mac.length);
   console.log('[Crypto] MAC (all 16 bytes):', Array.from(mac));
 
-  // Flutter format: pass separate ciphertext and mac to match SecretBox(ciphertext, nonce: nonce, mac: Mac(mac))
+  // Flutter format: SecretBox(ciphertext, nonce: nonce, mac: Mac(mac))
   // @stablelib expects combined ciphertext+mac, so we combine them
   const ciphertextAndMac = new Uint8Array(ciphertext.length + mac.length);
   ciphertextAndMac.set(ciphertext, 0);
@@ -185,8 +187,61 @@ export function decryptData(symmetricKey: string, encryptedData: string): string
 export function generateItemKey(): string {
   const crypto = getCrypto();
   const key = crypto.getRandomValues(new Uint8Array(32));
-  // Standard base64
+  // Flutter format: base64Url.encode(key) - Base64URL (no padding)
   const base64 = btoa(String.fromCharCode(...key));
-  // Convert to base64url
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/[=]+$/, '');
+}
+
+// Legacy decryption function for backward compatibility
+export function decryptDataLegacy(symmetricKey: string, encryptedData: string): string {
+  console.log('[Crypto] Starting legacy decryption process');
+  console.log('[Crypto] Input key length:', symmetricKey.length);
+  console.log('[Crypto] Input key (first 10 chars):', symmetricKey.substring(0, 10) + '...');
+  console.log('[Crypto] Input encrypted data length:', encryptedData.length);
+  console.log('[Crypto] Input encrypted data (first 20 chars):', encryptedData.substring(0, 20) + '...');
+
+  const key = base64UrlToBytes(symmetricKey);
+  console.log('[Crypto] Decoded key length:', key.length);
+  console.log('[Crypto] Decoded key (first 10 bytes):', Array.from(key.slice(0, 10)));
+
+  const algo = new ChaCha20Poly1305(key);
+  // Legacy format: Base64URL (not standard Base64)
+  const encryptedBytes = base64UrlToBytes(encryptedData);
+  console.log('[Crypto] Decoded encrypted data length:', encryptedBytes.length);
+  console.log('[Crypto] Decoded encrypted data (first 20 bytes):', Array.from(encryptedBytes.slice(0, 20)));
+
+  const nonce = encryptedBytes.slice(0, 12);
+  console.log('[Crypto] Extracted nonce length:', nonce.length);
+  console.log('[Crypto] Extracted nonce:', Array.from(nonce));
+
+  // Legacy format: nonce(12) | ciphertext | mac(16)
+  const MAC_LENGTH = 16;
+  const ciphertext = encryptedBytes.slice(12, encryptedBytes.length - MAC_LENGTH);
+  const mac = encryptedBytes.slice(encryptedBytes.length - MAC_LENGTH);
+  
+  console.log('[Crypto] Ciphertext length:', ciphertext.length);
+  console.log('[Crypto] Ciphertext (first 20 bytes):', Array.from(ciphertext.slice(0, 20)));
+  console.log('[Crypto] MAC length:', mac.length);
+  console.log('[Crypto] MAC (all 16 bytes):', Array.from(mac));
+
+  // Legacy format: pass combined ciphertext+mac to @stablelib
+  const ciphertextAndMac = new Uint8Array(ciphertext.length + mac.length);
+  ciphertextAndMac.set(ciphertext, 0);
+  ciphertextAndMac.set(mac, ciphertext.length);
+  
+  console.log('[Crypto] Combined ciphertext+MAC length:', ciphertextAndMac.length);
+  console.log('[Crypto] Combined ciphertext+MAC (first 20 bytes):', Array.from(ciphertextAndMac.slice(0, 20)));
+
+  const decrypted = algo.open(nonce, ciphertextAndMac);
+  console.log('[Crypto] Legacy decryption result:', decrypted ? 'SUCCESS' : 'FAILED');
+
+  if (!decrypted) {
+    console.error('[Crypto] Legacy decryption failed - MAC verification failed');
+    throw new Error('Legacy decryption failed');
+  }
+
+  const result = new TextDecoder().decode(decrypted);
+  console.log('[Crypto] Final decrypted text length:', result.length);
+  console.log('[Crypto] Final decrypted text (first 50 chars):', result.substring(0, 50) + (result.length > 50 ? '...' : ''));
+  return result;
 }

@@ -21,6 +21,7 @@ import {
   MdKeyboardArrowRight,
   MdKeyboardArrowDown,
   MdArrowForwardIos,
+  MdArrowBackIos,
   MdVisibility,
   MdVisibilityOff,
   MdCheckCircle,
@@ -28,6 +29,9 @@ import {
   MdWbSunny,
   MdNightlightRound,
   MdAddCircle,
+  MdClose,
+  MdError,
+  MdWarning,
 } from 'react-icons/md';
 
 export const IconsMap = {
@@ -53,6 +57,7 @@ export const IconsMap = {
   arrowRight: MdKeyboardArrowRight,
   arrowDown: MdKeyboardArrowDown,
   arrowForward: MdArrowForwardIos,
+  arrowBack: MdArrowBackIos,
   visibility: MdVisibility,
   visibilityOff: MdVisibilityOff,
   checkCircle: MdCheckCircle,
@@ -60,6 +65,9 @@ export const IconsMap = {
   sun: MdWbSunny,
   moon: MdNightlightRound,
   addCircle: MdAddCircle,
+  close: MdClose,
+  error: MdError,
+  warning: MdWarning,
 } as const;
 
 export type IconKey = keyof typeof IconsMap;

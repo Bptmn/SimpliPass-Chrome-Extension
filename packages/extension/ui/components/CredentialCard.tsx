@@ -6,8 +6,9 @@
 
 import React, { useState } from 'react';
 import type { CredentialDecrypted } from '@common/core/types/items.types';
-import { colors, spacing, radius, typography } from '../design/tokens';
-import { useClipboard } from '@common/hooks/useClipboard';
+import { colors, spacing, radius, shadow, cardStyles, textStyles } from '../design';
+import { LazyCredentialIcon } from './LazyCredentialIcon';
+import { CopyButton } from './CopyButton';
 
 interface CredentialCardProps {
   credential: CredentialDecrypted;
@@ -27,41 +28,17 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
   disableFavicon = false,
 }) => {
   const [error, setError] = useState<string | null>(null);
-  const { copyToClipboard } = useClipboard();
-
-  // Handle copying the password to clipboard
-  const handleCopy = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click
-    try {
-      await copyToClipboard(credential.password, "Mot de passe copié !");
-      if (onCopy) onCopy();
-    } catch {
-      setError('Impossible de copier le mot de passe');
-    }
-  };
 
   return (
     <div style={styles.credentialCard} onClick={onPress} data-testid={testID}>
       <div style={styles.credentialCardLeft}>
-        {/* Favicon / Icon */}
-        {!disableFavicon && credential.domain && (
-          <img
-            src={`https://www.google.com/s2/favicons?domain=${credential.domain}&sz=32`}
-            alt=""
-            style={styles.favicon}
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
-        )}
-        {!credential.domain && (
-          <div style={styles.placeholderIcon}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke={colors.primary} strokeWidth="2"/>
-              <path d="M7 11V7a5 5 0 0110 0v4" stroke={colors.primary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-        )}
+        {/* Lazy Credential Icon */}
+        <LazyCredentialIcon 
+          title={credential.title} 
+          url={credential.url || ''} 
+          disableFavicon={disableFavicon}
+          style={styles.iconContainer}
+        />
 
         {/* Info */}
         <div style={styles.credentialCardInfo}>
@@ -72,12 +49,14 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
 
       {/* Copy Button */}
       {!hideCopyBtn && (
-        <button style={styles.copyButton} onClick={handleCopy} data-testid={`${testID}-copy`}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke={colors.secondary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke={colors.secondary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
+        <div onClick={(e) => e.stopPropagation()}>
+          <CopyButton
+            textToCopy={credential.password}
+            onClick={() => {
+              if (onCopy) onCopy();
+            }}
+          />
+        </div>
       )}
 
       {/* Error (if any) */}
@@ -89,19 +68,19 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...cardStyles,
+  ...textStyles,
   credentialCard: {
+    ...cardStyles.card,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.secondaryBackground,
-    border: `1px solid ${colors.borderColor}`,
-    borderRadius: radius.md,
     padding: 6,
     width: '100%',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
     cursor: 'pointer',
     transition: 'box-shadow 0.2s',
+    boxSizing: 'border-box',
   },
   credentialCardLeft: {
     display: 'flex',
@@ -119,60 +98,36 @@ const styles: Record<string, React.CSSProperties> = {
     maxWidth: 200,
   },
   credentialCardTitle: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.cardTitle,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    whiteSpace: 'nowrap' as const,
   },
   credentialCardUsername: {
-    color: colors.tertiaryText,
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.cardSubtitle,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    whiteSpace: 'nowrap' as const,
   },
-  favicon: {
+  iconContainer: {
     width: 32,
     height: 32,
     borderRadius: radius.sm,
-  },
-  placeholderIcon: {
-    width: 32,
-    height: 32,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primaryBackground,
-    borderRadius: radius.sm,
-  },
-  copyButton: {
-    appearance: 'none',
-    border: 'none',
-    background: 'transparent',
-    cursor: 'pointer',
-    padding: 8,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: radius.sm,
-    transition: 'background 0.2s',
+    flexShrink: 0,
   },
   errorTooltip: {
-    position: 'absolute',
+    ...textStyles.error,
+    position: 'absolute' as const,
     top: -30,
     right: 0,
     backgroundColor: colors.error,
     color: colors.white,
-    fontSize: typography.fontSize.xs,
     padding: `${spacing.xs}px ${spacing.sm}px`,
     borderRadius: radius.sm,
-    whiteSpace: 'nowrap',
+    whiteSpace: 'nowrap' as const,
   },
 };
 
 export default CredentialCard;
+
 

@@ -5,14 +5,14 @@
  */
 
 import React, { useState } from 'react';
-import { HeaderTitle } from '@extension/ui/components/HeaderTitle';
+import { HeaderBar } from '@extension/ui/components/HeaderBar';
 import { ErrorBanner } from '@extension/ui/components/ErrorBanner';
 import { Button } from '@extension/ui/components/Buttons';
 import { InputEdit } from '@extension/ui/components/InputEdit';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
 import { useModifyCredential } from '@common/hooks/useModifyCredential';
-import { colors, spacing, typography } from '../design/tokens';
+import { colors, pageStyles, formStyles, commonStyles, textStyles } from '../design';
 import type { CredentialDecrypted } from '@common/core/types/items.types';
 
 interface ModifyCredentialPageProps {
@@ -36,7 +36,9 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
 
   const handleFormSubmit = async () => {
     try {
-      await handleSubmit(title, username, password, url, note);
+      await handleSubmit(title, username, password, url, note, (message: string) => {
+        console.log('Toast:', message);
+      });
       router.navigateTo(ROUTES.HOME);
     } catch (err) {
       console.error('Failed to modify credential:', err);
@@ -61,18 +63,20 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
     <div style={styles.pageContainer} data-testid="modify-credential-page">
       {error && <ErrorBanner message={error} />}
       
+      {/* Header - Fixed, non-scrollable */}
+      <HeaderBar 
+        title="Modifier l'identifiant" 
+        onBackPress={handleBack}
+      />
+      
       <div style={styles.pageContent}>
-        <HeaderTitle 
-          title="Modifier l'identifiant" 
-          onBackPress={handleBack}
-        />
         
         <div style={styles.formContainer}>
           <InputEdit
             label="Nom de l'identifiant"
             value={title}
             onChange={setTitle}
-            placeholder="[credentialsTitle]"
+            placeholder="Nom de l'identifiant"
             onClear={() => setTitle('')}
             testID="credential-title-input"
           />
@@ -81,7 +85,7 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
             label="Email / Nom d'utilisateur"
             value={username}
             onChange={setUsername}
-            placeholder="[userEmail]"
+            placeholder="Email ou nom d'utilisateur"
             onClear={() => setUsername('')}
             testID="credential-username-input"
           />
@@ -90,7 +94,7 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
             label="Mot de passe"
             value={password}
             onChange={setPassword}
-            placeholder="[password]"
+            placeholder="Mot de passe"
             onClear={() => setPassword('')}
             testID="credential-password-input"
           />
@@ -139,43 +143,20 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...pageStyles,
+  ...formStyles,
+  ...commonStyles,
+  ...textStyles,
   pageContainer: {
+    ...pageStyles.pageContainer,
+    height: '100vh', // Use full viewport height
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: colors.primaryBackground,
-    padding: spacing.lg,
-    height: '100%',
-    overflow: 'auto',
   },
   pageContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
-  },
-  formContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
-  },
-  actions: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.sm,
-  },
-  errorContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-  },
-  errorText: {
-    fontSize: typography.fontSize.md,
-    fontFamily: typography.fontFamily.base,
-    color: colors.error,
-    textAlign: 'center',
+    ...pageStyles.pageContentWithGap,
+    minHeight: 0, // Allow content to shrink
+    flex: 1, // Take available space
   },
 };
 

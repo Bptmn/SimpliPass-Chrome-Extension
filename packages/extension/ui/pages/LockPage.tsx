@@ -9,7 +9,7 @@ import { FormInput } from '@extension/ui/components/InputFields';
 import { Button } from '@extension/ui/components/Buttons';
 import { useAuth } from '@common/hooks/useAuth';
 import { useReEnterPassword } from '@common/hooks/useReEnterPassword';
-import { colors, spacing, typography } from '../design/tokens';
+import { colors, spacing, typography, pageStyles, formStyles } from '../design';
 import type { User } from '@common/core/types/auth.types';
 
 type LockReason = 'expired' | 'fingerprint_mismatch' | 'decryption_failed' | 'not_found' | 'corrupted';
@@ -102,12 +102,10 @@ export const LockPage: React.FC<LockPageProps> = ({ reason, user }) => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...pageStyles,
+  ...formStyles,
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: colors.primaryBackground,
-    padding: spacing.lg,
-    height: '100%',
+    ...pageStyles.pageContainer,
   },
   header: {
     marginBottom: spacing.xl,
@@ -129,10 +127,7 @@ const styles: Record<string, React.CSSProperties> = {
     margin: 0,
   },
   form: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
+    ...formStyles.formContainer,
   },
   actions: {
     display: 'flex',

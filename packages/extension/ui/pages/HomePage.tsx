@@ -9,17 +9,27 @@
 
 import React, { useState } from 'react';
 import { Button } from '@extension/ui/components/Buttons';
+import { CredentialCard } from '@extension/ui/components/CredentialCard';
+import { ItemBankCard } from '@extension/ui/components/ItemBankCard';
+import { ItemSecureNote } from '@extension/ui/components/ItemSecureNote';
 import { useAuth } from '@common/hooks/useAuth';
 import { useAppStateStore } from '@common/hooks/useAppState';
+import { useItemsState } from '@common/hooks/useItemsState';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, typography, pageStyles, textStyles } from '../design';
+import { HelperBar } from '../components/HelperBar';
+import { CATEGORIES } from '@common/core/types/categories.types';
+import type { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
 
 type Category = 'CREDENTIALS' | 'BANK_CARDS' | 'SECURE_NOTES';
 
 export const HomePage: React.FC = () => {
   // Get user from global state
   const user = useAppStateStore(state => state.user);
+  
+  // Get items state
+  const { credentials, bankCards, secureNotes, filteredItems, loading, error } = useItemsState({ user });
   
   // Get auth operations
   const { logout, isLoading: isLoggingOut } = useAuth({ user });
@@ -30,6 +40,21 @@ export const HomePage: React.FC = () => {
   // Local state
   const [category, setCategory] = useState<Category>('CREDENTIALS');
   const [searchValue, setSearchValue] = useState('');
+
+  // Filter items based on search value and category
+  const displayedItems = React.useMemo(() => {
+    const items = category === 'CREDENTIALS' ? credentials : 
+                 category === 'BANK_CARDS' ? bankCards : 
+                 secureNotes;
+    
+    if (!searchValue.trim()) {
+      return items;
+    }
+    
+    return items.filter((item) =>
+      item.title?.toLowerCase().includes(searchValue.toLowerCase())
+    );
+  }, [category, credentials, bankCards, secureNotes, searchValue]);
 
   // Handle navigation to generator
   const handleOpenGenerator = () => {
@@ -61,10 +86,34 @@ export const HomePage: React.FC = () => {
     }
   };
 
+  // Handle item selection for details - Use router navigation
+  const handleCredentialPress = (credential: CredentialDecrypted) => {
+    router.navigateTo(ROUTES.CREDENTIAL_DETAILS, { credential });
+  };
+
+  const handleBankCardPress = (card: BankCardDecrypted) => {
+    router.navigateTo(ROUTES.BANK_CARD_DETAILS, { card });
+  };
+
+  const handleSecureNotePress = (note: SecureNoteDecrypted) => {
+    router.navigateTo(ROUTES.SECURE_NOTE_DETAILS, { note });
+  };
+
+  // Convert category to CATEGORIES enum
+  const getCategoryEnum = (category: Category) => {
+    switch (category) {
+      case 'CREDENTIALS': return CATEGORIES.CREDENTIALS;
+      case 'BANK_CARDS': return CATEGORIES.BANK_CARDS;
+      case 'SECURE_NOTES': return CATEGORIES.SECURE_NOTES;
+      default: return CATEGORIES.CREDENTIALS;
+    }
+  };
+
   return (
     <div style={styles.pageContainer} data-testid="home-page">
-      {/* Fixed Header Section */}
-      <div style={styles.fixedHeader}>
+      <div style={styles.pageContent}>
+        {/* Fixed Header Section */}
+        <div style={styles.fixedHeader}>
         {/* Search Bar */}
         <div style={styles.stickySearchBar}>
           <div style={styles.searchBarIcon}>
@@ -159,37 +208,57 @@ export const HomePage: React.FC = () => {
             {category === 'SECURE_NOTES' && 'Notes sécurisées'}
           </div>
           <div style={styles.itemList}>
-            <div style={styles.emptyState}>Aucun élément trouvé.</div>
+            {loading ? (
+              <div style={styles.emptyState}>Chargement...</div>
+            ) : error ? (
+              <div style={styles.emptyState}>Erreur: {error}</div>
+            ) : category === 'CREDENTIALS' ? (
+              displayedItems.length === 0 ? (
+                <div style={styles.emptyState}>Aucun identifiant trouvé.</div>
+              ) : (
+                displayedItems.map((credential) => (
+                  <CredentialCard
+                    key={credential.id}
+                    credential={credential as CredentialDecrypted}
+                    onPress={() => handleCredentialPress(credential as CredentialDecrypted)}
+                    testID={`credential-${credential.id}`}
+                  />
+                ))
+              )
+            ) : category === 'BANK_CARDS' ? (
+              displayedItems.length === 0 ? (
+                <div style={styles.emptyState}>Aucune carte bancaire trouvée.</div>
+              ) : (
+                displayedItems.map((card) => (
+                  <ItemBankCard
+                    key={card.id}
+                    cred={card as BankCardDecrypted}
+                    onPress={() => handleBankCardPress(card as BankCardDecrypted)}
+                  />
+                ))
+              )
+            ) : category === 'SECURE_NOTES' ? (
+              displayedItems.length === 0 ? (
+                <div style={styles.emptyState}>Aucune note sécurisée trouvée.</div>
+              ) : (
+                displayedItems.map((note) => (
+                  <ItemSecureNote
+                    key={note.id}
+                    note={note as SecureNoteDecrypted}
+                    onPress={() => handleSecureNotePress(note as SecureNoteDecrypted)}
+                  />
+                ))
+              )
+            ) : (
+              <div style={styles.emptyState}>Aucun élément trouvé.</div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Fixed Helper Bar */}
-      <div style={styles.fixedHelperBar}>
-        <div style={styles.helperBarContent}>
-          {/* Add Button */}
-          <button style={styles.helperBtnAdd} onClick={handleAddItem} data-testid="helper-add-button">
-            <AddCircleIcon />
-            <span style={styles.helperBtnTextAdd}>
-              {category === 'CREDENTIALS' && 'Ajouter un identifiant'}
-              {category === 'BANK_CARDS' && 'Ajouter une carte'}
-              {category === 'SECURE_NOTES' && 'Ajouter une note'}
-            </span>
-          </button>
-
-          {/* Right Actions */}
-          <div style={styles.helperBarRight}>
-            <button style={styles.helperBtn} onClick={handleOpenGenerator} data-testid="helper-generator-button">
-              <LoopIcon />
-              <span style={styles.helperBtnText}>Générateur</span>
-            </button>
-            <button style={styles.helperBtn} onClick={() => router.navigateTo(ROUTES.SETTINGS)} data-testid="helper-settings-button">
-              <SettingsIcon />
-              <span style={styles.helperBtnText}>Paramètres</span>
-            </button>
-          </div>
-        </div>
       </div>
+      
+      {/* HelperBar */}
+      <HelperBar category={getCategoryEnum(category)} />
     </div>
   );
 };
@@ -249,20 +318,15 @@ const SettingsIcon = () => (
 );
 
 const styles: Record<string, React.CSSProperties> = {
-  pageContainer: {
-    backgroundColor: colors.primaryBackground,
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    width: '100%',
-    overflow: 'hidden',
+  ...pageStyles,
+  pageContent: {
+    ...pageStyles.pageContentWithGap,
+    flex: 1,
+    overflowY: 'auto',
   },
+  ...textStyles,
   fixedHeader: {
     backgroundColor: colors.primaryBackground,
-    paddingLeft: spacing.lg,
-    paddingRight: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
     display: 'flex',
     flexDirection: 'column',
     gap: spacing.md,
@@ -335,9 +399,6 @@ const styles: Record<string, React.CSSProperties> = {
   scrollableContent: {
     flex: 1,
     overflowY: 'auto',
-    paddingLeft: spacing.lg,
-    paddingRight: spacing.lg,
-    paddingBottom: 80, // Space for helper bar
   },
   pageSection: {
     display: 'flex',
@@ -347,8 +408,8 @@ const styles: Record<string, React.CSSProperties> = {
   },
   sectionTitle: {
     color: colors.secondary,
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.bold,
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   },
   suggestionPlaceholder: {
@@ -394,76 +455,35 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
   },
   emptyState: {
+    ...textStyles.placeholder,
+    fontSize: typography.fontSize.xs,
+  },
+  itemCard: {
+    backgroundColor: colors.secondaryBackground,
+    border: `1px solid ${colors.borderColor}`,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  },
+  itemTitle: {
+    color: colors.primary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    marginBottom: spacing.xs,
+  },
+  itemSubtitle: {
+    color: colors.tertiaryText,
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.regular,
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    marginBottom: spacing.xs,
+  },
+  itemUrl: {
     color: colors.tertiary,
     fontSize: typography.fontSize.xs,
-    fontStyle: 'italic',
-    textAlign: 'center',
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  fixedHelperBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: colors.primaryBackground,
-    borderTop: `1px solid ${colors.borderColor}`,
-    boxShadow: '0 -2px 8px rgba(0,0,0,0.04)',
-    zIndex: 1000,
-  },
-  helperBarContent: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 60,
-    paddingLeft: 8,
-    paddingRight: 8,
-  },
-  helperBtnAdd: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    gap: 4,
-    backgroundColor: colors.secondary,
-    borderRadius: 12,
-    padding: 8,
-    border: 'none',
-    cursor: 'pointer',
-    outline: 'none',
-  },
-  helperBtnTextAdd: {
-    color: colors.white,
-    fontSize: 13,
-    fontWeight: typography.fontWeight.medium,
-    textAlign: 'center',
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  helperBarRight: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 8,
-  },
-  helperBtn: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-    border: 'none',
-    borderRadius: 8,
-    width: 55,
-    cursor: 'pointer',
-    outline: 'none',
-  },
-  helperBtnText: {
-    color: colors.primary,
-    fontSize: 10,
-    fontWeight: typography.fontWeight.medium,
-    marginTop: 2,
-    textAlign: 'center',
+    fontWeight: typography.fontWeight.regular,
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   },
 };

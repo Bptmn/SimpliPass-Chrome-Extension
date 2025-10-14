@@ -1,0 +1,29 @@
+// Source: lib/custom_code/actions/encrypt_data.dart
+// ChaCha20-Poly1305 encryption: nonce(12) | ciphertext | mac(16) -> Base64 (standard)
+
+import 'package:cryptography/cryptography.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+
+Future<String> encryptData(String symmetricKey, String plainText) async {
+  final algorithm = Chacha20.poly1305Aead();
+  final normalizedKey = symmetricKey.trim();
+  final key = base64Url.decode(_padBase64(normalizedKey));
+  final secretKey = SecretKey(key);
+  final nonce = algorithm.newNonce();
+
+  final encrypted = await algorithm.encrypt(
+    utf8.encode(plainText),
+    secretKey: secretKey,
+    nonce: nonce,
+  );
+
+  final result = Uint8List.fromList(
+    nonce + encrypted.cipherText + encrypted.mac.bytes,
+  );
+  return base64.encode(result); // Base64 (standard)
+}
+
+String _padBase64(String input) {
+  return input + '=' * ((4 - input.length % 4) % 4);
+}

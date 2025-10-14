@@ -5,7 +5,7 @@
  */
 
 import React, { useRef } from 'react';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, typography } from '../design';
 
 interface CodeInputProps {
   value: string;
@@ -71,7 +71,8 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'row',
     gap: spacing.sm,
-    marginVertical: spacing.md,
+    marginTop: spacing.md,
+    marginBottom: spacing.md,
     width: '80%',
   },
   box: {

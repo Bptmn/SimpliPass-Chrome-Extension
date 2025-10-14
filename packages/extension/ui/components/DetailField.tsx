@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, cardStyles, textStyles } from '../design';
 import { CopyButton } from './CopyButton';
 import { Icon } from './Icon';
 
@@ -46,21 +46,24 @@ export const DetailField: React.FC<DetailFieldProps> = ({
           </div>
         </div>
         {value && showCopyButton && (
-          <CopyButton
-            text={copyText}
-            onPress={onCopy}
-            testID={`copy-${label.toLowerCase().replace(/\s+/g, '-')}`}
-          />
+          <div style={styles.buttonContainer}>
+            <CopyButton
+              textToCopy={value}
+              onClick={onCopy}
+            />
+          </div>
         )}
         {value && showLaunchButton && (
-          <button
-            style={styles.launchBtn}
-            onClick={onLaunch}
-            aria-label={`Launch ${label}`}
-            data-testid={`launch-${label.toLowerCase().replace(/\s+/g, '-')}`}
-          >
-            <Icon name="launch" size={20} color={colors.primary} />
-          </button>
+          <div style={styles.buttonContainer}>
+            <button
+              style={styles.launchBtn}
+              onClick={onLaunch}
+              aria-label={`Launch ${label}`}
+              data-testid={`launch-${label.toLowerCase().replace(/\s+/g, '-')}`}
+            >
+              <Icon name="launch" size={20} color={colors.primary} />
+            </button>
+          </div>
         )}
       </div>
     </div>
@@ -68,40 +71,59 @@ export const DetailField: React.FC<DetailFieldProps> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...cardStyles,
+  ...textStyles,
   container: {
     display: 'flex',
     flexDirection: 'column',
     gap: spacing.xxs,
-    width: '100%',
+    width: '100%', // 100% de la largeur de pageContent
+    marginLeft: 0, // Pas de marginLeft par défaut
+    marginRight: 0, // Pas de marginRight par défaut
+    boxSizing: 'border-box',
   },
   fieldLabel: {
-    color: colors.tertiaryText,
-    fontSize: typography.fontSize.xs,
-    fontWeight: typography.fontWeight.regular,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.labelSmall,
   },
   cardField: {
+    ...cardStyles.card,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.secondaryBackground,
-    border: `1px solid ${colors.borderColor}`,
-    borderRadius: radius.md,
     padding: spacing.sm,
-    width: '100%',
+    width: '100%', // 100% de la largeur du container
+    marginLeft: 0, // Pas de marginLeft par défaut
+    marginRight: 0, // Pas de marginRight par défaut
+    boxSizing: 'border-box',
+    overflow: 'hidden',
+    minWidth: 0, // Allow flex items to shrink
   },
   fieldLeft: {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
+    minWidth: 0, // Allow text to wrap/truncate
+    overflow: 'hidden',
   },
   fieldValue: {
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.regular,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.fieldValue,
     wordBreak: 'break-all' as const,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap' as const,
+    maxWidth: '100%',
+  },
+  copyText: {
+    ...textStyles.descriptionSmall,
+    color: colors.secondary,
+  },
+  buttonContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0, // Prevent button from shrinking
+    marginLeft: spacing.sm,
   },
   launchBtn: {
     display: 'flex',
@@ -111,8 +133,8 @@ const styles: Record<string, React.CSSProperties> = {
     border: 'none',
     borderRadius: radius.sm,
     height: spacing.lg * 2,
-    paddingHorizontal: spacing.sm,
-    marginLeft: spacing.sm,
+    paddingLeft: spacing.sm,
+    paddingRight: spacing.sm,
     cursor: 'pointer',
     outline: 'none',
   },

@@ -6,7 +6,7 @@ import React from 'react';
 import { BackButton } from '@extension/ui/components';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
-import { colors, spacing, typography } from '../design/tokens';
+import { colors, spacing, typography, pageStyles } from '../design';
 
 export const SettingsPage: React.FC = () => {
   const router = useAppRouterContext();
@@ -16,24 +16,24 @@ export const SettingsPage: React.FC = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <BackButton onClick={handleBack} label="Retour" />
-        <h2 style={styles.title}>Paramètres</h2>
-      </div>
-      <div style={styles.content}>
-        <div style={styles.comingSoon}>Plus d'options à venir...</div>
+    <div style={styles.pageContainer}>
+      <div style={styles.pageContent}>
+        <div style={styles.content}>
+          <div style={styles.comingSoon}>Plus d'options à venir...</div>
+        </div>
       </div>
     </div>
   );
 };
 
 const styles: Record<string, React.CSSProperties> = {
-  container: {
-    padding: spacing.lg,
-    display: 'flex',
-    flexDirection: 'column',
+  ...pageStyles,
+  pageContainer: {
+    ...pageStyles.pageContainer,
     gap: spacing.lg,
+  },
+  pageContent: {
+    ...pageStyles.pageContentWithGap,
   },
   header: {
     display: 'flex',

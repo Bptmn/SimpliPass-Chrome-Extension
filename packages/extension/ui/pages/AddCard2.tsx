@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { FormInput } from '@extension/ui/components/InputFields';
 import { Button } from '@extension/ui/components/Buttons';
-import { HeaderTitle } from '@extension/ui/components/HeaderTitle';
+import { HeaderBar } from '@extension/ui/components/HeaderBar';
 import { ColorSelector } from '@extension/ui/components/ColorSelector';
 import { ItemBankCard } from '@extension/ui/components/ItemBankCard';
 import { ErrorBanner } from '@extension/ui/components/ErrorBanner';
@@ -16,7 +16,7 @@ import { ROUTES } from '../router/ROUTES';
 import { useCardForm } from '@common/hooks/useCardForm';
 import { useAddCard2 } from '@common/hooks/useAddCard2';
 import { getMonthOptions, getYearOptions } from '@common/utils/cards';
-import { colors, spacing, typography } from '../design/tokens';
+import { colors, spacing, typography, pageStyles, formStyles, commonStyles } from '../design';
 
 interface AddCard2Props {
   title?: string;
@@ -81,7 +81,7 @@ export const AddCard2: React.FC<AddCard2Props> = ({
   return (
     <div style={styles.pageContainer} data-testid="add-card-2-page">
       <div style={styles.pageContent}>
-        <HeaderTitle 
+        <HeaderBar 
           title="Ajouter une carte" 
           onBackPress={handleBack}
         />
@@ -169,14 +169,6 @@ export const AddCard2: React.FC<AddCard2Props> = ({
 
         <div style={styles.actions}>
           <Button
-            onClick={handleBack}
-            variant="ghost"
-            fullWidth
-            data-testid="add-card-back-button"
-          >
-            Retour
-          </Button>
-          <Button
             onClick={handleFormSubmit}
             disabled={isSubmitting || !formData.cardNumber.trim() || !formData.expirationDate.trim() || !formData.cvv.trim()}
             fullWidth
@@ -191,83 +183,15 @@ export const AddCard2: React.FC<AddCard2Props> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...pageStyles,
+  ...formStyles,
+  ...commonStyles,
   pageContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: colors.primaryBackground,
-    padding: spacing.lg,
-    height: '100%',
+    ...pageStyles.pageContainer,
     overflow: 'auto',
-  },
-  pageContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
-  },
-  previewSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.sm,
-  },
-  sectionTitle: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
-    color: colors.primary,
-    margin: 0,
-  },
-  cardPreview: {
-    display: 'flex',
-    justifyContent: 'center',
-    padding: spacing.md,
-  },
-  formContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.md,
-    flex: 1,
-  },
-  dateRow: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  dateField: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    gap: spacing.xs,
-  },
-  dateLabel: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    fontFamily: typography.fontFamily.base,
-    color: colors.primary,
-  },
-  dateSelects: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: spacing.xs,
-  },
-  dateSelect: {
-    flex: 1,
-    padding: spacing.sm,
-    border: `1px solid ${colors.borderColor}`,
-    borderRadius: 8,
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.base,
-    backgroundColor: colors.primaryBackground,
-    color: colors.primary,
-    outline: 'none',
   },
   cvvField: {
     flex: 1,
-  },
-  actions: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.sm,
   },
 };
 

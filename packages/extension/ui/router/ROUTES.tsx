@@ -24,6 +24,7 @@ import { EmailConfirmationPage } from '@extension/ui/pages/EmailConfirmationPage
 import { ModifyBankCardPage } from '@extension/ui/pages/ModifyBankCardPage';
 import { ModifyCredentialPage } from '@extension/ui/pages/ModifyCredentialPage';
 import { ModifySecureNotePage } from '@extension/ui/pages/ModifySecureNotePage';
+import type { BankCardDecrypted, CredentialDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
 import { SecureNoteDetailsPage } from '@extension/ui/pages/SecureNoteDetailsPage';
 import { BackButton } from '@extension/ui/components';
 import { useAppRouterContext } from './AppRouterProvider';
@@ -101,6 +102,67 @@ const placeholderStyles: Record<string, React.CSSProperties> = {
   },
 };
 
+// Wrapper components to inject router context
+const ModifyBankCardWrapper: React.FC<any> = () => {
+  const router = useAppRouterContext();
+  const bankCard = router.routeParams?.bankCard;
+  if (!bankCard) {
+    console.error('[ModifyBankCardWrapper] No bankCard in routeParams:', router.routeParams);
+    return <div>Error: No bank card data</div>;
+  }
+  return <ModifyBankCardPage bankCard={bankCard} onBack={() => router.goBack()} />;
+};
+
+const ModifyCredentialWrapper: React.FC<any> = () => {
+  const router = useAppRouterContext();
+  const credential = router.routeParams?.credential;
+  if (!credential) {
+    console.error('[ModifyCredentialWrapper] No credential in routeParams:', router.routeParams);
+    return <div>Error: No credential data</div>;
+  }
+  return <ModifyCredentialPage credential={credential} onBack={() => router.goBack()} />;
+};
+
+const ModifySecureNoteWrapper: React.FC<any> = () => {
+  const router = useAppRouterContext();
+  const secureNote = router.routeParams?.secureNote;
+  if (!secureNote) {
+    console.error('[ModifySecureNoteWrapper] No secureNote in routeParams:', router.routeParams);
+    return <div>Error: No secure note data</div>;
+  }
+  return <ModifySecureNotePage secureNote={secureNote} onBack={() => router.goBack()} />;
+};
+
+const CredentialDetailsWrapper: React.FC<any> = () => {
+  const router = useAppRouterContext();
+  const credential = router.routeParams?.credential;
+  if (!credential) {
+    console.error('[CredentialDetailsWrapper] No credential in routeParams:', router.routeParams);
+    return <div>Error: No credential data</div>;
+  }
+  return <CredentialDetailsPage credential={credential} onBack={() => router.goBack()} />;
+};
+
+const BankCardDetailsWrapper: React.FC<any> = () => {
+  const router = useAppRouterContext();
+  const card = router.routeParams?.card;
+  if (!card) {
+    console.error('[BankCardDetailsWrapper] No card in routeParams:', router.routeParams);
+    return <div>Error: No card data</div>;
+  }
+  return <BankCardDetailsPage card={card} onBack={() => router.goBack()} />;
+};
+
+const SecureNoteDetailsWrapper: React.FC<any> = () => {
+  const router = useAppRouterContext();
+  const note = router.routeParams?.note;
+  if (!note) {
+    console.error('[SecureNoteDetailsWrapper] No note in routeParams:', router.routeParams);
+    return <div>Error: No note data</div>;
+  }
+  return <SecureNoteDetailsPage note={note} onBack={() => router.goBack()} />;
+};
+
 export const routeComponents: Record<AppRoute, React.ComponentType<any>> = {
   LOGIN: () => <LoginPage />, 
   LOCK: () => <LockPage reason="expired" user={null} />, 
@@ -112,14 +174,14 @@ export const routeComponents: Record<AppRoute, React.ComponentType<any>> = {
   ADD_CARD_1: () => <AddCard1 />, 
   ADD_CARD_2: () => <AddCard2 title="" bankName="" />, 
   ADD_SECURENOTE: () => <AddSecureNote />, 
-  MODIFY_BANK_CARD: () => <Placeholder title="Modify Bank Card" description="Pass bankCard prop" />, 
-  MODIFY_CREDENTIAL: () => <Placeholder title="Modify Credential" description="Pass credential prop" />, 
-  MODIFY_SECURENOTE: () => <Placeholder title="Modify Secure Note" description="Pass secureNote prop" />, 
+  MODIFY_BANK_CARD: ModifyBankCardWrapper, 
+  MODIFY_CREDENTIAL: ModifyCredentialWrapper, 
+  MODIFY_SECURENOTE: ModifySecureNoteWrapper, 
   LOADING: () => null,
   ERROR: () => null,
-  CREDENTIAL_DETAILS: () => <Placeholder title="Credential Details" description="Pass credential prop" />, 
-  BANK_CARD_DETAILS: () => <Placeholder title="Bank Card Details" description="Pass card prop" />, 
-  SECURE_NOTE_DETAILS: () => <Placeholder title="Secure Note Details" description="Pass note prop" />, 
+  CREDENTIAL_DETAILS: CredentialDetailsWrapper, 
+  BANK_CARD_DETAILS: BankCardDetailsWrapper, 
+  SECURE_NOTE_DETAILS: SecureNoteDetailsWrapper, 
   EMAIL_CONFIRMATION: () => <Placeholder title="Email Confirmation" description="Pass email prop" />, 
 };
 

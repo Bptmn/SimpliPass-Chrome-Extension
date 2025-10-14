@@ -5,20 +5,17 @@
  */
 
 import React from 'react';
-import { colors, radius, spacing, typography } from '../design/tokens';
+import { colors, radius, spacing, typography } from '../design';
 import { useClipboard } from '@common/hooks/useClipboard';
+import { Icon } from './Icon';
 
 interface CopyButtonProps {
   textToCopy: string;
-  ariaLabel?: string;
-  children?: React.ReactNode;
   onClick?: () => void;
 }
 
 export const CopyButton: React.FC<CopyButtonProps> = ({ 
   textToCopy, 
-  ariaLabel = 'Copier', 
-  children, 
   onClick 
 }) => {
   const { copyToClipboard } = useClipboard();
@@ -36,18 +33,13 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
     <button 
       style={styles.button} 
       onClick={handleCopy}
-      aria-label={ariaLabel}
+      aria-label="Copier"
       data-testid="copy-button"
     >
-      {children || (
-        <div style={styles.container}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke={colors.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke={colors.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span style={styles.text}>Copier</span>
-        </div>
-      )}
+      <div style={styles.container}>
+        <Icon name="copy" size={spacing.copyButtonIconSize} color="white" />
+        <span style={styles.text}>copier</span>
+      </div>
     </button>
   );
 };
@@ -65,6 +57,13 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     padding: spacing.xs,
     transition: 'opacity 0.2s',
+    // Taille fixe centralisée
+    width: spacing.copyButtonWidth,
+    height: spacing.copyButtonHeight,
+    minWidth: spacing.copyButtonWidth,
+    minHeight: spacing.copyButtonHeight,
+    // Styles centralisés - ne peuvent pas être modifiés par les pages
+    fontFamily: typography.fontFamily.base,
   },
   container: {
     display: 'flex',
@@ -75,11 +74,14 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
   },
   text: {
+    // Couleur, taille et famille centralisées
     color: colors.whiteText,
-    fontSize: typography.fontSize.xs,
-    fontWeight: typography.fontWeight.medium,
+    fontSize: typography.fontSize.xxs,
     fontFamily: typography.fontFamily.base,
+    fontWeight: typography.fontWeight.regular,
     marginTop: spacing.xxs,
+    // Empêche la surcharge depuis l'extérieur
+    textAlign: 'center',
   },
 };
 

@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { colors, spacing, radius, typography } from '../design/tokens';
+import { colors, spacing, radius, textStyles, cardStyles } from '../design';
 import { Icon } from './Icon';
 
 interface InputEditProps {
@@ -74,19 +74,17 @@ export const InputEdit: React.FC<InputEditProps> = ({
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  ...textStyles,
+  ...cardStyles,
   container: {
+    ...cardStyles.card,
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: colors.secondaryBackground,
-    border: `1px solid ${colors.borderColor}`,
     borderRadius: radius.md + 4,
     padding: spacing.sm,
   },
   label: {
-    color: colors.tertiaryText,
-    fontSize: typography.fontSize.xs,
-    fontWeight: typography.fontWeight.regular,
-    fontFamily: typography.fontFamily.base,
+    ...textStyles.labelSmall,
     marginBottom: spacing.xxs,
   },
   inputRow: {
@@ -95,11 +93,9 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
   },
   input: {
+    ...textStyles.input,
     backgroundColor: 'transparent',
     border: 'none',
-    color: colors.primary,
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.base,
     width: '100%',
     outline: 'none',
     resize: 'vertical' as const,

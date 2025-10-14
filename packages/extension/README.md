@@ -310,24 +310,19 @@ packages/extension/
 │   └── components/
 │       ├── CredentialPicker/
 │       │   ├── CredentialPickerPopover.tsx
-│       │   ├── CredentialPickerPopover.html
-│       │   └── CredentialPickerPopover.stories.tsx
+│       │   └── CredentialPickerPopover.html
 │       ├── LoginPrompt/
 │       │   ├── LoginPromptPopover.tsx
-│       │   ├── LoginPromptPopover.html
-│       │   └── LoginPromptPopover.stories.tsx
+│       │   └── LoginPromptPopover.html
 │       ├── PasswordGenerator/
 │       │   ├── PasswordGeneratorPopover.tsx
-│       │   ├── PasswordGeneratorPopover.html
-│       │   └── PasswordGeneratorPopover.stories.tsx
+│       │   └── PasswordGeneratorPopover.html
 │       ├── SaveCredential/
 │       │   ├── SaveCredentialPopover.tsx
-│       │   ├── SaveCredentialPopover.html
-│       │   └── SaveCredentialPopover.stories.tsx
+│       │   └── SaveCredentialPopover.html
 │       └── UpdateCredential/
 │           ├── UpdateCredentialPopover.tsx
-│           ├── UpdateCredentialPopover.html
-│           └── UpdateCredentialPopover.stories.tsx
+│           └── UpdateCredentialPopover.html
 ├── services/                          # Extension-specific services
 │   ├── passwordGenerationService.ts   # Password generation logic
 │   ├── credentialCaptureService.ts    # Credential capture and comparison
@@ -785,7 +780,6 @@ showLoginPromptPopover(field, loginFields)
 #### **✅ Code Organization & Cleanup**
 - ✅ **Duplicate Files Removed**: Cleaned up redundant popover files
 - ✅ **Proper File Structure**: Organized popover components in dedicated folders
-- ✅ **Storybook Integration**: Updated all Storybook stories to reflect component changes
 - ✅ **Build Process Optimization**: Fixed build configurations and file copying
 
 #### **✅ Pre-Checked Page Capabilities Approach**
