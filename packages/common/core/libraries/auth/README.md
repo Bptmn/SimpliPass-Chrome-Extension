@@ -99,4 +99,4 @@ The authentication library handles external API interactions:
 - **Secure Storage**: Uses Chrome Storage API for token storage
 - **Browser Integration**: Leverages browser-specific authentication features
 - **Tab Management**: Handles authentication across multiple tabs
-- **Extension APIs**: Uses Chrome extension APIs for enhanced functionality 
+- **Extension APIs**: Uses Chrome extension APIs for enhanced functionality

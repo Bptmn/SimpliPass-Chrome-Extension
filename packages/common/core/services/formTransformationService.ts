@@ -12,10 +12,9 @@ import type { BankCardDecrypted, CredentialDecrypted, SecureNoteDecrypted } from
 import type { CardFormData, CredentialFormData, SecureNoteForm } from '@common/core/types/items.types';
 import type { ItemDecrypted } from '@common/core/types/items.types';
 
-// ✅ Helper function to get crypto utilities through adapter pattern
+// ✅ Helper function to get crypto utilities through direct import
 const getCryptoUtils = async () => {
-  // This should ideally come through an adapter, but for now we'll keep the direct import
-  // TODO: Create a crypto adapter to abstract this dependency
+  // Direct import of crypto library (revert from adapter pattern)
   return await import('@common/core/libraries/crypto');
 };
 

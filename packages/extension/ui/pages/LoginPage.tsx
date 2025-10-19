@@ -86,7 +86,7 @@ export const LoginPage: React.FC = () => {
 const styles: Record<string, React.CSSProperties> = {
   ...pageStyles,
   ...formStyles,
-  pageContainer: { 
+  pageContainer: {
     ...pageStyles.pageContainer,
     gap: spacing.md,
   },
@@ -122,5 +122,3 @@ const styles: Record<string, React.CSSProperties> = {
 };
 
 export default LoginPage;
-
-

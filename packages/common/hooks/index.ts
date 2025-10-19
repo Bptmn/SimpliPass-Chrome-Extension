@@ -32,21 +32,3 @@ export { useAutofillState } from './autofill/useAutofillState';
 export { useAutofillSuggestions } from './autofill/useAutofillSuggestions';
 export { useAutofillInjection } from './autofill/useAutofillInjection';
 
-// Legacy hooks (maintained for compatibility)
-export { useAddCard2 } from './legacy/useAddCard2';
-export { useBankCardDetails } from './legacy/useBankCardDetails';
-export { useCredentialDetails } from './legacy/useCredentialDetails';
-export { useCurrentTabDomain } from './legacy/useCurrentTabDomain';
-export { useDebouncedValue } from './legacy/useDebouncedValue';
-export { useInputLogic } from './legacy/useInputLogic';
-export { useItemBankCard } from './legacy/useItemBankCard';
-export { useLazyCredentialIcon } from './legacy/useLazyCredentialIcon';
-export { useLoginStorage } from './legacy/useLoginStorage';
-export { useManualRefresh } from './legacy/useManualRefresh';
-export { useModifyBankCard } from './legacy/useModifyBankCard';
-export { useModifyCredential } from './legacy/useModifyCredential';
-export { useModifySecureNote } from './legacy/useModifySecureNote';
-export { useReEnterPassword } from './legacy/useReEnterPassword';
-export { useSettings } from './legacy/useSettings';
-export { useThemeStorage } from './legacy/useThemeStorage';
-export { useUser } from './legacy/useUser';

@@ -101,8 +101,7 @@ export class SecretsService implements ISecretsService {
 
   public async deriveAndStoreUserSecretKey(password: string): Promise<void> {
     try {
-      // ✅ Use adapter instead of direct library calls
-      // TODO: Create a crypto adapter to abstract this dependency
+      // ✅ Use direct import instead of adapter
       const { deriveKey } = await import('../libraries/crypto');
       const { fetchUserSaltCognito } = await import('../libraries/auth/cognito');
       

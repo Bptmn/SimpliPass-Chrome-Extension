@@ -4,6 +4,9 @@ This directory contains essential documentation for the SimpliPass Chrome Extens
 
 ## 📚 Current Documentation
 
+### Architecture
+- **[ARCHITECTURE_APPROACH.md](./ARCHITECTURE_APPROACH.md)** - Authentication, encryption, and storage approach
+
 ### Testing
 - **[TESTING_OVERVIEW.md](./TESTING_OVERVIEW.md)** - Current testing status and coverage
 

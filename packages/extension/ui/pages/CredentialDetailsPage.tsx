@@ -15,6 +15,7 @@ import { CopyButton } from '@extension/ui/components/CopyButton';
 import { ConfirmDialog } from '@extension/ui/components/ConfirmDialog';
 import { useClipboard } from '@common/hooks/useClipboard';
 import { usePasswordVisibility } from '@common/hooks/usePasswordVisibility';
+import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
 import { colors, spacing, radius, typography, pageStyles, commonStyles } from '../design';
@@ -29,13 +30,12 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   credential,
   onBack,
 }) => {
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   const router = useAppRouterContext();
   const { copyToClipboard } = useClipboard();
   const { isPasswordVisible, togglePasswordVisibility } = usePasswordVisibility();
+  const { deleteItem, isLoading, error } = useItemsCRUD();
   
   // Navigate to modify credential page
   const handleEdit = () => {
@@ -63,25 +63,17 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
   };
 
   const confirmDelete = async () => {
+    setShowDeleteConfirm(false);
     try {
-      setLoading(true);
-      // TODO: Implement delete logic using useItemsCRUD
-      console.log('Delete credential:', credential.id);
+      await deleteItem(credential.id);
       onBack();
-    } catch (err) {
-      setError('Erreur lors de la suppression');
-    } finally {
-      setLoading(false);
+    } catch (e) {
+      console.error('[CredentialDetailsPage] Delete failed:', e);
     }
   };
 
   const handleDelete = () => {
     setShowDeleteConfirm(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    setShowDeleteConfirm(false);
-    await confirmDelete();
   };
 
   return (
@@ -94,7 +86,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
         message="Êtes-vous sûr de vouloir supprimer cet identifiant ?"
         confirmText="Supprimer"
         cancelText="Annuler"
-        onConfirm={handleConfirmDelete}
+        onConfirm={confirmDelete}
         onCancel={() => setShowDeleteConfirm(false)}
         testId="delete-confirm-dialog"
       />
@@ -181,7 +173,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
           <Button
             onClick={handleEdit}
             variant="tertiary"
-            disabled={loading}
+            disabled={isLoading}
             data-testid="edit-credential-button"
             style={{ flex: 1, maxWidth: 135 }}
           >
@@ -190,7 +182,7 @@ export const CredentialDetailsPage: React.FC<CredentialDetailsPageProps> = ({
           <Button
             onClick={handleDelete}
             variant="danger"
-            disabled={loading}
+            disabled={isLoading}
             data-testid="delete-credential-button"
             style={{ flex: 1, maxWidth: 135 }}
           >
@@ -217,7 +209,7 @@ const styles: Record<string, React.CSSProperties> = {
   pageContent: {
     ...pageStyles.pageContentWithGap,
     minHeight: 0, // Allow content to shrink
-    flex: 1, // Take available space
+    flex: '0 1 auto', // Only take space needed by content
   },
   cardGroup: {
     ...pageStyles.pageElement, // Applique width: 100%, marginLeft: 0, marginRight: 0

@@ -14,10 +14,9 @@ export interface ICryptoService {
     encryptItem(userSecretKey: string, itemToEncrypt: ItemDecrypted): Promise<ItemEncrypted>;
 }
 
-// ✅ Helper function to get crypto utilities through adapter pattern
+// ✅ Helper function to get crypto utilities through direct import
 const getCryptoUtils = async () => {
-  // This should ideally come through an adapter, but for now we'll keep the direct import
-  // TODO: Create a crypto adapter to abstract this dependency
+  // Direct import of crypto library (revert from adapter pattern)
   return await import('@common/core/libraries/crypto');
 };
 
@@ -27,13 +26,9 @@ export const decryptItem = async (userSecretKey: string, itemToDecrypt: ItemEncr
         const cryptoUtils = await getCryptoUtils();
         const itemKey = await cryptoUtils.decryptData(userSecretKey, itemToDecrypt.item_key_encrypted);
         const decryptedContent = await cryptoUtils.decryptData(itemKey, itemToDecrypt.content_encrypted);
-        console.log('[Cryptography] Decrypted content length:', decryptedContent.length);
-        console.log('[Cryptography] Decrypted content (first 100 chars):', decryptedContent.substring(0, 100) + (decryptedContent.length > 100 ? '...' : ''));
         
         const contentJson = JSON.parse(decryptedContent);
-        console.log('[Cryptography] Parsed JSON keys:', Object.keys(contentJson));
-        console.log('[Cryptography] Parsed JSON itemType:', contentJson.itemType);
-        console.log('[Cryptography] Full parsed JSON:', JSON.stringify(contentJson, null, 2));
+
         
         // ✅ Database adapter now provides standard Date objects
         const createdDateTime = itemToDecrypt.created_at;

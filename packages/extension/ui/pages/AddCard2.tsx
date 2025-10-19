@@ -14,7 +14,7 @@ import { ErrorBanner } from '@extension/ui/components/ErrorBanner';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
 import { useCardForm } from '@common/hooks/useCardForm';
-import { useAddCard2 } from '@common/hooks/useAddCard2';
+import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { getMonthOptions, getYearOptions } from '@common/utils/cards';
 import { colors, spacing, typography, pageStyles, formStyles, commonStyles } from '../design';
 
@@ -41,14 +41,39 @@ export const AddCard2: React.FC<AddCard2Props> = ({
     handleFieldChange,
     handleCardNumberChange,
     handleExpirationDateChange,
-    handleCVVChange,
-    handleSubmit
+    handleCVVChange
   } = useCardForm();
 
   const [selectedColor, setSelectedColor] = useState('#4f86a2');
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
 
   // Use the hook for business logic
-  const { previewCard, isDatePickerVisible, showDatePicker, hideDatePicker } = useAddCard2(formData, selectedColor);
+  const { addBankCard, isLoading, error } = useItemsCRUD();
+
+  // Generate preview card
+    const previewCard = {
+      id: 'preview',
+      itemType: 'bank_card' as const,
+      title: formData.title || 'Titre de la carte',
+      cardNumber: formData.cardNumber || '1234567890123456',
+      owner: formData.cardholderName || 'Nom du titulaire',
+      expirationDate: {
+        month: parseInt(formData.expirationDate.split('/')[0]) || 1,
+        year: parseInt('20' + formData.expirationDate.split('/')[1]) || 2025,
+      },
+      verificationNumber: formData.cvv || '123',
+      note: formData.notes || '',
+      color: selectedColor,
+      createdDateTime: new Date(),
+      lastModified: new Date(),
+      lastUseDateTime: new Date(),
+      itemKey: '',
+      bankName: '',
+      bankDomain: '',
+    };
+
+  const showDatePicker = () => setDatePickerVisible(true);
+  const hideDatePicker = () => setDatePickerVisible(false);
 
   // Helper for web: generate month and year options
   const monthOptions = getMonthOptions();
@@ -67,7 +92,27 @@ export const AddCard2: React.FC<AddCard2Props> = ({
 
   const handleFormSubmit = async () => {
     try {
-      await handleSubmit();
+      const newCard = {
+        id: crypto.randomUUID(),
+        itemType: 'bank_card' as const,
+        title: formData.title,
+        cardNumber: formData.cardNumber,
+        owner: formData.cardholderName,
+        expirationDate: {
+          month: parseInt(formData.expirationDate.split('/')[0]),
+          year: parseInt('20' + formData.expirationDate.split('/')[1]),
+        },
+        verificationNumber: formData.cvv,
+        note: formData.notes || '',
+        color: selectedColor,
+        createdDateTime: new Date(),
+        lastModified: new Date(),
+        lastUseDateTime: new Date(),
+        itemKey: '',
+        bankName: '',
+        bankDomain: '',
+      };
+      await addBankCard(newCard);
       router.navigateTo(ROUTES.HOME);
     } catch (error) {
       console.error('Failed to submit card form:', error);
@@ -123,8 +168,8 @@ export const AddCard2: React.FC<AddCard2Props> = ({
                 >
                   <option value="">Mois</option>
                   {monthOptions.map(month => (
-                    <option key={month.value} value={month.value}>
-                      {month.label}
+                    <option key={month} value={month}>
+                      {month}
                     </option>
                   ))}
                 </select>
@@ -138,8 +183,8 @@ export const AddCard2: React.FC<AddCard2Props> = ({
                 >
                   <option value="">Année</option>
                   {yearOptions.map(year => (
-                    <option key={year.value} value={year.value}>
-                      {year.label}
+                    <option key={year} value={year}>
+                      {year}
                     </option>
                   ))}
                 </select>
@@ -170,11 +215,11 @@ export const AddCard2: React.FC<AddCard2Props> = ({
         <div style={styles.actions}>
           <Button
             onClick={handleFormSubmit}
-            disabled={isSubmitting || !formData.cardNumber.trim() || !formData.expirationDate.trim() || !formData.cvv.trim()}
+            disabled={isSubmitting || isLoading || !formData.cardNumber.trim() || !formData.expirationDate.trim() || !formData.cvv.trim()}
             fullWidth
             data-testid="add-card-submit-button"
           >
-            {isSubmitting ? 'Ajout en cours...' : 'Ajouter la carte'}
+            {isSubmitting || isLoading ? 'Ajout en cours...' : 'Ajouter la carte'}
           </Button>
         </div>
       </div>

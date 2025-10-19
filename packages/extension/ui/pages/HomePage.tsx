@@ -384,8 +384,7 @@ const styles: Record<string, React.CSSProperties> = {
     whiteSpace: 'nowrap',
   },
   categoryBtnActive: {
-    borderColor: colors.secondary,
-    borderWidth: 2,
+    border: `2px solid ${colors.secondary}`,
   },
   categoryBtnText: {
     color: colors.primary,

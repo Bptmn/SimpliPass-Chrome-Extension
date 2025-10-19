@@ -14,7 +14,9 @@ import { ItemBankCard } from '@extension/ui/components/ItemBankCard';
 import { LazyCredentialIcon } from '@extension/ui/components/LazyCredentialIcon';
 import { ConfirmDialog } from '@extension/ui/components/ConfirmDialog';
 import { useClipboard } from '@common/hooks/useClipboard';
-import { useBankCardDetails } from '@common/hooks/useBankCardDetails';
+import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
+import { useAppRouterContext } from '@extension/ui/router/AppRouterProvider';
+import { ROUTES } from '@extension/ui/router/ROUTES';
 import { formatExpirationDateFromExp } from '@common/utils';
 import { colors, spacing, radius, typography, pageStyles, commonStyles } from '../design';
 import type { BankCardDecrypted } from '@common/core/types/items.types';
@@ -28,35 +30,48 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
   card,
   onBack,
 }) => {
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { copyToClipboard } = useClipboard();
-
-  const { 
-    handleEdit, 
-    confirmDelete, 
-    handleCopyOwner, 
-    handleCopyCardNumber, 
-    handleCopyCVV, 
-    handleCopyNote, 
-    displayCardNumber 
-  } = useBankCardDetails(
-    card,
-    onBack,
-    setError,
-    setLoading,
-    copyToClipboard
-  );
+  const { deleteItem, isLoading, error } = useItemsCRUD();
+  const router = useAppRouterContext();
 
   const handleDelete = () => {
     setShowDeleteConfirm(true);
   };
 
-  const handleConfirmDelete = async () => {
+  const confirmDelete = async () => {
     setShowDeleteConfirm(false);
-    await confirmDelete();
+    try {
+      await deleteItem(card.id);
+      onBack();
+    } catch (e) {
+      console.error('[BankCardDetailsPage] Delete failed:', e);
+    }
   };
+
+  const handleEdit = () => {
+    router.navigateTo(ROUTES.MODIFY_BANK_CARD, { bankCard: card });
+  };
+
+  const handleCopyOwner = () => {
+    copyToClipboard(card.owner);
+  };
+
+  const handleCopyCardNumber = () => {
+    copyToClipboard(card.cardNumber);
+  };
+
+  const handleCopyCVV = () => {
+    copyToClipboard(card.verificationNumber);
+  };
+
+  const handleCopyNote = () => {
+    if (card.note) {
+      copyToClipboard(card.note);
+    }
+  };
+
+  const displayCardNumber = card.cardNumber.replace(/(.{4})/g, '$1 ').trim();
 
   const formatDate = (expDate: string) => {
     if (!expDate) return '';
@@ -67,16 +82,16 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
     <div style={styles.pageContainer} data-testid="bank-card-details-page">
       {error && <ErrorBanner message={error} />}
       
-      <ConfirmDialog
-        isOpen={showDeleteConfirm}
-        title="Confirmation"
-        message="Êtes-vous sûr de vouloir supprimer cette carte ?"
-        confirmText="Supprimer"
-        cancelText="Annuler"
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setShowDeleteConfirm(false)}
-        testId="delete-confirm-dialog"
-      />
+        <ConfirmDialog
+          isOpen={showDeleteConfirm}
+          title="Confirmation"
+          message="Êtes-vous sûr de vouloir supprimer cette carte ?"
+          confirmText="Supprimer"
+          cancelText="Annuler"
+          onConfirm={confirmDelete}
+          onCancel={() => setShowDeleteConfirm(false)}
+          testId="delete-confirm-dialog"
+        />
       
       {/* Header - Fixed, non-scrollable */}
       <HeaderBar title={card.title} onBackPress={onBack} />
@@ -133,7 +148,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
           <Button
             onClick={handleEdit}
             variant="secondary"
-            disabled={loading}
+            disabled={isLoading}
             data-testid="edit-card-button"
             style={{ flex: 1, maxWidth: 135 }}
           >
@@ -142,7 +157,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
           <Button
             onClick={handleDelete}
             variant="danger"
-            disabled={loading}
+            disabled={isLoading}
             data-testid="delete-card-button"
             style={{ flex: 1, maxWidth: 135 }}
           >

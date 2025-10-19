@@ -11,7 +11,7 @@ import { Button } from '@extension/ui/components/Buttons';
 import { InputEdit } from '@extension/ui/components/InputEdit';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
-import { useModifyCredential } from '@common/hooks/useModifyCredential';
+import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { colors, pageStyles, formStyles, commonStyles, textStyles } from '../design';
 import type { CredentialDecrypted } from '@common/core/types/items.types';
 
@@ -32,13 +32,20 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
   const [note, setNote] = useState(credential?.note || '');
 
   // Use the hook for business logic
-  const { error, loading, handleSubmit } = useModifyCredential(credential);
+  const { editItem, isLoading, error } = useItemsCRUD();
 
   const handleFormSubmit = async () => {
     try {
-      await handleSubmit(title, username, password, url, note, (message: string) => {
-        console.log('Toast:', message);
-      });
+      const updatedCredential = {
+        ...credential,
+        title,
+        username,
+        password,
+        url,
+        note,
+        lastModified: new Date(),
+      };
+        await editItem(credential.id, updatedCredential);
       router.navigateTo(ROUTES.HOME);
     } catch (err) {
       console.error('Failed to modify credential:', err);
@@ -130,11 +137,11 @@ export const ModifyCredentialPage: React.FC<ModifyCredentialPageProps> = ({
           </Button>
           <Button
             onClick={handleFormSubmit}
-            disabled={loading}
+            disabled={isLoading}
             fullWidth
             data-testid="modify-credential-save-button"
           >
-            {loading ? 'Sauvegarde...' : 'Sauvegarder'}
+            {isLoading ? 'Sauvegarde...' : 'Sauvegarder'}
           </Button>
         </div>
       </div>
@@ -156,7 +163,7 @@ const styles: Record<string, React.CSSProperties> = {
   pageContent: {
     ...pageStyles.pageContentWithGap,
     minHeight: 0, // Allow content to shrink
-    flex: 1, // Take available space
+    flex: '0 1 auto', // Only take space needed by content
   },
 };
 

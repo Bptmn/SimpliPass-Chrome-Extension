@@ -63,24 +63,6 @@ const checkPageCapabilities = async (): Promise<{
   }
 };
 
-// Legacy functions for backward compatibility
-const isAutofillAvailable = async (): Promise<boolean> => {
-  console.log('[Background] isAutofillAvailable called');
-  const capabilities = await checkPageCapabilities();
-      console.log('[Background] isAutofillAvailable result:', capabilities.canAutofill);
-    console.log('[Background] isAutofillAvailable details:', JSON.stringify(capabilities, null, 2));
-  return capabilities.canAutofill;
-};
-
-const isSaveCredentialAvailable = async (): Promise<boolean> => {
-  const capabilities = await checkPageCapabilities();
-  return capabilities.canSaveCredential;
-};
-
-const isPasswordGeneratorAvailable = async (): Promise<boolean> => {
-  const capabilities = await checkPageCapabilities();
-  return capabilities.canGeneratePassword;
-};
 
 const getMatchingCredentials = async (domain: string): Promise<Array<{
   id: string;
@@ -291,9 +273,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     console.log('[Background] GET_SESSION_STATUS request');
     (async () => {
       try {
-        const isValid = await isAutofillAvailable();
-        console.log('[Background] Session status:', isValid);
-        sendResponse({ isValid });
+        const capabilities = await checkPageCapabilities();
+        console.log('[Background] Session status:', capabilities.canAutofill);
+        sendResponse({ isValid: capabilities.canAutofill });
       } catch (error) {
         console.error('[Background] Error checking session status:', error);
         sendResponse({ isValid: false, error: error instanceof Error ? error.message : 'Unknown error' });
@@ -332,9 +314,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     console.log('[Background] GET_SAVE_CREDENTIAL_STATUS request');
     (async () => {
       try {
-        const isAvailable = await isSaveCredentialAvailable();
-        console.log('[Background] Save credential status:', isAvailable);
-        sendResponse({ isAvailable });
+        const capabilities = await checkPageCapabilities();
+        console.log('[Background] Save credential status:', capabilities.canSaveCredential);
+        sendResponse({ isAvailable: capabilities.canSaveCredential });
       } catch (error) {
         console.error('[Background] Error checking save credential status:', error);
         sendResponse({ isAvailable: false, error: error instanceof Error ? error.message : 'Unknown error' });
@@ -348,9 +330,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     console.log('[Background] GET_PASSWORD_GENERATOR_STATUS request');
     (async () => {
       try {
-        const isAvailable = await isPasswordGeneratorAvailable();
-        console.log('[Background] Password generator status:', isAvailable);
-        sendResponse({ isAvailable });
+        const capabilities = await checkPageCapabilities();
+        console.log('[Background] Password generator status:', capabilities.canGeneratePassword);
+        sendResponse({ isAvailable: capabilities.canGeneratePassword });
       } catch (error) {
         console.error('[Background] Error checking password generator status:', error);
         sendResponse({ isAvailable: false, error: error instanceof Error ? error.message : 'Unknown error' });

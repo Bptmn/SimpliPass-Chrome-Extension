@@ -37,9 +37,6 @@ The Database Library provides **pure provider functions** for all database opera
 - **Purpose**: Provides clean interface for all database functions
 - **Functions**: Centralized exports for easy importing
 
-**`mock_database.ts`** - Mock Implementation
-- **Purpose**: Provides mock implementations for testing and development
-- **Functions**: Mock CRUD operations, mock listeners, mock error scenarios
 
 ## Database Operations
 

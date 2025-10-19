@@ -20,6 +20,8 @@ export interface IItemsService {
 // State management for UI updates
 export class ItemsStateManager extends EventEmitter {
   private currentItems: ItemDecrypted[] = [];
+  private loading: boolean = false;
+  private error: string | null = null;
 
   constructor() {
     super();
@@ -50,6 +52,26 @@ export class ItemsStateManager extends EventEmitter {
   removeItem(itemId: string) {
     this.currentItems = this.currentItems.filter(item => item.id !== itemId);
     this.emit('itemsChanged', this.currentItems);
+  }
+
+  // Loading state management
+  setLoading(loading: boolean) {
+    this.loading = loading;
+    this.emit('loadingChanged', loading);
+  }
+
+  isLoading(): boolean {
+    return this.loading;
+  }
+
+  // Error state management
+  setError(error: string | null) {
+    this.error = error;
+    this.emit('errorChanged', error);
+  }
+
+  getError(): string | null {
+    return this.error;
   }
 }
 
@@ -94,6 +116,9 @@ export class ItemsService implements IItemsService {
 
   public async fetchAndStoreItems(currentUserId: string): Promise<ItemDecrypted[]> {
     try {
+      this.itemsStateManager.setLoading(true);
+      this.itemsStateManager.setError(null);
+
       const userSecretKey = await this.secretsService.getUserSecretKey();
       if (!userSecretKey) {
         throw new AuthenticationError('No user secret key found');
@@ -123,7 +148,11 @@ export class ItemsService implements IItemsService {
       this.itemsStateManager.setItems(decryptedItems);
       return decryptedItems;
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch items';
+      this.itemsStateManager.setError(errorMessage);
       this.handleServiceError(error, 'fetch and store items');
+    } finally {
+      this.itemsStateManager.setLoading(false);
     }
   }
   

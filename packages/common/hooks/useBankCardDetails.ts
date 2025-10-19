@@ -6,7 +6,7 @@
 
 import { useCallback } from 'react';
 import { useCardFormatting } from './useCardFormatting'; // ✅ Use focused formatting hook
-import { useItemsState } from './useItemsState';
+import { useItemsCRUD } from './useItemsCRUD';
 import type { BankCardDecrypted } from '../core/types/items.types';
 
 export const useBankCardDetails = (
@@ -17,7 +17,7 @@ export const useBankCardDetails = (
   showToast: (message: string) => void,
   copyToClipboard: (text: string, message: string) => void
 ) => {
-  const { deleteItem } = useItemsState({ user: null }); // User will be passed from parent
+  const { deleteItem } = useItemsCRUD();
   const { formatCardNumber } = useCardFormatting(); // ✅ Use focused formatting hook
 
   // Step 1: Format card number for display

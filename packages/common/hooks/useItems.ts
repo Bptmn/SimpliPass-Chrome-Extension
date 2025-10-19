@@ -25,11 +25,11 @@ export const useItems = (): UseItemsReturn => {
   }, []);
 
   const isLoading = useMemo(() => {
-    return false; // TODO: Add loading state to ItemsStateManager
+    return itemsStateManager.isLoading();
   }, []);
 
   const error = useMemo(() => {
-    return null; // TODO: Add error state to ItemsStateManager
+    return itemsStateManager.getError();
   }, []);
 
   const addItem = (item: ItemDecrypted): void => {
@@ -45,8 +45,9 @@ export const useItems = (): UseItemsReturn => {
   };
 
   const refreshItems = async (): Promise<void> => {
-    // TODO: Implement refresh logic
-    console.log('Refresh items called');
+    // TODO: Implement proper refresh logic that triggers listener re-sync
+    // For now, just log that refresh was called
+    console.log('Refresh items called - implementation pending');
   };
 
   return {

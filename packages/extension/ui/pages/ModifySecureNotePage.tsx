@@ -12,7 +12,7 @@ import { InputEdit } from '@extension/ui/components/InputEdit';
 import { ColorSelector } from '@extension/ui/components/ColorSelector';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
-import { useModifySecureNote } from '@common/hooks/useModifySecureNote';
+import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { colors, pageStyles, formStyles, commonStyles, textStyles } from '../design';
 import type { SecureNoteDecrypted } from '@common/core/types/items.types';
 
@@ -31,11 +31,18 @@ export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
   const [color, setColor] = useState(secureNote?.color || '#4f86a2');
 
   // Use the hook for business logic
-  const { error, loading, handleSubmit } = useModifySecureNote(secureNote);
+  const { editItem, isLoading, error } = useItemsCRUD();
 
   const handleFormSubmit = async () => {
     try {
-      await handleSubmit(title, noteText, color);
+      const updatedNote = {
+        ...secureNote,
+        title,
+        note: noteText,
+        color,
+        lastModified: new Date(),
+      };
+        await editItem(secureNote.id, updatedNote);
       router.navigateTo(ROUTES.HOME);
     } catch (err) {
       console.error('Failed to modify secure note:', err);
@@ -106,11 +113,11 @@ export const ModifySecureNotePage: React.FC<ModifySecureNotePageProps> = ({
           </Button>
           <Button
             onClick={handleFormSubmit}
-            disabled={loading}
+            disabled={isLoading}
             fullWidth
             data-testid="modify-note-save-button"
           >
-            {loading ? 'Sauvegarde...' : 'Sauvegarder'}
+            {isLoading ? 'Sauvegarde...' : 'Sauvegarder'}
           </Button>
         </div>
       </div>
@@ -132,7 +139,7 @@ const styles: Record<string, React.CSSProperties> = {
   pageContent: {
     ...pageStyles.pageContentWithGap,
     minHeight: 0, // Allow content to shrink
-    flex: 1, // Take available space
+    flex: '0 1 auto', // Only take space needed by content
   },
 };
 

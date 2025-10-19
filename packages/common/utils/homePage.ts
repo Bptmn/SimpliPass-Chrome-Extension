@@ -19,11 +19,29 @@ export function handleOtherItemClick(
   item: unknown,
   setSelected: (cred: CredentialDecrypted | null) => void
 ) {
-  if (item && typeof item === 'object' && 'id' in item && 'username' in item && 'password' in item) {
-    setSelected(item as CredentialDecrypted);
+  if (item && typeof item === 'object' && 'id' in item) {
+    // Type guard for CredentialDecrypted
+    if ('username' in item && 'password' in item) {
+      setSelected(item as CredentialDecrypted);
+      return;
+    }
+    
+    // Type guard for BankCardDecrypted
+    if ('cardNumber' in item && 'owner' in item) {
+      console.log('Bank card clicked - navigation to bank card details not implemented yet');
+      return;
+    }
+    
+    // Type guard for SecureNoteDecrypted
+    if ('note' in item && !('username' in item)) {
+      console.log('Secure note clicked - navigation to secure note details not implemented yet');
+      return;
+    }
+    
+    // Unknown item type
+    console.warn('handleOtherItemClick: unknown item type', item);
   } else {
-    // TODO: handle other item types or log a warning
-    console.warn('handleOtherItemClick: item is not a CredentialDecrypted', item);
+    console.warn('handleOtherItemClick: invalid item object', item);
   }
 }
 

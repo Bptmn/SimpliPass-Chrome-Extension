@@ -32,10 +32,10 @@ Based on analysis of major password managers (Dashlane, 1Password, Bitwarden, La
 
 1. Autofill for Login Forms - Detect login fields and display inline suggestions
 2. Password Generation - Suggest secure passwords on signup/change forms
-3. Capture New Logins - Detect form submission and suggest saving new credentials
+3. Capture New Logins - Detect form submission and suggest saving new credentials (when no credential exists for this website/app domain)
 4. Update Existing Logins - Detect password changes and offer to update stored credentials
-5. Context Menu Actions - Right-click actions for manual fill/copy operations
-6. Vault Lock/Unlock Integration - Require unlocking before autofilling
+5. Context Menu Actions - Button for manual fill/copy operations
+6. Vault Lock/Unlock Integration - Require having an unlocked vault before autofilling
 
 ### 🔒 Trust Boundaries & Security Constraints
 - Content Scripts: Untrusted entry points - all data must be sanitized and validated

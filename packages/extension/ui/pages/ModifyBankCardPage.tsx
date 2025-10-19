@@ -13,7 +13,7 @@ import { ColorSelector } from '@extension/ui/components/ColorSelector';
 import { ItemBankCard } from '@extension/ui/components/ItemBankCard';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
-import { useModifyBankCard } from '@common/hooks/useModifyBankCard';
+import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { useCardForm } from '@common/hooks/useCardForm';
 import { getMonthOptions, getYearOptions } from '@common/utils/cards';
 import { colors, spacing, typography, pageStyles, formStyles, commonStyles } from '../design';
@@ -59,7 +59,7 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
   } = useCardForm(initialFormData);
 
   // Use modify hook for submission
-  const { error, loading, handleSubmit: handleModifySubmit } = useModifyBankCard(bankCard);
+  const { editItem, isLoading, error } = useItemsCRUD();
 
   const [color, setColor] = useState(bankCard.color || '#4f86a2');
 
@@ -87,16 +87,21 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
 
   const handleFormSubmit = async () => {
     try {
-      await handleModifySubmit({
+      const updatedCard = {
+        ...bankCard,
         title: formData.title,
         cardNumber: formData.cardNumber,
-        cardholderName: formData.cardholderName,
-        expirationDate: formData.expirationDate,
-        cvv: formData.cvv,
-        notes: formData.notes || '',
-      }, color, (message: string) => {
-        console.log('Toast:', message);
-      });
+        owner: formData.cardholderName,
+        expirationDate: {
+          month: parseInt(formData.expirationDate.split('/')[0]),
+          year: parseInt('20' + formData.expirationDate.split('/')[1]),
+        },
+        verificationNumber: formData.cvv,
+        note: formData.notes || '',
+        color,
+        lastModified: new Date(),
+      };
+            await editItem(bankCard.id, updatedCard);
       router.navigateTo(ROUTES.HOME);
     } catch (err) {
       console.error('Failed to modify bank card:', err);
@@ -110,7 +115,7 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
   return (
     <div style={styles.pageContainer} data-testid="modify-bank-card-page">
       {error && <ErrorBanner message={error} />}
-      {loading && <div>Chargement...</div>}
+      {isLoading && <div>Chargement...</div>}
       
       {/* Header - Fixed, non-scrollable */}
       <HeaderBar 
@@ -231,11 +236,11 @@ export const ModifyBankCardPage: React.FC<ModifyBankCardPageProps> = ({
           </Button>
           <Button
             onClick={handleFormSubmit}
-            disabled={isSubmitting || loading}
+            disabled={isSubmitting || isLoading}
             fullWidth
             data-testid="modify-card-save-button"
           >
-            {isSubmitting || loading ? 'Sauvegarde...' : 'Sauvegarder'}
+            {isSubmitting || isLoading ? 'Sauvegarde...' : 'Sauvegarder'}
           </Button>
         </div>
       </div>
@@ -256,7 +261,7 @@ const styles: Record<string, React.CSSProperties> = {
   pageContent: {
     ...pageStyles.pageContentWithGap,
     minHeight: 0, // Allow content to shrink
-    flex: 1, // Take available space
+    flex: '0 1 auto', // Only take space needed by content
   },
   cvvField: {
     flex: 1,
