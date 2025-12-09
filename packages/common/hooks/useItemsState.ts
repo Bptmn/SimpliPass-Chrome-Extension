@@ -14,8 +14,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { itemsService, itemsStateManager } from '../core/services/itemsService';
 import { useItemsCRUD } from './useItemsCRUD';
-import { User } from '../core/types/auth.types';
-import { ItemDecrypted, CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../core/types/items.types';
+import { User } from '@common/types/auth.types';
+import { ItemDecrypted, CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/types/items.types';
 
 export interface UseItemsStateReturn {
   // Data

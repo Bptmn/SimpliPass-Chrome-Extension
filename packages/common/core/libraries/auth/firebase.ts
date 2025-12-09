@@ -3,7 +3,7 @@ import { initializeApp, FirebaseApp } from 'firebase/app';
 import { getAuth, signInWithCustomToken, signOut, User as FirebaseUser, Auth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getFirebaseConfig } from '@common/config/platform';
-import { AuthenticationError } from '@common/core/types/errors.types';
+import { AuthenticationError } from '@common/types/errors.types';
 
 // Global Firebase instances
 let firebaseApp: FirebaseApp | null = null;
@@ -30,7 +30,7 @@ export const initFirebase = async (platform: 'extension' | 'mobile'): Promise<vo
   }
 
   console.log('[Firebase] Initializing Firebase...');
-  const firebaseConfig = await getFirebaseConfig(platform);
+  const firebaseConfig = await getFirebaseConfig();
   firebaseApp = initializeApp(firebaseConfig);
   firebaseAuth = getAuth(firebaseApp);
   firebaseDb = getFirestore(firebaseApp);

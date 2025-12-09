@@ -10,7 +10,7 @@ import { Button } from '@extension/ui/components/Buttons';
 import { useAuth } from '@common/hooks/useAuth';
 import { useReEnterPassword } from '@common/hooks/useReEnterPassword';
 import { colors, spacing, typography, pageStyles, formStyles } from '../design';
-import type { User } from '@common/core/types/auth.types';
+import type { User } from '@common/types/auth.types';
 
 type LockReason = 'expired' | 'fingerprint_mismatch' | 'decryption_failed' | 'not_found' | 'corrupted';
 

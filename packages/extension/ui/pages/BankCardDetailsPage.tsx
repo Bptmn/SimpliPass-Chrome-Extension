@@ -19,7 +19,7 @@ import { useAppRouterContext } from '@extension/ui/router/AppRouterProvider';
 import { ROUTES } from '@extension/ui/router/ROUTES';
 import { formatExpirationDateFromExp } from '@common/utils';
 import { colors, spacing, radius, typography, pageStyles, commonStyles } from '../design';
-import type { BankCardDecrypted } from '@common/core/types/items.types';
+import type { BankCardDecrypted } from '@common/types/items.types';
 
 interface BankCardDetailsPageProps {
   card: BankCardDecrypted;
@@ -73,7 +73,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
 
   const displayCardNumber = card.cardNumber.replace(/(.{4})/g, '$1 ').trim();
 
-  const formatDate = (expDate: string) => {
+  const formatDate = (expDate: any) => {
     if (!expDate) return '';
     return formatExpirationDateFromExp(expDate);
   };

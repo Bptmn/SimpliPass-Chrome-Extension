@@ -13,44 +13,51 @@
     "<all_urls>"
   ],
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "packages/extension/popup/popup.html",
     "default_icon": {
-      "16": "assets/icons/icon16.png",
-      "48": "assets/icons/icon48.png",
-      "128": "assets/icons/icon128.png"
+      "16": "packages/extension/public/icons/icon16.png",
+      "48": "packages/extension/public/icons/icon48.png",
+      "128": "packages/extension/public/icons/icon128.png"
     }
   },
   "icons": {
-    "16": "assets/icons/icon16.png",
-    "48": "assets/icons/icon48.png",
-    "128": "assets/icons/icon128.png"
+    "16": "packages/extension/public/icons/icon16.png",
+    "48": "packages/extension/public/icons/icon48.png",
+    "128": "packages/extension/public/icons/icon128.png"
   },
   "background": {
-    "service_worker": "background.js",
+    "service_worker": "service-worker-loader.js",
     "type": "module"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["assets/content.js"],
+      "js": [
+        "assets/content.ts-loader-BmyNugZl.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
       "run_at": "document_idle",
       "type": "module"
     }
   ],
   "web_accessible_resources": [
     {
+      "matches": [
+        "<all_urls>"
+      ],
       "resources": [
-        "assets/src/content/popovers/PopoverCredentialPicker.html",
-        "assets/src/content/popovers/PopoverCredentialPicker.css",
-        "assets/src/content/popovers/PopoverCredentialPicker.js",
         "assets/popovers/components/PasswordGenerator/PasswordGeneratorPopover.html",
         "assets/popovers/components/SaveCredential/SaveCredentialPopover.html",
-        "assets/popovers/components/UpdateCredential/UpdateCredentialPopover.html"
+        "assets/popovers/components/UpdateCredential/UpdateCredentialPopover.html",
+        "assets/popovers/components/CredentialPicker/CredentialPickerPopover.html",
+        "assets/tokens-CR2bAsTd.js",
+        "assets/content.ts-C3Zmo2-Z.js"
       ],
-      "matches": ["<all_urls>"]
+      "use_dynamic_url": false
     }
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   }
-} 
+}

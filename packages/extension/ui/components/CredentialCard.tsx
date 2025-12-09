@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import type { CredentialDecrypted } from '@common/core/types/items.types';
+import type { CredentialDecrypted } from '@common/types/items.types';
 import { colors, spacing, radius, shadow, cardStyles, textStyles } from '../design';
 import { LazyCredentialIcon } from './LazyCredentialIcon';
 import { CopyButton } from './CopyButton';

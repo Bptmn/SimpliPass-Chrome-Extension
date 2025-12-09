@@ -12,7 +12,7 @@
  */
 
 import { create } from 'zustand';
-import type { User } from '@common/core/types/auth.types';
+import type { User } from '@common/types/auth.types';
 
 // Platform type definition
 export type Platform = 'extension' | 'mobile';

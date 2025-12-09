@@ -17,7 +17,7 @@ import { passwordGenerator } from '@common/utils/passwordGenerator';
 import { generateItemKey } from '@common/core/libraries/crypto';
 import { checkPasswordStrength } from '@common/utils/checkPasswordStrength';
 import { colors, spacing, typography, pageStyles, formStyles } from '../design';
-import type { CredentialDecrypted } from '@common/core/types/items.types';
+import type { CredentialDecrypted } from '@common/types/items.types';
 
 interface AddCredential2Props {
   title: string;
@@ -39,7 +39,17 @@ export const AddCredential2: React.FC<AddCredential2Props> = ({
   const [note, setNote] = useState('');
 
   // Calculate password strength
-  const passwordStrength = checkPasswordStrength(password);
+  const passwordStrengthValue = checkPasswordStrength(password);
+  
+  const passwordStrength = React.useMemo(() => {
+    switch (passwordStrengthValue) {
+      case 'perfect': return { score: 5, level: 'Parfait' };
+      case 'strong': return { score: 4, level: 'Fort' };
+      case 'average': return { score: 3, level: 'Moyen' };
+      case 'weak': return { score: 2, level: 'Faible' };
+      default: return { score: 1, level: 'Très faible' };
+    }
+  }, [passwordStrengthValue]);
 
   useEffect(() => {
     setTitle(initialTitle);

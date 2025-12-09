@@ -14,7 +14,7 @@ import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
 import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { colors, pageStyles, formStyles, commonStyles, textStyles } from '../design';
-import type { SecureNoteDecrypted } from '@common/core/types/items.types';
+import type { SecureNoteDecrypted } from '@common/types/items.types';
 
 interface ModifySecureNotePageProps {
   secureNote: SecureNoteDecrypted;

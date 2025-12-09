@@ -15,7 +15,7 @@ import { useAppStateStore } from './useAppState';
 // Note: Router imports removed - navigation should be handled by the calling component
 import { cardValidationService } from '@common/core/services/validationService';
 import { cardFormTransformationService } from '@common/core/services/formTransformationService';
-import type { CardFormData } from '@common/core/types/items.types';
+import type { CardFormData } from '@common/types/items.types';
 
 // Initial form data
 const cardFormInitialData: CardFormData = {
@@ -101,7 +101,7 @@ export const useCardForm = (initialData?: CardFormData): UseCardFormReturn => {
     try {
       // Transform form data to card format
       const { isValid, card, errors: transformErrors } = 
-        cardFormTransformationService.validateAndTransformCard(formData);
+        await cardFormTransformationService.validateAndTransformCard(formData);
       
       if (!isValid) {
         // Set validation errors

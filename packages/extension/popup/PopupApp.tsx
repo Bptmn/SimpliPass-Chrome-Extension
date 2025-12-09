@@ -13,7 +13,7 @@
 
 import React, { useState } from 'react';
 import { AppRouterProvider, AppRouterView, useAppRouter } from '@extension/ui/router';
-import { PageState } from '@common/core/types/auth.types';
+import { PageState } from '@common/types/auth.types';
 import { useAppInitialization } from '@extension/hooks/useAppInitialization';
 import { InitializationErrorBoundary } from '@extension/ui/components/InitializationErrorBoundary';
 import { DevModeIndicator } from '@extension/ui/components/DevModeIndicator';

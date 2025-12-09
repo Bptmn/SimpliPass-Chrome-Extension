@@ -1,7 +1,7 @@
 // packages/common/core/libraries/auth/cognito.ts
 import { Amplify } from 'aws-amplify';
-import { NetworkError, AuthenticationError } from '../../types/errors.types';
-import { CognitoUser, MfaChallenge } from '../../types/auth.types';
+import { NetworkError, AuthenticationError } from '@common/types/errors.types';
+import { CognitoUser, MfaChallenge } from '@common/types/auth.types';
 import { getCognitoConfig } from '@common/config/platform';
 
 export class CognitoAuth {
@@ -80,7 +80,7 @@ export class CognitoAuth {
 
     console.log('[Cognito] Initializing Cognito...');
     try {
-      const cognitoConfig = await getCognitoConfig('extension');
+      const cognitoConfig = await getCognitoConfig();
       Amplify.configure({
         Auth: {
           Cognito: cognitoConfig,

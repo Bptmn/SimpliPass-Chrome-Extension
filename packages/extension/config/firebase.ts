@@ -10,7 +10,7 @@ let db: any;
 export async function initFirebase() {
   try {
     // Only real Firebase initialization
-    const firebaseConfig = await getFirebaseConfig('extension');
+    const firebaseConfig = await getFirebaseConfig();
     
     // Check if Firebase config is properly set
     if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {

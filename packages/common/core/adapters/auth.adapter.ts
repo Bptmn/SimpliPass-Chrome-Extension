@@ -2,7 +2,7 @@
 import { User as FirebaseUser } from 'firebase/auth';
 import * as firebaseAuth from '../libraries/auth/firebase';
 import * as cognitoAuth from '../libraries/auth/cognito';
-import type { MfaChallenge } from '../types/auth.types';
+import type { MfaChallenge } from '@common/types/auth.types';
 
 export interface IAuthAdapter {
   initialize(platform?: 'extension' | 'mobile'): Promise<void>;

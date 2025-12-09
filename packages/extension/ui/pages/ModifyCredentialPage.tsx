@@ -13,7 +13,7 @@ import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
 import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { colors, pageStyles, formStyles, commonStyles, textStyles } from '../design';
-import type { CredentialDecrypted } from '@common/core/types/items.types';
+import type { CredentialDecrypted } from '@common/types/items.types';
 
 interface ModifyCredentialPageProps {
   credential: CredentialDecrypted;

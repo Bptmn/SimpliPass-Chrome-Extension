@@ -14,7 +14,7 @@ import { useAppRouterContext } from '../../ui/router/AppRouterProvider';
 import { ROUTES } from '../../ui/router/ROUTES';
 import { useItemsOperations } from './useItemsOperations';
 import { useAppStateStore } from '../core/useAppState';
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../../core/types/items.types';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../@common/types/items.types';
 
 export interface UseItemDetailsReturn {
   // Actions

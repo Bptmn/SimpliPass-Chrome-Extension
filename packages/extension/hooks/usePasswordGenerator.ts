@@ -36,22 +36,17 @@ export function usePasswordGenerator(): UsePasswordGeneratorReturn {
   const [password, setPassword] = useState('');
 
   const strength: PasswordStrength = useMemo(() => {
-    const score = checkPasswordStrength(password);
-    if (score >= 4) return 'perfect';
-    if (score === 3) return 'strong';
-    if (score === 2) return 'average';
-    return 'weak';
+    return checkPasswordStrength(password);
   }, [password]);
 
   const generate = useCallback(() => {
-    const newPassword = passwordGenerator({
-      length,
-      includeUppercase: hasUppercase,
-      includeLowercase: hasLowercase,
-      includeNumbers: hasNumbers,
-      includeSymbols: hasSymbols,
-      excludeSimilar: true,
-    });
+    const newPassword = passwordGenerator(
+      hasNumbers,
+      hasUppercase,
+      hasLowercase,
+      hasSymbols,
+      length
+    );
     setPassword(newPassword);
   }, [length, hasUppercase, hasLowercase, hasNumbers, hasSymbols]);
 

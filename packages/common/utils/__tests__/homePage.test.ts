@@ -10,7 +10,7 @@ import {
   shouldShowLoading, 
   getItemCounts 
 } from '../homePage';
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/types/items.types';
 
 // Mock console.warn to avoid noise in tests
 const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation();

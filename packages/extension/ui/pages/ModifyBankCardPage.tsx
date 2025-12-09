@@ -17,7 +17,7 @@ import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { useCardForm } from '@common/hooks/useCardForm';
 import { getMonthOptions, getYearOptions } from '@common/utils/cards';
 import { colors, spacing, typography, pageStyles, formStyles, commonStyles } from '../design';
-import type { BankCardDecrypted } from '@common/core/types/items.types';
+import type { BankCardDecrypted } from '@common/types/items.types';
 
 interface ModifyBankCardPageProps {
   bankCard: BankCardDecrypted;

@@ -11,7 +11,7 @@
  */
 
 import { IPlatformStorageAdapter } from '@common/core/adapters/platform.storage.adapter';
-import { User } from '@common/core/types/auth.types';
+import { User } from '@common/types/auth.types';
 import { browser } from '@extension/shims/browserAPI';
 
 export class ExtensionStorageAdapter implements IPlatformStorageAdapter {

@@ -9,8 +9,8 @@ import { Icon } from './Icon';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
 import { colors, spacing, radius, textStyles } from '../design';
-import type { Category } from '@common/core/types/categories.types';
-import { CATEGORIES } from '@common/core/types/categories.types';
+import type { Category } from '@common/types/categories.types';
+import { CATEGORIES } from '@common/types/categories.types';
 
 interface HelperBarProps {
   category: Category;

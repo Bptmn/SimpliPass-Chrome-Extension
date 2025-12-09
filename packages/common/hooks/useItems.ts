@@ -7,7 +7,7 @@
 
 import { useMemo } from 'react';
 import { itemsStateManager } from '@common/core/services/itemsService';
-import type { ItemDecrypted } from '@common/core/types/items.types';
+import type { ItemDecrypted } from '@common/types/items.types';
 
 export interface UseItemsReturn {
   items: ItemDecrypted[];

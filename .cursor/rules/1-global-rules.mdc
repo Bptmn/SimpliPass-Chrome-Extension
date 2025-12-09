@@ -42,10 +42,10 @@ import { cardValidationService } from '@common/core/services';
 // Common Libraries
 import { getPlatformAdapter } from '@common/core/adapters';
 // Types
-import type { CardFormData } from '@common/core/types';
+import type { CardFormData } from '@common/types';
 ```
 
-* Always use absolute imports (`@common`, `@extension`, `@shared`)
+* Always use absolute imports (`@common`, `@extension`)
 * Never use relative imports like `../../../`
 * Group by layer in order: external → extension UI → extension hooks → common services → common libraries → types
 

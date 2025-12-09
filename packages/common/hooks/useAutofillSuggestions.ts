@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CredentialDecrypted } from '../core/types/items.types';
+import { CredentialDecrypted } from '@common/types/items.types';
 
 export interface AutofillSuggestion {
   id: string;

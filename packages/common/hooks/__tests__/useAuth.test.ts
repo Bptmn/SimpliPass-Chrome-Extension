@@ -9,7 +9,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useAuth } from '../useAuth';
 import { authService } from '../../core/services/authService';
 import { getCurrentUser as getCurrentUserFromService } from '../../core/services/userService';
-import { User } from '../../core/types/auth.types';
+import { User } from '../@common/types/auth.types';
 
 // Mock the auth service
 jest.mock('../../core/services/authService', () => ({

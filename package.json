@@ -8,7 +8,7 @@
     "dev:web": "vite --config configs/build/vite/vite.config.web.ts",
     "build": "vite build --config configs/build/vite/vite.background.config.ts && vite build --config configs/build/vite/vite.content.config.ts && vite build --config configs/build/vite/vite.config.ts && cp dist/packages/extension/popup/popup.html dist/ && sed -i '' 's|\"../../../assets/|\"assets/|g' dist/popup.html",
     "dev:extension": "vite --config configs/build/vite/vite.config.ts",
-    "build:extension": "vite build --config configs/build/vite/vite.config.ts && cp dist/packages/extension/popup.html dist/",
+    "build:extension": "vite build --config configs/build/vite/vite.config.ts && cp dist/packages/extension/popup/popup.html dist/popup.html",
     "build:web": "vite build --config configs/build/vite/vite.config.web.ts",
     "preview:web": "vite preview --config configs/build/vite/vite.config.web.ts",
     "type-check": "tsc --noEmit",

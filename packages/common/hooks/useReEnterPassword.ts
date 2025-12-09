@@ -11,7 +11,7 @@ import { storeUserSecretKey } from '../core/services/secretsService';
 import { auth } from '../core/adapters/auth.adapter';
 import { db } from '../core/adapters/database.adapter';
 import { decryptItem } from '../core/services/cryptoService';
-import { ItemEncrypted } from '../core/types/items.types';
+import { ItemEncrypted } from '@common/types/items.types';
 import { useAppStateStore } from './useAppState';
 import { getCurrentUserAsync } from '@common/core/services/userService';
 

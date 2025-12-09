@@ -13,7 +13,7 @@
 import { useState, useCallback } from 'react';
 import { authService } from '../core/services/authService';
 import { getCurrentUser as getCurrentUserFromService } from '../core/services/userService';
-import { User } from '../core/types/auth.types';
+import { User } from '@common/types/auth.types';
 
 export interface UseAuthReturn {
   // State

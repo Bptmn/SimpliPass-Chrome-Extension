@@ -17,7 +17,7 @@ import { ROUTES } from '../router/ROUTES';
 import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { useClipboard } from '@common/hooks/useClipboard';
 import { colors, spacing, radius, pageStyles, commonStyles } from '../design';
-import type { SecureNoteDecrypted } from '@common/core/types/items.types';
+import type { SecureNoteDecrypted } from '@common/types/items.types';
 
 interface SecureNoteDetailsPageProps {
   note: SecureNoteDecrypted;

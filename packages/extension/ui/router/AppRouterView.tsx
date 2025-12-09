@@ -6,8 +6,8 @@
  */
 
 import React from 'react';
-import type { User } from '@common/core/types/auth.types';
-import type { PageState } from '@common/core/types/auth.types';
+import type { User } from '@common/types/auth.types';
+import type { PageState } from '@common/types/auth.types';
 import { ROUTES, requiresAuth, hasLayout, routeComponents } from './ROUTES';
 import { NavBar } from '../components/NavBar';
 

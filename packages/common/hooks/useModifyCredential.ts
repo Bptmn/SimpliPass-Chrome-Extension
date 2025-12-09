@@ -8,8 +8,8 @@
 import { useState, useCallback } from 'react';
 import { itemsService } from '@common/core/services/itemsService';
 // Note: Router imports removed - navigation should be handled by the calling component
-import { CATEGORIES } from '@common/core/types/categories.types';
-import type { CredentialDecrypted } from '@common/core/types/items.types';
+import { CATEGORIES } from '@common/types/categories.types';
+import type { CredentialDecrypted } from '@common/types/items.types';
 
 export const useModifyCredential = (credential: CredentialDecrypted | null) => {
   const [error, setError] = useState<string | null>(null);

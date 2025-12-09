@@ -13,7 +13,7 @@
 
 import { useState, useCallback } from 'react';
 import { authService } from '../core/services/authService';
-import type { MfaChallenge } from '../core/types/auth.types';
+import type { MfaChallenge } from '@common/types/auth.types';
 
 export interface UseLoginReturn {
   // Form state

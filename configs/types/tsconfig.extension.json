@@ -5,15 +5,13 @@
     "baseUrl": "../../",
     "paths": {
       "@common/*": ["packages/common/*"],
-      "@extension/*": ["packages/extension/*"],
-      "@shared/*": ["packages/shared/*"]
+      "@extension/*": ["packages/extension/*"]
     }
   },
   "include": [
     "../../packages/extension/**/*",
-    "../../packages/common/core/types/**/*",
-    "../../packages/common/utils/**/*",
-    "../../packages/shared/**/*"
+    "../../packages/common/types/**/*",
+    "../../packages/common/utils/**/*"
   ],
   "exclude": [
     "../../packages/common/hooks/**",
@@ -21,5 +19,3 @@
     "../../packages/extension/__tests__/**"
   ]
 }
-
-

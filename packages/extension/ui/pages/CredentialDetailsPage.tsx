@@ -19,7 +19,7 @@ import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
 import { colors, spacing, radius, typography, pageStyles, commonStyles } from '../design';
-import type { CredentialDecrypted } from '@common/core/types/items.types';
+import type { CredentialDecrypted } from '@common/types/items.types';
 
 interface CredentialDetailsPageProps {
   credential: CredentialDecrypted;

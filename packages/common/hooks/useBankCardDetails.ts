@@ -7,7 +7,7 @@
 import { useCallback } from 'react';
 import { useCardFormatting } from './useCardFormatting'; // ✅ Use focused formatting hook
 import { useItemsCRUD } from './useItemsCRUD';
-import type { BankCardDecrypted } from '../core/types/items.types';
+import type { BankCardDecrypted } from '@common/types/items.types';
 
 export const useBankCardDetails = (
   card: BankCardDecrypted,

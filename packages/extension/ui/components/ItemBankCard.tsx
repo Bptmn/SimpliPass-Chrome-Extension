@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import type { BankCardDecrypted } from '@common/core/types/items.types';
+import type { BankCardDecrypted } from '@common/types/items.types';
 import { formatExpirationDateFromExp } from '@common/utils';
 import { colors, spacing, typography, textStyles } from '../design';
 import { useItemBankCard } from '@common/hooks/useItemBankCard';

@@ -25,7 +25,6 @@
       "@hooks/*": ["packages/common/hooks/*"],
       "@utils/*": ["packages/common/utils/*"],
       "@logic/*": ["packages/common/core/services/*"],
-      "@shared/*": ["packages/shared/*"],
       "@extension/*": ["packages/extension/*"]
     }
   },

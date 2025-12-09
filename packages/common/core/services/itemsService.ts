@@ -1,7 +1,7 @@
 // packages/common/core/services/itemsService.ts
 import { EventEmitter } from 'events';
-import { CryptographyError, NetworkError, AuthenticationError, ItemError } from '../types/errors.types';
-import { ItemEncrypted, ItemDecrypted } from '../types/items.types';
+import { CryptographyError, NetworkError, AuthenticationError, ItemError } from '@common/types/errors.types';
+import { ItemEncrypted, ItemDecrypted } from '@common/types/items.types';
 import { ISecretsService } from './secretsService';
 import { ICryptoService } from './cryptoService';
 import { IDatabaseAdapter } from '../adapters/database.adapter';

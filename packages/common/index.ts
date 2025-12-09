@@ -21,9 +21,11 @@ export * from './core/libraries/database';
 export { platform } from './core/adapters';
 export type { PlatformAdapter } from './core/adapters/platform.adapter';
 
-// Types (specific exports to avoid conflicts)
-export type { User, UserSession, PageState } from './core/types/auth.types';
-export * from './core/types/errors.types';
+// Constants
+export * from './constants';
+
+// Types
+export * from './types';
 
 // Utils
-export * from './utils'; 
+export * from './utils';

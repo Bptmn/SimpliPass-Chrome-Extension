@@ -10,7 +10,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../../core/types/items.types';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../@common/types/items.types';
 
 export interface UseItemSelectionReturn {
   // State

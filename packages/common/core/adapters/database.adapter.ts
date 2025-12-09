@@ -1,7 +1,7 @@
 // packages/common/core/adapters/database.adapter.ts
 import * as firebaseDb from '../libraries/database/firestore';
 import { DocumentData } from 'firebase/firestore';
-import { User } from '../types/auth.types';
+import { User } from '@common/types/auth.types';
 
 type DocumentId = string;
 

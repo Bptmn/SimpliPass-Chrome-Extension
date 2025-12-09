@@ -1,7 +1,7 @@
 // validationService.ts
 // Business logic and validation functions moved from utils/validation.utils.ts
 
-import type { ValidationResult } from '@common/core/types/errors.types';
+import type { ValidationResult } from '@common/types/errors.types';
 
 // ===== Card Validation Service =====
 

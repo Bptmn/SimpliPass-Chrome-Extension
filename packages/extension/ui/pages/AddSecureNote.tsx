@@ -16,7 +16,7 @@ import { useUser } from '@common/hooks/useUser';
 import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { generateItemKey } from '@common/core/libraries/crypto';
 import { pageStyles, formStyles, commonStyles } from '../design';
-import type { SecureNoteDecrypted } from '@common/core/types/items.types';
+import type { SecureNoteDecrypted } from '@common/types/items.types';
 
 interface AddSecureNoteProps {
   onCancel?: () => void;

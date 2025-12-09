@@ -3,7 +3,7 @@ import { IAuthAdapter } from '../adapters/auth.adapter';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IAuthService } from './authService';
 import { IAuthListenerService } from './listenerService';
-import { NetworkError, AuthenticationError, PlatformError } from '../types/errors.types';
+import { NetworkError, AuthenticationError, PlatformError } from '@common/types/errors.types';
 import type { Platform } from '../../hooks/useAppState';
 
 export interface IInitializationService {

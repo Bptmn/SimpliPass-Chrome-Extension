@@ -7,7 +7,7 @@
 // - Error state management integration
 
 import { useCallback } from 'react';
-import type { ValidationResult } from '@common/core/types/errors.types';
+import type { ValidationResult } from '@common/types/errors.types';
 
 export interface ValidationService<T> {
   validateField: (field: keyof T, value: any) => ValidationResult;

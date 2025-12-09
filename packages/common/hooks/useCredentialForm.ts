@@ -17,7 +17,7 @@ import { useAppStateStore } from './useAppState';
 import { credentialValidationService } from '@common/core/services/validationService';
 import { credentialFormTransformationService } from '@common/core/services/formTransformationService';
 // Removed unused import
-import type { CredentialFormData } from '@common/core/types/items.types';
+import type { CredentialFormData } from '@common/types/items.types';
 
 // Initial form data
 const credentialFormInitialData: CredentialFormData = {
@@ -101,7 +101,7 @@ export const useCredentialForm = (): UseCredentialFormReturn => {
     try {
       // Transform form data to credential format
       const { isValid, credential, errors: transformErrors } = 
-        credentialFormTransformationService.validateAndTransformCredential(formData);
+        await credentialFormTransformationService.validateAndTransformCredential(formData);
       
       if (!isValid) {
         // Set validation errors

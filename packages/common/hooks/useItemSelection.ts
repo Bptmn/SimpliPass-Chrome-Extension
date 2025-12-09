@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../core/types/items.types';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/types/items.types';
 
 export const useItemSelection = () => {
   const [selectedCredential, setSelectedCredential] = useState<CredentialDecrypted | null>(null);

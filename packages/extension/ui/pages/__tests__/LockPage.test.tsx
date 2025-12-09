@@ -28,7 +28,7 @@ jest.mock('@common/config/platform', () => ({
 import { LockPage } from '../LockPage';
 import { useAuth } from '@common/hooks/useAuth';
 import { useReEnterPassword } from '@common/hooks/useReEnterPassword';
-import type { User } from '@common/core/types/auth.types';
+import type { User } from '@common/types/auth.types';
 
 // Mock the hooks
 jest.mock('@common/hooks/useAuth');

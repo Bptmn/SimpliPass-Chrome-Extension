@@ -7,10 +7,10 @@
 // - Generate required fields and IDs
 
 import { parseExpirationDate, createExpirationDate } from '@common/utils/expirationDate';
-import { ItemError } from '@common/core/types/errors.types';
-import type { BankCardDecrypted, CredentialDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
-import type { CardFormData, CredentialFormData, SecureNoteForm } from '@common/core/types/items.types';
-import type { ItemDecrypted } from '@common/core/types/items.types';
+import { ItemError } from '@common/types/errors.types';
+import type { BankCardDecrypted, CredentialDecrypted, SecureNoteDecrypted } from '@common/types/items.types';
+import type { CardFormData, CredentialFormData, SecureNoteForm } from '@common/types/items.types';
+import type { ItemDecrypted } from '@common/types/items.types';
 
 // ✅ Helper function to get crypto utilities through direct import
 const getCryptoUtils = async () => {

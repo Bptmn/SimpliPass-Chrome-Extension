@@ -9,7 +9,7 @@ import { useState, useCallback } from 'react';
 import { getCurrentUser } from '@common/core/services/userService';
 import { databaseListeners, authListeners } from '@common/core/services/listenerService';
 import { auth } from '@common/core/adapters/auth.adapter';
-import type { User } from '@common/core/types/auth.types';
+import type { User } from '@common/types/auth.types';
 
 export const useSettings = () => {
   const [user, setUser] = useState<User | null>(null);

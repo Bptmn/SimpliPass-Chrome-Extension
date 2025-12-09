@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useItemsState } from './useItemsState';
 import { useAppStateStore } from './useAppState';
 import { useCurrentTabDomain } from './useCurrentTabDomain';
-import type { CredentialDecrypted } from '@common/core/types/items.types';
+import type { CredentialDecrypted } from '@common/types/items.types';
 
 export interface AutofillData {
   username?: string;

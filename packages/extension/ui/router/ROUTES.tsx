@@ -24,7 +24,7 @@ import { EmailConfirmationPage } from '@extension/ui/pages/EmailConfirmationPage
 import { ModifyBankCardPage } from '@extension/ui/pages/ModifyBankCardPage';
 import { ModifyCredentialPage } from '@extension/ui/pages/ModifyCredentialPage';
 import { ModifySecureNotePage } from '@extension/ui/pages/ModifySecureNotePage';
-import type { BankCardDecrypted, CredentialDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
+import type { BankCardDecrypted, CredentialDecrypted, SecureNoteDecrypted } from '@common/types/items.types';
 import { SecureNoteDetailsPage } from '@extension/ui/pages/SecureNoteDetailsPage';
 import { BackButton } from '@extension/ui/components';
 import { useAppRouterContext } from './AppRouterProvider';

@@ -6,7 +6,7 @@ import { IAuthAdapter } from '../adapters/auth.adapter';
 import { IItemsService } from './itemsService';
 import { IUserService } from './userService';
 import { useAppStateStore } from '../../hooks/useAppState';
-import { NetworkError, AuthenticationError, ItemError } from '../types/errors.types';
+import { NetworkError, AuthenticationError, ItemError } from '@common/types/errors.types';
 
 export interface IAuthListenerService {
   start(): Promise<void>;

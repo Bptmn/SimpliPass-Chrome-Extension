@@ -11,7 +11,7 @@
 
 import { useState, useCallback } from 'react';
 import { itemsService } from '../core/services/itemsService';
-import type { ItemDecrypted, CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '../core/types/items.types';
+import type { ItemDecrypted, CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/types/items.types';
 
 export interface UseItemsCRUDReturn {
   // State

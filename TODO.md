@@ -9,12 +9,15 @@
 - [ ] Clean up ESLint errors in extension code
 - [ ] Add unit tests for extension services
 - [ ] Improve error handling in services
+- [ ] Implement Context Menu → PopoverManager integration (`packages/extension/contextMenu.ts`)
+- [ ] Implement Autofill Injection service flow (`packages/common/hooks/useAutofillInjection.ts`)
 
 ### Medium Priority
 - [ ] Complete popover features development
 - [ ] Add comprehensive error boundaries
 - [ ] Improve test coverage for critical paths
 - [ ] Optimize extension bundle size
+- [ ] Add navigation for bank card edit from details page (`useBankCardDetails`)
 
 ### Low Priority
 - [ ] Add performance monitoring
@@ -120,3 +123,14 @@
 - [ ] Web app version
 - [ ] Desktop app version
 - [ ] API for third-party integrations
+
+---
+
+## 🔍 Verification Notes (2025-11-16)
+
+- Context Menu integration: Still pending. Multiple TODOs present in `packages/extension/contextMenu.ts`.
+- Autofill Injection: Still pending. Explicit TODO in `packages/common/hooks/useAutofillInjection.ts`.
+- Bank Card Edit Navigation: Still pending. TODO present in `packages/common/hooks/useBankCardDetails.ts`.
+- Legacy hooks import paths: Not applicable anymore (no `legacy/` imports in `packages/common/hooks/index.ts`).
+- Legacy background functions: Not found in `packages/extension/background.ts` (no legacy markers present).
+- Type handling in `homePage.ts`: Already implemented (unknown item types are warned); no TODO present.

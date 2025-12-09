@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { User } from '../core/types/auth.types';
+import { User } from '@common/types/auth.types';
 import { getCurrentUser } from '../core/services/userService';
 
 export const useUser = () => {

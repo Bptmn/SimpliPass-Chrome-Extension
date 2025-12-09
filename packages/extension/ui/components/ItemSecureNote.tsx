@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { SecureNoteDecrypted } from '@common/core/types/items.types';
+import { SecureNoteDecrypted } from '@common/types/items.types';
 import { colors, spacing, cardStyles, textStyles } from '../design';
 
 interface ItemSecureNoteProps {

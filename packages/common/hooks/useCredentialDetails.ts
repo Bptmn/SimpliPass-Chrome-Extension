@@ -9,7 +9,7 @@ import { useTextFormatting } from './useTextFormatting'; // ✅ Use focused form
 import { useItemsState } from './useItemsState';
 import { ROUTES } from '../ui/router/ROUTES';
 import { useAppRouterContext } from '../ui/router/AppRouterProvider';
-import type { CredentialDecrypted } from '../core/types/items.types';
+import type { CredentialDecrypted } from '@common/types/items.types';
 
 export const useCredentialDetails = (
   credential: CredentialDecrypted,

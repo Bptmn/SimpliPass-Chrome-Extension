@@ -24,7 +24,6 @@ module.exports = {
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   moduleNameMapper: {
-    '^@shared/(.*)$': '<rootDir>/packages/shared/$1',
     '^@extension/(.*)$': '<rootDir>/packages/extension/$1',
     '^@common/(.*)$': '<rootDir>/packages/common/$1',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',

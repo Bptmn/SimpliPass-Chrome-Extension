@@ -7,9 +7,10 @@ export * from './passwordGenerator';
 export * from './credentials';
 export * from './homePage';
 export * from './debouncedValue';
+export * from './validation.utils';
 
 // Export specific functions to avoid conflicts
 export { formatCardNumber, formatExpirationDate } from './formatting';
 export { formatCardNumber as formatCardNumberFromCards } from './cards';
 export { formatExpirationDate as formatExpirationDateFromExp, createExpirationDate, parseExpirationDate, isExpirationDateValid } from './expirationDate';
-export type { ExpirationDate } from './expirationDate'; 
+export type { ExpirationDate } from './expirationDate';

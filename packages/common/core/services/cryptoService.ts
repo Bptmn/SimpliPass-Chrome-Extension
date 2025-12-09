@@ -5,8 +5,8 @@ import {
   SecureNoteDecrypted,
   ItemEncrypted,
   ItemDecrypted,
-} from '../types/items.types';
-import { CryptographyError, ItemError } from '../types/errors.types';
+} from '@common/types/items.types';
+import { CryptographyError, ItemError } from '@common/types/errors.types';
 
 export interface ICryptoService {
     decryptItem(userSecretKey: string, itemToDecrypt: ItemEncrypted): Promise<ItemDecrypted | null>;

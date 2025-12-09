@@ -9,7 +9,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useAppStateStore } from '@common/hooks/useAppState';
 import { ROUTES, type AppRoute } from './ROUTES';
-import type { User } from '@common/core/types/auth.types';
+import type { User } from '@common/types/auth.types';
 
 export type LockReason = 'expired' | 'fingerprint_mismatch' | 'decryption_failed' | 'not_found' | 'corrupted';
 

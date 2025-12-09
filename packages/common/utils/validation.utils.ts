@@ -8,21 +8,7 @@
  * across all packages without platform dependencies.
  */
 
-// ===== Validation Types =====
-
-export interface ValidationRule {
-  required?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  pattern?: RegExp;
-  custom?: (value: any) => string | null;
-}
-
-export interface ValidationResult {
-  isValid: boolean;
-  errors: string[];
-  warnings: string[];
-}
+import { ValidationRule, DetailedValidationResult as ValidationResult } from '../types/base.types';
 
 export interface FieldValidation {
   field: string;
@@ -67,7 +53,7 @@ export function validateEmail(email: string): string | null {
  * @param password - Password to check
  * @returns object - Password strength details
  */
-export function checkPasswordStrength(password: string) {
+export function checkPasswordStrengthRules(password: string) {
   const checks = {
     length: password.length >= 8,
     lowercase: /[a-z]/.test(password),
@@ -98,7 +84,7 @@ export function checkPasswordStrength(password: string) {
  * @returns ValidationResult
  */
 export function validatePassword(password: string): ValidationResult {
-  const strength = checkPasswordStrength(password);
+  const strength = checkPasswordStrengthRules(password);
   const errors: string[] = [];
   const warnings: string[] = [];
   
@@ -495,4 +481,4 @@ export function validateRequiredProperties(
   }
   
   return null;
-} 
+}

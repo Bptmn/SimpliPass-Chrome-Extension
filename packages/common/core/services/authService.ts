@@ -3,8 +3,8 @@ import { User as FirebaseUser } from 'firebase/auth';
 import { IAuthAdapter } from '../adapters/auth.adapter';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IUserService } from './userService';
-import { AuthenticationError, NetworkError } from '../types/errors.types';
-import type { MfaChallenge } from '../types/auth.types';
+import { AuthenticationError, NetworkError } from '@common/types/errors.types';
+import type { MfaChallenge } from '@common/types/auth.types';
 
 export interface IAuthService {
   initialize(platform?: 'extension' | 'mobile'): Promise<void>;

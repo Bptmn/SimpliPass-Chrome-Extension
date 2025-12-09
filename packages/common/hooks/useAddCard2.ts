@@ -8,7 +8,7 @@
 import { useState, useMemo, useCallback } from 'react';
 // Removed unused import
 import { createExpirationDate, parseExpirationDate } from '@common/utils/expirationDate';
-import type { BankCardDecrypted } from '@common/core/types/items.types';
+import type { BankCardDecrypted } from '@common/types/items.types';
 
 export const useAddCard2 = (
   formData: {

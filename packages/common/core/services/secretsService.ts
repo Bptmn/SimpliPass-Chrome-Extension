@@ -1,6 +1,6 @@
 // packages/common/core/services/secretsService.ts
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
-import { CryptographyError, StorageError, AuthenticationError } from '../types/errors.types';
+import { CryptographyError, StorageError, AuthenticationError } from '@common/types/errors.types';
 
 export interface ISecretsService {
   getUserSecretKey(): Promise<string | null>;

@@ -1,4 +1,4 @@
-import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
+import { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/types/items.types';
 
 type ItemType = CredentialDecrypted | BankCardDecrypted | SecureNoteDecrypted;
 

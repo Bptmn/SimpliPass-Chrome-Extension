@@ -1,11 +1,11 @@
 // packages/common/core/services/userService.ts
-import { User } from '../types/auth.types';
+import { User } from '@common/types/auth.types';
 import { IDatabaseAdapter } from '../adapters/database.adapter';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IAuthAdapter } from '../adapters/auth.adapter';
 import { User as FirebaseUser } from 'firebase/auth';
 import { hasUserSecretKey } from './secretsService';
-import { NetworkError, AuthenticationError, StorageError } from '../types/errors.types';
+import { NetworkError, AuthenticationError, StorageError } from '@common/types/errors.types';
 
 export interface IUserService {
   getCurrentUser(): Promise<User | null>;

@@ -173,7 +173,8 @@ export function decryptDataLegacy(symmetricKey: string, encryptedData: string): 
     console.log('[Crypto] Decoded key length:', keyBytes.length);
     
     // Step 5: Decrypt using @stablelib (expects combined ciphertext+mac)
-    const decryptedBytes = decrypt(keyBytes, nonce, combinedCiphertext);
+    const algo = new ChaCha20Poly1305(keyBytes);
+    const decryptedBytes = algo.open(nonce as Uint8Array, combinedCiphertext as Uint8Array);
     
     // Step 6: Convert back to string
     const decryptedText = new TextDecoder().decode(decryptedBytes);

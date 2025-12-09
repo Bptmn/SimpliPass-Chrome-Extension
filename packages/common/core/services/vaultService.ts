@@ -1,8 +1,8 @@
 // packages/common/core/services/vaultService.ts
-import { ItemDecrypted } from '@common/core/types/items.types';
+import { ItemDecrypted } from '@common/types/items.types';
 import { IPlatformStorageAdapter } from '../adapters/platform.storage.adapter';
 import { IAuthService } from './authService';
-import { StorageError, PlatformError, AuthenticationError } from '../types/errors.types';
+import { StorageError, PlatformError, AuthenticationError } from '@common/types/errors.types';
 
 export interface IVaultService {
   setLocalVault(items: ItemDecrypted[]): Promise<void>;

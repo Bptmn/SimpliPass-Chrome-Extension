@@ -19,8 +19,8 @@ import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
 import { colors, spacing, radius, typography, pageStyles, textStyles } from '../design';
 import { HelperBar } from '../components/HelperBar';
-import { CATEGORIES } from '@common/core/types/categories.types';
-import type { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/core/types/items.types';
+import { CATEGORIES } from '@common/types/categories.types';
+import type { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/types/items.types';
 
 type Category = 'CREDENTIALS' | 'BANK_CARDS' | 'SECURE_NOTES';
 
