@@ -15,11 +15,14 @@ import { ItemSecureNote } from '@extension/ui/components/ItemSecureNote';
 import { useAuth } from '@common/hooks/useAuth';
 import { useAppStateStore } from '@common/hooks/useAppState';
 import { useItemsState } from '@common/hooks/useItemsState';
+import { useDebouncedValue } from '@common/hooks/useDebouncedValue';
+import { useItemsCRUD } from '@common/hooks/useItemsCRUD';
 import { useAppRouterContext } from '../router/AppRouterProvider';
 import { ROUTES } from '../router/ROUTES';
 import { colors, spacing, radius, typography, pageStyles, textStyles } from '../design';
 import { HelperBar } from '../components/HelperBar';
 import { CATEGORIES } from '@common/types/categories.types';
+import { addFakeBankCards } from '@extension/ui/dev/addFakeCards';
 import type { CredentialDecrypted, BankCardDecrypted, SecureNoteDecrypted } from '@common/types/items.types';
 
 type Category = 'CREDENTIALS' | 'BANK_CARDS' | 'SECURE_NOTES';
@@ -36,10 +39,27 @@ export const HomePage: React.FC = () => {
   
   // Get router for navigation
   const router = useAppRouterContext();
+  
+  // Get CRUD operations for adding fake cards
+  const { addBankCard, isLoading: isAddingCards } = useItemsCRUD();
 
   // Local state
   const [category, setCategory] = useState<Category>('CREDENTIALS');
   const [searchValue, setSearchValue] = useState('');
+  
+  // Handle adding fake bank cards (dev mode only)
+  const handleAddFakeCards = async () => {
+    try {
+      await addFakeBankCards();
+      // Force refresh of items
+      window.location.reload();
+    } catch (error) {
+      console.error('[HomePage] Failed to add fake cards:', error);
+    }
+  };
+  
+  // Debounce search value (300ms delay)
+  const debouncedSearchValue = useDebouncedValue(searchValue, 300);
 
   // Filter items based on search value and category
   const displayedItems = React.useMemo(() => {
@@ -47,14 +67,25 @@ export const HomePage: React.FC = () => {
                  category === 'BANK_CARDS' ? bankCards : 
                  secureNotes;
     
-    if (!searchValue.trim()) {
+    if (!debouncedSearchValue.trim()) {
       return items;
     }
     
-    return items.filter((item) =>
-      item.title?.toLowerCase().includes(searchValue.toLowerCase())
-    );
-  }, [category, credentials, bankCards, secureNotes, searchValue]);
+    const searchLower = debouncedSearchValue.toLowerCase();
+    return items.filter((item) => {
+      // Filter by title
+      const titleMatch = item.title?.toLowerCase().includes(searchLower);
+      
+      // For credentials, also filter by username
+      if (item.itemType === 'credential') {
+        const credential = item as CredentialDecrypted;
+        const usernameMatch = credential.username?.toLowerCase().includes(searchLower);
+        return titleMatch || usernameMatch;
+      }
+      
+      return titleMatch;
+    });
+  }, [category, credentials, bankCards, secureNotes, debouncedSearchValue]);
 
   // Handle navigation to generator
   const handleOpenGenerator = () => {
@@ -214,7 +245,9 @@ export const HomePage: React.FC = () => {
               <div style={styles.emptyState}>Erreur: {error}</div>
             ) : category === 'CREDENTIALS' ? (
               displayedItems.length === 0 ? (
-                <div style={styles.emptyState}>Aucun identifiant trouvé.</div>
+                <div style={styles.emptyState}>
+                  {debouncedSearchValue.trim() ? 'Aucun résultat trouvé.' : 'Aucun identifiant trouvé.'}
+                </div>
               ) : (
                 displayedItems.map((credential) => (
                   <CredentialCard
@@ -227,7 +260,24 @@ export const HomePage: React.FC = () => {
               )
             ) : category === 'BANK_CARDS' ? (
               displayedItems.length === 0 ? (
-                <div style={styles.emptyState}>Aucune carte bancaire trouvée.</div>
+                <div style={styles.emptyState}>
+                  {debouncedSearchValue.trim() ? 'Aucun résultat trouvé.' : 'Aucune carte bancaire trouvée.'}
+                  {!debouncedSearchValue.trim() && (
+                    <div style={{ marginTop: spacing.sm }}>
+                      <button
+                        onClick={handleAddFakeCards}
+                        disabled={isAddingCards}
+                        style={{
+                          ...styles.devButton,
+                          opacity: isAddingCards ? 0.6 : 1,
+                        }}
+                        data-testid="add-fake-cards-button"
+                      >
+                        {isAddingCards ? 'Ajout...' : '➕ Ajouter 3 cartes factices (dev)'}
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
                 displayedItems.map((card) => (
                   <ItemBankCard
@@ -239,7 +289,9 @@ export const HomePage: React.FC = () => {
               )
             ) : category === 'SECURE_NOTES' ? (
               displayedItems.length === 0 ? (
-                <div style={styles.emptyState}>Aucune note sécurisée trouvée.</div>
+                <div style={styles.emptyState}>
+                  {debouncedSearchValue.trim() ? 'Aucun résultat trouvé.' : 'Aucune note sécurisée trouvée.'}
+                </div>
               ) : (
                 displayedItems.map((note) => (
                   <ItemSecureNote
@@ -483,6 +535,17 @@ const styles: Record<string, React.CSSProperties> = {
     color: colors.tertiary,
     fontSize: typography.fontSize.xs,
     fontWeight: typography.fontWeight.regular,
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  },
+  devButton: {
+    backgroundColor: colors.secondary,
+    color: colors.white,
+    border: 'none',
+    borderRadius: radius.md,
+    padding: `${spacing.sm} ${spacing.md}`,
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.medium,
+    cursor: 'pointer',
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   },
 };

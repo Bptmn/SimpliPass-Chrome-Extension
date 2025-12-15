@@ -28,8 +28,23 @@ export const getExtensionConfig = () => {
         userPoolClientId: process.env.VITE_COGNITO_CLIENT_ID || '',
         region: process.env.VITE_COGNITO_REGION || ''
       },
-      validateFirebaseConfig: () => true,
-      validateCognitoConfig: () => true
+      validateFirebaseConfig: () => {
+        const config = getExtensionConfig();
+        return !!(
+          config.firebaseConfig.apiKey &&
+          config.firebaseConfig.authDomain &&
+          config.firebaseConfig.projectId &&
+          config.firebaseConfig.appId
+        );
+      },
+      validateCognitoConfig: () => {
+        const config = getExtensionConfig();
+        return !!(
+          config.cognitoConfig.userPoolId &&
+          config.cognitoConfig.userPoolClientId &&
+          config.cognitoConfig.region
+        );
+      }
     };
   }
   

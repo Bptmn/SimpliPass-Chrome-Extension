@@ -32,7 +32,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content.ts-loader-BmyNugZl.js"
+        "assets/content.ts-loader-BI_p4VM1.js"
       ],
       "matches": [
         "<all_urls>"
@@ -51,8 +51,8 @@
         "assets/popovers/components/SaveCredential/SaveCredentialPopover.html",
         "assets/popovers/components/UpdateCredential/UpdateCredentialPopover.html",
         "assets/popovers/components/CredentialPicker/CredentialPickerPopover.html",
-        "assets/tokens-CR2bAsTd.js",
-        "assets/content.ts-C3Zmo2-Z.js"
+        "assets/LoginPromptPopover-LKP53Irv.js",
+        "assets/content.ts-Ds-66Z7u.js"
       ],
       "use_dynamic_url": false
     }

@@ -97,6 +97,12 @@ Adapters use libraries for low-level operations. Adapters are responsible for:
 - **Type Safety**: Use TypeScript interfaces for all adapter methods
 - **Documentation**: Clearly document all methods and their expected behavior
 
+### Provider-Agnostic Requirements
+- **Services MUST NOT import provider implementations**: Services should only use adapter interfaces
+- **Type-only imports are acceptable but not ideal**: Currently, some services import `FirebaseUser` type from `firebase/auth` for type annotations. This is acceptable but should be replaced with a generic `AuthUser` type in the future
+- **No runtime provider code in services**: Services must never call `firebase.*` or `cognito.*` directly
+- **UI components MUST NOT import provider code**: UI should only use hooks and services, never adapters or libraries directly
+
 ### Security Considerations
 - Never log sensitive data
 - Use secure storage for keys and tokens

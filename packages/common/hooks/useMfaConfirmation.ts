@@ -14,6 +14,7 @@ import { useState, useCallback } from 'react';
 import { authService } from '../core/services/authService';
 import { useAppRouterContext } from '../ui/router/AppRouterProvider';
 import { ROUTES } from '../ui/router/ROUTES';
+import { AuthenticationError, NetworkError } from '@common/types/errors.types';
 
 export interface UseMfaConfirmationReturn {
   // UI state
@@ -22,6 +23,7 @@ export interface UseMfaConfirmationReturn {
   
   // Actions
   handleConfirmMfa: (code: string) => Promise<void>;
+  handleResendCode: () => Promise<void>;
   clearError: () => void;
 }
 
@@ -38,14 +40,16 @@ export const useMfaConfirmation = (): UseMfaConfirmationReturn => {
     // Clear previous errors
     setError(null);
     
-    // Validate code
-    if (!code.trim()) {
+    // Validate code format: exactly 6 digits
+    const trimmedCode = code.trim();
+    if (!trimmedCode) {
       setError('Please enter the verification code');
       return;
     }
     
-    if (code.trim().length < 4) {
-      setError('Please enter a valid verification code');
+    // Validate exactly 6 digits
+    if (!/^\d{6}$/.test(trimmedCode)) {
+      setError('Please enter a valid 6-digit verification code');
       return;
     }
     
@@ -65,12 +69,47 @@ export const useMfaConfirmation = (): UseMfaConfirmationReturn => {
       router.navigateTo(ROUTES.HOME);
       
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'MFA confirmation failed';
+      // Improved error handling with clear messages
+      let errorMessage = 'MFA confirmation failed. Please try again.';
+      
+      if (err instanceof AuthenticationError) {
+        // Handle authentication errors (invalid code, expired code, etc.)
+        errorMessage = err.message || 'Invalid verification code. Please try again.';
+        
+        // Check if code expired
+        if (err.message.includes('expired') || err.message.includes('Expired')) {
+          errorMessage = 'The verification code has expired. Please request a new code.';
+        } else if (err.message.includes('Invalid') || err.message.includes('invalid')) {
+          errorMessage = 'Invalid verification code. Please check and try again.';
+        }
+      } else if (err instanceof NetworkError) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (err instanceof Error) {
+        const message = err.message.toLowerCase();
+        if (message.includes('expired') || message.includes('codeexpired')) {
+          errorMessage = 'The verification code has expired. Please request a new code.';
+        } else if (message.includes('invalid') || message.includes('codemismatch')) {
+          errorMessage = 'Invalid verification code. Please check and try again.';
+        } else if (message.includes('network') || message.includes('timeout')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else {
+          errorMessage = err.message || errorMessage;
+        }
+      }
+      
       setError(errorMessage);
       console.error('[useMfaConfirmation] MFA confirmation failed:', err);
     } finally {
       setIsLoading(false);
     }
+  }, [router]);
+
+  // Resend code handler - redirects to login to restart the flow
+  const handleResendCode = useCallback(async () => {
+    setError(null);
+    // Navigate back to login page to restart the authentication flow
+    // The user will need to enter their credentials again to receive a new code
+    router.navigateTo(ROUTES.LOGIN);
   }, [router]);
 
   // Clear error
@@ -85,6 +124,7 @@ export const useMfaConfirmation = (): UseMfaConfirmationReturn => {
     
     // Actions
     handleConfirmMfa,
+    handleResendCode,
     clearError,
   };
 };

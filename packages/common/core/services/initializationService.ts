@@ -5,6 +5,7 @@ import { IAuthService } from './authService';
 import { IAuthListenerService } from './listenerService';
 import { NetworkError, AuthenticationError, PlatformError } from '@common/types/errors.types';
 import type { Platform } from '../../hooks/useAppState';
+import { autoLockService } from './autoLockService';
 
 export interface IInitializationService {
   initializeApp(platform: Platform): Promise<void>;
@@ -44,7 +45,10 @@ export class InitializationService implements IInitializationService {
       // Step 5: Smart listener initialization
       await this.smartInitializeListeners();
       
-      // Step 6: Mark initialization complete and set auth as available
+      // Step 6: Start auto-lock service if user is authenticated
+      await this.startAutoLockIfAuthenticated();
+      
+      // Step 7: Mark initialization complete and set auth as available
       this.appStateStore.getState().setInitializing(false);
       this.appStateStore.getState().setAuthIsAvailable(true);
       
@@ -127,10 +131,28 @@ export class InitializationService implements IInitializationService {
     }
   }
 
+  // ✅ NEW: Start auto-lock service if user is authenticated
+  private async startAutoLockIfAuthenticated(): Promise<void> {
+    try {
+      const isAuthenticated = await this.authService.isAuthenticated();
+      if (isAuthenticated) {
+        console.log('[InitializationService] User authenticated, starting auto-lock service');
+        autoLockService.start();
+      } else {
+        console.log('[InitializationService] User not authenticated, skipping auto-lock');
+        autoLockService.stop();
+      }
+    } catch (error) {
+      console.error('[InitializationService] Failed to start auto-lock:', error);
+      // Don't throw here as auto-lock is not critical for initialization
+    }
+  }
+
   public resetInitializationState(): void {
     try {
       console.log('[InitializationService] Resetting initialization state');
       this.appStateStore.getState().setInitializing(false, null);
+      autoLockService.stop();
     } catch (error) {
       console.error('[InitializationService] Failed to reset initialization state:', error);
       // Don't throw here as this is a cleanup operation

@@ -1,0 +1,203 @@
+---
+description: Autonomous development workflow and context for AI-driven development
+alwaysApply: true
+---
+
+# 🤖 Autonomous Development Workflow
+
+## 📚 Références
+
+- **Tests manuels détaillés** : `documentation/ai-assistant/manual-testing-guide.md`
+- **Workflow complet** : `documentation/ai-assistant/workflow.md`
+- **Architecture** : `documentation/ai-assistant/architecture.md`
+- **Stratégie tests** : `documentation/ai-assistant/testing.md`
+- **Plan développement** : `documentation/ai-assistant/features.md`
+
+## 🚀 COMMANDES PRINCIPALES
+
+### 1. "Continue le développement"
+
+Quand l'utilisateur dit **"continue"**, **"continue le développement"** ou équivalent :
+
+```
+1. OUVRIR documentation/ai-assistant/features.md
+2. TROUVER le marqueur 📍 POSITION ACTUELLE
+3. LIRE toutes les sous-tâches du groupe actuel
+4. POUR CHAQUE item [ ] ou [~] :
+   a. Vérifier si le code existe (grep, read file)
+   b. Si [~] : évaluer, corriger si besoin
+   c. Si [ ] : implémenter
+   d. Cocher [x] quand terminé
+5. IMPLÉMENTER les tests 🧪 du groupe
+6. EXÉCUTER : npm run build:extension && npm run test:extension
+7. SI OK :
+   - Cocher [x] tous les items et tests
+   - DÉPLACER 📍 au prochain groupe (ex: 0.1 → 0.2)
+   - COMMIT : feat(scope): description
+   - CONTINUER au prochain groupe
+8. SI KO :
+   - Lire les logs
+   - Corriger
+   - Recommencer étape 6
+```
+
+---
+
+### 2. "Execute l'ensemble des tests"
+
+Quand l'utilisateur dit **"execute l'ensemble des tests"**, **"run all tests"**, **"test everything"** ou équivalent :
+
+**⚠️ CRITIQUE** : L'IA DOIT itérer automatiquement sur les erreurs jusqu'à ce que TOUS les tests passent. Ne JAMAIS s'arrêter après avoir détecté des erreurs sans les corriger.
+
+```
+BOUCLE PRINCIPALE (répéter jusqu'à ce que TOUS les tests passent) :
+│
+├─ 1. TESTS UNITAIRES
+│  ├─ Exécuter : npm run test:extension
+│  ├─ Si échec :
+│  │  ├─ Lister TOUS les tests qui échouent avec détails complets
+│  │  ├─ Analyser chaque erreur (message, stack trace, fichier concerné)
+│  │  ├─ Identifier la cause racine
+│  │  ├─ Corriger le code
+│  │  └─ RETOURNER à l'étape 1 (re-tester)
+│  └─ Si succès : continuer à l'étape 2
+│
+├─ 2. BUILD EXTENSION
+│  ├─ Exécuter : npm run build:extension
+│  ├─ Si échec :
+│  │  ├─ Lister TOUTES les erreurs TypeScript/compilation
+│  │  ├─ Analyser chaque erreur (fichier, ligne, type d'erreur)
+│  │  ├─ Corriger le code
+│  │  └─ RETOURNER à l'étape 2 (re-build)
+│  └─ Si succès : continuer à l'étape 3
+│
+└─ 3. TESTS POPUP DANS NAVIGATEUR (MÉTHODE STANDARD)
+   
+   **MÉTHODE OBLIGATOIRE** : Mode Web + Navigateur MCP Cursor
+   
+   **⚠️ CRITIQUE** : L'IA DOIT itérer automatiquement jusqu'à ce que TOUS les tests passent.
+   
+   **Processus** :
+   1. Démarrer serveur : `npm run dev:web > /tmp/vite-dev-web.log 2>&1 &`
+   2. Vérifier serveur prêt : `curl http://localhost:3000/packages/extension/popup/index.html`
+   3. Naviguer avec MCP : `browser_navigate({ url: '...' })`
+   4. Vérifier logs : `browser_console_messages()`
+   5. Tester features : `browser_click()`, `browser_type()`, `browser_snapshot()`
+   6. **BOUCLE D'ITÉRATION** : Si erreurs → Corriger → Attendre HMR → Re-tester
+   7. Nettoyer : `pkill -f "vite.*vite.config.web"`
+   
+   **Voir guide détaillé** : `documentation/ai-assistant/manual-testing-guide.md` section "Méthode Standard"
+
+   h. TESTER LES POPOVERS (content scripts) avec **MCP Playwright** si nécessaire :
+      - **⚠️ PROCESSUS COMPLET** : Tester manuellement avec MCP Playwright, itérer jusqu'à ce que tout fonctionne, puis créer des tests Playwright automatisés
+      - Build : `npm run build:extension`
+      - Lancer Chromium avec extension (MCP Playwright, non-headless)
+      - Tester popover sur page signup/login
+      - **BOUCLE D'ITÉRATION** : Corriger → Rebuild → Re-tester jusqu'à ce que TOUT fonctionne
+      - **CRÉER TESTS AUTOMATISÉS** : Créer `packages/extension/__tests__/playwright/XX-feature-name.spec.ts` après validation manuelle
+   
+   **Voir guide détaillé** : `documentation/ai-assistant/manual-testing-guide.md` section "Tests Popover"
+
+4. RAPPORT DES RÉSULTATS
+   - Lister tous les tests (unitaires, navigateur)
+   - Indiquer succès/échec pour chacun
+   - **⚠️ Si échecs** : L'IA DOIT automatiquement corriger et re-tester (ne JAMAIS s'arrêter)
+   - Répéter jusqu'à ce que TOUS les tests passent
+```
+
+**Voir guide détaillé** : `documentation/ai-assistant/workflow.md` section "Execute l'ensemble des tests"
+
+---
+
+## 📚 Context Documentation
+
+Documentation complète dans `documentation/ai-assistant/` :
+
+| Fichier | Contenu |
+|---------|---------|
+| `features.md` | **Plan complet A-Z** avec 📍 position actuelle |
+| `architecture.md` | Architecture 3 couches + Provider-Agnostic |
+| `workflow.md` | Boucle de développement détaillée |
+| `testing.md` | Stratégie de tests et debugging |
+| `manual-testing-guide.md` | **Guide tests manuels automatisés** - Comment tester la popup via navigateur MCP Cursor |
+
+---
+
+## 🔁 Boucle de Développement
+
+### 1. Analyse & Vérification
+- Lire TOUTES les sous-tâches du groupe actuel (📍)
+- Pour chaque item : vérifier si le code existe déjà
+- Items `[~]` = code partiel, à évaluer et compléter
+
+### 2. Développement (Web Mode First)
+```bash
+npm run dev:web
+```
+- Créer/Modifier les composants dans `packages/extension/ui`
+- Utiliser **Sandbox** (`/sandbox`) pour tester les Popovers
+- Terminer TOUTES les sous-tâches du groupe
+
+### 3. Intégration (Extension Mode)
+```bash
+npm run build:extension
+```
+- S'assurer que le build passe sans erreur TS
+
+### 4. Tests
+```bash
+npm run test:extension      # Tests unitaires
+```
+- Implémenter les tests listés sous "🧪 Tests Phase X.X"
+- Tous les tests doivent passer
+
+### 5. Mise à jour & Commit
+- **Cocher [x]** tous les items terminés dans `features.md`
+- **Déplacer 📍** au prochain groupe si terminé
+- **Commit** : `feat(scope): description`
+- **Continuer** au prochain groupe
+
+---
+
+## 🛠️ Commandes
+
+| Commande | Usage |
+|----------|-------|
+| `npm run dev:web` | Développement UI (HMR) |
+| `npm run build:extension` | Build Chrome extension |
+| `npm run test:extension` | Tests unitaires (Jest) |
+| `npm run lint:extension` | Linting |
+
+---
+
+## ⚠️ Règles Critiques
+
+1. **Vérifier avant de créer** : Le code existe probablement déjà
+2. **Un groupe à la fois** : Terminer TOUS les items avant de passer au suivant
+3. **Tests obligatoires** : Chaque groupe doit avoir ses tests passants
+4. **Validation inter-phase** : **OBLIGATOIRE** - À la fin de chaque grande phase (0, 1, 2, etc.), utiliser le serveur local (`npm run dev:web`) + Navigateur MCP Cursor pour tester la popup automatiquement (voir `manual-testing-guide.md`)
+5. **Tests manuels automatisés** : **MÉTHODE STANDARD** - Toujours utiliser `npm run dev:web` + Navigateur MCP Cursor pour tester la popup comme un site web, voir les logs, itérer avec HMR
+6. **Provider-Agnostic** : JAMAIS importer `firebase/*` dans Services/UI
+7. **Déplacer 📍** : Mettre à jour la position après chaque groupe
+8. **Web Mode First** : 10x plus rapide que tester dans l'extension
+
+---
+
+## 🔍 Debugging
+
+Si un test échoue :
+1. Lire les logs du navigateur MCP avec `browser_console_messages()`
+2. Utiliser `browser_snapshot()` pour voir l'état de la page
+3. Lire les logs `[CONSOLE]` :
+   - `[EXTENSION_UI]` = Erreur popup
+   - `[CONTENT_SCRIPT]` = Erreur content script
+   - `[PAGE_ERROR]` = Erreur JS runtime
+4. Corriger et recommencer
+
+---
+
+## 📝 Format de Commit
+
+- Format : `type(scope): description`
+- Types : `feat`, `fix`, `refactor`, `docs`, `test`
+- Ne jamais committer de code cassé

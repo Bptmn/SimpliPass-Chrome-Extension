@@ -18,7 +18,10 @@ export async function initFirebase() {
       throw new Error('Firebase configuration is missing');
     }
     
-    validateFirebaseConfig('extension');
+    const isValid = await validateFirebaseConfig();
+    if (!isValid) {
+      throw new Error('Firebase configuration validation failed');
+    }
     app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);

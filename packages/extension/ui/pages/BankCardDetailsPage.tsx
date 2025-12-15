@@ -71,6 +71,7 @@ export const BankCardDetailsPage: React.FC<BankCardDetailsPageProps> = ({
     }
   };
 
+  // Display full card number in details page (user explicitly opened details)
   const displayCardNumber = card.cardNumber.replace(/(.{4})/g, '$1 ').trim();
 
   const formatDate = (expDate: any) => {

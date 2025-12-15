@@ -26,12 +26,18 @@ module.exports = {
   moduleNameMapper: {
     '^@extension/(.*)$': '<rootDir>/packages/extension/$1',
     '^@common/(.*)$': '<rootDir>/packages/common/$1',
-    '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
-    '^@common/config/platform$': '<rootDir>/__mocks__/platformMock.js',
+    '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/configs/test/__mocks__/fileMock.js',
+    '^@common/config/platform$': '<rootDir>/configs/test/__mocks__/platformMock.js',
   },
   testMatch: [
     '**/__tests__/**/*.(ts|tsx|js)',
     '**/?(*.)+(spec|test).(ts|tsx|js)'
+  ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
+    '/coverage/',
+    '/__tests__/e2e/', // Exclude Playwright E2E tests
   ],
   collectCoverageFrom: [
     'packages/common/**/*.{ts,tsx}',

@@ -46,7 +46,7 @@ describe('IconsMap', () => {
 
   it('should have the correct number of icons', () => {
     const iconKeys = Object.keys(IconsMap);
-    expect(iconKeys).toHaveLength(29);
+    expect(iconKeys).toHaveLength(33);
   });
 
   it('should export IconKey type that matches all keys', () => {

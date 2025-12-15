@@ -11,13 +11,14 @@
 // 3. useAppRouter subscribes to Zustand store for automatic updates
 // 4. AppRouterView renders the appropriate page
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppRouterProvider, AppRouterView, useAppRouter } from '@extension/ui/router';
 import { PageState } from '@common/types/auth.types';
 import { useAppInitialization } from '@extension/hooks/useAppInitialization';
 import { InitializationErrorBoundary } from '@extension/ui/components/InitializationErrorBoundary';
 import { DevModeIndicator } from '@extension/ui/components/DevModeIndicator';
 import { injectCredentialIntoCurrentTab } from '../services/credentialInjection';
+import { addFakeBankCards } from '@extension/ui/dev/addFakeCards';
 
 export const PopupApp: React.FC = () => {
   // Initialize page state (to get current page information)
@@ -26,6 +27,14 @@ export const PopupApp: React.FC = () => {
 
   // Step 1: Use initialization (uses Zustand store directly)
   useAppInitialization();
+
+  // Expose utility functions to window for console access (dev mode only)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).addFakeBankCards = addFakeBankCards;
+      console.log('[PopupApp] Dev utilities available: window.addFakeBankCards()');
+    }
+  }, []);
 
   // Step 2: Create router (subscribes to Zustand store automatically)
   const router = useAppRouter({

@@ -2,7 +2,7 @@
 import {
   isValidEmail,
   validateEmail,
-  checkPasswordStrength,
+  checkPasswordStrengthRules,
   validatePassword,
   isValidUrl,
   validateUrl,
@@ -21,6 +21,7 @@ import {
   validateArrayLength,
   validateRequiredProperties,
 } from '../validation.utils';
+import { checkPasswordStrength } from '../checkPasswordStrength';
 
 describe('Validation Utilities', () => {
   describe('Email Validation', () => {
@@ -47,18 +48,22 @@ describe('Validation Utilities', () => {
 
   describe('Password Validation', () => {
     it('should identify a strong password', () => {
-      const { strength } = checkPasswordStrength('Abcdef1!');
-      expect(strength).toBe('very-strong');
+      const result = checkPasswordStrengthRules('Abcdef1!');
+      expect(result.strength).toBe('very-strong');
+      
+      // Also test checkPasswordStrength from separate module (uses zxcvbn)
+      const strength = checkPasswordStrength('Abcdef1!');
+      expect(['weak', 'average', 'strong', 'perfect']).toContain(strength);
     });
 
     it('should return no errors for a valid password', () => {
-      const { isValid } = validatePassword('Abcdef1!');
-      expect(isValid).toBe(true);
+      const result = validatePassword('Abcdef1!');
+      expect(result.isValid).toBe(true);
     });
 
     it('should return errors for a weak password', () => {
-      const { errors } = validatePassword('abc');
-      expect(errors.length).toBeGreaterThan(0);
+      const result = validatePassword('abc');
+      expect(result.errors.length).toBeGreaterThan(0);
     });
   });
 

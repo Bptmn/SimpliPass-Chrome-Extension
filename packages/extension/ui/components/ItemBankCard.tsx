@@ -50,7 +50,10 @@ export const ItemBankCard: React.FC<ItemBankCardProps> = ({ cred, onPress }) => 
       {/* Bottom: Owner and Expiry */}
       <div style={styles.bankCardBottom}>
         <div style={styles.bankCardOwner}>{cred.ownerFirstName} {cred.ownerLastName}</div>
-        <div style={styles.bankCardExpiry}>{formatExpirationDateFromExp(cred.exp)}</div>
+        <div style={styles.bankCardExpiry}>
+          {cred.exp ? formatExpirationDateFromExp(cred.exp) : 
+           cred.expirationDate ? formatExpirationDateFromExp(cred.expirationDate) : 'N/A'}
+        </div>
       </div>
     </button>
   );

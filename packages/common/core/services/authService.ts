@@ -176,9 +176,31 @@ export class AuthService implements IAuthService {
 
   public async logout(): Promise<void> {
     try {
-      // Business logic: clear user data and sign out
+      console.log('[AuthService] Starting logout process');
+      
+      // Step 1: Stop auto-lock service
+      const { autoLockService } = await import('./autoLockService');
+      autoLockService.stop();
+      console.log('[AuthService] Auto-lock service stopped');
+      
+      // Step 2: Clear vault from session storage (RAM)
+      const { vaultService } = await import('./vaultService');
+      await vaultService.clearLocalVault();
+      console.log('[AuthService] Vault cleared from session storage');
+      
+      // Step 3: Clear user data (includes user secret key)
       await this.userService.clearUserData();
+      console.log('[AuthService] User data cleared');
+      
+      // Step 4: Sign out from all providers (Firebase + Cognito)
       await this.authAdapter.signOut();
+      console.log('[AuthService] Signed out from all providers');
+      
+      // Step 5: Reset app state
+      this.appStateStore.getState().setUserAndSecretKey(null, false);
+      console.log('[AuthService] App state reset');
+      
+      console.log('[AuthService] Logout completed successfully');
     } catch (error) {
       console.error('[AuthService] Logout failed:', error);
       throw new AuthenticationError('Failed to sign out', error as Error);

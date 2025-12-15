@@ -1,136 +1,22 @@
-# SimpliPass Chrome Extension - TODO
+TO DO manuel :
 
-- Est-ce que les tests lorsqu'un service est mocked sont utiles et fiable ? Authentication, adapters... ? Il existe des méthodes pour tester ça? Ou il vaut mieux que ce soit via playwright pour une situation réelle?
-- Pourquoi il y a un hook CRUD mais aussi des hooks spécifiques aux modifications des items?
+ORGANISATION :
+- Continuer de clean l'organisation, notemment à l'intérieur de chaque dossiers, jusqu'à que tout soit parfait pour avoir une bonne base pour reprendre/continuer le développement.
+Exemple : Utilité du dossier Mock? Position du dossier public/assets/popovers/components?
 
-## 🎯 Current Priorities
+RULES :
+- Revoir les rules
+- Notemment sur l'approche, l'organisation et la mise à jour constante de la documentation (folder documentation et les readme)
+- Conseiller l'utilisation de context7
+- Mettre en place des règles de scripts, notemment leur mise à jour constante avec l'évolution du code par l'IA
 
-### High Priority
-- [ ] Clean up ESLint errors in extension code
-- [ ] Add unit tests for extension services
-- [ ] Improve error handling in services
-- [ ] Implement Context Menu → PopoverManager integration (`packages/extension/contextMenu.ts`)
-- [ ] Implement Autofill Injection service flow (`packages/common/hooks/useAutofillInjection.ts`)
+TESTING :
+- Stratégie de test à développer avec l'IA : dossier test dans chaque package, reprendre depuis les core features, tester toutes les choses essentiels, depuis les plus petites features au plus complète. L'objectif est de s'assurer que l'essentiel fonctionne, et ensuite de compléter les tests. L'objectif global est que pour les futures développement, on puisse lancer les tests pour s'asssurer que rien ne casse et garder une application toujours fonctionnelle
+- Documenter cette approche dans le doc ia-assistant
+- Reprendre le dossier test actuel pour garder ce qui est intéressant (notemment dans le Readme)
 
-### Medium Priority
-- [ ] Complete popover features development
-- [ ] Add comprehensive error boundaries
-- [ ] Improve test coverage for critical paths
-- [ ] Optimize extension bundle size
-- [ ] Add navigation for bank card edit from details page (`useBankCardDetails`)
-
-### Low Priority
-- [ ] Add performance monitoring
-- [ ] Create extension store listing
-
-## 🎭 E2E Testing with Playwright (NEW PRIORITY)
-
-### Phase 1: Setup ✅ COMPLETE
-- [x] Install Playwright dependencies
-- [x] Create Playwright configuration
-- [x] Create extension context helper
-- [x] Implement smoke test (extension loads)
-- [x] Verify tests run successfully
-
-### Phase 2: Authentication Tests ✅ INFRASTRUCTURE COMPLETE
-- [x] Create test configuration file
-- [x] Create console monitor helper
-- [x] Write login flow test
-- [x] Write logout flow test
-- [x] Write email validation test
-- [x] Write error handling tests
-- [x] Write password visibility toggle test
-- [ ] Add data-testid attributes to UI components
-- [ ] Create test user in Firebase
-- [ ] Verify all tests pass
-
-### Phase 3: Autofill Tests (Week 3)
-- [ ] Test form detection
-- [ ] Test credential selection
-- [ ] Test autofill injection
-- [ ] Test save credential prompt
-- [ ] Test autofill on various sites
-
-### Phase 4: Advanced Features (Week 4)
-- [ ] Test password generator
-- [ ] Test security features (HTTP warning, iframe protection)
-- [ ] Test XSS prevention
-- [ ] Create console monitor helper
-- [ ] Add test data helpers
-
-### Phase 5: CI/CD (Week 5)
-- [ ] Set up GitHub Actions workflow
-- [ ] Add test scripts to package.json
-- [ ] Generate test reports
-- [ ] Document test patterns
-
-**See**: `documentation/PLAYWRIGHT_IMPLEMENTATION_PLAN.md` for full details
-
-## 🚀 Features to Develop
-
-### Core Features
-- [ ] Settings page with preference persistence
-- [ ] Complete CRUD operations for credentials
-- [ ] Password change functionality
-- [ ] Email change functionality
-- [ ] Enhanced popover interactions
-
-### Advanced Features
-- [ ] Biometric authentication
-- [ ] Advanced password generation options
-- [ ] Secure notes management
-- [ ] Credit card management
-- [ ] Two-factor authentication
-
-## 🧪 Testing & Quality
-
-### Testing
-- [ ] Unit tests for all services
-- [ ] Integration tests for autofill
-- [ ] Security tests for popovers
-- [ ] Performance tests for crypto operations
-
-### Code Quality
-- [ ] Achieve 100% ESLint compliance
-- [ ] Improve TypeScript strictness
-- [ ] Add comprehensive error handling
-- [ ] Optimize bundle size and performance
-
-## 📚 Documentation
-
-### Technical Documentation
-- [ ] API documentation for services
-- [ ] Component documentation
-- [ ] Security best practices guide
-- [ ] Deployment guide
-
-### User Documentation
-- [ ] User manual
-- [ ] Feature guides
-- [ ] Troubleshooting guide
-- [ ] FAQ section
-
-## 🏗️ Architecture
-
-### Current State
-- ✅ Extension: React DOM + Vite
-- ✅ Business Logic: packages/common (services, adapters, utils)
-- ✅ UI: packages/extension/ui (DOM components)
-- ✅ No React Native dependencies
-
-### Future Considerations
-- [ ] Mobile app development with shared logic
-- [ ] Web app version
-- [ ] Desktop app version
-- [ ] API for third-party integrations
-
----
-
-## 🔍 Verification Notes (2025-11-16)
-
-- Context Menu integration: Still pending. Multiple TODOs present in `packages/extension/contextMenu.ts`.
-- Autofill Injection: Still pending. Explicit TODO in `packages/common/hooks/useAutofillInjection.ts`.
-- Bank Card Edit Navigation: Still pending. TODO present in `packages/common/hooks/useBankCardDetails.ts`.
-- Legacy hooks import paths: Not applicable anymore (no `legacy/` imports in `packages/common/hooks/index.ts`).
-- Legacy background functions: Not found in `packages/extension/background.ts` (no legacy markers present).
-- Type handling in `homePage.ts`: Already implemented (unknown item types are warned); no TODO present.
+AI-ASSISTANT :
+- Etoffer chacune des files afin d'avoir une approche complète du développement
+- Lui faire chercher les meilleurs pratiques essentiels sur internet ou grâce à context7 afin de documenter l'approche global pour l'IA
+- Documenter ce qui existe et fonctionne déjà dans la check list, comme une liste de feature de A à Z de ce qui est nécessaite pour l'entièreté du développement jusqu'à la production, de manière assez détaillé, orienté résultat pour laisser l'IA prendre les bonnes décisions pour les atteindres.
+- S'assurer que dans les règles et/ou l'approche de l'IA assistant, il y a bien le fait que le code doit être bien commenté, avec une petite explication à chaque début de fichier, des commentaires sur les parties principales du code, et dans la mesure du possible, numéroté les étapes des process séquentiels

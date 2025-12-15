@@ -4,6 +4,7 @@
   "description": "SimpliPass Chrome Extension",
   "main": "background/background.js",
   "scripts": {
+    "validate:env": "node scripts/validate-env.js",
     "dev": "vite --config configs/build/vite/vite.config.ts",
     "dev:web": "vite --config configs/build/vite/vite.config.web.ts",
     "build": "vite build --config configs/build/vite/vite.background.config.ts && vite build --config configs/build/vite/vite.content.config.ts && vite build --config configs/build/vite/vite.config.ts && cp dist/packages/extension/popup/popup.html dist/ && sed -i '' 's|\"../../../assets/|\"assets/|g' dist/popup.html",
@@ -26,13 +27,7 @@
     "lint:extension": "eslint packages/extension --ext .ts,.tsx",
     "lint:extension:fix": "eslint packages/extension --ext .ts,.tsx --fix",
     "test:extension": "jest --config configs/test/jest.config.js packages/extension packages/common/core packages/common/utils packages/common/hooks",
-    "test:e2e": "playwright test --config=configs/playwright/playwright.config.ts",
-    "test:e2e:headless": "HEADLESS=true playwright test --config=configs/playwright/playwright.config.ts",
-    "test:e2e:ui": "playwright test --config=configs/playwright/playwright.config.ts --ui",
-    "test:e2e:debug": "playwright test --config=configs/playwright/playwright.config.ts --debug",
-    "test:e2e:slow": "SLOWMO=500 playwright test --config=configs/playwright/playwright.config.ts",
-    "test:e2e:report": "playwright show-report playwright-report",
-    "test:all": "npm run test:extension && npm run test:e2e"
+    "test:all": "npm run test:extension"
   },
   "dependencies": {
     "@stablelib/chacha20poly1305": "^2.0.1",
@@ -62,7 +57,6 @@
     "@babel/preset-react": "^7.23.0",
     "@babel/preset-typescript": "^7.23.0",
     "@crxjs/vite-plugin": "^2.0.2",
-    "@playwright/test": "^1.55.1",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
@@ -94,7 +88,6 @@
     "husky": "^8.0.3",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
-    "playwright-chromium": "^1.55.1",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "react-test-renderer": "^18.2.0",

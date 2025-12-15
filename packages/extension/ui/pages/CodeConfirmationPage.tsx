@@ -41,12 +41,21 @@ export const CodeConfirmationPage: React.FC<CodeConfirmationPageProps> = ({
   const error = externalError || internalError;
 
   const handleSubmit = () => {
-    if (!code.trim()) {
-      setInternalError('Veuillez entrer le code de confirmation.');
+    // Validate code format: exactly 6 digits
+    const trimmedCode = code.trim();
+    if (!trimmedCode) {
+      setInternalError('Please enter the verification code');
       return;
     }
+    
+    // Validate exactly 6 digits
+    if (!/^\d{6}$/.test(trimmedCode)) {
+      setInternalError('Please enter a valid 6-digit verification code');
+      return;
+    }
+    
     setInternalError('');
-    onConfirm(code);
+    onConfirm(trimmedCode);
   };
 
   const handleBack = () => {

@@ -1,7 +1,6 @@
 ---
-alwaysApply: true
+alwaysApply: false
 ---
-
 ## 🧪 Testing Strategy - Essential Tests Only
 
 ### Core Philosophy
@@ -29,13 +28,13 @@ alwaysApply: true
 
 ```
            /\
-          /  \          ← E2E Tests (Playwright) - MINIMAL
-         /    \           5% of tests (CRITICAL FLOWS ONLY)
-        /------\          Only for real user journeys
+          /  \          ← Tests Navigateur (MCP Cursor) - MINIMAL
+         /    \           5% of tests (TESTS WEB POPUP)
+        /------\          Via navigateur MCP de Cursor
        /        \
-      /  E2E     \
-     /    REAL   \
-    /   Services  \     ← Integration Tests (Jest + RTL)
+      /  Browser \
+     /    Tests  \
+    /   (MCP)     \     ← Integration Tests (Jest + RTL)
    /----------------\     25% of tests (USER INTERACTIONS)
   /   Integration   \    Fast, reliable, essential only
  /--------------------\
@@ -48,7 +47,7 @@ alwaysApply: true
 ### Test Distribution (Essential Only)
 - **70% Unit Tests** - Pure functions, utilities, business logic
 - **25% Integration Tests** - User interactions, form validation, navigation  
-- **5% E2E Tests** - Critical user flows only
+- **5% Tests Navigateur** - Tests web popup via navigateur MCP Cursor
 
 ---
 
@@ -84,21 +83,36 @@ alwaysApply: true
 
 ---
 
-### 3️⃣ E2E Tests (Playwright) - 5% of Tests - CRITICAL FLOWS ONLY
+### 3️⃣ Tests Navigateur (MCP Cursor) - 5% of Tests - TESTS WEB POPUP
 
-**Purpose**: Test only the most critical user journeys with real services
+**Purpose**: Tester la popup dans le navigateur via le navigateur MCP de Cursor
 
 **What to Test**:
-- ✅ **Critical Authentication Flow**: Login → Home → Logout (with real services)
-- ✅ **Essential Extension Behavior**: Popup functionality, basic navigation
-- ❌ **Complex User Flows**: Skip detailed CRUD operations, complex workflows
-- ❌ **Non-Critical Features**: Skip advanced features, edge cases
+- ✅ **Popup se charge** : Vérifier que la popup se charge sans erreur
+- ✅ **Console errors** : Vérifier qu'il n'y a pas d'erreurs JavaScript
+- ✅ **Features principales** : Tester les interactions principales selon la phase
+- ❌ **Tests automatisés complexes** : Utiliser Jest + RTL pour les tests automatisés
 
-**Why Playwright**: Only for absolutely critical flows that cannot be tested otherwise
+**Why Navigateur MCP Cursor** : Permet de tester la popup comme un site web avec HMR pour itérer rapidement
 
 ---
 
-## ❌ What NOT to Test with Playwright
+### 🔧 Tests Popover (Content Scripts) avec MCP Playwright
+
+**⚠️ PROCESSUS COMPLET** : Voir guide détaillé dans `documentation/ai-assistant/manual-testing-guide.md` section "Tests Popover (Content Scripts) avec MCP Playwright".
+
+**Résumé** :
+- Build extension : `npm run build:extension`
+- Lancer Chromium avec extension (MCP Playwright, non-headless)
+- Tester popover sur page signup/login
+- **BOUCLE D'ITÉRATION** : Corriger → Rebuild → Re-tester jusqu'à ce que TOUT fonctionne
+- **CRÉER TESTS AUTOMATISÉS** : Créer `packages/extension/__tests__/playwright/XX-feature-name.spec.ts` après validation manuelle
+
+**Voir guide complet** : `documentation/ai-assistant/manual-testing-guide.md`
+
+---
+
+## ❌ What NOT to Test with Navigateur MCP
 
 1. **❌ Form Validation Logic** - Use Jest (pure logic, no browser needed)
 2. **❌ Button Click Handlers** - Use React Testing Library (DOM events work in jsdom)
@@ -110,7 +124,7 @@ alwaysApply: true
 
 ## 🔥 Testing with Real External Services
 
-### ✅ Use Playwright with REAL Services
+### ✅ Use Navigateur MCP Cursor for Web Tests
 
 **Firebase/Firestore**:
 - Use real Firebase test environment
@@ -123,12 +137,12 @@ alwaysApply: true
 - Don't delete test users (reuse them)
 
 **Chrome Storage**:
-- Test real Chrome Storage persistence
+- Test real Chrome Storage persistence (via mode web avec shims)
 - Verify data survives popup close/reopen
 
-### ❌ Never Mock External Services in E2E
+### ❌ Never Mock External Services in Browser Tests
 
-Mocking Firebase, Cognito, or Chrome APIs in E2E tests defeats the purpose. If you need mocks, use Jest instead.
+Mocking Firebase, Cognito, or Chrome APIs in browser tests defeats the purpose. If you need mocks, use Jest instead.
 
 ---
 
@@ -136,33 +150,47 @@ Mocking Firebase, Cognito, or Chrome APIs in E2E tests defeats the purpose. If y
 
 ### For Every Feature or Bug Fix:
 
-1. **Build Extension First**
+**Note**: This workflow integrates with the autonomous development loop. See `4-autonomous-dev.mdc` for the complete workflow.
+
+1. **Analysis**
+   - Read task requirements
+   - Identify impacted files (UI, Service, Test)
+   - Check existing architecture rules
+
+2. **Development (Web Mode First) - UI/Logic**
+   ```bash
+   npm run dev:web
+   ```
+   - Create/Modify components in `packages/extension/ui`
+   - Use **Sandbox** (`/sandbox` route) to test Popovers in isolation
+   - Verify logic works with `browserAPI` shim (sessionStorage)
+   - **For TDD**: Write unit/integration tests (Jest) during this phase if applicable
+
+3. **Integration (Extension Mode)**
    ```bash
    npm run build:extension
    ```
+   - Build must pass without TypeScript errors
+   - Verify extension compiles correctly
 
-2. **Run Existing Tests**
+4. **Browser Test & Validation**
    ```bash
-   npm run test:e2e
+   npm run dev:web
+   # Puis utiliser navigateur MCP Cursor pour tester
    ```
-   - If tests fail, understand why before proceeding
-   - Fix broken tests before adding new features
+   - **For new features**: Test popup via navigateur MCP Cursor
+   - Navigate to `http://localhost:3000/packages/extension/popup/index.html`
+   - Use `browser_snapshot()`, `browser_console_messages()` to verify
+   - **For bug fixes**: Test existing features first, fix issues before proceeding
+   - If errors detected, read console logs and fix code
 
-3. **Write Test First (TDD Approach)**
-   - Write E2E test that describes expected behavior
-   - Test should fail initially (red)
-   - This validates the test is actually testing something
-
-4. **Implement Feature**
-   - Write minimal code to make test pass
-   - Follow architecture rules (3-layer separation)
-
-5. **Verify Test Passes**
-   ```bash
-   npm run build:extension && npm run test:e2e
-   ```
-   - Test should now pass (green)
-   - If not, iterate until it does
+5. **Iteration Loop**
+   - **If test fails**: 
+     - Read console logs (`[EXTENSION_UI]`, `[CONTENT_SCRIPT]`, `[PAGE_ERROR]`)
+     - Diagnose root cause
+     - Fix code
+     - Return to step 3 (or step 2 if UI-only fix)
+   - **If test passes**: Continue to step 6
 
 6. **Check for Regressions**
    ```bash
@@ -177,60 +205,53 @@ Mocking Firebase, Cognito, or Chrome APIs in E2E tests defeats the purpose. If y
 
 ---
 
-## 📝 Writing E2E Tests
+## 📝 Testing with Navigateur MCP Cursor
 
-### Test Structure
+### Processus de Test
 
-```typescript
-import { test, expect } from './helpers/extensionContext';
+**Pour tester la popup via navigateur MCP Cursor** :
 
-test.describe('Feature Name', () => {
-  test('should do specific thing', async ({ context, extensionId }) => {
-    // Arrange: Setup test data and state
-    const popup = await context.newPage();
-    await popup.goto(`chrome-extension://${extensionId}/popup.html`);
-    
-    // Act: Perform the action
-    await popup.click('[data-testid="some-button"]');
-    
-    // Assert: Verify the result
-    await expect(popup.locator('[data-testid="result"]')).toBeVisible();
-  });
-});
+```bash
+# 1. Démarrer le serveur web
+npm run dev:web > /tmp/vite-dev-web.log 2>&1 &
+
+# 2. Vérifier que le serveur est prêt
+sleep 5
+curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/packages/extension/popup/index.html
+# Doit retourner 200
 ```
 
-### Test Naming Convention
+**Actions avec Navigateur MCP Cursor** :
+1. `browser_navigate({ url: 'http://localhost:3000/packages/extension/popup/index.html' })`
+2. `browser_wait_for({ time: 3 })` - Attendre le chargement
+3. `browser_snapshot()` - Voir l'état de la page
+4. `browser_console_messages()` - Vérifier les logs/erreurs
+5. `browser_click()`, `browser_type()` - Tester les interactions
+6. Répéter jusqu'à ce que tout fonctionne
 
-- ✅ `should show error when email is invalid`
-- ✅ `should save credential after successful login`
-- ✅ `should not autofill on HTTP sites`
-- ❌ `test login` (too vague)
-- ❌ `checkEmailValidation` (not descriptive)
+### Checklist de Test
 
-### Always Include Console Monitoring
+- ✅ Popup se charge sans erreur
+- ✅ Aucune erreur console détectée
+- ✅ Features principales fonctionnent
+- ✅ Interactions utilisateur fonctionnent
+- ✅ Navigation fonctionne
 
-```typescript
-test('feature name', async ({ context, extensionId }) => {
-  const popup = await context.newPage();
-  
-  // Monitor console
-  const logs: string[] = [];
-  const errors: string[] = [];
-  
-  popup.on('console', msg => {
-    logs.push(`[${msg.type()}] ${msg.text()}`);
-    if (msg.type() === 'error') errors.push(msg.text());
-  });
-  
-  // Your test code...
-  
-  // Print logs for debugging
-  console.log('Console logs:', logs);
-  
-  // Verify no unexpected errors
-  const unexpectedErrors = errors.filter(e => !e.includes('DevTools'));
-  expect(unexpectedErrors).toHaveLength(0);
-});
+### Itération sur les Erreurs
+
+```
+RÉPÉTER jusqu'à ce que TOUTES les vérifications passent :
+│
+├─ Vérifier logs : browser_console_messages()
+├─ Si erreurs détectées :
+│  ├─ Lire TOUS les logs d'erreur en détail
+│  ├─ Analyser chaque erreur (message, stack trace, contexte)
+│  ├─ Identifier la cause racine
+│  ├─ Corriger le code
+│  ├─ Attendre 2-3 secondes pour HMR recharger
+│  └─ RETOURNER au début de la boucle (re-vérifier)
+│
+└─ Si TOUT fonctionne : sortir de la boucle
 ```
 
 ---
@@ -285,12 +306,68 @@ test('feature name', async ({ context, extensionId }) => {
 
 ### When a Test Fails:
 
-1. **Read the Error Message** - Playwright provides detailed error messages
+1. **Read the Error Message** - Jest provides detailed error messages
 2. **Check Console Logs** - `console.log('Console logs:', logs);`
-3. **View Screenshots** - Located in `playwright-report/`
-4. **Watch Video** - Located in `playwright-report/`
-5. **Use Debug Mode** - `npx playwright test path/to/test.spec.ts --debug`
-6. **Add More Logging** - Log current URL, element text, take screenshots
+3. **Use browser_console_messages()** - Voir les logs du navigateur MCP
+4. **Use browser_snapshot()** - Voir l'état actuel de la page
+5. **Add More Logging** - Log current URL, element text, utiliser browser_snapshot()
+
+---
+
+## 🧪 Tests Manuels Automatisés (Méthode Standard)
+
+### Processus pour l'IA
+
+**MÉTHODE OBLIGATOIRE** : Utiliser le serveur local + navigateur MCP Cursor
+
+**⚠️ CRITIQUE** : L'IA DOIT itérer automatiquement sur les erreurs jusqu'à ce que TOUTES les vérifications passent. Ne JAMAIS s'arrêter après avoir détecté des erreurs sans les corriger.
+
+```bash
+# 1. Démarrer le serveur web
+npm run dev:web > /tmp/vite-dev-web.log 2>&1 &
+
+# 2. Vérifier que le serveur est prêt
+sleep 5
+curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/packages/extension/popup/index.html
+```
+
+**Actions MCP Navigateur** :
+1. `browser_navigate({ url: 'http://localhost:3000/packages/extension/popup/index.html' })`
+2. `browser_wait_for({ time: 3 })`
+3. `browser_snapshot()` - Voir l'état de la page
+4. `browser_console_messages()` - Vérifier les logs/erreurs
+
+**BOUCLE D'ITÉRATION (OBLIGATOIRE)** :
+```
+RÉPÉTER jusqu'à ce que TOUTES les vérifications passent :
+│
+├─ Vérifier logs : browser_console_messages()
+├─ Si erreurs détectées :
+│  ├─ Lire TOUS les logs d'erreur en détail
+│  ├─ Analyser chaque erreur (message, stack trace, contexte)
+│  ├─ Identifier la cause racine
+│  ├─ Corriger le code
+│  ├─ Attendre 2-3 secondes pour HMR recharger
+│  └─ RETOURNER au début de la boucle (re-vérifier)
+│
+├─ Tester features principales (browser_click, browser_type)
+├─ Si feature ne fonctionne pas :
+│  ├─ Analyser pourquoi (logs, snapshot, comportement)
+│  ├─ Identifier le problème
+│  ├─ Corriger le code
+│  ├─ Attendre 2-3 secondes pour HMR recharger
+│  └─ RETOURNER au début de la boucle (re-tester)
+│
+└─ Si TOUT fonctionne : sortir de la boucle
+```
+
+**Nettoyage** :
+```bash
+pkill -f "vite.*vite.config.web"
+lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+```
+
+**Voir guide complet** : `documentation/ai-assistant/manual-testing-guide.md`
 
 ---
 
@@ -298,31 +375,16 @@ test('feature name', async ({ context, extensionId }) => {
 
 ### Development Commands
 ```bash
-# Build extension (ALWAYS do this first)
+# Web Mode (UI/Logic development - START HERE)
+npm run dev:web
+
+# Build extension (AFTER Web Mode development)
 npm run build:extension
-
-# Run all E2E tests
-npm run test:e2e
-
-# Run specific test (headed mode - see browser)
-npx playwright test path/to/test.spec.ts --headed
-
-# Debug mode (step through test)
-npx playwright test path/to/test.spec.ts --debug
-
-# Run with UI (interactive)
-npx playwright test --ui
-
-# Run only failed tests
-npx playwright test --last-failed
-
-# View test report
-npm run test:e2e:report
 ```
 
 ### Test Verification Commands
 ```bash
-# Run all tests (unit + E2E)
+# Run all tests (unit tests only)
 npm run test:all
 
 # Run unit tests only
@@ -349,10 +411,9 @@ npm run lint:extension
 | Form submission | ✅ Jest + RTL |
 | Input validation UI | ✅ Jest + RTL |
 | Conditional rendering | ✅ Jest + RTL |
-| Complete login flow | ✅ Playwright |
-| Autofill on real site | ✅ Playwright |
-| Popup → Website interaction | ✅ Playwright |
-| Chrome API behavior | ✅ Playwright |
+| Popup web testing | ✅ Navigateur MCP Cursor |
+| Console errors check | ✅ Navigateur MCP Cursor |
+| Popup UI interactions | ✅ Navigateur MCP Cursor |
 
 ---
 
@@ -360,9 +421,9 @@ npm run lint:extension
 
 ### Before Considering Any Task Complete:
 
-- [ ] E2E test exists for the feature (if needed)
+- [ ] Browser test completed (if needed) - Popup tested via navigateur MCP Cursor
 - [ ] Test passes consistently (run 3 times)
-- [ ] No console errors in test output
+- [ ] No console errors in browser output
 - [ ] All existing tests still pass
 - [ ] Extension builds without errors
 - [ ] Component has data-testid attributes
@@ -374,7 +435,7 @@ npm run lint:extension
 
 1. **Unit tests (Jest)** = Test PURE FUNCTIONS (70% of tests)
 2. **Integration tests (Jest + RTL)** = Test ESSENTIAL USER INTERACTIONS (25% of tests)
-3. **E2E tests (Playwright)** = Test CRITICAL FLOWS ONLY (5% of tests)
+3. **Browser tests (Navigateur MCP Cursor)** = Test WEB POPUP (5% of tests)
 4. **EFFICIENCY FIRST** - Only test what prevents real bugs
 5. **Skip complex mocks** - Avoid tests requiring extensive setup
 6. **Skip unstable tests** - Avoid flaky or unreliable tests

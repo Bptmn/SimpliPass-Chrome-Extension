@@ -54,10 +54,10 @@ describe('useLogin', () => {
       const { result } = renderHook(() => useLogin());
 
       act(() => {
-        result.current.setPassword('password123');
+        result.current.setPassword('Password123!');
       });
 
-      expect(result.current.password).toBe('password123');
+      expect(result.current.password).toBe('Password123!');
     });
 
     it('should update remember email preference', () => {
@@ -95,7 +95,7 @@ describe('useLogin', () => {
         result.current.validateForm();
       });
 
-      expect(result.current.emailError).toBe('Please enter a valid email');
+      expect(result.current.emailError).toBe('Invalid email format');
 
       // Test valid email
       act(() => {
@@ -123,9 +123,9 @@ describe('useLogin', () => {
 
       expect(result.current.passwordError).toBe('Password is required');
 
-      // Test valid password
+      // Test valid password (any non-empty password is accepted for login)
       act(() => {
-        result.current.setPassword('password123');
+        result.current.setPassword('anypassword');
       });
       
       act(() => {
@@ -152,7 +152,7 @@ describe('useLogin', () => {
 
       act(() => {
         result.current.setEmail('test@example.com');
-        result.current.setPassword('password123');
+        result.current.setPassword('anypassword');
       });
 
       const isValid = result.current.validateForm();
@@ -168,14 +168,14 @@ describe('useLogin', () => {
 
       act(() => {
         result.current.setEmail('test@example.com');
-        result.current.setPassword('password123');
+        result.current.setPassword('Password123!');
       });
 
       await act(async () => {
         await result.current.handleLogin();
       });
 
-      expect(mockAuthService.login).toHaveBeenCalledWith('test@example.com', 'password123');
+      expect(mockAuthService.login).toHaveBeenCalledWith('test@example.com', 'Password123!');
       expect(result.current.loginSuccess).toBe(true);
       expect(result.current.mfaChallenge).toBeNull();
       expect(result.current.error).toBeNull();
@@ -194,14 +194,14 @@ describe('useLogin', () => {
 
       act(() => {
         result.current.setEmail('test@example.com');
-        result.current.setPassword('password123');
+        result.current.setPassword('Password123!');
       });
 
       await act(async () => {
         await result.current.handleLogin();
       });
 
-      expect(mockAuthService.login).toHaveBeenCalledWith('test@example.com', 'password123');
+      expect(mockAuthService.login).toHaveBeenCalledWith('test@example.com', 'Password123!');
       expect(result.current.mfaChallenge).toEqual(mfaChallenge);
       expect(result.current.loginSuccess).toBe(false);
       expect(result.current.error).toBeNull();
@@ -215,7 +215,7 @@ describe('useLogin', () => {
 
       act(() => {
         result.current.setEmail('test@example.com');
-        result.current.setPassword('wrongpassword');
+        result.current.setPassword('wrongpassword'); // Any password accepted, but wrong credentials
       });
 
       await act(async () => {
@@ -223,7 +223,8 @@ describe('useLogin', () => {
       });
 
       expect(mockAuthService.login).toHaveBeenCalledWith('test@example.com', 'wrongpassword');
-      expect(result.current.error).toBe(errorMessage);
+      // Error message is transformed by useLogin error handling
+      expect(result.current.error).toContain('Invalid email or password');
       expect(result.current.loginSuccess).toBe(false);
       expect(result.current.mfaChallenge).toBeNull();
     });
@@ -255,7 +256,7 @@ describe('useLogin', () => {
 
       act(() => {
         result.current.setEmail('test@example.com');
-        result.current.setPassword('password123');
+        result.current.setPassword('Password123!');
       });
 
       // Start login
@@ -284,7 +285,7 @@ describe('useLogin', () => {
 
       act(() => {
         result.current.setEmail('test@example.com');
-        result.current.setPassword('password123');
+        result.current.setPassword('Password123!');
       });
 
       await act(async () => {
@@ -314,7 +315,7 @@ describe('useLogin', () => {
 
       act(() => {
         result.current.setEmail('test@example.com');
-        result.current.setPassword('password123');
+        result.current.setPassword('Password123!');
       });
 
       await act(async () => {

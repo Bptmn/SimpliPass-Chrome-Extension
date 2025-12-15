@@ -169,6 +169,16 @@ class AuthListeners implements IAuthListenerService {
           console.error('[AuthListeners] Failed to start database listeners:', dbError);
           // Don't throw here as auth is still successful even if DB listeners fail
         }
+        
+        // ✅ Start auto-lock service when user is authenticated
+        try {
+          const { autoLockService } = await import('./autoLockService');
+          autoLockService.start();
+          console.log('[AuthListeners] Auto-lock service started');
+        } catch (autoLockError) {
+          console.error('[AuthListeners] Failed to start auto-lock service:', autoLockError);
+          // Don't throw here as auto-lock is not critical
+        }
       }
     } catch (error) {
       console.error('[AuthListeners] Error handling user authentication:', error);
@@ -182,11 +192,21 @@ class AuthListeners implements IAuthListenerService {
     try {
       console.log('[AuthListeners] Handling user sign out');
       
-      // Step 1: Stop database listeners
+      // Step 1: Stop auto-lock service
+      try {
+        const { autoLockService } = await import('./autoLockService');
+        autoLockService.stop();
+        console.log('[AuthListeners] Auto-lock service stopped');
+      } catch (autoLockError) {
+        console.error('[AuthListeners] Failed to stop auto-lock service:', autoLockError);
+        // Don't throw here as cleanup should continue
+      }
+      
+      // Step 2: Stop database listeners
       this.databaseListeners.stop();
       console.log('[AuthListeners] Database listeners stopped due to sign out');
       
-      // Step 2: Update global state directly via Zustand store
+      // Step 3: Update global state directly via Zustand store
       this.appStateStore.getState().setUserAndSecretKey(null, false);
       
       console.log('[AuthListeners] User signed out');

@@ -1,2 +1,0 @@
-// Root Prettier config - delegates to configs/lint/.prettierrc
-module.exports = require('./configs/lint/.prettierrc');

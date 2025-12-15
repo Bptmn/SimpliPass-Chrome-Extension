@@ -26,6 +26,7 @@ import { ModifyCredentialPage } from '@extension/ui/pages/ModifyCredentialPage';
 import { ModifySecureNotePage } from '@extension/ui/pages/ModifySecureNotePage';
 import type { BankCardDecrypted, CredentialDecrypted, SecureNoteDecrypted } from '@common/types/items.types';
 import { SecureNoteDetailsPage } from '@extension/ui/pages/SecureNoteDetailsPage';
+import { SandboxPage } from '@extension/ui/dev/Sandbox';
 import { BackButton } from '@extension/ui/components';
 import { useAppRouterContext } from './AppRouterProvider';
 import { colors, spacing, typography } from '@extension/ui/design/tokens';
@@ -50,6 +51,7 @@ export const ROUTES = {
   BANK_CARD_DETAILS: 'BANK_CARD_DETAILS',
   SECURE_NOTE_DETAILS: 'SECURE_NOTE_DETAILS',
   EMAIL_CONFIRMATION: 'EMAIL_CONFIRMATION',
+  SANDBOX: 'SANDBOX',
 } as const;
 
 export type AppRoute = keyof typeof ROUTES;
@@ -183,14 +185,15 @@ export const routeComponents: Record<AppRoute, React.ComponentType<any>> = {
   BANK_CARD_DETAILS: BankCardDetailsWrapper, 
   SECURE_NOTE_DETAILS: SecureNoteDetailsWrapper, 
   EMAIL_CONFIRMATION: () => <Placeholder title="Email Confirmation" description="Pass email prop" />, 
+  SANDBOX: () => <SandboxPage />,
 };
 
 export const PUBLIC_ROUTES: AppRoute[] = [
-  'LOGIN', 'LOADING', 'ERROR', 'LOCK', 'EMAIL_CONFIRMATION',
+  'LOGIN', 'LOADING', 'ERROR', 'LOCK', 'EMAIL_CONFIRMATION', 'SANDBOX',
 ];
 
 export const SYSTEM_ROUTES: AppRoute[] = [
-  'LOADING', 'ERROR', 'LOGIN', 'LOCK', 'EMAIL_CONFIRMATION',
+  'LOADING', 'ERROR', 'LOGIN', 'LOCK', 'EMAIL_CONFIRMATION', 'SANDBOX',
 ];
 
 export const requiresAuth = (route: AppRoute): boolean => !PUBLIC_ROUTES.includes(route);

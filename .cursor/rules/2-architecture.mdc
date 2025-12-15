@@ -1,7 +1,6 @@
 ---
-alwaysApply: true
+alwaysApply: false
 ---
-
 ## 🏗️ Three-Layer Architecture
 
 ### Layer 1: UI Layer (Extension-Specific)
@@ -30,7 +29,7 @@ alwaysApply: true
 
 ---
 
-### Layer 2: Services (Business Logic Layer)
+### Layer 2: Services (Business Logic Layer) - PROVIDER AGNOSTIC
 
 **Purpose**: Business logic orchestration, validation, formatting, and data transformation
 
@@ -47,7 +46,8 @@ alwaysApply: true
 * Coordinate multiple lower-level libraries
 * Transform data for UI
 * Propagate and wrap errors
-* May call adapters and libraries
+* **MUST use Adapters (interfaces) only** — never import provider-specific code (`firebase/*`, `amazon-cognito-*`)
+* 100% reusable if providers change
 
 **Testing**: Test business logic in isolation with comprehensive mocking
 
@@ -59,6 +59,15 @@ alwaysApply: true
 
 **Location**: `packages/common/core/libraries/`, `packages/common/core/adapters/`, `packages/extension/adapters/`
 
+**Structure**:
+* **Adapters**: Define interfaces (IAuthAdapter, IDatabaseAdapter) + export current implementation
+* **Libraries**: Provider-specific code (firebase.ts, cognito.ts, firestore.ts)
+
+**Key Interfaces**:
+* `IAuthAdapter` — Login, MFA, Session, Listeners
+* `IDatabaseAdapter` — CRUD, Real-time listeners
+* `ICryptoAdapter` — Encryption, Key derivation
+
 **Responsibilities**:
 * Low-level external API calls (e.g., Firebase, crypto, storage)
 * Chrome extension-specific platform code
@@ -67,6 +76,7 @@ alwaysApply: true
 **Characteristics**:
 * Pure implementation
 * No conditionals or orchestration
+* **Easily swappable** — change provider by modifying adapter only
 
 **Testing**: With mocks for external APIs and Chrome extension APIs (in unit tests), or with real APIs in E2E tests
 
@@ -119,3 +129,5 @@ export class SimpliPassError extends Error {
 * ✅ Only services handle business decisions
 * ✅ Only libraries/adapters touch external systems
 * ✅ Global error boundaries catch unrecoverable app-wide failures only
+* ✅ **PROVIDER AGNOSTIC**: Services NEVER import `firebase/*` or `amazon-cognito-*` directly — use Adapters
+* ✅ To change provider: modify adapter only, services remain unchanged

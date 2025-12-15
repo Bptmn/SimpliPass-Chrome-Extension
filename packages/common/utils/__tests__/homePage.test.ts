@@ -86,7 +86,7 @@ describe('handleOtherItemClick', () => {
 
     expect(mockSetSelected).not.toHaveBeenCalled();
     expect(mockConsoleWarn).toHaveBeenCalledWith(
-      'handleOtherItemClick: item is not a CredentialDecrypted', 
+      'handleOtherItemClick: unknown item type', 
       mockItem
     );
   });
@@ -109,7 +109,7 @@ describe('handleOtherItemClick', () => {
 
     expect(mockSetSelected).not.toHaveBeenCalled();
     expect(mockConsoleWarn).toHaveBeenCalledWith(
-      'handleOtherItemClick: item is not a CredentialDecrypted', 
+      'handleOtherItemClick: unknown item type', 
       mockItem
     );
   });

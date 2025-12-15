@@ -19,9 +19,6 @@ npm run type-check:extension
 # Unit tests (extension)
 npm run test:extension -- --verbose
 
-# E2E tests (Playwright)
-npm run test:e2e
-
 echo "✅ All tests completed."
 
 

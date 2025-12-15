@@ -13,6 +13,8 @@
 
 import { useState, useCallback } from 'react';
 import { authService } from '../core/services/authService';
+import { credentialValidationService } from '../core/services/validationService';
+import { AuthenticationError, NetworkError } from '@common/types/errors.types';
 import type { MfaChallenge } from '@common/types/auth.types';
 
 export interface UseLoginReturn {
@@ -53,21 +55,26 @@ export const useLogin = (): UseLoginReturn => {
   const [mfaChallenge, setMfaChallenge] = useState<MfaChallenge | null>(null);
   const [loginSuccess, setLoginSuccess] = useState(false);
 
-  // Form validation
+  // Form validation using validationService
   const validateForm = useCallback((): boolean => {
     setEmailError('');
     setPasswordError('');
     
     let isValid = true;
     
+    // Validate email using validationService
     if (!email.trim()) {
       setEmailError('Email is required');
       isValid = false;
-    } else if (!email.includes('@')) {
-      setEmailError('Please enter a valid email');
+    } else {
+      const emailResult = credentialValidationService.validateEmail(email);
+      if (!emailResult.isValid) {
+        setEmailError(emailResult.error || 'Invalid email format');
       isValid = false;
+      }
     }
     
+    // Validate password - only check if it's not empty (no format validation for login)
     if (!password) {
       setPasswordError('Password is required');
       isValid = false;
@@ -106,7 +113,29 @@ export const useLogin = (): UseLoginReturn => {
       }
       
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      // Improved error handling with clear messages
+      let errorMessage = 'Login failed. Please try again.';
+      
+      if (err instanceof AuthenticationError) {
+        // Clear authentication errors (invalid credentials, user not found, etc.)
+        errorMessage = err.message || 'Invalid email or password. Please check your credentials.';
+      } else if (err instanceof NetworkError) {
+        // Network errors
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (err instanceof Error) {
+        // Other errors with specific messages
+        const message = err.message.toLowerCase();
+        if (message.includes('user not found') || message.includes('invalid credentials')) {
+          errorMessage = 'Invalid email or password. Please check your credentials.';
+        } else if (message.includes('network') || message.includes('timeout')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else if (message.includes('too many attempts')) {
+          errorMessage = 'Too many login attempts. Please try again later.';
+        } else {
+          errorMessage = err.message || errorMessage;
+        }
+      }
+      
       setError(errorMessage);
       console.error('[useLogin] Login failed:', err);
     } finally {

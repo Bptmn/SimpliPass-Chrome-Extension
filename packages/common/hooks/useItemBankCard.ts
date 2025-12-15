@@ -9,12 +9,12 @@ import type { BankCardDecrypted } from '@common/types/items.types';
 
 export const useItemBankCard = (card: BankCardDecrypted) => {
   // ✅ Use focused formatting hook
-  const { formatCardNumber } = useCardFormatting();
+  const { maskCardNumber } = useCardFormatting();
   
-  // Step 1: Format card number using focused hook
+  // Step 1: Mask card number by default for security (showing only last 4 digits)
   const displayCardNumber = useMemo(() => {
-    return formatCardNumber(card.cardNumber);
-  }, [card.cardNumber, formatCardNumber]);
+    return maskCardNumber(card.cardNumber);
+  }, [card.cardNumber, maskCardNumber]);
 
   return {
     displayCardNumber,
